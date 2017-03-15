@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
 @package AkeebaSubs
-@copyright Copyright (c)2010-2016 Nicholas K. Dionysopoulos
+@copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
 @license GNU General Public License version 3, or later
 -->
 <form>
@@ -171,6 +171,14 @@
             label="COM_AKEEBASUBS_SUBSCRIPTION_CUSTOMPARAMS_TITLE"
             class="tab-pane"
             source="admin:com_akeebasubs/Subscriptions/form_customparams"
+            >
+    </fieldset>
+
+    <fieldset
+            name="invoices"
+            label="COM_AKEEBASUBS_MAINMENU_INVOICES"
+            class="tab-pane"
+            source="admin:com_akeebasubs/Subscriptions/form_invoice"
             >
     </fieldset>
 

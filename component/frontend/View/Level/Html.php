@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  */
 
@@ -75,6 +75,7 @@ class Html extends \FOF30\View\DataView\Html
 			'currencysymbol'        => $this->container->params->get('currencysymbol', '€'),
 			'hidelonepaymentoption' => $this->container->params->get('hidelonepaymentoption', 1),
 			'reqcoupon'             => $this->container->params->get('reqcoupon', 0),
+			'warndnt'               => $this->container->params->get('warndnt', 1),
 		);
 
 		$this->cparams = $componentParams;

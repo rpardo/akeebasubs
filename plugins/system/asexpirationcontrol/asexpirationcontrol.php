@@ -1,7 +1,7 @@
 <?php
 /**
  * @package        akeebasubs
- * @copyright      Copyright (c)2010-2016 Nicholas K. Dionysopoulos / AkeebaBackup.com
+ * @copyright      Copyright (c)2010-2017 Nicholas K. Dionysopoulos / AkeebaBackup.com
  * @license        GNU GPLv3 <http://www.gnu.org/licenses/gpl.html> or later
  */
 
@@ -112,7 +112,7 @@ class plgSystemAsexpirationcontrol extends JPlugin
 		JLoader::import('joomla.utilities.date');
 		$jNow = new JDate();
 
-		// Load a list of subscriptions which have to expire -- F0F does the rest magically!
+		// Load a list of subscriptions which have to expire -- FOF does the rest magically!
 		/** @var Subscriptions $subsModel */
 		$subsModel = Container::getInstance('com_akeebasubs')->factory->model('Subscriptions')->tmpInstance();
 		$subs = $subsModel
@@ -158,10 +158,11 @@ class plgSystemAsexpirationcontrol extends JPlugin
 	private function doIHaveToRun()
 	{
 		// Get the component parameters
-		$params      = $this->getComponentParameters();
+		$componentParameters      = $this->getComponentParameters();
 
 		// Is scheduling enabled?
-		$scheduling  = $params->get('scheduling', 1);
+		// WARNING: DO NOT USE $componentParameters HERE! THIS IS A PLUGIN PARAMETER NOT A COMPONENT PARAMETER
+		$scheduling  = $this->params->get('scheduling', 1);
 
 		if (!$scheduling)
 		{
@@ -169,7 +170,7 @@ class plgSystemAsexpirationcontrol extends JPlugin
 		}
 
 		// Find the next execution time (midnight GMT of the next day after the last time we ran the scheduling)
-		$lastRunUnix = $params->get('plg_akeebasubs_asexpirationcontrol_timestamp', 0);
+		$lastRunUnix = $componentParameters->get('plg_akeebasubs_asexpirationcontrol_timestamp', 0);
 		$dateInfo    = getdate($lastRunUnix);
 		$nextRunUnix = mktime(0, 0, 0, $dateInfo['mon'], $dateInfo['mday'], $dateInfo['year']);
 		$nextRunUnix += 24 * 3600;

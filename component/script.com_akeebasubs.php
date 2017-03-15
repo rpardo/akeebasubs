@@ -1,7 +1,7 @@
 <?php
 /**
  * @package      akeebasubs
- * @copyright    Copyright (c)2010-2016 Nicholas K. Dionysopoulos / AkeebaBackup.com
+ * @copyright    Copyright (c)2010-2017 Nicholas K. Dionysopoulos / AkeebaBackup.com
  * @license      GNU GPLv3 <http://www.gnu.org/licenses/gpl.html> or later
  * @version      $Id$
  *
@@ -128,6 +128,11 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'components/com_akeebasubs/View/Level/tmpl/default_level.php',
 			'components/com_akeebasubs/View/Level/tmpl/default_login.php',
 			'components/com_akeebasubs/View/Level/tmpl/steps.php',
+
+			// Obsolete CLI scripts
+			'cli/akeebasubs-expiration-control.php',
+			'cli/akeebasubs-expiration-notify.php',
+			'cli/akeebasubs-update.php',
 		],
 		'folders' => [
 			'administrator/components/com_akeebasubs/commands',
@@ -215,10 +220,6 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			 align="left"/>
 		<h2 style="font-size: 14pt; font-weight: bold; padding: 0; margin: 0 0 0.5em;">Welcome to Akeeba Subscriptions!</h2>
 		<span>The easiest way to sell subscriptions on your Joomla! site</span>
-
-		<div style="margin: 1em; font-size: 14pt; background-color: #fffff9; color: black">
-			You can download translation files <a href="http://cdn.akeebabackup.com/language/akeebasubs/index.html">directly from our CDN page</a>.
-		</div>
 
 		<?php
 	}

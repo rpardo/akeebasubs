@@ -1,6 +1,6 @@
 /**
  * @package        akeebasubs
- * @copyright    Copyright (c)2010-2016 Nicholas K. Dionysopoulos / AkeebaBackup.com
+ * @copyright    Copyright (c)2010-2017 Nicholas K. Dionysopoulos / AkeebaBackup.com
  * @license        GNU GPLv3 <http://www.gnu.org/licenses/gpl.html> or later
  */
 
@@ -39,7 +39,7 @@ var akeebasubs_eu_configuration = {
 	"AT": ["Austria", "AT", 20],
 	"PL": ["Poland", "PL", 23],
 	"PT": ["Portugal", "PT", 23],
-	"RO": ["Romania", "RO", 20],
+	"RO": ["Romania", "RO", 19],
 	"SI": ["Slovenia", "SI", 22],
 	"SK": ["Slovakia", "SK", 20],
 	"FI": ["Finland", "FI", 24],
@@ -707,7 +707,7 @@ function applyValidation(response, callback)
 
 					$('#username_invalid').hide();
 
-					if ($('#username').val() != '')
+					if (true || ($('#username').val() != ''))
 					{
 						$('#username').parents('div.form-group').addClass('error has-error');
 						$('#username_invalid').show();
@@ -910,7 +910,7 @@ function applyPrice(response)
 
 		if ($sumTotalField.length > 0)
 		{
-			var vatContainer = $('#akeebasubs-sum-vat-container');
+			var vatContainer = $('#akeebasubs-vat-container');
 			vatContainer.hide();
 
 			$sumTotalField.text(response.gross);

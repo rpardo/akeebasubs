@@ -1,14 +1,14 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2016 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
  * @license   GNU General Public License version 3, or later
  */
 
 defined('_JEXEC') or die;
 
 $backtrace_array = debug_backtrace();
-$filename = $backtrace_array[1]['file'];
+$filename = $backtrace_array[0]['file'];
 $folder = dirname($filename);
 $altFolder = basename($filename) . '.bak';
 
