@@ -178,7 +178,7 @@ This email is sent to you by your own site, [SITENAME]
 
 ENDBODY;
 
-		$jconfig  = JFactory::getConfig();
+		$jconfig  = self::getContainer()->platform->getConfig();
 		$sitename = $jconfig->get('sitename');
 
 		$substitutions = array(
@@ -219,7 +219,7 @@ ENDBODY;
 	{
 		JLoader::import('joomla.updater.update');
 
-		$db = JFactory::getDbo();
+		$db = $this->container->platform->getDbo();
 
 		$updateSiteIDs = $this->getUpdateSiteIds();
 		$update_site   = array_shift($updateSiteIDs);
@@ -245,7 +245,7 @@ ENDBODY;
 			return "No download URL found inside XML manifest";
 		}
 
-		$config   = JFactory::getConfig();
+		$config   = self::getContainer()->platform->getConfig();
 		$tmp_dest = $config->get('tmp_path');
 
 		if (!$tmp_dest)
@@ -315,7 +315,7 @@ ENDBODY;
 	 */
 	private function setLastSend()
 	{
-		$db     = JFactory::getDbo();
+		$db     = $this->container->platform->getDbo();
 		$params = JComponentHelper::getParams('com_akeebasubs');
 
 		$params->set('akeebasubs_autoupdate_lastsend', time());

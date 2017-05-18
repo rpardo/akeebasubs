@@ -10,6 +10,7 @@ defined('_JEXEC') or die();
 use Akeeba\Subscriptions\Admin\Model\Levels;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 use Akeeba\Subscriptions\Admin\PluginAbstracts\AkpaymentBase;
+use FOF30\Container\Container;
 
 class plgAkpaymentStripe extends AkpaymentBase
 {
@@ -45,14 +46,14 @@ class plgAkpaymentStripe extends AkpaymentBase
 			return false;
 		}
 
-		$doc = JFactory::getDocument();
-		$doc->addScriptDeclaration("
+		$container = Container::getInstance('com_akeebasubs');
+		$container->template->addJSInline("
 
 			;//
 			Stripe.setPublishableKey('" . $this->getPublicKey() . "');
 			");
-		$doc->addScript("https://js.stripe.com/v2/");
-		$doc->addScriptDeclaration("
+		$container->template->addJS("https://js.stripe.com/v2/");
+		$container->template->addJSInline("
 
 				akeeba.jQuery(function($){
 					var stripeResponseHandler = function(status, response) {
@@ -288,7 +289,7 @@ class plgAkpaymentStripe extends AkpaymentBase
 
 			$error_url = 'index.php?option=com_akeebasubs&view=Level&slug=' . $level->slug;
 			$error_url = JRoute::_($error_url, false);
-			JFactory::getApplication()->redirect($error_url, $data['akeebasubs_failure_reason'], 'error');
+			$this->container->platform->redirect($error_url, 303, $data['akeebasubs_failure_reason'], 'error');
 
 			return false;
 		}
@@ -327,7 +328,7 @@ class plgAkpaymentStripe extends AkpaymentBase
 		// Redirect the user to the "thank you" page
 		$thankyouUrl = JRoute::_('index.php?option=com_akeebasubs&view=Message&slug=' . $subscription->level->slug . '&task=thankyou&subid=' . $subscription->akeebasubs_subscription_id, false);
 
-		JFactory::getApplication()->redirect($thankyouUrl);
+		$this->container->platform->redirect($thankyouUrl);
 
 		return true;
 	}

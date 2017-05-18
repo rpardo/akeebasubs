@@ -10,6 +10,7 @@ JLoader::import('joomla.plugin.plugin');
 use FOF30\Container\Container;
 use Akeeba\Subscriptions\Admin\Model\Levels;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
+use FOF30\Date\Date;
 
 class plgContentAsrestricted extends JPlugin
 {
@@ -194,6 +195,12 @@ class plgContentAsrestricted extends JPlugin
 	private static function isTrue($id)
 	{
 		static $subscriptions = null;
+		static $container = null;
+
+		if (is_null($container))
+		{
+			$container = Container::getInstance('com_akeebasubs');
+		}
 
 		// Don't process empty or invalid IDs
 		$id = trim($id);
@@ -204,7 +211,7 @@ class plgContentAsrestricted extends JPlugin
 		}
 
 		// Don't process for guests
-		$user = JFactory::getUser();
+		$user = $container->platform->getUser();
 
 		if ($user->guest)
 		{
@@ -214,7 +221,7 @@ class plgContentAsrestricted extends JPlugin
 		{
 			$subscriptions = array();
 			JLoader::import('joomla.utilities.date');
-			$jNow = new JDate();
+			$jNow = new Date();
 
 			/** @var Subscriptions $subsModel */
 			$subsModel = Container::getInstance('com_akeebasubs', [], 'site')->factory->model('Subscriptions')->tmpInstance();

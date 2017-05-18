@@ -70,7 +70,7 @@ class Subscribe extends Model
 	{
 		parent::__construct($container, $config);
 
-		$this->validatorFactory = new ValidatorFactory($this->container, $this->getStateVariables(), JFactory::getUser());
+		$this->validatorFactory = new ValidatorFactory($this->container, $this->getStateVariables(), $this->container->platform->getUser());
 	}
 
 	/**
@@ -233,7 +233,7 @@ class Subscribe extends Model
 			{
 				if ($key == 'username')
 				{
-					$user = JFactory::getUser();
+					$user = $this->container->platform->getUser();
 
 					if (!empty($state->username) && ($user->username == $state->username))
 					{
@@ -265,7 +265,7 @@ class Subscribe extends Model
 	public function updateUserInfo($allowNewUser = true, $level = null)
 	{
 		$state = $this->getStateVariables();
-		$user = JFactory::getUser();
+		$user = $this->container->platform->getUser();
 		$user = $this->getState('user', $user);
 
 		if (($user->id == 0) && !$allowNewUser)
@@ -305,7 +305,7 @@ class Subscribe extends Model
 				{
 					// Username and email match with the blocked user; reuse that
 					// user, please.
-					$user = JFactory::getUser($user1->id);
+					$user = $this->container->platform->getUser($user1->id);
 				}
 				elseif ($id1 && $id2)
 				{
@@ -331,7 +331,7 @@ class Subscribe extends Model
 					}
 
 					// Remove $user2 and set $user to $user1 so that it gets updated
-					$jUser2 = JFactory::getUser($user2->id);
+					$jUser2 = $this->container->platform->getUser($user2->id);
 					$error = '';
 
 					try
@@ -349,7 +349,7 @@ class Subscribe extends Model
 						$user2->delete($id2);
 					}
 
-					$user = JFactory::getUser($user1->id);
+					$user = $this->container->platform->getUser($user1->id);
 					$user->email = $state->email;
 					$user->save(true);
 				}
@@ -357,13 +357,13 @@ class Subscribe extends Model
 				{
 					// We have a user with the same email, but the wrong username.
 					// Use this user (the username is updated later on)
-					$user = JFactory::getUser($user2->id);
+					$user = $this->container->platform->getUser($user2->id);
 				}
 				elseif ($id1 && !$id2)
 				{
 					// We have a user with the same username, but the wrong email.
 					// Use this user (the email is updated later on)
-					$user = JFactory::getUser($user1->id);
+					$user = $this->container->platform->getUser($user1->id);
 				}
 			}
 		}
@@ -398,7 +398,7 @@ class Subscribe extends Model
 
 			// Set the user's default language to whatever the site's current language is
 			$params['params'] = array(
-				'language' => JFactory::getConfig()->get('language')
+				'language' => $this->container->platform->getConfig()->get('language')
 			);
 
 			// We always block the user, so that only a successful payment or
@@ -483,7 +483,7 @@ class Subscribe extends Model
 		$state = $this->getStateVariables();
 		$validation = $this->getValidation();
 
-		$user = JFactory::getUser();
+		$user = $this->container->platform->getUser();
 		$user = $this->getState('user', $user);
 
 		// Find an existing record
@@ -572,7 +572,7 @@ class Subscribe extends Model
 		$validation = $this->getValidation();
 
 		// Mark this subscription attempt in the session
-		$this->container->session->set('apply_validation.' . $state->id, 1, 'com_akeebasubs');
+		$this->container->platform->setSessionVar('apply_validation.' . $state->id, 1, 'com_akeebasubs');
 
 		// Step #1.a. Check that the form is valid
 		// ----------------------------------------------------------------------
@@ -645,7 +645,7 @@ class Subscribe extends Model
 
 		// Reset the session flag, so that future registrations will merge the
 		// data from the database
-		$this->container->session->set('firstrun', true, 'com_akeebasubs');
+		$this->container->platform->setSessionVar('firstrun', true, 'com_akeebasubs');
 
 		// Step #2.b. Apply block rules
 		// ----------------------------------------------------------------------
@@ -659,7 +659,7 @@ class Subscribe extends Model
 
 		// Step #3. Create or update a user record
 		// ----------------------------------------------------------------------
-		$user = JFactory::getUser();
+		$user = $this->container->platform->getUser();
 		$this->setState('user', $user);
 		$userIsSaved = $this->updateUserInfo(true, $level);
 
@@ -671,8 +671,7 @@ class Subscribe extends Model
 		$user = $this->getState('user', $user);
 
 		// Store the user's ID in the session
-		$session = $this->container->session;
-		$session->set('subscribes.user_id', $user->id, 'com_akeebasubs');
+		$this->container->platform->setSessionVar('subscribes.user_id', $user->id, 'com_akeebasubs');
 
 		// Remove new subscriptions which are not yet paid for this user
 		// !! Removed because it was causing problems with users retrying to pay for the same subscription
@@ -797,7 +796,7 @@ class Subscribe extends Model
 			}
 		}
 
-		$nullDate = JFactory::getDbo()->getNullDate();
+		$nullDate = $this->container->db->getNullDate();
 
 		/** @var Levels $level */
 		$level = $this->container->factory->model('Levels')->tmpInstance();
@@ -961,8 +960,7 @@ class Subscribe extends Model
 
 		// Step #8. Clear the session
 		// ----------------------------------------------------------------------
-		$session = $this->container->session;
-		$session->set('apply_validation.' . $state->id, null, 'com_akeebasubs');
+		$this->container->platform->setSessionVar('apply_validation.' . $state->id, null, 'com_akeebasubs');
 
 		// Step #9. Call the specific plugin's onAKPaymentNew() method and get the redirection URL,
 		//          or redirect immediately on auto-activated subscriptions
@@ -1005,8 +1003,7 @@ class Subscribe extends Model
 			}
 
 			// and then just redirect
-			$app = JFactory::getApplication();
-			$app->redirect(str_replace('&amp;', '&', \JRoute::_('index.php?option=com_akeebasubs&layout=default&view=message&slug=' . $level->slug . '&layout=order&subid=' . $subscription->akeebasubs_subscription_id)));
+			$this->container->platform->redirect(str_replace('&amp;', '&', \JRoute::_('index.php?option=com_akeebasubs&layout=default&view=message&slug=' . $level->slug . '&layout=order&subid=' . $subscription->akeebasubs_subscription_id)));
 
 			return false;
 		}
@@ -1196,8 +1193,8 @@ class Subscribe extends Model
 	private function sendActivationEmail($user, array $indata = [])
 	{
 		$app = JFactory::getApplication();
-		$config = JFactory::getConfig();
-		$db = JFactory::getDbo();
+		$config = $this->container->platform->getConfig();
+		$db = $this->container->db;
 		$params = \JComponentHelper::getParams('com_users');
 
 		$data = array_merge((array)$user->getProperties(), $indata);

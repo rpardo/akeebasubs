@@ -1,3 +1,16 @@
+# 5.2.3
+
+**Added features**
+
+* More price formatting options in the asprice content plugin
+
+**Bug fixes**
+
+* gh-281 Paypal IPN issues
+* Joomla! 3.7 added a fixed width to specific button classes in the toolbar, breaking the page layout
+* Joomla! 3.7.0 broke the JDate package, effectively ignoring timezones, causing grave errors in date / time calculations and display
+* Joomla! 3.7.0 has a broken System - Page Cache plugin leading to white pages and wrong redirections
+
 # 5.2.2
 
 **Removed features**

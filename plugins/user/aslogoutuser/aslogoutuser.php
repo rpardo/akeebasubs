@@ -83,10 +83,10 @@ class plgUserAslogoutuser extends JPlugin
 			return true;
 		}
 
-		$userid = JUserHelper::getUserId($response['username']);
-		$juser = JFactory::getUser($userid);
-
 		$container = Container::getInstance('com_akeebasubs');
+		$userid    = JUserHelper::getUserId($response['username']);
+		$juser     = $container->platform->getUser($userid);
+
 		/** @var Users $user */
 		$user = $container->factory->model('Users')->tmpInstance();
 		$user->find(['user_id' => $juser->id]);
@@ -99,7 +99,7 @@ class plgUserAslogoutuser extends JPlugin
 
 		// Do not go through the model as it ends up destroying the session when the Remember Me plugin tries to log you
 		// back in.
-		$db = JFactory::getDbo();
+		$db    = $container->db;
 		$query = $db->getQuery(true)
 			->update($db->qn('#__akeebasubs_users'))
 			->set($db->qn('needs_logout') . ' = ' . $db->q(0))

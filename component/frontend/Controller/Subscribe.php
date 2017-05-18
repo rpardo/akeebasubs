@@ -101,7 +101,7 @@ class Subscribe extends Controller
 		}
 
 		// Check the Joomla! View Access Level for this subscription level
-		$accessLevels = \JFactory::getUser()->getAuthorisedViewLevels();
+		$accessLevels = $this->container->platform->getUser()->getAuthorisedViewLevels();
 
 		if (!in_array($level->access, $accessLevels))
 		{
@@ -117,7 +117,7 @@ class Subscribe extends Controller
 		// Did we fail to create a new subscription?
 		if (!$result)
 		{
-			$this->container->session->set('firstrun', false, 'com_akeebasubs');
+			$this->container->platform->setSessionVar('firstrun', false, 'com_akeebasubs');
 
 			$url = str_replace('&amp;', '&', \JRoute::_('index.php?option=com_akeebasubs&view=Level&layout=default&slug=' . $model->slug));
 			$msg = \JText::_('COM_AKEEBASUBS_LEVEL_ERR_VALIDATIONOVERALL');

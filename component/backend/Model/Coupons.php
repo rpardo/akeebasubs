@@ -11,7 +11,6 @@ defined('_JEXEC') or die;
 
 use FOF30\Container\Container;
 use FOF30\Model\DataModel;
-use JDate;
 use JLoader;
 use JText;
 
@@ -154,7 +153,7 @@ class Coupons extends DataModel
 		// Make sure the specified user (if any) exists
 		if (!empty($this->user))
 		{
-			$userObject = \JFactory::getUser($this->user);
+			$userObject = $this->container->platform->getUser($this->user);
 			$this->user = null;
 
 			if (is_object($userObject))

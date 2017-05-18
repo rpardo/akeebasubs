@@ -14,6 +14,7 @@ use Akeeba\Subscriptions\Admin\Helper\EUVATInfo;
 use Akeeba\Subscriptions\Admin\Helper\Format;
 use Akeeba\Subscriptions\Admin\Helper\Message;
 use FOF30\Container\Container;
+use FOF30\Date\Date;
 use FOF30\Model\DataModel;
 
 /**
@@ -275,7 +276,7 @@ class Invoices extends DataModel
 
 		if ( !empty($invoice_date) && preg_match($dateRegEx, $invoice_date))
 		{
-			$jFrom = \JFactory::getDate($invoice_date);
+			$jFrom = $this->container->platform->getDate($invoice_date);
 			$jFrom->setTime(0, 0, 0);
 			$jTo = clone $jFrom;
 			$jTo->setTime(23, 59, 59);
@@ -289,13 +290,13 @@ class Invoices extends DataModel
 		{
 			if ( !empty($invoice_date_before) && preg_match($dateRegEx, $invoice_date_before))
 			{
-				$jDate = \JFactory::getDate($invoice_date_before);
-				$query->where($db->qn('invoice_date') . ' <= ' . $db->q($jDate->toSql()));
+				$date = $this->container->platform->getDate($invoice_date_before);
+				$query->where($db->qn('invoice_date') . ' <= ' . $db->q($date->toSql()));
 			}
 			if ( !empty($invoice_date_after) && preg_match($dateRegEx, $invoice_date_after))
 			{
-				$jDate = \JFactory::getDate($invoice_date_after);
-				$query->where($db->qn('invoice_date') . ' >= ' . $db->q($jDate->toSql()));
+				$date = $this->container->platform->getDate($invoice_date_after);
+				$query->where($db->qn('invoice_date') . ' >= ' . $db->q($date->toSql()));
 			}
 		}
 
@@ -306,7 +307,7 @@ class Invoices extends DataModel
 
 		if ( !empty($sent_on) && preg_match($dateRegEx, $sent_on))
 		{
-			$jFrom = \JFactory::getDate($sent_on);
+			$jFrom = $this->container->platform->getDate($sent_on);
 			$jFrom->setTime(0, 0, 0);
 			$jTo = clone $jFrom;
 			$jTo->setTime(23, 59, 59);
@@ -320,13 +321,13 @@ class Invoices extends DataModel
 		{
 			if ( !empty($sent_on_before) && preg_match($dateRegEx, $sent_on_before))
 			{
-				$jDate = \JFactory::getDate($sent_on_before);
-				$query->where($db->qn('sent_on') . ' <= ' . $db->q($jDate->toSql()));
+				$date = $this->container->platform->getDate($sent_on_before);
+				$query->where($db->qn('sent_on') . ' <= ' . $db->q($date->toSql()));
 			}
 			if ( !empty($sent_on_after) && preg_match($dateRegEx, $sent_on_after))
 			{
-				$jDate = \JFactory::getDate($sent_on_after);
-				$query->where($db->qn('sent_on') . ' >= ' . $db->q($jDate->toSql()));
+				$date = $this->container->platform->getDate($sent_on_after);
+				$query->where($db->qn('sent_on') . ' >= ' . $db->q($date->toSql()));
 			}
 		}
 	}
@@ -420,7 +421,7 @@ class Invoices extends DataModel
 		// Get the configuration variables
 		if ( !$existingRecord)
 		{
-			$jInvoiceDate = \JFactory::getDate();
+			$jInvoiceDate = $this->container->platform->getDate();
 			$invoiceData  = array(
 				'akeebasubs_subscription_id' => $sub->akeebasubs_subscription_id,
 				'extension'                  => 'akeebasubs',
@@ -529,7 +530,7 @@ class Invoices extends DataModel
 				$formated_invoice_no = $invoice_no;
 			}
 
-			$jInvoiceDate = \JFactory::getDate($invoiceRecord->invoice_date);
+			$jInvoiceDate = $this->container->platform->getDate($invoiceRecord->invoice_date);
 
 			$invoiceData = $invoiceRecord->toArray();
 		}
@@ -944,7 +945,7 @@ class Invoices extends DataModel
 		$mailer->AddAttachment($path . $this->filename, 'invoice.pdf', 'base64', 'application/pdf');
 
 		// Set the recipient
-		$mailer->addRecipient(\JFactory::getUser($sub->user_id)->email);
+		$mailer->addRecipient($this->container->platform->getUser($sub->user_id)->email);
 
 		// Send it
 		$result = $mailer->Send();
@@ -952,7 +953,7 @@ class Invoices extends DataModel
 
 		if ($result == true)
 		{
-			$this->sent_on = \JFactory::getDate()->toSql();
+			$this->sent_on = $this->container->platform->getDate()->toSql();
 			$this->save();
 		}
 
@@ -1001,7 +1002,7 @@ class Invoices extends DataModel
 		}
 
 		// Set up TCPDF
-		$jreg     = \JFactory::getConfig();
+		$jreg     = self::getContainer()->platform->getConfig();
 		$tmpdir   = $jreg->get('tmp_path');
 		$tmpdir   = rtrim($tmpdir, '/' . DIRECTORY_SEPARATOR) . '/';
 		$siteName = $jreg->get('sitename');
@@ -1222,8 +1223,8 @@ class Invoices extends DataModel
 
 	public function getInvoicePath()
 	{
-		$date = new \JDate($this->invoice_date);
-		$timezone = \JFactory::getConfig()->get('offset', null);
+		$date = new Date($this->invoice_date);
+		$timezone = self::getContainer()->platform->getConfig()->get('offset', null);
 
 		if ($timezone && $timezone != 'UTC')
 		{

@@ -107,13 +107,13 @@ class Levels extends DataModel
 	public function onAfterBuildQuery(\JDatabaseQuery $query, $overrideLimits = false)
 	{
 		$db = $this->getDbo();
-		$user      = \JFactory::getUser();
+		$user      = $this->container->platform->getUser();
 
 		$access_user_id = $this->getState('access_user_id', null);
 
 		if (!is_null($access_user_id))
 		{
-			$levels = \JFactory::getUser($access_user_id)->getAuthorisedViewLevels();
+			$levels = $this->container->platform->getUser($access_user_id)->getAuthorisedViewLevels();
 
 			if (!empty($levels))
 			{
@@ -283,7 +283,7 @@ class Levels extends DataModel
 
 			if ($count != 0)
 			{
-				$this->title .= ' ' . JFactory::getDate()->format(\JText::_('DATE_FORMAT_LC4'));
+				$this->title .= ' ' . $this->container->platform->getDate()->format(\JText::_('DATE_FORMAT_LC4'));
 			}
 
 			//$this->assert($count == 0, 'COM_AKEEBASUBS_LEVEL_ERR_TITLEUNIQUE');
@@ -324,7 +324,7 @@ class Levels extends DataModel
 
 			if ($count != 0)
 			{
-				$this->slug .= ' ' . JFactory::getDate()->toUnix();
+				$this->slug .= ' ' . $this->container->platform->getDate()->toUnix();
 			}
 
 			//$this->assert($count == 0, 'COM_AKEEBASUBS_LEVEL_ERR_SLUGUNIQUE');
@@ -334,12 +334,12 @@ class Levels extends DataModel
 		$this->assertNotEmpty($this->image, 'COM_AKEEBASUBS_LEVEL_ERR_IMAGE');
 
 		// Check the fixed expiration date and make sure it's in the future
-		$nullDate = JFactory::getDbo()->getNullDate();
+		$nullDate = $this->getDbo()->getNullDate();
 
 		if (!empty($this->fixed_date) && $this->fixed_date != $nullDate)
 		{
-			$jNow   = JFactory::getDate();
-			$jFixed = JFactory::getDate($this->fixed_date);
+			$jNow   = $this->container->platform->getDate();
+			$jFixed = $this->container->platform->getDate($this->fixed_date);
 
 			if ($jNow->toUnix() > $jFixed->toUnix())
 			{

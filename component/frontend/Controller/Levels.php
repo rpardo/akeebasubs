@@ -74,7 +74,7 @@ class Levels extends DataController
 		if (!empty($ids))
 		{
 			$appInput->set('ids', $ids);
-			$appInput->set('_x_userid', JFactory::getUser()->id);
+			$appInput->set('_x_userid', $this->container->platform->getUser()->id);
 		}
 
 		/** @var TaxHelper $taxHelper */
@@ -95,8 +95,7 @@ class Levels extends DataController
 
 		if (!empty($coupon))
 		{
-			$session = $this->container->session;
-			$session->set('coupon', $coupon, 'com_akeebasubs');
+			$this->container->platform->setSessionVar('coupon', $coupon, 'com_akeebasubs');
 		}
 
 		// Are we told to hide notices?
@@ -130,7 +129,7 @@ class Levels extends DataController
 			}
 		}
 
-		$model->access_user_id(\JFactory::getUser()->id);
+		$model->access_user_id($this->container->platform->getUser()->id);
 	}
 
 	/**
@@ -155,7 +154,7 @@ class Levels extends DataController
 		$model = $this->getModel();
 
 		$this->getIDsFromRequest($model, true);
-		$model->access_user_id(\JFactory::getUser()->id);
+		$model->access_user_id($this->container->platform->getUser()->id);
 		$id = $model->getId();
 
 		if (!$id && $slug)
@@ -214,7 +213,7 @@ class Levels extends DataController
 				// User trying to renew a level which is marked as only_once
 				if ($model->renew_url)
 				{
-					\JFactory::getApplication()->redirect($model->renew_url);
+					$this->container->platform->redirect($model->renew_url);
 				}
 
 				return false;
@@ -228,7 +227,7 @@ class Levels extends DataController
 		/** @var Users $usersModel */
 		$usersModel = $this->getModel('Users');
 		$userparams = $usersModel
-			->getMergedData(\JFactory::getUser()->id);
+			->getMergedData($this->container->platform->getUser()->id);
 
 		$view->userparams = $userparams;
 
@@ -238,14 +237,13 @@ class Levels extends DataController
 		$vModel->slug($slug)->id($id);
 
 		// Should we use the coupon code saved in the session?
-		$session = $this->container->session;
-		$sessionCoupon = $session->get('coupon', null, 'com_akeebasubs');
+		$sessionCoupon = $this->container->platform->getSessionVar('coupon', null, 'com_akeebasubs');
 		$inputCoupon = $this->input->getString('coupon');
 
 		if (empty($inputCoupon) && !empty($sessionCoupon))
 		{
 			$vModel->coupon($sessionCoupon);
-			$session->set('coupon', null, 'com_akeebasubs');
+			$this->container->platform->setSessionVar('coupon', null, 'com_akeebasubs');
 		}
 
 		$cache = (array)($vModel->getData());

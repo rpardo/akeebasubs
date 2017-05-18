@@ -12,6 +12,7 @@ JLoader::import('joomla.plugin.plugin');
 use FOF30\Container\Container;
 use Akeeba\Subscriptions\Admin\Model\Levels;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
+use FOF30\Date\Date;
 
 class plgSystemAsexpirationnotify extends JPlugin
 {
@@ -110,9 +111,11 @@ class plgSystemAsexpirationnotify extends JPlugin
 
 		$options = array_merge($defaultOptions, $options);
 
+		\JLog::add("Starting Expiration Notify - Time limit {$options['time_limit']} seconds", \JLog::DEBUG, "akeebasubs.cron.expirationnotify");
+
 		// Get today's date
 		JLoader::import('joomla.utilities.date');
-		$jNow = new JDate();
+		$jNow = new Date();
 		$now  = $jNow->toUnix();
 
 		// Start the clock!
@@ -131,6 +134,8 @@ class plgSystemAsexpirationnotify extends JPlugin
 		/** @var Levels $level */
 		foreach ($levels as $level)
 		{
+			\JLog::add("Processing level " . $level->title, \JLog::DEBUG, "akeebasubs.cron.expirationnotify");
+
 			// Load the notification thresholds and make sure they are sorted correctly!
 			$notify1     = $level->notify1;
 			$notify2     = $level->notify2;
@@ -151,8 +156,8 @@ class plgSystemAsexpirationnotify extends JPlugin
 
 			// Get the subscriptions expiring within the next $notify1 days for
 			// users which we have not contacted yet.
-			$jFrom = new JDate($now + 1);
-			$jTo   = new JDate($now + $notify1 * 24 * 3600);
+			$jFrom = new Date($now + 1);
+			$jTo   = new Date($now + $notify1 * 24 * 3600);
 
 			/** @var Subscriptions $subsModel */
 			$subsModel = Container::getInstance('com_akeebasubs')->factory->model('Subscriptions')->tmpInstance();
@@ -165,14 +170,16 @@ class plgSystemAsexpirationnotify extends JPlugin
 				 ->expires_to($jTo->toSql())
 				 ->get(true);
 
+			\JLog::add("First Notification - From " . $jFrom->format('Y/m/d H:i:s') . ' - To ' . $jTo->format('Y/m/d H:i:s') . ' - Contact flag 0 - Found ' . $subs1->count(), \JLog::DEBUG, "akeebasubs.cron.expirationnotify");
+
 			// Get the subscriptions expiring within the next $notify2 days for
 			// users which we have contacted only once
 			$subs2 = array();
 
 			if ($notify2 > 0)
 			{
-				$jFrom = new JDate($now + 1);
-				$jTo   = new JDate($now + $notify2 * 24 * 3600);
+				$jFrom = new Date($now + 1);
+				$jTo   = new Date($now + $notify2 * 24 * 3600);
 
 				$subs2 = $subsModel->getClone()
 					->contact_flag(1)
@@ -181,6 +188,8 @@ class plgSystemAsexpirationnotify extends JPlugin
 					->expires_from($jFrom->toSql())
 					->expires_to($jTo->toSql())
 					->get(true);
+
+				\JLog::add("Second Notification - From " . $jFrom->format('Y/m/d H:i:s') . ' - To ' . $jTo->format('Y/m/d H:i:s') . ' - Contact flag 1 - Found ' . $subs1->count(), \JLog::DEBUG, "akeebasubs.cron.expirationnotify");
 			}
 
 			// Get the subscriptions expired $notifyAfter days ago
@@ -193,8 +202,8 @@ class plgSystemAsexpirationnotify extends JPlugin
 				// is triggered at least once every two days. Any site with less traffic than that required for the
 				// plugin to be triggered every 48 hours doesn't need our software, it needs better marketing to get
 				// some users!
-				$jFrom = new JDate($now - ($notifyAfter + 2) * 24 * 3600);
-				$jTo   = new JDate($now - $notifyAfter * 24 * 3600);
+				$jFrom = new Date($now - ($notifyAfter + 2) * 24 * 3600);
+				$jTo   = new Date($now - $notifyAfter * 24 * 3600);
 
 				$subs3 = $subsModel->getClone()
 					->level($level->akeebasubs_level_id)
@@ -202,6 +211,8 @@ class plgSystemAsexpirationnotify extends JPlugin
 					->expires_from($jFrom->toSql())
 					->expires_to($jTo->toSql())
 					->get(true);
+
+				\JLog::add("After Expiration Notification - From " . $jFrom->format('Y/m/d H:i:s') . ' - To ' . $jTo->format('Y/m/d H:i:s') . ' - Contact flag 3 - Found ' . $subs1->count(), \JLog::DEBUG, "akeebasubs.cron.expirationnotify");
 			}
 
 			// If there are no subscriptions, bail out
@@ -225,6 +236,8 @@ class plgSystemAsexpirationnotify extends JPlugin
 					// Skip the subscription if the contact_flag is already 3
 					if ($sub->contact_flag == 3)
 					{
+						\JLog::add("Skipping #" . $sub->akeebasubs_subscription_id . ', contact flag is 3', \JLog::INFO, "akeebasubs.cron.expirationnotify");
+
 						continue;
 					}
 
@@ -238,6 +251,8 @@ class plgSystemAsexpirationnotify extends JPlugin
 
 					if ($renewals->count())
 					{
+						\JLog::add("Skipping #" . $sub->akeebasubs_subscription_id . ', renewals found. Updating contact flag to 3', \JLog::INFO, "akeebasubs.cron.expirationnotify");
+
 						// The user has already renewed. Don't send him an email; just update the row
 						$subsModel->getClone()
 						        ->find($sub->akeebasubs_subscription_id)
@@ -269,12 +284,15 @@ class plgSystemAsexpirationnotify extends JPlugin
 			}
 
 			// Loop through subscriptions and send out emails, checking for timeout
-			$jNow = new JDate();
-			$mNow = $jNow->toSql();
+			$jNow           = new Date();
+			$mNow           = $jNow->toSql();
+			$processedCount = 0;
 
 			/** @var Subscriptions $sub */
 			foreach ($realSubs as $sub)
 			{
+				$processedCount++;
+
 				// Is it the first or the second contact?
 				if ($sub->enabled && ($sub->contact_flag == 0))
 				{
@@ -307,11 +325,14 @@ class plgSystemAsexpirationnotify extends JPlugin
 				}
 				else
 				{
+					\JLog::add("I have no idea what to do with subscription #{$sub->akeebasubs_subscription_id}", \JLog::WARNING, "akeebasubs.cron.expirationnotify");
+
 					continue;
 				}
 
 				if ($result)
 				{
+					\JLog::add("-- Updating subscription #{$sub->akeebasubs_subscription_id}, contact flag set to {$data['contact_flag']}", \JLog::DEBUG, "akeebasubs.cron.expirationnotify");
 					$table = $subsModel->getClone();
 					$table->find($sub->akeebasubs_subscription_id);
 					$table->setState('_dontNotify', true);
@@ -324,6 +345,9 @@ class plgSystemAsexpirationnotify extends JPlugin
 
 				if (($options['time_limit'] > 0) && ($elapsed > $options['time_limit']))
 				{
+					$leftOvers = count($realSubs) - $processedCount;
+					\JLog::add("I ran out of time. Number of subscriptions in queue left unprocessed: $leftOvers", \JLog::DEBUG, "akeebasubs.cron.expirationnotify");
+
 					// Unset last run timestamp and return
 					$this->setLastRunTimestamp(0);
 
@@ -399,7 +423,7 @@ class plgSystemAsexpirationnotify extends JPlugin
 		$params  = $this->getComponentParameters();
 		$params->set('plg_akeebasubs_asexpirationnotify_timestamp', $lastRun);
 
-		$db = JFactory::getDBO();
+		$db = Container::getInstance('com_akeebasubs')->db;
 
 		$data  = $params->toString('JSON');
 		$query = $db->getQuery(true)
@@ -443,8 +467,10 @@ class plgSystemAsexpirationnotify extends JPlugin
 	 */
 	private function sendEmail($row, $type)
 	{
+		$container = Container::getInstance('com_akeebasubs');
+
 		// Get the user object
-		$user = JFactory::getUser($row->user_id);
+		$user = $container->platform->getUser($row->user_id);
 
 		// Get a preloaded mailer
 		$key    = 'plg_system_' . $this->_name . '_' . $type;
@@ -454,6 +480,8 @@ class plgSystemAsexpirationnotify extends JPlugin
 		{
 			return false;
 		}
+
+		\JLog::add("Sending $type notification to #{$row->akeebasubs_subscription_id} @{$user->username} ($user->name <{$user->email}>)", \JLog::INFO, "akeebasubs.cron.expirationnotify");
 
 		$mailer->addRecipient($user->email);
 		$result = $mailer->Send();

@@ -14,6 +14,7 @@ use Akeeba\Subscriptions\Admin\Helper\EUVATInfo;
 use Akeeba\Subscriptions\Admin\Helper\Format;
 use Akeeba\Subscriptions\Admin\Helper\Message;
 use FOF30\Container\Container;
+use FOF30\Date\Date;
 use FOF30\Model\DataModel;
 
 /**
@@ -253,7 +254,7 @@ class CreditNotes extends DataModel
 
 		if (!empty($invoice_date) && preg_match($dateRegEx, $invoice_date))
 		{
-			$jFrom = \JFactory::getDate($invoice_date);
+			$jFrom = $this->container->platform->getDate($invoice_date);
 			$jFrom->setTime(0, 0, 0);
 			$jTo = clone $jFrom;
 			$jTo->setTime(23, 59, 59);
@@ -267,13 +268,13 @@ class CreditNotes extends DataModel
 		{
 			if (!empty($invoice_date_before) && preg_match($dateRegEx, $invoice_date_before))
 			{
-				$jDate = \JFactory::getDate($invoice_date_before);
-				$query->where($db->qn('creditnote_date') . ' <= ' . $db->q($jDate->toSql()));
+				$date = $this->container->platform->getDate($invoice_date_before);
+				$query->where($db->qn('creditnote_date') . ' <= ' . $db->q($date->toSql()));
 			}
 			if (!empty($invoice_date_after) && preg_match($dateRegEx, $invoice_date_after))
 			{
-				$jDate = \JFactory::getDate($invoice_date_after);
-				$query->where($db->qn('creditnote_date') . ' >= ' . $db->q($jDate->toSql()));
+				$date = $this->container->platform->getDate($invoice_date_after);
+				$query->where($db->qn('creditnote_date') . ' >= ' . $db->q($date->toSql()));
 			}
 		}
 
@@ -284,7 +285,7 @@ class CreditNotes extends DataModel
 
 		if (!empty($sent_on) && preg_match($dateRegEx, $sent_on))
 		{
-			$jFrom = \JFactory::getDate($sent_on);
+			$jFrom = $this->container->platform->getDate($sent_on);
 			$jFrom->setTime(0, 0, 0);
 			$jTo = clone $jFrom;
 			$jTo->setTime(23, 59, 59);
@@ -298,13 +299,13 @@ class CreditNotes extends DataModel
 		{
 			if (!empty($sent_on_before) && preg_match($dateRegEx, $sent_on_before))
 			{
-				$jDate = \JFactory::getDate($sent_on_before);
-				$query->where($db->qn('sent_on') . ' <= ' . $db->q($jDate->toSql()));
+				$date = $this->container->platform->getDate($sent_on_before);
+				$query->where($db->qn('sent_on') . ' <= ' . $db->q($date->toSql()));
 			}
 			if (!empty($sent_on_after) && preg_match($dateRegEx, $sent_on_after))
 			{
-				$jDate = \JFactory::getDate($sent_on_after);
-				$query->where($db->qn('sent_on') . ' >= ' . $db->q($jDate->toSql()));
+				$date = $this->container->platform->getDate($sent_on_after);
+				$query->where($db->qn('sent_on') . ' >= ' . $db->q($date->toSql()));
 			}
 		}
 	}
@@ -361,7 +362,7 @@ class CreditNotes extends DataModel
 		// Get the configuration variables
 		if (!$existingRecord)
 		{
-			$jCreditNoteDate = \JFactory::getDate();
+			$jCreditNoteDate = $this->container->platform->getDate();
 			$creditNoteData  = array(
 				'akeebasubs_invoice_id' => $invoice->akeebasubs_subscription_id,
 				'creditnote_date'       => $jCreditNoteDate->toSql(),
@@ -462,7 +463,7 @@ class CreditNotes extends DataModel
 				$formattedCreditNoteNumber = $creditNoteNumber;
 			}
 
-			$jCreditNoteDate = \JFactory::getDate($creditNoteRecord->creditnote_date);
+			$jCreditNoteDate = $this->container->platform->getDate($creditNoteRecord->creditnote_date);
 
 			$creditNoteData = $creditNoteRecord->toArray();
 		}
@@ -497,7 +498,7 @@ class CreditNotes extends DataModel
 				$this->container->params->get('invoice_vatnote', 'VAT liability is transferred to the recipient, pursuant EU Directive nr 2006/112/EC and local tax laws implementing this directive.');
 		}
 
-		$jInvoiceDate = \JDate::getInstance($invoice->invoice_date);
+		$jInvoiceDate = Date::getInstance($invoice->invoice_date);
 
 		$extras = array(
 			'[CN:ID]'                  => $creditNoteNumber,
@@ -768,7 +769,7 @@ class CreditNotes extends DataModel
 
 		if ($result == true)
 		{
-			$this->sent_on = \JFactory::getDate()->toSql();
+			$this->sent_on = $this->container->platform->getDate()->toSql();
 			$this->save();
 		}
 
@@ -817,7 +818,7 @@ class CreditNotes extends DataModel
 		}
 
 		// Set up TCPDF
-		$jreg     = \JFactory::getConfig();
+		$jreg     = self::getContainer()->platform->getConfig();
 		$tmpdir   = $jreg->get('tmp_path');
 		$tmpdir   = rtrim($tmpdir, '/' . DIRECTORY_SEPARATOR) . '/';
 		$siteName = $jreg->get('sitename');
@@ -959,8 +960,8 @@ class CreditNotes extends DataModel
 
 	public function getCreditNotePath()
 	{
-		$date     = new \JDate($this->creditnote_date);
-		$timezone = \JFactory::getConfig()->get('offset', null);
+		$date     = new Date($this->creditnote_date);
+		$timezone = self::getContainer()->platform->getConfig()->get('offset', null);
 
 		if ($timezone && $timezone != 'UTC')
 		{

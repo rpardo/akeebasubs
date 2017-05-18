@@ -10,6 +10,7 @@ defined('_JEXEC') or die();
 use Akeeba\Subscriptions\Admin\Model\Levels;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 use Akeeba\Subscriptions\Admin\PluginAbstracts\AkpaymentBase;
+use FOF30\Date\Date;
 
 class plgAkpaymentPaypalpaymentspro extends AkpaymentBase
 {
@@ -137,7 +138,7 @@ class plgAkpaymentPaypalpaymentspro extends AkpaymentBase
 		JLoader::import('joomla.utilities.date');
 
 		$isRecurring = ($data['METHOD'] == 'CreateRecurringPaymentsProfile');
-		$jNow = new JDate();
+		$jNow = new Date();
 		$responseData = array();
 
 		// Load the relevant subscription row
@@ -350,7 +351,7 @@ class plgAkpaymentPaypalpaymentspro extends AkpaymentBase
 
 			$error_url = 'index.php?option=com_akeebasubs&view=level&slug=' . $level->slug;
 			$error_url = JRoute::_($error_url, false);
-			JFactory::getApplication()->redirect($error_url, $responseData['akeebasubs_failure_reason'], 'error');
+			$this->container->platform->redirect($error_url, 303, $responseData['akeebasubs_failure_reason'], 'error');
 
 			return false;
 		}
@@ -358,7 +359,7 @@ class plgAkpaymentPaypalpaymentspro extends AkpaymentBase
 		// Redirect the user to the "thank you" page
 		$level = $subscription->level;
 		$thankyouUrl = JRoute::_('index.php?option=com_akeebasubs&view=Message&slug=' . $level->slug . '&task=thankyou&subid=' . $subscription->akeebasubs_subscription_id, false);
-		JFactory::getApplication()->redirect($thankyouUrl);
+		$this->container->platform->redirect($thankyouUrl);
 
 		return true;
 	}
@@ -544,9 +545,9 @@ class plgAkpaymentPaypalpaymentspro extends AkpaymentBase
 		// In the case of a successful recurring payment, fetch the old subscription's data
 		if ($recurring && ($newStatus == 'C') && ($subscription->state == 'C'))
 		{
-			$jNow = new JDate();
-			$jStart = new JDate($subscription->publish_up);
-			$jEnd = new JDate($subscription->publish_down);
+			$jNow = new Date();
+			$jStart = new Date($subscription->publish_up);
+			$jEnd = new Date($subscription->publish_down);
 			$now = $jNow->toUnix();
 			$start = $jStart->toUnix();
 			$end = $jEnd->toUnix();
@@ -572,7 +573,7 @@ class plgAkpaymentPaypalpaymentspro extends AkpaymentBase
 			{
 				foreach ($allSubs as $aSub)
 				{
-					$jExpire = new JDate($aSub->publish_down);
+					$jExpire = new Date($aSub->publish_down);
 					$expire = $jExpire->toUnix();
 
 					if ($expire > $max_expire)
@@ -585,8 +586,8 @@ class plgAkpaymentPaypalpaymentspro extends AkpaymentBase
 			$duration = $end - $start;
 			$start = max($now, $max_expire);
 			$end = $start + $duration;
-			$jStart = new JDate($start);
-			$jEnd = new JDate($end);
+			$jStart = new Date($start);
+			$jEnd = new Date($end);
 
 			$updates['publish_up'] = $jStart->toSql();
 			$updates['publish_down'] = $jEnd->toSql();

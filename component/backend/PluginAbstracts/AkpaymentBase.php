@@ -12,7 +12,7 @@ use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 use Akeeba\Subscriptions\Site\Model\TaxHelper;
 use Akeeba\Subscriptions\Site\Model\Users;
 use FOF30\Container\Container;
-use JDate;
+use FOF30\Date\Date;
 use JFactory;
 use JFile;
 use JLoader;
@@ -313,9 +313,9 @@ abstract class AkpaymentBase extends JPlugin
 			$subscription->publish_down = '2038-01-01';
 		}
 
-		$jNow   = new JDate();
-		$jStart = new JDate($subscription->publish_up);
-		$jEnd   = new JDate($subscription->publish_down);
+		$jNow   = new Date();
+		$jStart = new Date($subscription->publish_up);
+		$jEnd   = new Date($subscription->publish_down);
 		$now    = $jNow->toUnix();
 		$start  = $jStart->toUnix();
 		$end    = $jEnd->toUnix();
@@ -334,7 +334,7 @@ abstract class AkpaymentBase extends JPlugin
 			}
 			else
 			{
-				$jOldSubExpiration         = new JDate($oldsub->publish_down);
+				$jOldSubExpiration         = new Date($oldsub->publish_down);
 				$oldSubExpirationTimestamp = $jOldSubExpiration->toUnix();
 			}
 		}
@@ -350,7 +350,8 @@ abstract class AkpaymentBase extends JPlugin
 			{
 				// Get the subscription level and determine if this is a Fixed
 				// Expiration subscription
-				$nullDate = JFactory::getDbo()->getNullDate();
+				$container = Container::getInstance('com_akeebasubs');
+				$nullDate = $container->db->getNullDate();
 
 				/** @var Levels $level */
 				if ($subscription->level instanceof Levels)
@@ -368,7 +369,7 @@ abstract class AkpaymentBase extends JPlugin
 				if (!is_null($fixed_date) && !($fixed_date == $nullDate))
 				{
 					// Is the fixed date in the future?
-					$jFixedDate = JFactory::getDate($fixed_date);
+					$jFixedDate = new Date($fixed_date);
 
 					if ($now > $jFixedDate->toUnix())
 					{
@@ -402,8 +403,8 @@ abstract class AkpaymentBase extends JPlugin
 				}
 			}
 
-			$jStart = new JDate($start);
-			$jEnd   = new JDate($end);
+			$jStart = new Date($start);
+			$jEnd   = new Date($end);
 		}
 
 		// Expiration = replace => expire old subscription
@@ -464,7 +465,7 @@ abstract class AkpaymentBase extends JPlugin
 	 */
 	protected function logIPN($data, $isValid)
 	{
-		$config  = JFactory::getConfig();
+		$config  = $this->container->platform->getConfig();
 		$logpath = $config->get('log_path');
 
 		$logFilenameBase = $logpath . '/akpayment_' . strtolower($this->ppName) . '_ipn';
@@ -789,7 +790,7 @@ abstract class AkpaymentBase extends JPlugin
 		if (empty($logDir))
 		{
 			$defLogDir = (version_compare(JVERSION, '3.5.999', 'le') ? JPATH_ROOT : JPATH_ADMINISTRATOR) . '/logs';
-			$logDir    = JFactory::getConfig()->get('log_path', $defLogDir);
+			$logDir    = $this->container->platform->getConfig()->get('log_path', $defLogDir);
 			$logDir    = rtrim($logDir, '/' . DIRECTORY_SEPARATOR);
 		}
 
@@ -809,7 +810,7 @@ abstract class AkpaymentBase extends JPlugin
 	 */
 	protected function handleRecurringSubscription(Subscriptions $subscription, &$updates)
 	{
-		$jNow = new JDate();
+		$jNow = new Date();
 
 		// Create a new record for the old subscription
 		$oldData                               = $subscription->getData();
@@ -889,13 +890,13 @@ abstract class AkpaymentBase extends JPlugin
 				// Gross amount is what the client paid. This is either the recurring_amount (if it's non zero) or the gross_amount
 				$updates['gross_amount']       = ($subscription->recurring_amount > 0.01) ? $subscription->recurring_amount : $subscription->gross_amount;
 				// We reverse engineer the tax amount from the gross amount since the tax_percent may have changed since the last payment (e.g. a country has increased the tax rate; UK left the EU and so on)
-				$updates['tax_amount']         = ($subscription->tax_percent < 0.01) ? 0 : ($updates['gross_amount'] / (0.01 * (100 + $updates['tax_percent'])));
+				$updates['tax_amount']         = ($subscription->tax_percent < 0.01) ? 0 : $updates['gross_amount'] - 100 * $updates['gross_amount'] / (100 + $updates['tax_percent']);
 				// The net_amount is calculated by subtraction to make sure we don't suffer any rounding errors which would throw us off by a penny.
 				$updates['net_amount']         = $updates['gross_amount'] - $updates['tax_amount'];
 				// There is no discount in recurring subscriptions...
 				$updates['discount_amount']    = 0;
-				// ...therefore the prediscount_amount is the same as the full price paid.
-				$updates['prediscount_amount'] = $updates['gross_amount'];
+				// ...therefore the prediscount_amount is the same as the net price paid.
+				$updates['prediscount_amount'] = $updates['net_amount'];
 			}
 		}
 	}

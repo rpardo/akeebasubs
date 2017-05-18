@@ -11,6 +11,7 @@ JLoader::import('joomla.plugin.plugin');
 
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 use FOF30\Container\Container;
+use FOF30\Date\Date;
 
 /**
  * plgSystemAspaypalcollation plugin. Collates PayPal sales with the information in Akeeba Subscriptions. Useful if you
@@ -154,7 +155,7 @@ class plgSystemAspaypalcollation extends JPlugin
 		}
 
 		// Loop through each sale and make a list of which ones do not correspond to an active subscription
-		$db             = JFactory::getDbo();
+		$db             = Container::getInstance('com_akeebasubs')->db;
 		$needProcessing = array();
 		$protoQuery     = $db->getQuery(true)
 		                     ->select('COUNT(*)')
@@ -254,7 +255,7 @@ class plgSystemAspaypalcollation extends JPlugin
 	protected function getLatestSales($timePeriod = 86400)
 	{
 		// Used for debug mode
-		$jconfig  = JFactory::getConfig();
+		$jconfig  = Container::getInstance('com_akeebasubs')->platform->getConfig();
 		$tmp      = $jconfig->get('tmp_path', sys_get_temp_dir());
 		$fileName = $tmp . '/test_paypal_latest_sales.txt';
 
@@ -270,9 +271,9 @@ class plgSystemAspaypalcollation extends JPlugin
 		}
 
 		JLoader::import('joomla.utilities.date');
-		$now = new JDate();
+		$now = new Date();
 
-		$fromDate = new JDate($now->toUnix() - $timePeriod);
+		$fromDate = new Date($now->toUnix() - $timePeriod);
 
 		$targetURL = new JUri('https://api-3t.paypal.com/nvp');
 		$targetURL->setVar('USER', self::$username);

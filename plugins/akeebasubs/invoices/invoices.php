@@ -10,6 +10,7 @@ defined('_JEXEC') or die();
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 use FOF30\Container\Container;
 use Akeeba\Subscriptions\Admin\Model\Invoices;
+use FOF30\Date\Date;
 
 class plgAkeebasubsInvoices extends JPlugin
 {
@@ -72,8 +73,8 @@ class plgAkeebasubsInvoices extends JPlugin
 		// prevents accidentally creating an invoice for past subscriptions not
 		// handled by the invoicing system
 		JLoader::import('joomla.utilities.date');
-		$jCreated = new JDate($row->created_on);
-		$jNow = new JDate();
+		$jCreated = new Date($row->created_on);
+		$jNow = new Date();
 		$dateDiff = $jNow->toUnix() - $jCreated->toUnix();
 		if ($dateDiff > 604800)
 		{
@@ -83,7 +84,8 @@ class plgAkeebasubsInvoices extends JPlugin
 		// Only handle not expired subscriptions
 		if ($generateAnInvoice && !in_array($row->akeebasubs_subscription_id, self::$generatedInvoicesFor))
 		{
-			$db = JFactory::getDbo();
+			$container = Container::getInstance('com_akeebasubs');
+			$db = $container->db;
 
 			// Check if there is an invoice for this subscription already
 			$query = $db->getQuery(true)

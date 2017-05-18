@@ -11,6 +11,7 @@ use Akeeba\Subscriptions\Admin\Model\Levels;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 use Akeeba\Subscriptions\Admin\Model\Users;
 use FOF30\Container\Container;
+use FOF30\Date\Date;
 use FOF30\Model\DataModel;
 use JFactory;
 use JLoader;
@@ -26,11 +27,26 @@ defined('_JEXEC') or die;
 abstract class Message
 {
 	/**
-	 * The component container used by this class
+	 * The component's container
 	 *
-	 * @var  Container
+	 * @var   Container
 	 */
-	static $container = null;
+	protected static $container;
+
+	/**
+	 * Returns the component's container
+	 *
+	 * @return  Container
+	 */
+	protected static function getContainer()
+	{
+		if (is_null(self::$container))
+		{
+			self::$container = Container::getInstance('com_akeebasubs');
+		}
+
+		return self::$container;
+	}
 
 	/**
 	 * Pre-processes the message text in $text, replacing merge tags with those
@@ -45,7 +61,7 @@ abstract class Message
 	public static function processSubscriptionTags($text, $sub, $extras = array(), $businessInfoAware = false)
 	{
 		// Get the user object for this subscription
-		$joomlaUser = JFactory::getUser($sub->user_id);
+		$joomlaUser = self::getContainer()->platform->getUser($sub->user_id);
 
 		// Get the extra user parameters object for the subscription
 		/** @var Users $subsUser */
@@ -341,7 +357,7 @@ abstract class Message
 		}
 
 		// -- Get the site name
-		$config   = JFactory::getConfig();
+		$config   = self::getContainer()->platform->getConfig();
 		$sitename = $config->get('sitename');
 
 		// -- First/last name
@@ -425,8 +441,8 @@ abstract class Message
 
 		// Dates
 		JLoader::import('joomla.utilities.date');
-		$jFrom = new \JDate($sub->publish_up);
-		$jTo   = new \JDate($sub->publish_down);
+		$jFrom = new Date($sub->publish_up);
+		$jTo   = new Date($sub->publish_down);
 
 		// Download ID
 
@@ -538,7 +554,7 @@ abstract class Message
 			}
 			else
 			{
-				$user = JFactory::getUser();
+				$user = self::getContainer()->platform->getUser();
 
 				if (property_exists($user, 'language'))
 				{
@@ -672,32 +688,5 @@ abstract class Message
 		while ($pos !== false);
 
 		return $text;
-	}
-
-	/**
-	 * Returns the current Akeeba Subscriptions container object
-	 *
-	 * @return  Container
-	 */
-	protected static function getContainer()
-	{
-		if (is_null(self::$container))
-		{
-			self::$container = Container::getInstance('com_akeebasubs');
-		}
-
-		return self::$container;
-	}
-
-	/**
-	 * Set the Akeeba Subscriptions container
-	 *
-	 * @param   Container  $container
-	 *
-	 * @return  void
-	 */
-	protected static function setContainer(Container $container)
-	{
-		self::$container = $container;
 	}
 }

@@ -48,11 +48,11 @@ class plgAkpaymentPaymilldss3 extends AkpaymentBase
 			return false;
 		}
 
-		$doc = JFactory::getDocument();
-		$doc->addScriptDeclaration(
+		$container = Container::getInstance('com_akeebasubs');
+		$container->template->addJSInline(
 			"\n;//\nvar PAYMILL_PUBLIC_KEY = '" . $this->getPublicKey() . "';\n");
-		$doc->addScript("https://bridge.paymill.com/dss3");
-		$doc->addScript(JUri::base() . 'plugins/akpayment/paymilldss3/js/publicapi.js');
+		$container->template->addJS("https://bridge.paymill.com/dss3");
+		$container->template->addJS(JUri::base() . 'plugins/akpayment/paymilldss3/js/publicapi.js');
 
 		$callbackUrl = JURI::base() . 'index.php?option=com_akeebasubs&view=Callback&paymentmethod=paymilldss3&sid=' . $subscription->akeebasubs_subscription_id;
 		$data = (object)array(
@@ -81,6 +81,7 @@ class plgAkpaymentPaymilldss3 extends AkpaymentBase
 	public function onAKPaymentCallback($paymentmethod, $data)
 	{
 		JLoader::import('joomla.utilities.date');
+		$container = Container::getInstance('com_akeebasubs');
 
 		// Check if we're supposed to handle this
 		if ($paymentmethod != $this->ppName)
@@ -145,7 +146,7 @@ class plgAkpaymentPaymilldss3 extends AkpaymentBase
 			$error_url = 'index.php?option=com_akeebasubs&view=Level&slug=' . $level->slug;
 			$error_url = JRoute::_($error_url, false);
 
-			JFactory::getApplication()->redirect($error_url, $data['akeebasubs_failure_reason'], 'error');
+			$this->container->platform->redirect($error_url, 303, $data['akeebasubs_failure_reason'], 'error');
 
 			return false;
 		}
@@ -154,10 +155,10 @@ class plgAkpaymentPaymilldss3 extends AkpaymentBase
 		$apiKey = $this->getPrivateKey();
 		$apiEndpoint = 'https://api.paymill.de/v2/';
 
-		$db = JFactory::getDbo();
+		$db = $container->db;
 
 		// CHECK: Do we have a user already defined in PayMill?
-		$user = JFactory::getUser($subscription->user_id);
+		$user = $container->platform->getUser($subscription->user_id);
 
 		$request = new Paymill\Request($apiKey);
 		$clientsObject = new Paymill\Models\Request\Client();
@@ -206,7 +207,7 @@ class plgAkpaymentPaymilldss3 extends AkpaymentBase
 				$error_url = 'index.php?option=com_akeebasubs&view=Level&slug=' . $level->slug;
 				$error_url = JRoute::_($error_url, false);
 
-				JFactory::getApplication()->redirect($error_url, $params['akeebasubs_failure_reason'], 'error');
+				$this->container->platform->redirect($error_url, 303, $params['akeebasubs_failure_reason'], 'error');
 
 				return false;
 			}
@@ -248,7 +249,7 @@ class plgAkpaymentPaymilldss3 extends AkpaymentBase
 				$error_url = 'index.php?option=com_akeebasubs&view=Level&slug=' . $level->slug;
 				$error_url = JRoute::_($error_url, false);
 
-				JFactory::getApplication()->redirect($error_url, $params['akeebasubs_failure_reason'], 'error');
+				$this->container->platform->redirect($error_url, 303, $params['akeebasubs_failure_reason'], 'error');
 
 				return false;
 			}
@@ -263,7 +264,7 @@ class plgAkpaymentPaymilldss3 extends AkpaymentBase
 				'state'                      => 'P',
 			);
 
-			JFactory::getDbo()->updateObject('#__akeebasubs_subscriptions', $oUpdate, 'akeebasubs_subscription_id');
+			$this->container->db->updateObject('#__akeebasubs_subscriptions', $oUpdate, 'akeebasubs_subscription_id');
 		}
 
 		// CHECK: Do we already have a transaction for this subscription?
@@ -289,7 +290,7 @@ class plgAkpaymentPaymilldss3 extends AkpaymentBase
 				'state'                      => 'P',
 			);
 
-			JFactory::getDbo()->updateObject('#__akeebasubs_subscriptions', $oUpdate, 'akeebasubs_subscription_id');
+			$this->container->db->updateObject('#__akeebasubs_subscriptions', $oUpdate, 'akeebasubs_subscription_id');
 
 			// Create the transaction
 			$transactionsObject = new Paymill\Models\Request\Transaction();
@@ -330,7 +331,7 @@ class plgAkpaymentPaymilldss3 extends AkpaymentBase
 				'akeebasubs_subscription_id' => $subscription->akeebasubs_subscription_id,
 				'processor_key'              => $subscription->processor_key,
 			);
-			JFactory::getDbo()->updateObject('#__akeebasubs_subscriptions', $oUpdate, 'akeebasubs_subscription_id');
+			$this->container->db->updateObject('#__akeebasubs_subscriptions', $oUpdate, 'akeebasubs_subscription_id');
 
 			// Fraud attempt? Do nothing more!
 			if (!$isValid)
@@ -339,7 +340,7 @@ class plgAkpaymentPaymilldss3 extends AkpaymentBase
 				$error_url = 'index.php?option=com_akeebasubs&view=Level&slug=' . $level->slug;
 				$error_url = JRoute::_($error_url, false);
 
-				JFactory::getApplication()->redirect($error_url, $params['akeebasubs_failure_reason'], 'error');
+				$this->container->platform->redirect($error_url, 303, $params['akeebasubs_failure_reason'], 'error');
 
 				return false;
 			}
@@ -351,7 +352,7 @@ class plgAkpaymentPaymilldss3 extends AkpaymentBase
 			$error_url = 'index.php?option=com_akeebasubs&view=Level&slug=' . $level->slug;
 			$error_url = JRoute::_($error_url, false);
 
-			JFactory::getApplication()->redirect($error_url, 'Cannot process the transaction twice. Wait to receive your subscription confirmation email and do not retry submitting the payment form again.', 'error');
+			$this->container->platform->redirect($error_url, 303, 'Cannot process the transaction twice. Wait to receive your subscription confirmation email and do not retry submitting the payment form again.', 'error');
 
 			return false;
 		}
@@ -415,7 +416,7 @@ class plgAkpaymentPaymilldss3 extends AkpaymentBase
 		// Redirect the user to the "thank you" page
 		$level = $subscription->level;
 		$thankyouUrl = JRoute::_('index.php?option=com_akeebasubs&view=Message&slug=' . $level->slug . '&task=thankyou&subid=' . $subscription->akeebasubs_subscription_id, false);
-		JFactory::getApplication()->redirect($thankyouUrl);
+		$this->container->platform->redirect($thankyouUrl);
 
 		return true;
 	}
