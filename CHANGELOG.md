@@ -1,3 +1,9 @@
+# 5.2.4
+
+**Bug fixes**
+
+* Fatal error in backend Coupons page for some users
+
 # 5.2.3
 
 **Added features**

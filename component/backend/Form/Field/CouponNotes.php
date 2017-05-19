@@ -49,7 +49,7 @@ class CouponNotes extends TextArea
 
 		if ($this->item->user)
 		{
-			$limits[] = JText::_('COM_AKEEBASUBS_COUPONS_LIMITS_USERS') . ' (' . $this->container->platform->getUser($this->item->user)->username . ')';
+			$limits[] = JText::_('COM_AKEEBASUBS_COUPONS_LIMITS_USERS') . ' (' . $this->form->getContainer()->platform->getUser($this->item->user)->username . ')';
 		}
 
 		if ($this->item->email)
@@ -57,7 +57,7 @@ class CouponNotes extends TextArea
 			$limits[] = JText::_('COM_AKEEBASUBS_COUPONS_LIMITS_EMAIL') . ' (' . $this->item->email . ')';
 		}
 
-		if (count($this->item->subscriptions))
+		if ($this->item->subscriptions->count())
 		{
 			$limits[] = JText::_('COM_AKEEBASUBS_COUPONS_LIMITS_LEVELS');
 		}
