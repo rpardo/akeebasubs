@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="3.3.0" type="plugin" group="content" method="upgrade">
-	<name>PLG_CONTENT_ASLINK</name>
-	<author>Nicholas K. Dionysopoulos</author>
-	<authorEmail>nicholas@dionysopoulos.me</authorEmail>
-	<authorUrl>http://www.akeebabackup.com</authorUrl>
-	<copyright>Copyright (c)2010-2017 Nicholas K. Dionysopoulos</copyright>
-	<license>GNU General Public License version 3, or later</license>
-	<creationDate>April 2015</creationDate>
-	<version>5.0</version>
-	<description>PLG_CONTENT_ASLINK_DESCRIPTION</description>
-	<files>
-		<filename plugin="aslink">aslink.php</filename>
-	</files>
-	<languages folder="language">
-		<language tag="en-GB">en-GB/en-GB.plg_content_aslink.ini</language>
-		<language tag="en-GB">en-GB/en-GB.plg_content_aslink.sys.ini</language>
-	</languages>
-	
+    <name>PLG_CONTENT_ASLINK</name>
+    <author>Nicholas K. Dionysopoulos</author>
+    <authorEmail>nicholas@dionysopoulos.me</authorEmail>
+    <authorUrl>http://www.akeebabackup.com</authorUrl>
+    <copyright>Copyright (c)2010-2017 Nicholas K. Dionysopoulos</copyright>
+    <license>GNU General Public License version 3, or later</license>
+    <creationDate>April 2015</creationDate>
+    <version>5.0</version>
+    <description>PLG_CONTENT_ASLINK_DESCRIPTION</description>
+    <files>
+        <filename plugin="aslink">aslink.php</filename>
+    </files>
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.plg_content_aslink.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_content_aslink.sys.ini</language>
+    </languages>
+
+    <scriptfile>script.php</scriptfile>
+
 </extension>

@@ -1,30 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="3.3.0" type="plugin" group="akeebasubs" method="upgrade">
-	<name>PLG_AKEEBASUBS_AGREETOTOS</name>
-	<author>Nicholas K. Dionysopoulos</author>
-	<authorEmail>nicholas@dionysopoulos.me</authorEmail>
-	<authorUrl>http://www.akeebabackup.com</authorUrl>
-	<copyright>Copyright (c)2010-2017 Nicholas K. Dionysopoulos</copyright>
-	<license>GNU General Public License version 3, or later</license>
-	<creationDate>April 2015</creationDate>
-	<version>5.0</version>
-	<description>PLG_AKEEBASUBS_AGREETOTOS_DESCRIPTION</description>
-	<files>
-		<filename plugin="agreetotos">agreetotos.php</filename>
-	</files>
-	<languages folder="language">
-		<language tag="en-GB">en-GB/en-GB.plg_akeebasubs_agreetotos.ini</language>
-		<language tag="en-GB">en-GB/en-GB.plg_akeebasubs_agreetotos.sys.ini</language>
-	</languages>
-	<config>
-		<fields name="params">
-			<fieldset name="basic">
-				<field name="tosurl" type="text" default="" label="PLG_AKEEBASUBS_AGREETOTOS_TOSURL_TITLE" description="PLG_AKEEBASUBS_AGREETOTOS_TOSURL_DESC" length="50" />
-				<field name="cachechoice" type="radio" default="1" label="PLG_AKEEBASUBS_AGREETOTOS_CACHECHOICE_TITLE" description="PLG_AKEEBASUBS_AGREETOTOS_CACHECHOICE_DESCRIPTION">
-					<option value="0">JNo</option>
-					<option value="1">JYes</option>
-				</field>
-			</fieldset>
-		</fields>
-	</config>
+    <name>PLG_AKEEBASUBS_AGREETOTOS</name>
+    <author>Nicholas K. Dionysopoulos</author>
+    <authorEmail>nicholas@dionysopoulos.me</authorEmail>
+    <authorUrl>http://www.akeebabackup.com</authorUrl>
+    <copyright>Copyright (c)2010-2017 Nicholas K. Dionysopoulos</copyright>
+    <license>GNU General Public License version 3, or later</license>
+    <creationDate>April 2015</creationDate>
+    <version>5.0</version>
+    <description>PLG_AKEEBASUBS_AGREETOTOS_DESCRIPTION</description>
+    <files>
+        <filename plugin="agreetotos">agreetotos.php</filename>
+    </files>
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.plg_akeebasubs_agreetotos.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_akeebasubs_agreetotos.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="tosurl" type="text" default="" label="PLG_AKEEBASUBS_AGREETOTOS_TOSURL_TITLE"
+                       description="PLG_AKEEBASUBS_AGREETOTOS_TOSURL_DESC" length="50"/>
+                <field name="cachechoice" type="radio" default="1" label="PLG_AKEEBASUBS_AGREETOTOS_CACHECHOICE_TITLE"
+                       description="PLG_AKEEBASUBS_AGREETOTOS_CACHECHOICE_DESCRIPTION">
+                    <option value="0">JNo</option>
+                    <option value="1">JYes</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+
+    <scriptfile>script.php</scriptfile>
+
 </extension>
