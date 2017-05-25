@@ -27,6 +27,6 @@ class plgAkpaymentPaymilldss3InstallerScript extends FOF30\Utils\InstallScript\P
 	 *
 	 * @var   string
 	 */
-	protected $pluginName = 'Paymilldss3';
+	protected $pluginName = 'paymilldss3';
 
 }
