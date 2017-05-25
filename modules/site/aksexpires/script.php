@@ -13,7 +13,7 @@ if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/inclu
 	throw new RuntimeException('This extension requires FOF 3.0.');
 }
 
-class Mod_aksexpiresInstallerScript extends FOF30\Utils\InstallScript\Module
+class Mod_AksexpiresInstallerScript extends FOF30\Utils\InstallScript\Module
 {
 
 }
