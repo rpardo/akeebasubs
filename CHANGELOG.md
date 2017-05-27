@@ -5,6 +5,7 @@
 * Fatal error in backend Coupons page for some users
 * Workaround for Joomla! Bug 16147 (https://github.com/joomla/joomla-cms/issues/16147) - Cannot access component after installation when cache is enabled
 * Workaround for Joomla! bug "Sometimes files are not copied on update"
+* Blind change: 2Checkout TLS 1.1 requirement since June 1st, 2017 (blind because I can't test it until AFTER they switch their production systems FFS)
 
 # 5.2.3
 

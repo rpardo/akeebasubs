@@ -244,13 +244,31 @@ class plgSystemAs2cocollation extends JPlugin
 		$nextDay = new Date($now->toUnix() + 86400, $tz);
 
 		$ch = curl_init("https://www.2checkout.com/api/sales/list_sales?sale_date_begin=" . $prevDay->format('Y-m-d') . '&sale_date_end=' . $nextDay->format('Y-m-d') . '&pagesize=100');
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array("Accept: application/json"));
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_USERAGENT, "2Checkout PHP/0.1.0");
-		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-		curl_setopt($ch, CURLOPT_USERPWD, self::$apiUsername . ':' . self::$apiPassword);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($ch, CURLOPT_CAINFO, JPATH_LIBRARIES . '/fof30/Download/Adapter/cacert.pem');
+
+		$options = [
+			CURLOPT_SSL_VERIFYPEER  => true,
+			CURLOPT_SSL_VERIFYHOST  => 2,
+			CURLOPT_VERBOSE         => false,
+			CURLOPT_HEADER          => false,
+			CURLINFO_HEADER_OUT     => false,
+			CURLOPT_RETURNTRANSFER  => true,
+			CURLOPT_CAINFO          => JPATH_LIBRARIES . '/fof30/Download/Adapter/cacert.pem',
+			CURLOPT_HTTPHEADER      => [
+				"Accept: application/json"
+			],
+			CURLOPT_USERAGENT       => "2Checkout PHP/0.1.0",
+			CURLOPT_USERPWD         => self::$apiUsername . ':' . self::$apiPassword,
+			CURLOPT_HTTPAUTH        => CURLAUTH_BASIC,
+			CURLOPT_HTTP_VERSION    => CURL_HTTP_VERSION_1_1,
+			CURLOPT_CONNECTTIMEOUT  => 30,
+			CURLOPT_FORBID_REUSE    => true,
+			// Force the use of TLS (therefore SSLv3 is not used, mitigating POODLE; see https://github.com/paypal/merchant-sdk-php)
+			CURLOPT_SSL_CIPHER_LIST => 'TLSv1',
+			// This forces the use of TLS 1.x
+			CURLOPT_SSLVERSION      => CURL_SSLVERSION_TLSv1,
+		];
+
+		curl_setopt_array($ch, $options);
 
 		$json_resp = curl_exec($ch);
 		curl_close($ch);
