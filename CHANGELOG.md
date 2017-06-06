@@ -7,6 +7,7 @@
 * Workaround for Joomla! bug "Sometimes files are not copied on update"
 * Blind change: 2Checkout TLS 1.1 requirement since June 1st, 2017 (blind because I can't test it until AFTER they switch their production systems FFS)
 * PayMill button class should be "btn btn-success", not just "btn"
+* The selected payment method is not remembered when coming back to the form after a validation error
 
 # 5.2.3
 
