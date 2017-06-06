@@ -50,7 +50,7 @@
 		<label for="pay" class="control-label" style="width:190px; margin-right:20px;">
 		</label>
 		<div class="controls">
-			<a href="#ccform" id="payment-button" class="btn">
+			<a href="#ccform" id="payment-button" class="btn btn-success">
 				<?php echo JText::_('PLG_AKPAYMENT_PAYMILL_FORM_PAYBUTTON') ?>
 			</a>
 		</div>
