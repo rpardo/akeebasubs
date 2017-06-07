@@ -33,6 +33,12 @@ div.controls span.floatme { display: inline-block; float: left; padding: 5px; }
  */
  
  
+.icon-akeebasubs {
+	background: transparent url(../images/akeebasubs-16.png) no-repeat;
+	min-width: 16px !important;
+	min-height: 16px !important;
+}
+
 .icon-48-akeebasubs {
 	background: transparent url(../images/akeebasubs-48.png) no-repeat !important;
 }
