@@ -18,10 +18,6 @@ $needsInvoice = is_null($invoice) || !($invoice instanceof Invoices) || empty($i
 $returnURL    = 'index.php?option=com_akeebasubs&view=Subscriptions&task=edit&id=' . $model->akeebasubs_subscription_id;
 ?>
 
-<h3>
-	<?php echo JText::_('COM_AKEEBASUBS_MAINMENU_INVOICES'); ?>
-</h3>
-
 <?php
 if ($needsInvoice): ?>
 	<a

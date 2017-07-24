@@ -281,3 +281,8 @@ input#since {
  * Joomla! 3.7 made success buttons fixed width.
  */
 #toolbar .btn-success { width: auto !important; }
+
+/**
+ * Joomla! 3.7 broke span6 margins x_x
+ */
+div#akeeba-renderjoomla [class*="span"] { margin-left: 0; }

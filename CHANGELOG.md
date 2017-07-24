@@ -1,6 +1,8 @@
 # 5.2.5
 
-(placholder)
+**Miscellaneous changes**
+
+* Address Joomla! 3.7 visual bug with .span6 margins being too wide
 
 # 5.2.4
 
