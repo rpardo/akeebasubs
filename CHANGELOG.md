@@ -4,6 +4,10 @@
 
 * Address Joomla! 3.7 visual bug with .span6 margins being too wide
 
+**Bug fixes**
+
+* "Do you already have an account" leads to the wrong URL
+
 # 5.2.4
 
 **Bug fixes**
