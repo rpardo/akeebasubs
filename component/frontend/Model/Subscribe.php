@@ -241,19 +241,33 @@ class Subscribe extends Model
 				{
 					$user = $this->container->platform->getUser();
 
+					// Not a logged in user? Empty username is of course an error!
+					if ($user->guest)
+					{
+						break;
+					}
+
+					// Username for the validation state matches current user = valid username
 					if (!empty($state->username) && ($user->username == $state->username))
 					{
 						$isValid = true;
+
+						continue;
 					}
-					else
+
+					// Username in the state empty, but user is logged in. Accept this as-is.
+					if (empty($state->username))
 					{
-						break;
+						$isValid = true;
+
+						continue;
 					}
 				}
 
 				break;
 			}
 		}
+
 		// Make sure custom fields also validate
 		$isValid = $isValid && $validation->custom_valid && $validation->subscription_custom_valid;
 

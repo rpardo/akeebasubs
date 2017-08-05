@@ -7,6 +7,7 @@
 **Bug fixes**
 
 * "Do you already have an account" leads to the wrong URL
+* Username validation for logged in users can make subscription / renewal impossible
 
 # 5.2.4
 
