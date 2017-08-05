@@ -140,7 +140,7 @@ JS;
 		$custom['agreetotos']                        = $this->isTruthism($custom['agreetotos']) ? 1 : 0;
 		$response['custom_validation']['agreetotos'] = $custom['agreetotos'];
 		$response['custom_validation']['agreetotos'] = ($custom['agreetotos'] != 0) ? 1 : 0;
-		$response['valid']                           = $response['custom_validation']['agreetotos'] ? 1 : 0;
+		$response['valid']                           = $response['custom_validation']['agreetotos'] ? true : false;
 
 		return $response;
 	}
