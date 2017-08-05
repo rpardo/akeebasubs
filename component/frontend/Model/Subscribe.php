@@ -203,6 +203,12 @@ class Subscribe extends Model
 
 		foreach ($validation->validation as $key => $validData)
 		{
+			// Skip over debug data dump
+			if ($key == 'rawDataForDebug')
+			{
+				continue;
+			}
+
 			// An invalid (not VIES registered) VAT number is not a fatal error
 			if ($key == 'vatnumber')
 			{
