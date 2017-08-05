@@ -38,11 +38,12 @@ class plgAkeebasubsAgreetotos extends JPlugin
 		}
 
 		$labelText = JText::sprintf('PLG_AKEEBASUBS_AGREETOTOS_AGREE_LABEL', $urlField);
+		$labelText2 = JText::sprintf('PLG_AKEEBASUBS_AGREETOTOS_AGREE_LABEL', JText::_('PLG_AKEEBASUBS_AGREETOTOS_TOS_LABEL'));
 		$extraText = JText::sprintf('PLG_AKEEBASUBS_AGREETOTOS_TOS_INFO_LABEL', JText::_('PLG_AKEEBASUBS_AGREETOTOS_TOS_LABEL'));
 		$html      = <<<HTML
 <label class="checkbox">
 	<input type="checkbox" name="custom[agreetotos]" id="agreetotos" />
-	<span class="glyphicon glyphicon-info-sign hasPopover" title="$labelText" data-content="$extraText"></span>
+	<span class="glyphicon glyphicon-info-sign hasPopover" title="$labelText2" data-content="$extraText"></span>
 	$labelText
 </label>
 HTML;
