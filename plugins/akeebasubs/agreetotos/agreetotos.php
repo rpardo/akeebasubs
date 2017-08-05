@@ -23,36 +23,74 @@ class plgAkeebasubsAgreetotos extends JPlugin
 		$lang->load('plg_akeebasubs_agreetotos', JPATH_ADMINISTRATOR, 'en-GB', true);
 		$lang->load('plg_akeebasubs_agreetotos', JPATH_ADMINISTRATOR, null, true);
 
+		$cachechoice = $this->params->get('cachechoice', 0);
+
 		// Init the fields array which will be returned
 		$fields = array();
 
-		// ----- CONFIRM BEING INFORMED FIELD -----
-		// Setup the checkbox parameters
-		$url      = $this->params->get('tosurl', '');
-		$urlField = JText::_('PLG_AKEEBASUBS_AGREETOTOS_TOS_LABEL');
-
-		if (!empty($url))
+		// ----- AGREE TO TOS FIELD -----
+		// Get the current setting (or 0 if none)
+		if (array_key_exists('agreetotos', $cache['custom']))
 		{
-			$text     = JText::_('PLG_AKEEBASUBS_AGREETOTOS_TOS_LABEL');
+			if ($cachechoice)
+			{
+				$current = $cache['custom']['agreetotos'];
+			}
+			else
+			{
+				$current = '';
+			}
+		}
+		else
+		{
+			if (!is_object($userparams->params))
+			{
+				$current = '';
+			}
+			else
+			{
+				if ($cachechoice)
+				{
+					$current = property_exists($userparams->params, 'agreetotos') ? $userparams->params->agreetotos : 0;
+				}
+				else
+				{
+					$current = '';
+				}
+			}
+		}
+
+		// Setup the field
+		$url = $this->params->get('tosurl', '');
+
+		if (empty($url))
+		{
+			$urlField = JText::_('PLG_AKEEBASUBS_AGREETOTOS_TOS_LABEL');
+		}
+		else
+		{
+			$text = JText::_('PLG_AKEEBASUBS_AGREETOTOS_TOS_LABEL');
 			$urlField = '<a href="javascript:return false;" onclick="window.open(\'' . $url . '\',\'toswindow\',\'width=640,height=480,resizable=yes,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no\');">' . $text . '</a>';
 		}
 
+		// Setup the field's HTML
+		$checked = $current ? 'checked="checked"' : '';
 		$labelText = JText::sprintf('PLG_AKEEBASUBS_AGREETOTOS_AGREE_LABEL', $urlField);
 		$extraText = JText::sprintf('PLG_AKEEBASUBS_AGREETOTOS_TOS_INFO_LABEL', JText::_('PLG_AKEEBASUBS_AGREETOTOS_TOS_LABEL'));
-		$html      = <<<HTML
+		$labelText2 = strip_tags($labelText);
+		$html = <<<HTML
 <label class="checkbox">
-	<input type="checkbox" name="custom[agreetotos]" id="agreetotos" />
-	<span class="glyphicon glyphicon-info-sign hasPopover" title="$labelText" data-content="$extraText"></span>
+	<input type="checkbox" name="custom[agreetotos]" id="agreetotos" $checked />
+	<span class="glyphicon glyphicon-info-sign hasPopover" title="$labelText2" data-content="$extraText"></span>
 	$labelText
 </label>
 HTML;
 
-		// Setup the field
 		$field = array(
-			'id'          => 'agreetotos',
-			'label'       => '* ',
-			'elementHTML' => $html,
-			'isValid'     => false,
+			'id'           => 'agreetotos',
+			'label'        => '* ',
+			'elementHTML'  => $html,
+			'isValid'      => $current != 0
 		);
 		// Add the field to the return output
 		$fields[] = $field;
@@ -104,8 +142,10 @@ function plg_akeebasubs_agreetotos_validate(response)
 			thisIsValid = true;
 			return;
 		}
-		
-		if (!response.custom_validation.agreetotos) {
+
+		if(response.custom_validation.agreetotos || $('#agreetotos').is(':checked')) {
+			thisIsValid = true;
+		} else {
 			$('#agreetotos').parents('div.form-group').addClass('has-error');
 			thisIsValid = false;
 		}
@@ -115,7 +155,7 @@ function plg_akeebasubs_agreetotos_validate(response)
 }
 
 JS;
-		$container  = Container::getInstance('com_akeebasubs');
+		$container = Container::getInstance('com_akeebasubs');
 		$container->template->addJSInline($javascript);
 
 		// ----- RETURN THE FIELDS -----
@@ -126,7 +166,7 @@ JS;
 	{
 		$response = array(
 			'isValid'           => true,
-			'custom_validation' => array(),
+			'custom_validation' => array()
 		);
 
 		$custom = $data->custom;
@@ -136,26 +176,11 @@ JS;
 			$custom['agreetotos'] = 0;
 		}
 
-		$custom['agreetotos']                        = $this->isTruthism($custom['agreetotos']) ? 1 : 0;
-		$response['custom_validation']['agreetotos'] = $custom['agreetotos'];
+		$custom['agreetotos'] = ($custom['agreetotos'] === 'on') ? 1 : 0;
+
 		$response['custom_validation']['agreetotos'] = ($custom['agreetotos'] != 0) ? 1 : 0;
-		$response['valid']                           = $response['custom_validation']['agreetotos'] ? 1 : 0;
+		$response['valid'] = $response['custom_validation']['agreetotos'] ? 1 : 0;
 
 		return $response;
-	}
-
-	private function isTruthism($value)
-	{
-		if ($value === 1)
-		{
-			return true;
-		}
-
-		if (in_array($value, ['on', 'checked', 'true', '1', 'yes', 1, true], true))
-		{
-			return true;
-		}
-
-		return false;
 	}
 }
