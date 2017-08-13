@@ -230,6 +230,13 @@ tr.pending-renewal td .akeebasubs-subscription-grossamount { color: gray; }
 	color: navy;
 }
 
+.akeebasubs-subscription-ua {
+	display: block;
+	clear: left;
+	font-weight: bold;
+	color: navy;
+}
+
 /** User display **/
 .fof-usersfield-avatar {
 	padding-right: 6pt;

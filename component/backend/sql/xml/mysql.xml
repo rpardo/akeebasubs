@@ -79,6 +79,8 @@ CREATE TABLE `#__akeebasubs_subscriptions` (
 	`params` TEXT,
 	`ip` VARCHAR(255),
 	`ip_country` VARCHAR(255),
+	`ua` VARCHAR(255),
+	`mobile` TINYINT(1) NOT NULL DEFAULT '0',
 
 	`akeebasubs_coupon_id` BIGINT(20) NULL,
 	`akeebasubs_upgrade_id` BIGINT(20) NULL,
@@ -1139,5 +1141,20 @@ ALTER TABLE `#__akeebasubs_coupons` DROP KEY `coupon`;
 ALTER TABLE `#__akeebasubs_coupons` ADD UNIQUE KEY `coupon` (`coupon`(100));
             ]]></query>
         </action>
+
+        <action table="#__akeebasubs_subscriptions" canfail="0">
+            <condition type="missing" value="ua" />
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_subscriptions` ADD COLUMN `ua` VARCHAR(255) AFTER `ip_country`;
+				]]></query>
+        </action>
+
+        <action table="#__akeebasubs_subscriptions" canfail="0">
+            <condition type="missing" value="mobile" />
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_subscriptions` ADD COLUMN `mobile` TINYINT(1) NOT NULL DEFAULT '0' AFTER `ua`;
+				]]></query>
+        </action>
+
     </sql>
 </schema>
