@@ -167,6 +167,27 @@
     </fieldset>
 
     <fieldset
+        name="uainfo"
+        class="span6"
+        label="COM_AKEEBASUBS_SUBSCRIPTION_LBL_UAINFO"
+    >
+
+        <field
+            name="ua"
+            type="Text"
+            label="COM_AKEEBASUBS_SUBSCRIPTIONS_UA"
+        />
+
+        <field
+                name="mobile"
+                id="mobileEnabled"
+                type="BooleanToggle"
+                label="COM_AKEEBASUBS_SUBSCRIPTIONS_MOBILE"
+        />
+
+    </fieldset>
+
+    <fieldset
             name="customparams"
             label="COM_AKEEBASUBS_SUBSCRIPTION_CUSTOMPARAMS_TITLE"
             class="span6"
