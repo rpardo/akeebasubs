@@ -35,13 +35,14 @@ HTML;
 
 		if (!empty($this->item->ua))
 		{
+			$labelClass = $this->item->mobile ? 'label-success' : '';
 			$iconClass  = $this->item->mobile ? 'icon-mobile' : 'icon-screen';
 			$originText = htmlspecialchars(JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_UA'));
 			$ua         = htmlspecialchars($this->item->ua);
 
 			$html .= <<< HTML
 <span class="akeebasubs-subscription-ua hasTip" title="$originText::$ua">
-	<span class="icon $iconClass" />
+	<span class="label $labelClass">&nbsp;&nbsp;<span class="icon $iconClass" /></span>
 </span>
 
 HTML;
