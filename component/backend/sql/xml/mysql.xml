@@ -497,7 +497,7 @@ VALUES
 
         <action table="#__akeebasubs_creditnotetemplates" canfail="1">
             <condition type="equals" operator="not" value="1"><![CDATA[
-SELECT COUNT(*) FROM `#__akeebasubs_creditnoteemplates` WHERE `akeebasubs_invoicetemplate_id` = 1;
+SELECT COUNT(*) FROM `#__akeebasubs_creditnotetemplates` WHERE `akeebasubs_invoicetemplate_id` = 1;
             ]]></condition>
             <query><![CDATA[
 REPLACE INTO `#__akeebasubs_creditnotetemplates` (`akeebasubs_invoicetemplate_id`, `template`, `globalformat`, `globalnumbering`, `number_reset`, `format`, `enabled`, `ordering`, `created_on`, `created_by`, `modified_on`, `modified_by`, `locked_on`, `locked_by`)
