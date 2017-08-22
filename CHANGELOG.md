@@ -8,6 +8,7 @@
 
 * "Do you already have an account" leads to the wrong URL
 * Username validation for logged in users can make subscription / renewal impossible
+* Reseller plugin caused a save button to display when displaying a subscription's details
 
 # 5.2.4
 
