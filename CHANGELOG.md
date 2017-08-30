@@ -1,3 +1,7 @@
+# 5.2.6
+
+(Placeholder)
+
 # 5.2.5
 
 **Miscellaneous changes**
