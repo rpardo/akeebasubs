@@ -253,7 +253,7 @@ class plgContentAsprice extends JPlugin
 	private static function processIfHasDiscount($match)
 	{
 		$levelId   = self::getId($match[1], false);
-		$container = Price::getContainer();
+		$container = Container::getInstance('com_akeebasubs');
 		$params    = Price::getPricingParameters();
 		/** @var \Akeeba\Subscriptions\Site\Model\Levels $level */
 		$level = $container->factory->model('Levels')->tmpInstance();
@@ -299,7 +299,7 @@ class plgContentAsprice extends JPlugin
 	private static function processIfIncludesSignup($match)
 	{
 		$levelId   = self::getId($match[1], false);
-		$container = Price::getContainer();
+		$container = Container::getInstance('com_akeebasubs');
 		$params    = Price::getPricingParameters();
 		/** @var \Akeeba\Subscriptions\Site\Model\Levels $level */
 		$level = $container->factory->model('Levels')->tmpInstance();
@@ -367,7 +367,7 @@ class plgContentAsprice extends JPlugin
 	private static function processFancyPrice($match)
 	{
 		$levelId   = self::getId($match[1], false);
-		$container = Price::getContainer();
+		$container = Container::getInstance('com_akeebasubs');
 		$params    = Price::getPricingParameters();
 		/** @var \Akeeba\Subscriptions\Site\Model\Levels $level */
 		$level     = $container->factory->model('Levels')->tmpInstance();
@@ -446,7 +446,7 @@ class plgContentAsprice extends JPlugin
 	private static function processFancyDiscount($match)
 	{
 		$levelId   = self::getId($match[1], false);
-		$container = Price::getContainer();
+		$container = Container::getInstance('com_akeebasubs');
 		$params    = Price::getPricingParameters();
 		/** @var \Akeeba\Subscriptions\Site\Model\Levels $level */
 		$level     = $container->factory->model('Levels')->tmpInstance();
@@ -524,7 +524,7 @@ class plgContentAsprice extends JPlugin
 	private static function processFancySignup($match)
 	{
 		$levelId   = self::getId($match[1], false);
-		$container = Price::getContainer();
+		$container = Container::getInstance('com_akeebasubs');
 		$params    = Price::getPricingParameters();
 		/** @var \Akeeba\Subscriptions\Site\Model\Levels $level */
 		$level     = $container->factory->model('Levels')->tmpInstance();

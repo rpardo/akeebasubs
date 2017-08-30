@@ -15,7 +15,9 @@ use Akeeba\Subscriptions\Site\Model\Subscribe\ValidatorFactory;
 use FOF30\Container\Container;
 use FOF30\Model\Model;
 use FOF30\Utils\Ip;
+use JBrowser;
 use JFactory;
+use JLoader;
 use JUser;
 
 defined('_JEXEC') or die;
@@ -203,6 +205,12 @@ class Subscribe extends Model
 
 		foreach ($validation->validation as $key => $validData)
 		{
+			// Skip over debug data dump
+			if ($key == 'rawDataForDebug')
+			{
+				continue;
+			}
+
 			// An invalid (not VIES registered) VAT number is not a fatal error
 			if ($key == 'vatnumber')
 			{
@@ -235,19 +243,33 @@ class Subscribe extends Model
 				{
 					$user = $this->container->platform->getUser();
 
+					// Not a logged in user? Empty username is of course an error!
+					if ($user->guest)
+					{
+						break;
+					}
+
+					// Username for the validation state matches current user = valid username
 					if (!empty($state->username) && ($user->username == $state->username))
 					{
 						$isValid = true;
+
+						continue;
 					}
-					else
+
+					// Username in the state empty, but user is logged in. Accept this as-is.
+					if (empty($state->username))
 					{
-						break;
+						$isValid = true;
+
+						continue;
 					}
 				}
 
 				break;
 			}
 		}
+
 		// Make sure custom fields also validate
 		$isValid = $isValid && $validation->custom_valid && $validation->subscription_custom_valid;
 
@@ -382,7 +404,7 @@ class Subscribe extends Model
 			// We have to use JUser directly instead of JFactory getUser
 			$user = new JUser(0);
 
-			\JLoader::import('joomla.application.component.helper');
+			JLoader::import('joomla.application.component.helper');
 			$usersConfig = \JComponentHelper::getParams('com_users');
 			$newUsertype = $usersConfig->get('new_usertype');
 
@@ -404,8 +426,8 @@ class Subscribe extends Model
 			// We always block the user, so that only a successful payment or
 			// clicking on the email link activates his account. This is to
 			// prevent spam registrations when the subscription form is abused.
-			\JLoader::import('joomla.user.helper');
-			\JLoader::import('cms.application.helper');
+			JLoader::import('joomla.user.helper');
+			JLoader::import('cms.application.helper');
 			$params['block'] = 1;
 
 			$randomString = \JUserHelper::genRandomPassword();
@@ -431,7 +453,7 @@ class Subscribe extends Model
 
 			if (!empty($state->password) && ($state->password == $state->password2))
 			{
-				\JLoader::import('joomla.user.helper');
+				JLoader::import('joomla.user.helper');
 				$salt = \JUserHelper::genRandomPassword(32);
 				$pass = \JUserHelper::getCryptedPassword($state->password, $salt);
 				$updates['password'] = $pass . ':' . $salt;
@@ -893,6 +915,12 @@ class Subscribe extends Model
 			}
 		}
 
+		// Get the User Agent string
+		JLoader::import('joomla.environment.browser');
+		$browser = new JBrowser();
+		$ua      = $browser->getAgentString();
+		$mobile  = $browser->isMobile();
+
 		// Setup the new subscription
 		$data = array(
 			'akeebasubs_subscription_id' => null,
@@ -923,8 +951,10 @@ class Subscribe extends Model
 			'second_contact'             => '0000-00-00 00:00:00',
 			'akeebasubs_affiliate_id'    => 0,
 			'affiliate_comission'        => 0,
+			'ua'                         => $ua,
+			'mobile'                     => $mobile ? 1 : 0,
 			// Flags
-			'_dontCheckPaymentID'		 => true
+			'_dontCheckPaymentID'        => true,
 		);
 
 		// If I have an alternate currenct, let's convert some values and store them

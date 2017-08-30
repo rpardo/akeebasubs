@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="3.3.0" type="plugin" group="akeebasubs" method="upgrade">
-	<name>PLG_AKEEBASUBS_ADMINEMAILS_XML_TITLE</name>
+    <name>PLG_AKEEBASUBS_ADMINEMAILS_XML_TITLE</name>
     <author>Nicholas K. Dionysopoulos</author>
     <authorEmail>nicholas@dionysopoulos.me</authorEmail>
     <authorUrl>http://www.akeebabackup.com</authorUrl>
@@ -8,19 +8,23 @@
     <license>GNU General Public License version 3, or later</license>
     <creationDate>April 2015</creationDate>
     <version>5.0</version>
-	<description>PLG_AKEEBASUBS_ADMINEMAILS_DESCRIPTION</description>
-	<files>
-		<filename plugin="adminemails">adminemails.php</filename>
-	</files>
-	<languages folder="language">
-		<language tag="en-GB">en-GB/en-GB.plg_akeebasubs_adminemails.ini</language>
-		<language tag="en-GB">en-GB/en-GB.plg_akeebasubs_adminemails.sys.ini</language>
-	</languages>
-	<config>
-		<fields name="params" >
-			<fieldset name="basic">
-				<field name="emails" type="text" default="" label="PLG_AKEEBASUBS_ADMINEMAILS_EMAILS_LABEL" description="PLG_AKEEBASUBS_ADMINEMAILS_EMAILS_DESC" />
-			</fieldset>
-		</fields>
-	</config>
+    <description>PLG_AKEEBASUBS_ADMINEMAILS_DESCRIPTION</description>
+    <files>
+        <filename plugin="adminemails">adminemails.php</filename>
+    </files>
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.plg_akeebasubs_adminemails.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_akeebasubs_adminemails.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="emails" type="text" default="" label="PLG_AKEEBASUBS_ADMINEMAILS_EMAILS_LABEL"
+                       description="PLG_AKEEBASUBS_ADMINEMAILS_EMAILS_DESC"/>
+            </fieldset>
+        </fields>
+    </config>
+
+    <scriptfile>script.php</scriptfile>
+
 </extension>

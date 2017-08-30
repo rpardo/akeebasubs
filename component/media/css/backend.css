@@ -33,6 +33,12 @@ div.controls span.floatme { display: inline-block; float: left; padding: 5px; }
  */
  
  
+.icon-akeebasubs {
+	background: transparent url(../images/akeebasubs-16.png) no-repeat;
+	min-width: 16px !important;
+	min-height: 16px !important;
+}
+
 .icon-48-akeebasubs {
 	background: transparent url(../images/akeebasubs-48.png) no-repeat !important;
 }
@@ -224,6 +230,13 @@ tr.pending-renewal td .akeebasubs-subscription-grossamount { color: gray; }
 	color: navy;
 }
 
+.akeebasubs-subscription-ua {
+	display: block;
+	clear: left;
+	font-weight: bold;
+	color: navy;
+}
+
 /** User display **/
 .fof-usersfield-avatar {
 	padding-right: 6pt;
@@ -275,3 +288,8 @@ input#since {
  * Joomla! 3.7 made success buttons fixed width.
  */
 #toolbar .btn-success { width: auto !important; }
+
+/**
+ * Joomla! 3.7 broke span6 margins x_x
+ */
+div#akeeba-renderjoomla [class*="span"] { margin-left: 0; }

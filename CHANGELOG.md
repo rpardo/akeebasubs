@@ -1,3 +1,30 @@
+# 5.2.6
+
+(Placeholder)
+
+# 5.2.5
+
+**Miscellaneous changes**
+
+* Address Joomla! 3.7 visual bug with .span6 margins being too wide
+
+**Bug fixes**
+
+* "Do you already have an account" leads to the wrong URL
+* Username validation for logged in users can make subscription / renewal impossible
+* Reseller plugin caused a save button to display when displaying a subscription's details
+
+# 5.2.4
+
+**Bug fixes**
+
+* Fatal error in backend Coupons page for some users
+* Workaround for Joomla! Bug 16147 (https://github.com/joomla/joomla-cms/issues/16147) - Cannot access component after installation when cache is enabled
+* Workaround for Joomla! bug "Sometimes files are not copied on update"
+* Blind change: 2Checkout TLS 1.1 requirement since June 1st, 2017 (blind because I can't test it until AFTER they switch their production systems FFS)
+* PayMill button class should be "btn btn-success", not just "btn"
+* The selected payment method is not remembered when coming back to the form after a validation error
+
 # 5.2.3
 
 **Added features**

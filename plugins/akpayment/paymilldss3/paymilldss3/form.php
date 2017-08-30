@@ -21,7 +21,7 @@
 		</label>
 
 		<div class="controls">
-			<a href="#payment-form" id="payment-button" class="btn">
+			<a href="#payment-form" id="payment-button" class="btn btn-success">
 				<?php echo JText::_('PLG_AKPAYMENT_PAYMILLDSS3_FORM_PAYBUTTON') ?>
 			</a>
 		</div>
