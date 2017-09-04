@@ -80,6 +80,7 @@ class Dispatcher extends \FOF30\Dispatcher\Dispatcher
 			'subscriptions' => 'Subscriptions',
 			'userinfos'     => 'UserInfo',
 			'userinfo'      => 'UserInfo',
+			'Userinfo'      => 'UserInfo',
 			'validates'     => 'Validate',
 			'validate'      => 'Validate',
 		];

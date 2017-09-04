@@ -79,7 +79,7 @@ function AkeebasubsBuildRoute(&$query)
 	unset($query['view']);
 
 	// Add the slug
-	if ($newView != 'userinfo')
+	if ($newView != 'UserInfo')
 	{
 		$container = \FOF30\Container\Container::getInstance('com_akeebasubs');
 
