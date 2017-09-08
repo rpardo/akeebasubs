@@ -33,6 +33,11 @@ class Updates extends Update
 		$config['update_sitename']  = 'Akeeba Subscriptions';
 		$config['update_site']      = 'https://raw.githubusercontent.com/akeeba/akeebasubs/master/update/pkg_akeebasubs_updates.xml';
 
+		if (defined('AKEEBASUBS_VERSION') && !in_array(substr(AKEEBASUBS_VERSION, 0, 3), ['dev', 'rev']))
+		{
+			$config['update_version'] = AKEEBASUBS_VERSION;
+		}
+
 		parent::__construct($config);
 	}
 

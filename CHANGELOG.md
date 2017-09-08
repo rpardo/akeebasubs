@@ -1,6 +1,6 @@
 # 5.2.6
 
-(Placeholder)
+* Clicking on "Reload update information" will fix Joomla! erroneously reporting an update is availabe when you have the latest version installed
 
 # 5.2.5
 
