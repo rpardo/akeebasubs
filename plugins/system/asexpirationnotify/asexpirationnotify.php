@@ -241,13 +241,17 @@ class plgSystemAsexpirationnotify extends JPlugin
 						continue;
 					}
 
-					// Get the user and level, load similar subscriptions with start date after this subscription's expiry date
-					$renewals = $subsModel->getClone()
-						->enabled(1)
-						->user_id($sub->user_id)
-						->level($sub->akeebasubs_level_id)
-						->publish_up($sub->publish_down)
-						->get(true);
+					// Given the user and the level, load similar subscriptions with start date after this subscription's expiry date
+					$subsModel = Container::getInstance('com_akeebasubs')->factory->model('Subscriptions')->tmpInstance();
+
+					// Renewals won't be enabled (since they're not started yet), however they MUST BE completed
+					// Otherwise a failed renewal will be considered as a "valid one"
+					$subsModel->state('C');
+					$subsModel->user_id($sub->user_id);
+					$subsModel->level($sub->akeebasubs_level_id);
+					$subsModel->publish_up($sub->publish_down);
+
+					$renewals = $subsModel->get(true);
 
 					if ($renewals->count())
 					{
