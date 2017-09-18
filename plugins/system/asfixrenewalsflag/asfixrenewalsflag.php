@@ -120,20 +120,93 @@ class plgSystemAsfixrenewalsflag extends JPlugin
 		// Start the clock!
 		$clockStart = microtime(true);
 
-		// Get and loop all subscription levels
-		/** @var Levels $levelsModel */
-		$levelsModel = Container::getInstance('com_akeebasubs')->factory->model('Levels')->tmpInstance();
-		$levels = $levelsModel
-			->enabled(1)
-			->get(true);
-
 		// Update the last run info before doing the actual work
 		$this->setLastRunTimestamp();
 
-		/** @var Levels $level */
-		foreach ($levels as $level)
+		$jTo   = new Date($now + (60 * 24 * 3600));
+
+		/** @var Subscriptions $subsModel */
+		$subsModel = Container::getInstance('com_akeebasubs')->factory->model('Subscriptions')->tmpInstance();
+
+		// Let's fetch all the expiring subs in the next 60 days, one query for each contact flag
+		$next_expires0 = $subsModel->getClone()
+			->contact_flag(0)
+			->enabled(1)
+			->expires_from($jNow->toSql())
+			->expires_to($jTo->toSql())
+			->get(true);
+
+		$next_expires1 = $subsModel->getClone()
+			->contact_flag(1)
+			->enabled(1)
+			->expires_from($jNow->toSql())
+			->expires_to($jTo->toSql())
+			->get(true);
+
+		$next_expires2 = $subsModel->getClone()
+			->contact_flag(2)
+			->enabled(1)
+			->expires_from($jNow->toSql())
+			->expires_to($jTo->toSql())
+			->get(true);
+
+		// If there are no subscriptions, bail out
+		$subs0count = is_object($next_expires0) ? $next_expires0->count() : 0;
+		$subs1count = is_object($next_expires1) ? $next_expires1->count() : 0;
+		$subs2count = is_object($next_expires2) ? $next_expires2->count() : 0;
+
+		if (($subs0count + $subs1count + $subs2count) == 0)
 		{
-			\JLog::add("Processing level " . $level->title, \JLog::DEBUG, "akeebasubs.cron.fixrenewalsflag");
+			return;
+		}
+
+		foreach (array($next_expires0, $next_expires1, $next_expires2) as $subs)
+		{
+			/** @var Subscriptions $sub */
+			foreach ($subs as $sub)
+			{
+				// This should never happen, but better be safe than sorry
+				if ($sub->contact_flag == 3)
+				{
+					continue;
+				}
+
+				// Given the user and the level, load similar subscriptions with start date after this subscription's expiry date
+				$subsModel = Container::getInstance('com_akeebasubs')->factory->model('Subscriptions')->tmpInstance();
+
+				// Renewals won't be enabled (since they're not started yet), however they MUST BE completed
+				// Otherwise a failed renewal will be considered as a "valid one"
+				$subsModel->state('C');
+				$subsModel->user_id($sub->user_id);
+				$subsModel->level($sub->akeebasubs_level_id);
+				$subsModel->publish_up($sub->publish_down);
+
+				$renewals = $subsModel->get(true);
+
+				// No renewals? There's nothing to do, then
+				if (!$renewals->count())
+				{
+					continue;
+				}
+
+				\JLog::add("Fixing #" . $sub->akeebasubs_subscription_id . ', renewals found. Updating contact flag to 3', \JLog::INFO, "akeebasubs.cron.fixrenewalsflag");
+
+				// The user has already renewed. Don't send him an email; just update the row
+				$subsModel->getClone()
+					->find($sub->akeebasubs_subscription_id)
+					->save([
+						'contact_flag' => 3
+					]);
+
+				// Timeout check -- Only if we did make a modification!
+				$clockNow = microtime(true);
+				$elapsed  = $clockNow - $clockStart;
+
+				if (($options['time_limit'] > 0) && ($elapsed > $options['time_limit']))
+				{
+					return;
+				}
+			}
 		}
 	}
 
