@@ -114,7 +114,6 @@ class plgSystemAsfixrenewalsflag extends JPlugin
 		\JLog::add("Starting Fixing the Contact flag on renewals- Time limit {$options['time_limit']} seconds", \JLog::DEBUG, "akeebasubs.cron.fixrenewalsflag");
 
 		// Get today's date
-		JLoader::import('joomla.utilities.date');
 		$jNow = new Date();
 		$now  = $jNow->toUnix();
 

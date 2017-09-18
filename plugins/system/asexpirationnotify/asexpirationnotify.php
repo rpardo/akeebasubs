@@ -114,7 +114,6 @@ class plgSystemAsexpirationnotify extends JPlugin
 		\JLog::add("Starting Expiration Notify - Time limit {$options['time_limit']} seconds", \JLog::DEBUG, "akeebasubs.cron.expirationnotify");
 
 		// Get today's date
-		JLoader::import('joomla.utilities.date');
 		$jNow = new Date();
 		$now  = $jNow->toUnix();
 
