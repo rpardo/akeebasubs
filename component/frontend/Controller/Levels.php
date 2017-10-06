@@ -50,7 +50,9 @@ class Levels extends DataController
 	 */
 	public function onBeforeBrowse()
 	{
-		$params = \JFactory::getApplication()->getPageParameters();
+		/** @var \JApplicationSite $app */
+		$app    = \JFactory::getApplication();
+		$params = $app->getParams();
 
 		$ids = $params->get('ids', '');
 
@@ -69,7 +71,7 @@ class Levels extends DataController
 		}
 
 		// Working around Progressive Caching
-		$appInput = \JFactory::getApplication()->input;
+		$appInput = $app->input;
 
 		if (!empty($ids))
 		{
@@ -139,10 +141,13 @@ class Levels extends DataController
 	 */
 	public function onBeforeRead()
 	{
+		/** @var \JApplicationSite $app */
+		$app      = \JFactory::getApplication();
+
 		// Fetch the subscription slug from page parameters
-		$params = \JFactory::getApplication()->getPageParameters();
+		$params   = $app->getParams();
 		$pageslug = $params->get('slug', '');
-		$slug = $this->input->getString('slug', null);
+		$slug     = $this->input->getString('slug', null);
 
 		if ($pageslug)
 		{
@@ -182,8 +187,8 @@ class Levels extends DataController
 		$model->find($id);
 
 		// Working around Progressive Caching
-		\JFactory::getApplication()->input->set('slug', $slug);
-		\JFactory::getApplication()->input->set('id', $id);
+		$app->input->set('slug', $slug);
+		$app->input->set('id', $id);
 
 		$this->registerUrlParams(array(
 			'slug' => 'STRING',
