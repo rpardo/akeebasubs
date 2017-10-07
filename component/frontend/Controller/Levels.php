@@ -15,7 +15,6 @@ use Akeeba\Subscriptions\Site\Model\TaxHelper;
 use Akeeba\Subscriptions\Site\Model\Users;
 use FOF30\Container\Container;
 use FOF30\Controller\DataController;
-use JFactory;
 
 class Levels extends DataController
 {

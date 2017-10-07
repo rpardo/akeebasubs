@@ -48,7 +48,7 @@ use JFactory;
  *
  * @method  $this  akeebasubs_level_id()       akeebasubs_level_id(int $v)
  * @method  $this  title()                     title(string $v)
- * @method  $this  slug()                      slug(string $v)
+ * @method  $this  slug()                      slug(string|array $v)
  * @method  $this  image()                     image(string $v)
  * @method  $this  description()               description(string $v)
  * @method  $this  duration()                  duration(int $v)

@@ -77,6 +77,26 @@ class Subscriptions extends DataController
 			$subsModel->paystate(['C', 'P']);
 		}
 
+		if ($this->input->getInt('noInvoice', 0) && $isAdmin)
+		{
+			$db = $subsModel->getDbo();
+			$subsModel->whereRaw($db->qn('akeebasubs_invoice_id') . ' IS NULL');
+		}
+		elseif ($this->input->getInt('hasInvoice', 0) && $isAdmin)
+		{
+			$db = $subsModel->getDbo();
+			$subsModel->whereRaw($db->qn('akeebasubs_invoice_id') . ' IS NOT NULL');
+		}
+
+		// Search for subscriptions after but not including this subscription ID
+		$lastSubId = $this->input->getInt('last_subid', 0);
+
+		if ($lastSubId && $isAdmin)
+		{
+			$db = $subsModel->getDbo();
+			$subsModel->whereRaw($db->qn('akeebasubs_subscription_id') . ' > ' . $db->q($lastSubId));
+		}
+
 		// Let me cheat. If the request doesn't specify how many records to show, show them all!
 		if ($this->input->getCmd('format', 'html') != 'html')
 		{
