@@ -183,6 +183,9 @@ class plgSystemAs2cocollation extends JPlugin
 			// Find the subscription ID
 			$subId = trim($sale['sale']['invoices'][0]['vendor_order_id']);
 
+			// Find the amount paid
+			$paidAmount = isset($sale['sale']['invoices'][0]['vendor_total']) ? floatval($sale['sale']['invoices'][0]['vendor_total']) : 0.00;
+
 			// Construct the processor key
 			$invoiceId = $sale['sale']['invoices'][0]['invoice_id'];
 			$processorKey = $id . '/' . $invoiceId;
@@ -193,6 +196,12 @@ class plgSystemAs2cocollation extends JPlugin
 			$sub->find($subId);
 
 			if ($sub->akeebasubs_subscription_id != $subId)
+			{
+				continue;
+			}
+
+			// If the price paid doesn't match we don't accept the transaction
+			if (($sub->gross_amount - $paidAmount) >= 0.01)
 			{
 				continue;
 			}
