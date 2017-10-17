@@ -30,6 +30,7 @@ You will also need the following path structure inside a folder on your system
 * **buildfiles** [Akeeba Build Tools](https://github.com/akeeba/buildfiles)
 * **fof3** [Framework on Framework 3](https://github.com/akeeba/fof)
 * **strapper** [Akeeba Strapper](https://github.com/akeeba/strapper)
+* **translations** [Translations](https://github.com/akeeba/translations)
 
 You must use the exact folder names specified here.
 
