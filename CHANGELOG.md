@@ -1,6 +1,12 @@
 # 5.2.6
 
-* Clicking on "Reload update information" will fix Joomla! erroneously reporting an update is availabe when you have the latest version installed
+**Added features**
+
+* Log failed subscription for submissions (gh-298).
+
+**Miscellaneous changes**
+
+* Clicking on "Reload update information" will fix Joomla! erroneously reporting an update is available when you have the latest version installed
 
 # 5.2.5
 
