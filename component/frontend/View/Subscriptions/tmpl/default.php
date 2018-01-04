@@ -34,6 +34,25 @@ if (!empty($this->returnURL))
 
 <div id="akeebasubs" class="subscriptions">
 	<h2 class="pageTitle"><?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_TITLE')?></h2>
+
+    <?php
+    if (!empty($this->getContainer()->platform->getUser()->getParam('timezone', null))):
+    try {
+	    $defaultTZ = \Joomla\CMS\Factory::getApplication()->get('offset', 'GMT');
+    } catch (Exception $e) {
+        $defaultTZ = 'GMT';
+    }
+    ?>
+    <div class="alert alert-warning">
+        <h3>
+            <?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_TZWARNING_HEAD'); ?>
+        </h3>
+        <p>
+	        <?php echo JText::sprintf('COM_AKEEBASUBS_SUBSCRIPTIONS_TZWARNING_BODY', $defaultTZ, JRoute::_('index.php?option=com_users&task=profile.edit&user_id=' . $this->getContainer()->platform->getUser()->id) . '&returnurl=' . base64_encode(JRoute::_('index.php?option=com_akeebasubs&view=Subscriptions'))); ?>
+        </p>
+    </div>
+    <?php endif; ?>
+
 	<form action="<?php echo $formURL ?>" method="post" class="adminform" name="adminForm" id="adminForm">
 	<input type="hidden" name="<?php echo $this->container->platform->getToken(true);?>" value="1" />
 

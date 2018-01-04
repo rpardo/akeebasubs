@@ -3,6 +3,7 @@
 **Added features**
 
 * Log failed subscription for submissions (gh-298).
+* Display timezone in the My Subscriptions page (ongoing gh-295)
 
 **Miscellaneous changes**
 
