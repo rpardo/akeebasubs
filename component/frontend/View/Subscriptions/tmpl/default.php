@@ -36,7 +36,7 @@ if (!empty($this->returnURL))
 	<h2 class="pageTitle"><?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_TITLE')?></h2>
 
     <?php
-    if (!empty($this->getContainer()->platform->getUser()->getParam('timezone', null))):
+    if (empty($this->getContainer()->platform->getUser()->getParam('timezone', null))):
     try {
 	    $defaultTZ = \Joomla\CMS\Factory::getApplication()->get('offset', 'GMT');
     } catch (Exception $e) {
