@@ -572,7 +572,7 @@ class Invoices extends DataModel
 			'[INV:ID]'                 => $invoice_no,
 			'[INV:PLAIN_NUMBER]'       => $invoice_no,
 			'[INV:NUMBER]'             => $formated_invoice_no,
-			'[INV:INVOICE_DATE]'       => Format::date($jInvoiceDate->toUnix()),
+			'[INV:INVOICE_DATE]'       => Format::date($jInvoiceDate->toUnix(), 'Y-m-d', false),
 			'[INV:INVOICE_DATE_EU]'    => $jInvoiceDate->format('d/m/Y', true),
 			'[INV:INVOICE_DATE_USA]'   => $jInvoiceDate->format('m/d/Y', true),
 			'[INV:INVOICE_DATE_JAPAN]' => $jInvoiceDate->format('Y/m/d', true),
