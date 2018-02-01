@@ -133,6 +133,9 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'cli/akeebasubs-expiration-control.php',
 			'cli/akeebasubs-expiration-notify.php',
 			'cli/akeebasubs-update.php',
+
+            // Moving to FEF
+            'administrator/components/com_akeebasubs/View/ControlPanel/tmpl/2copromo.blade.php',
 		],
 		'folders' => [
 			'administrator/components/com_akeebasubs/commands',

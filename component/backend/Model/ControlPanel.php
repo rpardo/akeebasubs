@@ -156,7 +156,6 @@ class ControlPanel extends Model
 		$params = new JRegistry();
 		$params->loadString($rawparams, 'JSON');
 
-		// Set the show2copromo parameter to 0
 		$params->set($parameter, $value);
 
 		// Save the component parameters
