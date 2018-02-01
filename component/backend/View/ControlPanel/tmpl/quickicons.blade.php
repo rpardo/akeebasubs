@@ -8,17 +8,17 @@
 defined('_JEXEC') or die;
 ?>
 
-<a href="index.php?option=com_akeebasubs&view=Level" class="btn">
-    <span class="icon icon-book"></span>
+<a href="index.php?option=com_akeebasubs&view=Level" class="akeeba-btn--dark--small">
+    <span class="akion-ios-book"></span>
     <span>@lang('COM_AKEEBASUBS_DASHBOARD_ADD_LEVEL')</span>
 </a>
 
-<a href="index.php?option=com_akeebasubs&view=Subscription" class="btn">
-    <span class="icon icon-bookmark"></span>
+<a href="index.php?option=com_akeebasubs&view=Subscription" class="akeeba-btn--dark--small">
+    <span class="akion-bookmark"></span>
     <span>@lang('COM_AKEEBASUBS_DASHBOARD_ADD_SUBSCRIPTION')</span>
 </a>
 
-<a href="index.php?option=com_akeebasubs&view=Coupon" class="btn">
-    <span class="icon icon-tag"></span>
+<a href="index.php?option=com_akeebasubs&view=Coupon" class="akeeba-btn--dark--small">
+    <span class="akion-ios-pricetag"></span>
     <span>@lang('COM_AKEEBASUBS_DASHBOARD_ADD_COUPON')</span>
 </a>

@@ -7,12 +7,12 @@
 
 defined('_JEXEC') or die;
 ?>
-<p style="font-size: small" class="well">
+<div class="akeeba-panel--info">
 	<strong>
 		Akeeba Subscriptions {{{ AKEEBASUBS_VERSION }}}
 	</strong>
 
-	<a href="index.php?option=com_akeebasubs&view=Updates&task=force" class="btn btn-inverse btn-small">
+	<a href="index.php?option=com_akeebasubs&view=Updates&task=force" class="akeeba-btn--dark--small">
         @lang('COM_AKEEBASUBS_CPANEL_MSG_RELOADUPDATE')
 	</a>
 
@@ -29,4 +29,4 @@ defined('_JEXEC') or die;
 		version 3 of the license or &ndash;at your option&ndash; any later version
 		published by the Free Software Foundation.
 	</span>	
-</p>
+</div>
