@@ -33,26 +33,22 @@ render it. --}}
 
 @yield('geoip', '')
 
-<div class="row-fluid">
-    <div id="cpanel" class="span6">
+<div class="akeeba-container--50-50">
+    <div>
         @yield('graphs', '')
     </div>
-    <div id="cpanel" class="span6">
+    <div>
         @yield('stats', '')
 
-        <div style="clear: both;">&nbsp;</div>
-
         @modules('akeebasubscriptionsstats')
-
-        <div style="clear: both;">&nbsp;</div>
 
         @include('admin:com_akeebasubs/ControlPanel/quickicons')
         @yield('quickicons', '')
     </div>
 </div>
 
-<div class="row-fluid footer">
-    <div class="span12">
+<div class="akeeba-container--100">
+    <div>
         @include('admin:com_akeebasubs/ControlPanel/footer')
         @yield('footer')
     </div>

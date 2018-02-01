@@ -10,7 +10,7 @@ defined('_JEXEC') or die;
 
 @section('wizard')
 
-<div class="well">
+<div class="akeeba-block--info">
     @if ($wizardstep == 1)
 
         <h2>
@@ -22,7 +22,7 @@ defined('_JEXEC') or die;
 
         <p>
             <a href="index.php?option=com_config&view=component&component=com_akeebasubs&path=&return={{ base64_encode(\JUri::getInstance()->toString()) }}"
-               class="btn btn-primary">
+               class="akeeba-btn--primary">
                 @lang('COM_AKEEBASUBS_CPANEL_WIZARD_STEP1_BUTTON')
             </a>
         </p>
@@ -39,7 +39,7 @@ defined('_JEXEC') or die;
             @lang('COM_AKEEBASUBS_CPANEL_WIZARD_STEP2_TEXTA')
         </p>
         <p>
-            <a href="index.php?option=com_users&view=groups" class="btn btn-primary">
+            <a href="index.php?option=com_users&view=groups" class="akeeba-btn--primary">
                 @lang('COM_AKEEBASUBS_CPANEL_WIZARD_STEP2_BUTTONA')
             </a>
         </p>
@@ -47,7 +47,7 @@ defined('_JEXEC') or die;
             @lang('COM_AKEEBASUBS_CPANEL_WIZARD_STEP2_TEXTb')
         </p>
         <p>
-            <a href="index.php?option=com_users&view=levels" class="btn btn-primary">
+            <a href="index.php?option=com_users&view=levels" class="akeeba-btn--primary">
                 @lang('COM_AKEEBASUBS_CPANEL_WIZARD_STEP2_BUTTONB')
             </a>
         </p>
@@ -61,7 +61,7 @@ defined('_JEXEC') or die;
             @lang('COM_AKEEBASUBS_CPANEL_WIZARD_STEP3_TEXT')
         </p>
         <p>
-            <a href="index.php?option=com_plugins&view=plugins&filter_search=&filter_folder=akpayment" class="btn btn-primary">
+            <a href="index.php?option=com_plugins&view=plugins&filter_search=&filter_folder=akpayment" class="akeeba-btn--primary">
                 @lang('COM_AKEEBASUBS_CPANEL_WIZARD_STEP3_BUTTON')
             </a>
         </p>
@@ -75,7 +75,7 @@ defined('_JEXEC') or die;
             @lang('COM_AKEEBASUBS_CPANEL_WIZARD_STEP4_TEXT')
         </p>
         <p>
-            <a href="index.php?option=com_akeebasubs&view=Levels" class="btn btn-primary">
+            <a href="index.php?option=com_akeebasubs&view=Levels" class="akeeba-btn--primary">
                 @lang('COM_AKEEBASUBS_CPANEL_WIZARD_STEP4_BUTTON')
             </a>
         </p>
@@ -89,7 +89,7 @@ defined('_JEXEC') or die;
             @lang('COM_AKEEBASUBS_CPANEL_WIZARD_STEP5_TEXT')
         </p>
         <p>
-            <a href="https://www.akeebabackup.com/documentation/akeeba-subscriptions.html" class="btn btn-primary">
+            <a href="https://www.akeebabackup.com/documentation/akeeba-subscriptions.html" class="akeeba-btn--primary">
                 @lang('COM_AKEEBASUBS_CPANEL_WIZARD_STEP5_BUTTON')
             </a>
         </p>
@@ -99,11 +99,11 @@ defined('_JEXEC') or die;
     @endif
 
     <div class="form-actions">
-        <a href="index.php?option=com_akeebasubs&view=ControlPanel&task=wizardstep&wizardstep=<?php echo ++$wizardstep ?>" class="btn btn-success">
+        <a href="index.php?option=com_akeebasubs&view=ControlPanel&task=wizardstep&wizardstep=<?php echo ++$wizardstep ?>" class="akeeba-btn--green">
             <span class="icon icon-white icon-check"></span>
             @lang('COM_AKEEBASUBS_CPANEL_WIZARD_COMMON_COMPLETE')
         </a>
-        <a href="index.php?option=com_akeebasubs&view=ControlPanel&task=wizardstep&wizardstep=6" class="btn btn-warning">
+        <a href="index.php?option=com_akeebasubs&view=ControlPanel&task=wizardstep&wizardstep=6" class="akeeba-btn--orange">
             <span class="icon icon-remove"></span>
             @lang('COM_AKEEBASUBS_CPANEL_WIZARD_COMMON_HIDE')
         </a>

@@ -41,42 +41,54 @@ JS;
     @js('media://com_akeebasubs/js/jqplot.hermite.js')
     @js('media://com_akeebasubs/js/cpanelgraphs.js')
 
-    <div class="well well-small">
-        <div class="form form-inline">
-            @jhtml('calendar', $graphDayFrom, 'akeebasubs_graph_datepicker', 'akeebasubs_graph_datepicker')
+    <div class="akeeba-panel--info">
+        <header class="akeeba-block-header">
+            <h3>@lang('COM_AKEEBASUBS_DASHBOARD_SALES')</h3>
+        </header>
 
-            @jhtml('calendar', $graphDayTo, 'akeebasubs_graph_todatepicker', 'akeebasubs_graph_todatepicker')
-            {{ Select::subscriptionlevels(0, 'akeebasubs_graph_level_id', array('class'=>'input-small')) }}
-            <button class="btn btn-primary btn-mini" id="akeebasubs_graph_reload" onclick="return false">
-                <span class="icon icon-white icon-reload"></span>
-                @lang('COM_AKEEBASUBS_DASHBOARD_RELOADGRAPHS')
-            </button>
+        <div>
+            <form class="akeeba-form--inline">
+                <div class="akeeba-form-group">
+                    @jhtml('calendar', $graphDayFrom, 'akeebasubs_graph_datepicker', 'akeebasubs_graph_datepicker')
+                </div>
+
+                <div class="akeeba-form-group">
+                    @jhtml('calendar', $graphDayTo, 'akeebasubs_graph_todatepicker', 'akeebasubs_graph_todatepicker')
+                </div>
+
+                <div class="akeeba-form-group">
+                    {{ Select::subscriptionlevels(0, 'akeebasubs_graph_level_id', array('class'=>'akeeba-input-small')) }}
+                </div>
+
+                <div class="akeeba-form-group--actions">
+                    <button class="akeeba-btn--primary--mini" id="akeebasubs_graph_reload" onclick="return false">
+                        @lang('COM_AKEEBASUBS_DASHBOARD_RELOADGRAPHS')
+                    </button>
+                </div>
+            </form>
         </div>
+
+        <div id="aksaleschart">
+            <img src="@media('media://com_akeebasubs/images/throbber.gif')" id="akthrobber" />
+            <p id="aksaleschart-nodata" style="display:none">
+                @lang('COM_AKEEBASUBS_DASHBOARD_STATS_NODATA')
+            </p>
+        </div>
+
+        <div style="clear: both;">&nbsp;</div>
+
+        <h3>
+            @lang('COM_AKEEBASUBS_DASHBOARD_LEVELSTATS')
+        </h3>
+
+        <div id="aklevelschart">
+            <img src="@media('media://com_akeebasubs/images/throbber.gif')" id="akthrobber2" />
+            <p id="aklevelschart-nodata" style="display:none">
+                @lang('COM_AKEEBASUBS_DASHBOARD_STATS_NODATA')
+            </p>
+        </div>
+
     </div>
-
-    <h3>
-        @lang('COM_AKEEBASUBS_DASHBOARD_SALES')
-    </h3>
-    <div id="aksaleschart">
-        <img src="@media('media://com_akeebasubs/images/throbber.gif')" id="akthrobber" />
-        <p id="aksaleschart-nodata" style="display:none">
-            @lang('COM_AKEEBASUBS_DASHBOARD_STATS_NODATA')
-        </p>
-    </div>
-
-    <div style="clear: both;">&nbsp;</div>
-
-    <h3>
-        @lang('COM_AKEEBASUBS_DASHBOARD_LEVELSTATS')
-    </h3>
-
-    <div id="aklevelschart">
-        <img src="@media('media://com_akeebasubs/images/throbber.gif')" id="akthrobber2" />
-        <p id="aklevelschart-nodata" style="display:none">
-            @lang('COM_AKEEBASUBS_DASHBOARD_STATS_NODATA')
-        </p>
-    </div>
-
     @inlineJs($js)
 
 @stop

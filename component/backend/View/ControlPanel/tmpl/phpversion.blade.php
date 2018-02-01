@@ -10,7 +10,7 @@ defined('_JEXEC') or die;
 
 @section('phpVersionWarning')
     @if (version_compare(PHP_VERSION, '5.5.0', 'lt'))
-    <div id="phpVersionCheck" class="alert alert-warning">
+    <div id="phpVersionCheck" class="akeeba-block--warning">
         <h3>
             @lang('AKEEBA_COMMON_PHPVERSIONTOOOLD_WARNING_TITLE')
         </h3>

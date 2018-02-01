@@ -16,6 +16,12 @@ defined('_JEXEC') or die;
 
 class Html extends \FOF30\View\DataView\Html
 {
+	public $hasGeoIPPlugin;
+	public $geoIPPluginNeedsUpdate;
+	public $akeebaCommonDatePHP;
+	public $akeebaCommonDateObsolescence;
+	public $wizardstep;
+
 	protected function onBeforeMain($tpl = null)
 	{
 		/** @var ControlPanel $model */
