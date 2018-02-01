@@ -195,6 +195,9 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 	{
 		// Call the parent method
 		parent::postflight($type, $parent);
+
+		// Add ourselves to the list of extensions depending on Akeeba FEF
+		$this->addDependency('file_fef', $this->componentName);
 	}
 
 	public function uninstall($parent)
