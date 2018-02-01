@@ -23,7 +23,7 @@ class ControlPanel extends Controller
 	{
 		parent::__construct($container, $config);
 
-		$this->predefinedTaskList = ['main', 'hide2copromo', 'wizardstep', 'updateinfo', 'updategeoip'];
+		$this->predefinedTaskList = ['main', 'wizardstep', 'updateinfo', 'updategeoip'];
 	}
 
 	/**
@@ -40,32 +40,6 @@ class ControlPanel extends Controller
 		/** @var \Akeeba\Subscriptions\Admin\Model\Updates $updatesModel */
 		$updatesModel = $this->getModel('Updates');
 		$updatesModel->refreshUpdateSite();
-	}
-
-	/**
-	 * Hide the 2Checkout promotion banner
-	 */
-	public function hide2copromo()
-	{
-		/** @var \Akeeba\Subscriptions\Admin\Model\ControlPanel $model */
-		$model = $this->getModel();
-		$model->setComponentParameter('show2copromo', 0);
-
-		// Redirect back to the control panel
-		$url = '';
-		$returnurl = $this->input->getBase64('returnurl', '');
-
-		if (!empty($returnurl))
-		{
-			$url = base64_decode($returnurl);
-		}
-
-		if (empty($url))
-		{
-			$url = JUri::base().'index.php?option=com_akeebasubs';
-		}
-
-		$this->setRedirect($url);
 	}
 
 	/**
