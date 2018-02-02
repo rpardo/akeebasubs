@@ -9,7 +9,8 @@
 
 **Miscellaneous changes**
 
-* Clicking on "Reload update information" will fix Joomla! erroneously reporting an update is available when you have the latest version installed
+* Clicking on "Reload update information" will fix Joomla! erroneously reporting an update is available when you have the latest version installed.
+* Removed redirection from the "System - Akeeba Subscriptions Logout user" plugin. Redirection caused the Thank You page to never appear until you logged in and only if you did not use the login module on the same page.
 
 # 5.2.5
 

@@ -114,6 +114,7 @@ class plgSystemAslogoutuser extends JPlugin
 		$returnurl = base64_encode($returnurl->toString());
 
 		$app->logout();
-		$container->platform->redirect(JRoute::_('index.php?option=com_users&view=login&return=' . $returnurl));
+
+		// $container->platform->redirect(JRoute::_('index.php?option=com_users&view=login&return=' . $returnurl));
 	}
 }
