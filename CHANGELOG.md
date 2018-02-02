@@ -4,6 +4,7 @@
 
 * Log failed subscription for submissions (gh-298).
 * Display timezone in the My Subscriptions page (ongoing gh-295)
+* More EU checkboxes since we now have to also deal with GDPR.
 
 **Miscellaneous changes**
 
