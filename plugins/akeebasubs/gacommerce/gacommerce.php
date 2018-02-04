@@ -15,6 +15,9 @@ defined('_JEXEC') or die();
  * Google Analytics e-commerce integration for Akeeba Subscriptions.
  *
  * This plugin implements the analytics.js method. It won't work with gtag.js (tag manager).
+ *
+ * The code is only added in the thank-you page, e.g. something like
+ * http://www.example.com/index.php?option=com_akeebasubs&view=Message&task=thankyou&slug=SILVER&subid=3
  */
 class plgAkeebasubsGacommerce extends JPlugin
 {
@@ -96,19 +99,37 @@ class plgAkeebasubsGacommerce extends JPlugin
 		/**
 		 * Create the Google Analytics for E-Commerce integration code.
 		 *
-		 * Note: the ";//" is intentionally there to prevent badly written 3PD plugins without a
-		 * trailing line in the JavaScript from causing an error with our code.
-		 *
-		 * The if-block makes sure we don't throw a JS error if Google Analytics is not already
-		 * loaded on the page.
+		 * Note: the ";//" is intentionally there to prevent badly written 3PD plugins without a trailing line in the
+		 * JavaScript from causing an error with our code.
 		 */
 		$js = <<<JS
 ;//
-window.jQuery(document).ready({
 
-});
-if (typeof ga === "function")
+var akeebaSubscriptionsGAEcommerceDone = false;
+var akeebaSubscriptionsGAEcommerceTimerID = null;
+
+function akeebasubs_gacommerce_submit()
 {
+    if (akeebaSubscriptionsGAEcommerceDone === true) {
+        console.log("AkeebaSubs GACommerce: Abort run; already done");
+        
+        if ((akeebaSubscriptionsGAEcommerceTimerID !== null) && (akeebaSubscriptionsGAEcommerceTimerID > 0))  {
+        	clearInterval(akeebaSubscriptionsGAEcommerceTimerID);
+        }
+        
+        return;
+    }
+    
+    if (typeof ga !== 'function') {
+        console.log("AkeebaSubs GACommerce: Postpone run; ga.js not loaded yet");
+        
+        return;
+    }
+    
+    console.log("AkeebaSubs GACommerce: Submitting e-commerce information using ga.js");
+    akeebaSubscriptionsGAEcommerceDone = true;
+    clearInterval(akeebaSubscriptionsGAEcommerceTimerID);
+    
     ga('require', 'ecommerce');
     ga('ecommerce:addTransaction', {
         'id': '{$subscription->akeebasubs_subscription_id}',
@@ -125,6 +146,12 @@ if (typeof ga === "function")
     });
     ga('ecommerce:send');
 }
+
+window.jQuery(document).ready(function() {
+	akeebaSubscriptionsGAEcommerceTimerID = window.setInterval(akeebasubs_gacommerce_submit, 250);
+});
+
+
 
 JS;
 
