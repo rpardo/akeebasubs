@@ -1,3 +1,11 @@
+# 6.0.0
+
+**New**
+
+* Rewritten interface using our Akeeba Frontend Framework (FEF).
+* Warn the user if either FOF or FEF is not installed.
+* Warn the user about incompatible versions of PHP, use of eAccelerator on PHP 5.4 and use of HHVM.
+
 # 5.2.6
 
 **Added features**
