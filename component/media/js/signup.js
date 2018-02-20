@@ -7,12 +7,12 @@
 /**
  * Setup (required for Joomla! 3)
  */
-if (typeof(akeeba) === 'undefined')
+if (typeof(akeeba) === "undefined")
 {
 	var akeeba = {};
 }
 
-if (typeof(akeeba.jQuery) === 'undefined')
+if (typeof(akeeba.jQuery) === "undefined")
 {
 	akeeba.jQuery = window.jQuery.noConflict();
 }
@@ -50,61 +50,168 @@ var akeebasubs_eu_configuration = {
 	"IM": ["Isle of Man", "GB", 20]
 };
 
-var akeebasubs_business_state = '';
-var akeebasubs_isbusiness = false;
-var akeebasubs_blocked_gui = false;
+var akeebasubs_business_state               = "";
+var akeebasubs_isbusiness                   = false;
+var akeebasubs_blocked_gui                  = false;
 var akeebasubs_run_validation_after_unblock = false;
-var akeebasubs_cached_response = false;
-var akeebasubs_valid_form = true;
-var akeebasubs_validation_fetch_queue = [];
-var akeebasubs_validation_queue = [];
-var akeebasubs_sub_validation_fetch_queue = [];
-var akeebasubs_sub_validation_queue = [];
-var akeebasubs_level_id = 0;
-var akeebasubs_submit_after_validation = false;
-var akeebasubs_noneuvat = false;
-var akeebasubs_apply_validation = false;
-var akeebasubs_form_specifier = 'signupForm';
+var akeebasubs_cached_response              = false;
+var akeebasubs_valid_form                   = true;
+var akeebasubs_validation_fetch_queue       = [];
+var akeebasubs_validation_queue             = [];
+var akeebasubs_sub_validation_fetch_queue   = [];
+var akeebasubs_sub_validation_queue         = [];
+var akeebasubs_level_id                     = 0;
+var akeebasubs_submit_after_validation      = false;
+var akeebasubs_noneuvat                     = false;
+var akeebasubs_apply_validation             = false;
+var akeebasubs_form_specifier               = "signupForm";
 
-function cacheSubmitAction(e)
+(function ($)
+{
+	$.fn.removePartial = function (baseClass, removeThis)
+	{
+		var myElement = this;
+		var classList = [];
+		var myClass = this.attr("class");
+
+		if (typeof myClass !=='undefined')
+		{
+			classList = myClass.split(/\s+/);
+		}
+
+		$.each(classList, function (index, wholeClass)
+		{
+			// Wrong base class or already bare?
+			if (!wholeClass.startsWith(baseClass + "--"))
+			{
+				return;
+			}
+
+			// Degenerate case "baseClass--removeThis", we just need to return baseClass
+			if (wholeClass === (baseClass + "--" + removeThis))
+			{
+				myElement.removeClass(wholeClass).addClass(baseClass);
+
+				return;
+			}
+
+			var partials = wholeClass.split("--");
+			partials.splice(0, 1);
+
+			var newClass = baseClass;
+			myElement.removeClass(wholeClass);
+
+			for (var i = 0; i < partials.length; i++)
+			{
+				if (partials[i] === removeThis)
+				{
+					continue;
+				}
+
+				newClass += "--" + partials[i];
+			}
+
+			myElement.addClass(newClass);
+		});
+
+		return this;
+	};
+
+	$.fn.addPartial = function (baseClass, addThis)
+	{
+		var myElement = this;
+		var classList = this.attr("class").split(/\s+/);
+
+		$.each(classList, function (index, wholeClass)
+		{
+			// Wrong base class?
+			if (!wholeClass.startsWith(baseClass))
+			{
+				return;
+			}
+
+			// Class already "baseClass--addThis"?
+			if (wholeClass === (baseClass + "--" + addThis))
+			{
+				return;
+			}
+
+			// Class already bare? Just add the partial.
+			if (wholeClass === baseClass)
+			{
+				myElement.removeClass(wholeClass);
+				myElement.addClass(baseClass + "--" + addThis);
+				return;
+			}
+
+			// Double check we are not matching the wrong class, e.g. whileClass = 'foobar' and baseClass='foo'
+			if (!wholeClass.startsWith(baseClass + "--"))
+			{
+				return;
+			}
+
+			// Already includes '--' + addThis? Return.
+			if (wholeClass.indexOf("--" + addThis) !== -1)
+			{
+				return;
+			}
+
+			// Add the partial
+			myElement.removeClass(wholeClass);
+			myElement.addClass(wholeClass + "--" + addThis);
+		});
+
+		return this;
+	};
+
+})(akeeba.jQuery);
+
+
+function cacheSubmitAction (e)
 {
 	(function ($)
 	{
 		e.preventDefault();
 		akeebasubs_submit_after_validation = true;
-		$('#subscribenow').attr('disabled', 'disabled');
+		$("#subscribenow").attr("disabled", "disabled");
 	})(akeeba.jQuery);
 }
 
-function blockInterface()
+function blockInterface ()
 {
 	(function ($)
 	{
-		$('#subscribenow').click(cacheSubmitAction);
-		//$('#subscribenow').attr('disabled','disabled');
+		var btnSubscribeNow = $("#subscribenow");
+		btnSubscribeNow.click(cacheSubmitAction);
+		btnSubscribeNow.attr("disabled", "disabled");
 		akeebasubs_blocked_gui = true;
 	})(akeeba.jQuery);
 }
 
-function enableInterface()
+function enableInterface ()
 {
 	(function ($)
 	{
-		$('#subscribenow').unbind('click');
-		$('#subscribenow').removeAttr('disabled');
+		var btnSubscribeNow = $("#subscribenow");
+
+		btnSubscribeNow.unbind("click");
+		btnSubscribeNow.removeAttr("disabled");
+
 		akeebasubs_blocked_gui = false;
+
 		if (akeebasubs_run_validation_after_unblock)
 		{
 			akeebasubs_run_validation_after_unblock = false;
+
 			validateBusiness();
+
+			return;
 		}
-		else
+
+		if (akeebasubs_submit_after_validation)
 		{
-			if (akeebasubs_submit_after_validation)
-			{
-				akeebasubs_submit_after_validation = false;
-				setTimeout("(function($) {$('#subscribenow').click()})(akeeba.jQuery);", 100);
-			}
+			akeebasubs_submit_after_validation = false;
+			setTimeout("(function($) {$('#subscribenow').click()})(akeeba.jQuery);", 100);
 		}
 	})(akeeba.jQuery);
 }
@@ -116,7 +223,7 @@ function enableInterface()
  * @param callback_function
  * @return
  */
-function validateForm(callback_function)
+function validateForm (callback_function)
 {
 	if (akeebasubs_blocked_gui)
 	{
@@ -126,50 +233,55 @@ function validateForm(callback_function)
 
 	(function ($)
 	{
-		var paymentMethod = $('input[name=paymentmethod]:checked').val();
+		var paymentMethod = null;
+
+		paymentMethod = $("input[name=paymentmethod]:checked").val();
 
 		if (paymentMethod == null)
 		{
-			var paymentMethod = $('select[name=paymentmethod]').val();
+			paymentMethod = $("select[name=paymentmethod]").val();
 		}
 
 		var $couponField = $("#coupon");
-		var couponValue  = ($couponField.length > 0) ? $couponField.val() : '';
+		var couponValue  = ($couponField.length > 0) ? $couponField.val() : "";
 
 		var data = {
-			'action':        'read',
-			'id':            akeebasubs_level_id,
-			'username':      $('#username').val(),
-			'name':          $('#name').val(),
-			'email':         $('#email').val(),
-			'email2':        $('#email2').val(),
-			'address1':      $('#address1').val(),
-			'address2':      $('#address2').val(),
-			'country':       $('#' + akeebasubs_form_specifier + ' select[name$="country"]').val(),
-			'state':         $('#' + akeebasubs_form_specifier + ' select[name$="state"]').val(),
-			'city':          $('#city').val(),
-			'zip':           $('#zip').val(),
-			'isbusiness':    $('#isbusiness').val(),
-			'businessname':  $('#businessname').val(),
-			'occupation':    $('#occupation').val(),
-			'vatnumber':     $('#vatnumber').val(),
-			'coupon':        couponValue,
-			'paymentmethod': paymentMethod,
-			'custom':        {},
-			'subcustom':     {}
+			"action"       : "read",
+			"id"           : akeebasubs_level_id,
+			"username"     : $("#username").val(),
+			"name"         : $("#name").val(),
+			"email"        : $("#email").val(),
+			"email2"       : $("#email2").val(),
+			"address1"     : $("#address1").val(),
+			"address2"     : $("#address2").val(),
+			"country"      : $("#" + akeebasubs_form_specifier + " select[name$=\"country\"]").val(),
+			"state"        : $("#" + akeebasubs_form_specifier + " select[name$=\"state\"]").val(),
+			"city"         : $("#city").val(),
+			"zip"          : $("#zip").val(),
+			"isbusiness"   : $("#isbusiness").val(),
+			"businessname" : $("#businessname").val(),
+			"occupation"   : $("#occupation").val(),
+			"vatnumber"    : $("#vatnumber").val(),
+			"coupon"       : couponValue,
+			"paymentmethod": paymentMethod,
+			"custom"       : {},
+			"subcustom"    : {}
 		};
 
-		if ($('#password'))
+		var elPassword = $("#password");
+
+		if (elPassword)
 		{
-			data.password = $('#password').val();
-			data.password2 = $('#password2').val();
+			data.password  = elPassword.val();
+			data.password2 = $("#password2").val();
 		}
 
 		// Fetch the custom fields
 		$.each(akeebasubs_validation_fetch_queue, function (index, function_name)
 		{
 			var result = function_name();
-			if ((result !== null) && (typeof result == 'object'))
+
+			if ((result !== null) && (typeof result === "object"))
 			{
 				// Merge the result with the data object
 				$.extend(data.custom, result);
@@ -180,7 +292,7 @@ function validateForm(callback_function)
 		$.each(akeebasubs_sub_validation_fetch_queue, function (index, function_name)
 		{
 			var result = function_name();
-			if ((result !== null) && (typeof result == 'object'))
+			if ((result !== null) && (typeof result === "object"))
 			{
 				// Merge the result with the data object
 				$.extend(data.subcustom, result);
@@ -190,64 +302,65 @@ function validateForm(callback_function)
 		blockInterface();
 
 		$.ajax({
-			type:     'POST',
-			url: akeebasubs_validate_url + '?option=com_akeebasubs&view=Validate&format=json',
-			data:     data,
-			dataType: 'json',
-			success:  function (msg, textStatus, xhr)
-			{
-				if (msg.validation)
-				{
-					msg.validation.custom_validation = msg.custom_validation;
-					msg.validation.custom_valid = msg.custom_valid;
-					msg.validation.subcustom_validation = msg.subscription_custom_validation;
-					msg.validation.subcustom_valid = msg.subscription_custom_valid;
-					applyValidation(msg.validation, callback_function);
-				}
-				if (msg.price)
-				{
-					applyPrice(msg.price);
-				}
-				enableInterface();
-			},
-			error:    function (jqXHR, textStatus, errorThrown)
-			{
-				enableInterface();
-			}
-		});
+				   type    : "POST",
+				   url     : akeebasubs_validate_url + "?option=com_akeebasubs&view=Validate&format=json",
+				   data    : data,
+				   dataType: "json",
+				   success : function (msg, textStatus, xhr)
+				   {
+					   if (msg.validation)
+					   {
+						   msg.validation.custom_validation    = msg.custom_validation;
+						   msg.validation.custom_valid         = msg.custom_valid;
+						   msg.validation.subcustom_validation = msg.subscription_custom_validation;
+						   msg.validation.subcustom_valid      = msg.subscription_custom_valid;
+						   applyValidation(msg.validation, callback_function);
+					   }
+					   if (msg.price)
+					   {
+						   applyPrice(msg.price);
+					   }
+					   enableInterface();
+				   },
+				   error   : function (jqXHR, textStatus, errorThrown)
+				   {
+					   enableInterface();
+				   }
+			   });
 
 		// Fetch list of payment methods
-		if (akeebasubs_form_specifier == 'signupForm')
+		if (akeebasubs_form_specifier == "signupForm")
 		{
 			$.ajax({
-				type:     'POST',
-				url:      akeebasubs_validate_url + '?option=com_akeebasubs&view=Validate&task=getpayment&format=json',
-				data:     data,
-				dataType: 'text',
-				success:  function (result)
-						  {
-							  var html = /###(\{.*?\})###/.exec(result);
+					   type    : "POST",
+					   url     : akeebasubs_validate_url + "?option=com_akeebasubs&view=Validate&task=getpayment&format=json",
+					   data    : data,
+					   dataType: "text",
+					   success : function (result)
+					   {
+						   var html = /###(\{.*?\})###/.exec(result);
 
-							  if (html && html[1] !== 'undefined' && html[1].html !== 'undefined')
-							  {
-								  // Before building the new payment list, let's save the select method, so I can select it again
-								  var cur_method = $('input[name="paymentmethod"]:checked').val();
-								  $('#paymentlist-container').html(JSON.parse(html[1]).html);
-								  $('input[name="paymentmethod"][value="' + cur_method + '"]').prop('checked', true);
+						   if (html && html[1] !== "undefined" && html[1].html !== "undefined")
+						   {
+							   // Before building the new payment list, let's save the select method, so I can select
+							   // it again
+							   var cur_method = $("input[name=\"paymentmethod\"]:checked").val();
+							   $("#paymentlist-container").html(JSON.parse(html[1]).html);
+							   $("input[name=\"paymentmethod\"][value=\"" + cur_method + "\"]").prop("checked", true);
 
-								  if (html[1].states !== 'undefined')
-								  {
-									  $('#akeebasubs-statescontainer').html(JSON.parse(html[1]).states)
-								  }
-							  }
+							   if (html[1].states !== "undefined")
+							   {
+								   $("#akeebasubs-statescontainer").html(JSON.parse(html[1]).states);
+							   }
+						   }
 
-							  enableInterface();
-						  },
-				error:    function ()
-						  {
-							  enableInterface();
-						  }
-			});
+						   enableInterface();
+					   },
+					   error   : function ()
+					   {
+						   enableInterface();
+					   }
+				   });
 		}
 
 	})(akeeba.jQuery);
@@ -257,49 +370,57 @@ function validateForm(callback_function)
  * Validates the password fields
  * @return
  */
-function validatePassword()
+function validatePassword ()
 {
 	(function ($)
 	{
-		if (!$('#password'))
+		var elPassword  = $("#password");
+		var elPassword2 = $("#password2");
+
+		if (!elPassword)
 		{
 			return;
 		}
-		var password = $('#password').val();
-		var password2 = $('#password2').val();
+		var password  = elPassword.val();
+		var password2 = elPassword2.val();
 
-		$('#password_invalid').hide();
-		$('#password2_invalid').hide();
+		var elPasswordInvalid = $("#password_invalid");
+		var elPasswordValid   = $("#password2_invalid");
+
+		elPasswordInvalid.hide();
+		elPasswordValid.hide();
 
 		if (!akeebasubs_apply_validation)
 		{
-			if ((password == '') && (password2 == ''))
+			if ((password === "") && (password2 === ""))
 			{
-				$('#password').parents('div.form-group').removeClass('error has-error');
-				$('#password2').parents('div.form-group').removeClass('error has-error');
+				$("#password").parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+				$("#password2").parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+
 				return;
 			}
 		}
 
-		if (password == '')
+		if (password === "")
 		{
-			$('#password').parents('div.form-group').addClass('error has-error');
-			$('#password2').parents('div.form-group').removeClass('error has-error');
-			$('#password_invalid').show();
+			$("#password").parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
+			$("#password2").parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+			elPasswordInvalid.show();
 			akeebasubs_valid_form = false;
 		}
 		else
 		{
-			$('#password').parents('div.form-group').removeClass('error has-error');
-			if (password2 != password)
+			$("#password").parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+
+			if (password2 !== password)
 			{
-				$('#password2').parents('div.form-group').addClass('error has-error');
-				$('#password2_invalid').show();
+				$("#password2").parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
+				elPasswordValid.show();
 				akeebasubs_valid_form = false;
 			}
 			else
 			{
-				$('#password2').parents('div.form-group').removeClass('error has-error');
+				$("#password2").parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
 			}
 		}
 	})(akeeba.jQuery);
@@ -309,21 +430,25 @@ function validatePassword()
  * Validates the (real) name
  * @return
  */
-function validateName()
+function validateName ()
 {
 	(function ($)
 	{
-		$('#name_empty').hide();
-		var name = $('#name').val();
+		var elNameEmpty = $("#name_empty");
+		var elName      = $("#name");
+		var name        = elName.val();
 
-		$('#name').parents('div.form-group').removeClass('error has-error');
+		elNameEmpty.hide();
+		elName.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+
 		if (!akeebasubs_apply_validation)
 		{
 			return;
 		}
 
 		var invalidName = false;
-		if (name == '')
+
+		if (name === "")
 		{
 			invalidName = true;
 		}
@@ -337,15 +462,14 @@ function validateName()
 
 		if (invalidName)
 		{
-			$('#name').parents('div.form-group').addClass('error has-error');
-			$('#name_empty').show();
+			elName.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
+			elNameEmpty.show();
 			akeebasubs_valid_form = false;
+
 			return;
 		}
-		else
-		{
-			$('#name').parents('div.form-group').removeClass('error has-error');
-		}
+
+		elName.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
 	})(akeeba.jQuery);
 }
 
@@ -353,11 +477,11 @@ function validateName()
  * DHTML email validation script. Courtesy of SmartWebby.com (http://www.smartwebby.com/dhtml/)
  */
 
-function echeck(str)
+function echeck (str)
 {
-	var at = "@";
-	var dot = ".";
-	var lat = str.indexOf(at);
+	var at   = "@";
+	var dot  = ".";
+	var lat  = str.indexOf(at);
 	var lstr = str.length;
 	var ldot = str.indexOf(dot);
 	if (str.indexOf(at) == -1)
@@ -402,158 +526,181 @@ function echeck(str)
  * Validates the email address
  * @return
  */
-function validateEmail()
+function validateEmail ()
 {
 	(function ($)
 	{
-		$('#email_empty').hide();
-		$('#email_invalid').hide();
-		$('#email2_invalid').hide();
-		$('#email').parents('div.form-group').removeClass('error has-error');
-		$('#email2').parents('div.form-group').removeClass('error has-error');
-		var email = $('#email').val();
-		var email2 = $('#email2').val();
+		var elEmailEmpty    = $("#email_empty");
+		var elEmailInvalid  = $("#email_invalid");
+		var elEmail2Invalid = $("#email2_invalid");
+		var elEmail         = $("#email");
+		var elEmail2        = $("#email2");
+
+		elEmailEmpty.hide();
+		elEmailInvalid.hide();
+		elEmail2Invalid.hide();
+
+		elEmail.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+		elEmail2.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+
+		var email  = elEmail.val();
+		var email2 = elEmail2.val();
 
 		if (!akeebasubs_apply_validation)
 		{
 			return;
 		}
 
-		if ((email == '') && (email2 == ''))
+		if ((email === "") && (email2 === ""))
 		{
-			$('#email').parents('div.form-group').removeClass('error has-error');
-			$('#email2').parents('div.form-group').removeClass('error has-error');
-			$('#email_empty').hide();
-			$('#email_invalid').hide();
-			$('#email2_invalid').hide();
+			elEmail.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+			elEmail2.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+
+			elEmailEmpty.hide();
+			elEmailInvalid.hide();
+			elEmail2Invalid.hide();
+
 			return;
 		}
 
-		if (email == '')
+		if (email === "")
 		{
-			$('#email').parents('div.form-group').addClass('error has-error');
-			$('#email_empty').show();
+			elEmail.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
+			elEmailEmpty.show();
 			akeebasubs_valid_form = false;
+
 			return;
 		}
-		else if (!echeck(email))
+
+		if (!echeck(email))
 		{
-			$('#email').parents('div.form-group').addClass('error has-error');
-			$('#email_invalid').show();
+			elEmail.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
+			elEmailInvalid.show();
 			akeebasubs_valid_form = false;
+
 			return;
 		}
-		else
-		{
-			validateForm();
-		}
+
+		validateForm();
 	})(akeeba.jQuery);
 }
 
-function validateAddress()
+function validateAddress ()
 {
 	(function ($)
 	{
-		var address = $('#address1').val();
-		var country = $('#' + akeebasubs_form_specifier + ' select[name$="country"]').val();
-		var state = $('#' + akeebasubs_form_specifier + ' select[name$="state"]').val();
-		var city = $('#city').val();
-		var zip = $('#zip').val();
+		var elAddress1       = $("#address1");
+		var elCity           = $("#city");
+		var elZip            = $("#zip");
+		var elCountry        = $("#country");
+		var elState          = $("#state");
+		var elAdddress1Empty = $("#address1_empty");
+		var elCountryEmpty   = $("#country_empty");
+		var elCityEmpty      = $("#city_empty");
+		var elZipEmpty       = $("#zip_empty");
+		var elStateEmpty     = $("#state_empty");
+
+		var address = elAddress1.val();
+		var country = elCountry.val();
+		var state   = elState.val();
+		var city    = elCity.val();
+		var zip     = elZip.val();
 
 		var hasErrors = false;
 
 		if (!akeebasubs_apply_validation)
 		{
-			$('#address1').parents('div.form-group').removeClass('error has-error');
-			$('#country').parents('div.form-group').removeClass('error has-error');
-			$('#city').parents('div.form-group').removeClass('error has-error');
-			$('#state').parents('div.form-group').removeClass('error has-error');
-			$('#zip').parents('div.form-group').removeClass('error has-error');
+			elAddress1.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+			elCountry.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+			elCity.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+			elState.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+			elZip.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
 
-			$('#address1_empty').hide();
-			$('#country_empty').hide();
-			$('#city_empty').hide();
-			$('#state_empty').hide();
-			$('#zip_empty').hide();
+			elAdddress1Empty.hide();
+			elCountryEmpty.hide();
+			elCityEmpty.hide();
+			elStateEmpty.hide();
+			elZipEmpty.hide();
 
 			return;
 		}
 
 
-		$('#address1').parents('div.form-group').removeClass('error has-error');
-		if (address == '')
+		elAddress1.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+		elAdddress1Empty.hide();
+
+		if (address === "")
 		{
-			$('#address1').parents('div.form-group').addClass('error has-error');
-			$('#address1_empty').show();
+			elAddress1.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
+			elAdddress1Empty.show();
 			hasErrors = true;
-		}
-		else
-		{
-			$('#address1_empty').hide();
 		}
 
-		$('#country').parents('div.form-group').removeClass('error has-error');
-		if (country == '')
+		elCountry.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+
+		if (country === "")
 		{
-			$('#country').parents('div.form-group').addClass('error has-error');
-			$('#country_empty').show();
+			elCountry.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
+			elCountryEmpty.show();
 			hasErrors = true;
 		}
 		else
 		{
-			$('#country_empty').hide();
+			elCountryEmpty.hide();
+
 			// If that's an EU country, show and update the VAT field
-			if ($('#vatfields'))
+			var elVatFields  = $("#vatfields");
+			var elVatCountry = $("#vatcountry");
+
+			if (elVatFields)
 			{
-				$('#vatfields').hide();
+				elVatFields.hide();
 
 				if (akeebasubs_noneuvat)
 				{
-					$('#vatfields').show();
-					$('#vatcountry').text('');
+					elVatFields.show();
+					elVatCountry.text("");
 				}
 
-				Object.keys(akeebasubs_eu_configuration).forEach(function(key){
-					if (key == country)
-					{
-						$('#vatfields').show();
+				Object.keys(akeebasubs_eu_configuration)
+					  .forEach(function (key)
+							   {
+								   if (key === country)
+								   {
+									   $("#vatfields").show();
 
-						var ccode = akeebasubs_eu_configuration[key][1];
-						$('#vatcountry').text(ccode);
+									   var ccode = akeebasubs_eu_configuration[key][1];
+									   $("#vatcountry").text(ccode);
 
-					}
-				});
+								   }
+							   });
 			}
 		}
 
-		$('#city').parents('div.form-group').removeClass('error has-error');
-		if (city == '')
+		elCity.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+		elCityEmpty.hide();
+
+		if (city === "")
 		{
-			$('#city').parents('div.form-group').addClass('error has-error');
-			$('#city_empty').show();
+			elCity.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
+			elCityEmpty.show();
 			hasErrors = true;
 		}
-		else
-		{
-			$('#city_empty').hide();
-		}
 
-		$('#zip').parents('div.form-group').removeClass('error has-error');
-		if (zip == '')
+		elZip.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+		elZipEmpty.hide();
+
+		if (zip === "")
 		{
-			$('#zip').parents('div.form-group').addClass('error has-error');
-			$('#zip_empty').show();
+			elZip.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
+			elZipEmpty.show();
 			hasErrors = true;
 		}
-		else
-		{
-			$('#zip_empty').hide();
-		}
-
 
 		if (hasErrors)
 		{
 			akeebasubs_valid_form = false;
+
 			return;
 		}
 
@@ -564,85 +711,96 @@ function validateAddress()
  * Validates the business registration information and runs a price fetch
  * @return
  */
-function validateBusiness()
+function validateBusiness ()
 {
 	(function ($)
 	{
 		// Do I have to show the business fields?
-		if ($('#isbusiness').val() == 1)
+		var elIsBusiness = $("#isbusiness");
+
+		if (elIsBusiness.val())
 		{
-			$('#businessfields').show();
+			$("#businessfields").show();
 		}
 		else
 		{
-			$('#businessfields').hide();
+			$("#businessfields").hide();
 			// If it's not a business validation, chain an address validation
 			if (akeebasubs_blocked_gui)
 			{
 				akeebasubs_run_validation_after_unblock = true;
+
 				return;
 			}
-			else
-			{
-				akeebasubs_valid_form = true;
-				validateForm();
-			}
+
+			akeebasubs_valid_form = true;
+			validateForm();
 			return;
 		}
 
 		// Do I have to show VAT fields?
-		var country = $('#' + akeebasubs_form_specifier + ' select[name$="country"]').val();
-		$('#vatfields').hide();
+		var elCountry   = $("#" + akeebasubs_form_specifier + " select[name$=\"country\"]");
+		var elVatFields = $("#vatfields");
+		var country     = elCountry.val();
+
+		elVatFields.hide();
 
 		if (akeebasubs_noneuvat)
 		{
-			$('#vatfields').css('display', 'block');
-			$('#vatcountry').text('');
+			elVatFields.css("display", "grid");
+			$("#vatcountry").text("");
 		}
 
-		Object.keys(akeebasubs_eu_configuration).forEach(function(key){
-			if (key == country)
-			{
-				$('#vatfields').css('display', 'block');
+		Object.keys(akeebasubs_eu_configuration)
+			  .forEach(function (key)
+					   {
+						   if (key === country)
+						   {
+							   $("#vatfields").css("display", "grid");
 
-				var ccode = akeebasubs_eu_configuration[key][1];
-				$('#vatcountry').text(ccode);
+							   var ccode = akeebasubs_eu_configuration[key][1];
+							   $("#vatcountry").text(ccode);
 
-			}
-		});
+						   }
+					   });
 
 		// Make sure we don't do business validation / price check unless something's changed
-		var vatnumber = '';
-		if ($('#vatnumber'))
+		var elVatNumber = $("#vatnumber");
+		var vatnumber   = "";
+
+		if (elVatNumber)
 		{
-			vatnumber = $('#vatnumber').val();
+			vatnumber = elVatNumber.val();
 		}
+
+		var elCoupon = $("#coupon");
 
 		var data = {
-			country:      $('#' + akeebasubs_form_specifier + ' select[name$="country"]').val(),
-			state:        $('#' + akeebasubs_form_specifier + ' select[name$="state"]').val(),
-			city:         $('#city').val(),
-			zip:          $('#zip').val(),
-			isbusiness:   $('#isbusiness').val(),
-			businessname: $('#businessname').val(),
-			occupation:   $('#occupation').val(),
-			vatnumber:    vatnumber,
-			coupon:       ($("#coupon").length > 0) ? $('#coupon').val() : ''
+			country     : elCountry.val(),
+			state       : $("#" + akeebasubs_form_specifier + " select[name$=\"state\"]").val(),
+			city        : $("#city").val(),
+			zip         : $("#zip").val(),
+			isbusiness  : elIsBusiness.val(),
+			businessname: $("#businessname").val(),
+			occupation  : $("#occupation").val(),
+			vatnumber   : vatnumber,
+			coupon      : (elCoupon.length > 0) ? elCoupon.val() : ""
 		};
 
-		var hash = '';
+		var hash = "";
 		for (key in data)
 		{
-			hash += '|' + key + '|' + data[key];
+			hash += "|" + key + "|" + data[key];
 		}
-		hash += '|';
+		hash += "|";
 
-		if (akeebasubs_business_state == hash)
+		if (akeebasubs_business_state === hash)
 		{
 			if (akeebasubs_isbusiness)
 			{
 				return;
 			}
+
 			akeebasubs_isbusiness = true;
 		}
 
@@ -652,22 +810,26 @@ function validateBusiness()
 	})(akeeba.jQuery);
 }
 
-function validateIsNotBusiness(e)
+function validateIsNotBusiness (e)
 {
 	(function ($)
 	{
-		$('#businessfields').hide();
-		akeebasubs_cached_response.businessname = true;
-		akeebasubs_cached_response.novatrequired = true;
-		applyValidation(akeebasubs_cached_response);
+		$("#businessfields").hide();
+
+		var tempData = {
+			businessname: true, novatrequired: true
+		};
+
+		applyValidation(tempData);
 		akeebasubs_isbusiness = false;
 	})(akeeba.jQuery);
 }
 
-function onIsBusinessClick(e)
+function onIsBusinessClick (e)
 {
-	(function ($) {
-		var isBusiness = $('#isbusiness').val() == 1;
+	(function ($)
+	{
+		var isBusiness = $("#isbusiness").val() === 1;
 
 		if (isBusiness)
 		{
@@ -680,204 +842,229 @@ function onIsBusinessClick(e)
 	})(akeeba.jQuery);
 }
 
-function applyValidation(response, callback)
+function applyValidation (response, callback)
 {
 	akeebasubs_cached_response = response;
 
 	(function ($)
 	{
 		akeebasubs_valid_form = true;
+		var elBusinessName    = $("#businessname");
+		var elOccupation      = $("#occupation");
 		if (akeebasubs_apply_validation)
 		{
-			$('#username').parents('div.form-group').removeClass('error has-error');
+			var elUsername        = $("#username");
+			var elUsernameInvalid = $("#username_invalid");
 
-			if ($('#username_invalid'))
+			elUsername.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+
+			if (elUsernameInvalid)
 			{
 				if (response.username)
 				{
-					$('#username_invalid').hide();
+					elUsernameInvalid.hide();
 				}
 				else
 				{
-					if (!$('#username').attr('disabled') || $('#username').attr('disabled') != 'disabled')
+					if (!elUsername.attr("disabled") || (elUsername.attr("disabled") !== "disabled"))
 					{
 						akeebasubs_valid_form = false;
 					}
 
-					$('#username_invalid').hide();
+					elUsernameInvalid.hide();
 
-					if (true || ($('#username').val() != ''))
+					if (true || (elUsername.val() !== ""))
 					{
-						$('#username').parents('div.form-group').addClass('error has-error');
-						$('#username_invalid').show();
+						elUsername.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
+						elUsernameInvalid.show();
 					}
 				}
 			}
 
-			$('#name').parents('div.form-group').removeClass('error has-error');
+			var elName = $("#name");
+			elName.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
 			if (response.name)
 			{
-				$('#name_empty').hide();
+				$("#name_empty").hide();
 			}
 			else
 			{
-				$('#name').parents('div.form-group').addClass('error has-error');
+				elName.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
 				akeebasubs_valid_form = false;
-				$('#name_empty').show();
+				$("#name_empty").show();
 			}
 
-			$('#email').parents('div.form-group').removeClass('error has-error');
+			var elEmail = $("#email");
+			elEmail.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
 			if (response.email)
 			{
-				$('#email_invalid').hide();
+				$("#email_invalid").hide();
 			}
 			else
 			{
-				$('#email').parents('div.form-group').addClass('error has-error');
+				elEmail.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
 				akeebasubs_valid_form = false;
-				$('#email_invalid').show();
+				$("#email_invalid").show();
 			}
 
-			$('#email2').parents('div.form-group').removeClass('error has-error');
+			var elEmail2 = $("#email2");
+			elEmail2.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
 			if (response.email2)
 			{
-				$('#email2_invalid').hide();
+				$("#email2_invalid").hide();
 			}
 			else
 			{
-				$('#email2').parents('div.form-group').addClass('error has-error');
+				elEmail2.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
 				akeebasubs_valid_form = false;
-				$('#email2_invalid').show();
+				$("#email2_invalid").show();
 			}
 
-			$('#address1').parents('div.form-group').removeClass('error has-error');
+			var elAddress1 = $("#address1");
+			elAddress1.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
 			if (response.address1)
 			{
-				$('#address1_empty').hide();
+				$("#address1_empty").hide();
 			}
 			else
 			{
-				$('#address1').parents('div.form-group').addClass('error has-error');
+				elAddress1.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
 				akeebasubs_valid_form = false;
-				$('#address1_empty').show();
+				$("#address1_empty").show();
 			}
 
-			$('#country').parents('div.form-group').removeClass('error has-error');
+			var elCountry = $("#country");
+			elCountry.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+
 			if (response.country)
 			{
-				$('#country_empty').hide();
+				$("#country_empty").hide();
 			}
 			else
 			{
 				akeebasubs_valid_form = false;
-				$('#country').parents('div.form-group').addClass('error has-error');
-				$('#country_empty').show();
+				elCountry.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
+				$("#country_empty").show();
 			}
 
-			$('#state').parents('div.form-group').removeClass('error has-error');
+			var elState      = $("#state");
+			var elStateEmpty = $("#state_empty");
+
+			elState.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+
 			if (response.state)
 			{
-				$('#state_empty').hide();
+				elStateEmpty.hide();
 			}
 			else
 			{
-				$('#state').parents('div.form-group').addClass('error has-error');
-				if ($('#state_empty').css('display') != 'none')
+				elState.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
+
+				if (elStateEmpty.css("display") !== "none")
 				{
 					akeebasubs_valid_form = false;
 				}
-				$('#state_empty').show();
+
+				elStateEmpty.show();
 			}
 
-			$('#city').parents('div.form-group').removeClass('error has-error');
+			var elCity = $("#city");
+			elCity.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+
 			if (response.city)
 			{
-				$('#city_empty').hide();
+				$("#city_empty").hide();
 			}
 			else
 			{
-				$('#city').parents('div.form-group').addClass('error has-error');
+				elCity.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
 				akeebasubs_valid_form = false;
-				$('#city_empty').show();
+				$("#city_empty").show();
 			}
 
-			$('#zip').parents('div.form-group').removeClass('error has-error');
+			var elZip = $("#zip");
+			elZip.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+
 			if (response.zip)
 			{
-				$('#zip_empty').hide();
+				$("#zip_empty").hide();
 			}
 			else
 			{
-				$('#zip').parents('div.form-group').addClass('error has-error');
+				elZip.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
 				akeebasubs_valid_form = false;
-				$('#zip_empty').show();
+				$("#zip_empty").show();
 			}
 
-			$('#businessname').parents('div.form-group').removeClass('error has-error');
+			elBusinessName.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+			var elIsBusiness = $("#isbusiness");
 			if (response.businessname)
 			{
-				$('#businessname_empty').hide();
+				$("#businessname_empty").hide();
 			}
 			else
 			{
-				$('#businessname').parents('div.form-group').addClass('error has-error');
-				if ($('#isbusiness').val() == 1)
+				elBusinessName.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
+				if (elIsBusiness.val() === 1)
 				{
 					akeebasubs_valid_form = false;
 				}
-				$('#businessname_empty').show();
+				$("#businessname_empty").show();
 			}
 
-			$('#occupation').parents('div.form-group').removeClass('error has-error');
-			if ($('#occupation').val())
+			elOccupation.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+			if (elOccupation.val())
 			{
-				$('#occupation_empty').hide();
+				$("#occupation_empty").hide();
 			}
 			else
 			{
-				$('#occupation').parents('div.form-group').addClass('error has-error');
-				if ($('#isbusiness').val() == 1)
+				elOccupation.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
+
+				if (elIsBusiness.val() === 1)
 				{
 					akeebasubs_valid_form = false;
 				}
-				$('#occupation_empty').show();
+
+				$("#occupation_empty").show();
 			}
 		}
 		else
 		{
 			// Apply validation is false
-			$('#businessname').parents('div.form-group').removeClass('error has-error');
-			$('#occupation').parents('div.form-group').removeClass('error has-error');
-			$('#businessname_empty').hide();
-			$('#occupation_empty').hide();
+			elBusinessName.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+			elOccupation.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+			$("#businessname_empty").hide();
+			$("#occupation_empty").hide();
 		}
 
-		$('#vatnumber').parents('div.form-group').removeClass('warning has-warning');
+		var elVatNumber = $("#vatnumber");
+		elVatNumber.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "warning");
 		if (response.vatnumber)
 		{
-			$('#vat-status-invalid').hide();
+			$("#vat-status-invalid").hide();
 		}
 		else
 		{
-			$('#vatnumber').parents('div.form-group').addClass('warning has-warning');
-			$('#vat-status-invalid').show();
+			elVatNumber.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "warning");
+			$("#vat-status-invalid").show();
 		}
 
 		if (response.novatrequired)
 		{
-			$('#vatnumber').parents('div.form-group').removeClass('warning has-warning');
-			$('#vat-status-invalid').hide();
+			elVatNumber.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "warning");
+			$("#vat-status-invalid").hide();
 		}
 
 		// Finally, apply the custom validation
 		$.each(akeebasubs_validation_queue, function (index, function_name)
 		{
-			var isValid = function_name(response);
+			var isValid           = function_name(response);
 			akeebasubs_valid_form = akeebasubs_valid_form & isValid;
 		});
 		$.each(akeebasubs_sub_validation_queue, function (index, function_name)
 		{
-			var isValid = function_name(response);
+			var isValid           = function_name(response);
 			akeebasubs_valid_form = akeebasubs_valid_form & isValid;
 		});
 
@@ -890,38 +1077,44 @@ function applyValidation(response, callback)
 		{
 			if (akeebasubs_valid_form)
 			{
-				$('#subscribenow').addClass('btn-success').removeClass('btn-warning btn-primary')
+				$("#subscribenow")
+				.addPartial("akeeba-btn", "success")
+				.removePartial("akeeba-btn", "warning")
+				.removePartial("akeeba-btn", "teal");
 			}
 			else
 			{
-				$('#subscribenow').removeClass('btn-success btn-primary').addClass('btn-warning')
+				$("#subscribenow")
+				.addPartial("akeeba-btn", "warning")
+				.removePartial("akeeba-btn", "success")
+				.removePartial("akeeba-btn", "teal");
 			}
 		}
 
 	})(akeeba.jQuery);
 }
 
-function applyPrice(response)
+function applyPrice (response)
 {
 	(function ($)
 	{
-		var $sumTotalField = $('#akeebasubs-sum-total');
+		var $sumTotalField = $("#akeebasubs-sum-total");
 
 		if ($sumTotalField.length > 0)
 		{
-			var vatContainer = $('#akeebasubs-vat-container');
+			var vatContainer = $("#akeebasubs-vat-container");
 			vatContainer.hide();
 
 			$sumTotalField.text(response.gross);
-			$('#akeebasubs-sum-vat-percent').html(response.taxrate);
+			$("#akeebasubs-sum-vat-percent").html(response.taxrate);
 
 			if (response.taxrate > 0)
 			{
 				vatContainer.show();
 			}
 
-			var $discountFieldContainer = $('#akeebasubs-sum-discount-container');
-			var $originalFieldContainer = $('#akeebasubs-sum-original-container');
+			var $discountFieldContainer = $("#akeebasubs-sum-discount-container");
+			var $originalFieldContainer = $("#akeebasubs-sum-original-container");
 
 			if ($discountFieldContainer.length)
 			{
@@ -932,8 +1125,8 @@ function applyPrice(response)
 					$originalFieldContainer.hide();
 				}
 
-				var $discountField = $('#akeebasubs-sum-discount');
-				var $originalField = $('#akeebasubs-sum-original');
+				var $discountField = $("#akeebasubs-sum-discount");
+				var $originalField = $("#akeebasubs-sum-original");
 
 				if ((response.discount > 0) && $discountField.length)
 				{
@@ -957,11 +1150,11 @@ function applyPrice(response)
 
 			if (response.gross * 1 <= 0)
 			{
-				$('#paymentmethod-container').hide();
+				$("#paymentmethod-container").css("display", "none");
 			}
 			else
 			{
-				$('#paymentmethod-container').css('display', 'inline');
+				$("#paymentmethod-container").css("display", "inherit");
 			}
 		}
 
@@ -969,12 +1162,12 @@ function applyPrice(response)
 
 		if ($couponField.length)
 		{
-			var couponValue  = ($couponField.length > 0) ? $couponField.val() : '';
-			$couponField.removeClass('coupon-valid coupon-invalid');
+			var couponValue = ($couponField.length > 0) ? $couponField.val() : "";
+			$couponField.removeClass("coupon-valid coupon-invalid");
 
 			if (couponValue)
 			{
-				var couponClass = (response.couponid > 0) ? 'coupon-valid' : 'coupon-invalid';
+				var couponClass = (response.couponid > 0) ? "coupon-valid" : "coupon-invalid";
 				$couponField.addClass(couponClass);
 			}
 		}
@@ -985,9 +1178,9 @@ function applyPrice(response)
 /**
  * Adds a function to the validation fetch queue
  */
-function addToValidationFetchQueue(myfunction)
+function addToValidationFetchQueue (myfunction)
 {
-	if (typeof myfunction != 'function')
+	if (typeof myfunction != "function")
 	{
 		return false;
 	}
@@ -997,9 +1190,9 @@ function addToValidationFetchQueue(myfunction)
 /**
  * Adds a function to the validation queue
  */
-function addToValidationQueue(myfunction)
+function addToValidationQueue (myfunction)
 {
-	if (typeof myfunction != 'function')
+	if (typeof myfunction != "function")
 	{
 		return false;
 	}
@@ -1009,9 +1202,9 @@ function addToValidationQueue(myfunction)
 /**
  * Adds a function to the per-subscription validation fetch queue
  */
-function addToSubValidationFetchQueue(myfunction)
+function addToSubValidationFetchQueue (myfunction)
 {
-	if (typeof myfunction != 'function')
+	if (typeof myfunction != "function")
 	{
 		return false;
 	}
@@ -1021,9 +1214,9 @@ function addToSubValidationFetchQueue(myfunction)
 /**
  * Adds a function to the per-subscription validation queue
  */
-function addToSubValidationQueue(myfunction)
+function addToSubValidationQueue (myfunction)
 {
-	if (typeof myfunction != 'function')
+	if (typeof myfunction != "function")
 	{
 		return false;
 	}
@@ -1034,85 +1227,95 @@ function addToSubValidationQueue(myfunction)
 (function ($)
 {
 	$(document).ready(function ()
-	{
-		if (jQuery('#userinfoForm').length)
-		{
-			akeebasubs_form_specifier = 'userinfoForm';
-		}
+					  {
+						  if (jQuery("#userinfoForm").length)
+						  {
+							  akeebasubs_form_specifier = "userinfoForm";
+						  }
 
-		$('#username').blur(validateForm);
-		if ($('#password'))
-		{
-			$('#password').blur(validatePassword);
-			$('#password2').blur(validatePassword);
-		}
-		$('#name').blur(validateName);
-		$('#email').blur(validateEmail);
-		$('#email2').blur(validateEmail);
-		$('#address1').blur(validateAddress);
-		$('#city').blur(validateBusiness);
-		$('#zip').blur(validateBusiness);
-		$('#businessname').blur(validateBusiness);
-		$('#vatnumber').blur(validateBusiness);
+						  $("#username").blur(validateForm);
+						  if ($("#password"))
+						  {
+							  $("#password").blur(validatePassword);
+							  $("#password2").blur(validatePassword);
+						  }
+						  $("#name").blur(validateName);
+						  $("#email").blur(validateEmail);
+						  $("#email2").blur(validateEmail);
+						  $("#address1").blur(validateAddress);
+						  $("#city").blur(validateBusiness);
+						  $("#zip").blur(validateBusiness);
+						  $("#businessname").blur(validateBusiness);
+						  $("#vatnumber").blur(validateBusiness);
 
-		$('#' + akeebasubs_form_specifier + ' select[name$="country"]').change(validateBusiness);
-		$('#' + akeebasubs_form_specifier + ' select[name$="state"]').change(validateBusiness);
-		$('#' + akeebasubs_form_specifier + ' select[name$="isbusiness"]').change(onIsBusinessClick);
+						  $("#" + akeebasubs_form_specifier + " select[name$=\"country\"]").change(validateBusiness);
+						  $("#" + akeebasubs_form_specifier + " select[name$=\"state\"]").change(validateBusiness);
+						  $("#" + akeebasubs_form_specifier + " select[name$=\"isbusiness\"]").change(
+							  onIsBusinessClick);
 
-		if ($('#coupon').length > 0)
-		{
-			$('#coupon').blur(validateBusiness);
-		}
-		// Attach onBlur events to custom fields
-		$('#' + akeebasubs_form_specifier + ' *[name]').filter(function (index)
-		{
-			if ($(this).is('input'))
-			{
-				return $(this).attr('name').substr(0, 7) == 'custom[';
-			}
-			return false;
-		}).blur(validateForm);
-		$('#' + akeebasubs_form_specifier + ' *[name]').filter(function (index)
-		{
-			if ($(this).is('input'))
-			{
-				return $(this).attr('name').substr(0, 10) == 'subcustom[';
-			}
-			return false;
-		}).blur(validateForm);
-		// Attach onChange events to custom checkboxes
-		$('#' + akeebasubs_form_specifier + ' *[name]').filter(function (index)
-		{
-			if ($(this).attr('type') == 'checkbox')
-			{
-				return true;
-			}
-			if ($(this).attr('type') == 'radio')
-			{
-				return true;
-			}
-			if ($(this).is('select'))
-			{
-				return true;
-			}
-			return false;
-		}).change(validateForm);
+						  if ($("#coupon").length > 0)
+						  {
+							  $("#coupon").blur(validateBusiness);
+						  }
+						  // Attach onBlur events to custom fields
+						  var elFormElements = $("#" + akeebasubs_form_specifier + " *[name]");
+						  elFormElements
+						  .filter(function (index)
+								  {
+									  if ($(this).is("input"))
+									  {
+										  return $(this)
+										  .attr("name")
+										  .substr(0, 7) === "custom[";
+									  }
+									  return false;
+								  }).blur(validateForm);
+						  elFormElements
+						  .filter(function (index)
+								  {
+									  if ($(this).is("input"))
+									  {
+										  return $(this)
+										  .attr("name")
+										  .substr(0, 10) === "subcustom[";
+									  }
+									  return false;
+								  }).blur(validateForm);
+						  // Attach onChange events to custom checkboxes
+						  elFormElements
+						  .filter(function (index)
+								  {
+									  if ($(this).attr("type") === "checkbox")
+									  {
+										  return true;
+									  }
+									  if ($(this).attr("type") === "radio")
+									  {
+										  return true;
+									  }
+									  if ($(this).is("select"))
+									  {
+										  return true;
+									  }
+									  return false;
+								  }).change(validateForm);
 
-		setTimeout('onIsBusinessClick();', 1500);
+						  setTimeout("onIsBusinessClick();", 1500);
 
-		// Disable form submit when ENTER is hit in the coupon field
-		$('input#coupon').keypress(function (e)
-		{
-			if (e.which == 13)
-			{
-				validateForm();
-				return false;
-			}
-		});
+						  // Disable form submit when ENTER is hit in the coupon field
+						  $("input#coupon")
+						  .keypress(function (e)
+									{
+										if (e.which == 13)
+										{
+											validateForm();
+											return false;
+										}
+									});
 
-		validateEmail();
-		validateForm();
-	});
+						  validateEmail();
+						  validateForm();
+					  });
 })(akeeba.jQuery);
 
 /**
@@ -1120,16 +1323,16 @@ function addToSubValidationQueue(myfunction)
 })(akeeba.jQuery);
  /**/
 
-function rtrim(str, charlist)
+function rtrim (str, charlist)
 {
-	charlist = !charlist ? ' \\s\u00A0' : (charlist + '').replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, '\\$1');
-	var re = new RegExp('[' + charlist + ']+$', 'g');
-	return (str + '').replace(re, '');
+	charlist = !charlist ? " \\s\u00A0" : (charlist + "").replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, "\\$1");
+	var re   = new RegExp("[" + charlist + "]+$", "g");
+	return (str + "").replace(re, "");
 }
 
-function ltrim(str, charlist)
+function ltrim (str, charlist)
 {
-	charlist = !charlist ? ' \\s\u00A0' : (charlist + '').replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, '$1');
-	var re = new RegExp('^[' + charlist + ']+', 'g');
-	return (str + '').replace(re, '');
+	charlist = !charlist ? " \\s\u00A0" : (charlist + "").replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, "$1");
+	var re   = new RegExp("^[" + charlist + "]+", "g");
+	return (str + "").replace(re, "");
 }

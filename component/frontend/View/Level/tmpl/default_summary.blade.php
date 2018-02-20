@@ -141,7 +141,7 @@ $hidePaymentMethod   =
 </div>
 
 {{-- PAYMENT METHODS --}}
-<div id="paymentmethod-container" class="{{$hidePaymentMethod ? 'hidden' : ''}}">
+<div id="paymentmethod-container" style="display: {{$hidePaymentMethod ? 'none' : 'inherit'}}">
 	<div class="akeeba-form-group">
 		<label for="paymentmethod">
 			@lang('COM_AKEEBASUBS_LEVEL_FIELD_METHOD')
