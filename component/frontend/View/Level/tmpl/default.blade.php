@@ -32,15 +32,15 @@ $this->addJavascriptInline($script);
 
 	{{-- Warning when Javascript is disabled --}}
 	<noscript>
-		<div class="alert alert-warning">
-			<h3>
+		<div class="akeeba-block--warning">
+			<h4>
 				<span class="glyphicon glyphicon-alert"></span>
 				@lang('COM_AKEEBASUBS_LEVEL_ERR_NOJS_HEADER')
-			</h3>
+			</h4>
 			<p>@lang('COM_AKEEBASUBS_LEVEL_ERR_NOJS_BODY')</p>
 			<p>
-				<a href="http://enable-javascript.com" class="btn btn-primary" target="_blank">
-					<span class="glyphicon glyphicon-info-sign"></span>
+				<a href="http://enable-javascript.com" class="akeeba-btn--primary" target="_blank">
+					<span class="akion-information-circled"></span>
 					@lang('COM_AKEEBASUBS_LEVEL_ERR_NOJS_MOREINFO')
 				</a>
 			</p>
@@ -50,44 +50,34 @@ $this->addJavascriptInline($script);
 	<form
 		action="@route('index.php?option=com_akeebasubs&view=Subscribe&layout=default&slug=' . $this->input->getString('slug', ''))"
 		method="post"
-		id="signupForm" class="form form-horizontal">
+		id="signupForm" class="akeeba-form--horizontal">
 		<input type="hidden" name="@token()" value="1"/>
 
-		<div class="col-sm-12 col-md-6">
+		<div class="akeeba-container--50-50">
 			{{-- ACCOUNT COLUMN --}}
-			<div id="akeebasubs-panel-account" class="panel panel-default">
-				<div class="panel-heading">
-					<h3 class="panel-title">
+			<div id="akeebasubs-panel-account" class="akeeba-panel--info">
+				<header class="akeeba-block-header">
+					<h3>
 						@lang('COM_AKEEBASUBS_LEVEL_LBL_ACCOUNTHEADER')
 					</h3>
-				</div>
-				<div class="panel-body">
-					@include('site:com_akeebasubs/Level/default_fields')
-				</div>
+				</header>
+				@include('site:com_akeebasubs/Level/default_fields')
 			</div>
-		</div>
-		<div class="col-sm-12 col-md-6">
-			{{-- ORDER COLUMN --}}
-			<div id="akeebasubs-panel-order" class="panel panel-default">
-				<div class="panel-heading">
-					<h3 class="panel-title">
-						@lang('COM_AKEEBASUBS_LEVEL_LBL_YOURORDER')
-						<span class="label label-default label-inverse">{{{$this->item->title}}}</span>
-					</h3>
-				</div>
-				<div class="panel-body">
-					@include('site:com_akeebasubs/Level/default_summary')
-				</div>
-			</div>
-		</div>
 
-		<div class="clearfix"></div>
+			{{-- ORDER COLUMN --}}
+			<div id="akeebasubs-panel-order" class="akeeba-panel--primary">
+				<header class="akeeba-block-header">
+					<h3>
+						@lang('COM_AKEEBASUBS_LEVEL_LBL_YOURORDER')
+					</h3>
+				</header>
+				@include('site:com_akeebasubs/Level/default_summary')
+			</div>
+		</div>
 	</form>
 
 	{{-- Module position 'akeebasubscriptionsfooter' --}}
 	@modules('akeebasubscriptionsfooter')
-
-	<div class="clearfix"></div>
 </div>
 
 <?php

@@ -40,32 +40,30 @@ if (is_array($jResponse) && !empty($jResponse))
 			$customField_class = '';
 			if ($apply_validation && array_key_exists('isValid', $field))
 			{
-				$customField_class = (array_key_exists('validLabel', $field) ? 'has-success' : '');
-				$customField_class = $field['isValid'] ? $customField_class : 'has-error';
+				$customField_class = (array_key_exists('validLabel', $field) ? '--success' : '');
+				$customField_class = $field['isValid'] ? $customField_class : '--error';
 			}
 			?>
-			<div class="form-group {{$customField_class}}">
-				<label for="{{$field['id']}}" class="control-label col-sm-4">
+			<div class="akeeba-form-group{{$customField_class}}">
+				<label for="{{$field['id']}}">
 					{{$field['label']}}
 				</label>
 
-				<div class="col-sm-8">
-					{{$field['elementHTML']}}
+				{{$field['elementHTML']}}
 
-					@if (array_key_exists('validLabel', $field))
-						<p id="{{$field['id']}}_valid" class="help-block"
-						   style="<?php if (!$field['isValid'] || !$apply_validation): ?>display:none<?php endif ?>">
-							{{$field['validLabel']}}
-						</p>
-					@endif
+				@if (array_key_exists('validLabel', $field))
+					<p id="{{$field['id']}}_valid" class="akeeba-help-text"
+					   style="<?php if (!$field['isValid'] || !$apply_validation): ?>display:none<?php endif ?>">
+						{{$field['validLabel']}}
+					</p>
+				@endif
 
-					@if (array_key_exists('invalidLabel', $field))
-						<p id="{{$field['id']}}_invalid" class="help-block"
-						   style="<?php if ($field['isValid'] || !$apply_validation): ?>display:none<?php endif ?>">
-							{{$field['invalidLabel']}}
-						</p>
-					@endif
-				</div>
+				@if (array_key_exists('invalidLabel', $field))
+					<p id="{{$field['id']}}_invalid" class="akeeba-help-text"
+					   style="<?php if ($field['isValid'] || !$apply_validation): ?>display:none<?php endif ?>">
+						{{$field['invalidLabel']}}
+					</p>
+				@endif
 			</div>
 		@endforeach
 	@endforeach

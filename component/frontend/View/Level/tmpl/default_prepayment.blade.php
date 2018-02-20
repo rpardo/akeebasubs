@@ -8,6 +8,7 @@
 defined('_JEXEC') or die();
 
 /** @var \Akeeba\Subscriptions\Site\View\Level\Html $this */
+/** @var array $field */
 
 $this->getContainer()->platform->importPlugin('akeebasubs');
 $jResponse = $this->getContainer()->platform->runPlugins('onSubscriptionFormPrepaymentRender', [
@@ -19,27 +20,21 @@ if (!is_array($jResponse) || empty($jResponse)) return;
 ?>
 @repeatable('customField', $field)
 <?php
+$field['label'] = (trim($field['label']) == '*') ? '' : $field['label'];
 $field['isValid']  = array_key_exists('isValid', $field) ? $field['isValid'] : true;
-
 $customField_class = '';
-$classValidLabel   = '';
-$classInvalidLabel = '';
 
 if ($this->apply_validation == 'true')
 {
-	$customField_class = $field['isValid'] ? '' : 'has-error';
-	$classValidLabel   = $field['isValid'] ? '' : 'hidden';
-	$classInvalidLabel = !$field['isValid'] ? '' : 'hidden';
+	$customField_class = $field['isValid'] ? '' : '--error';
 }
 ?>
-<div class="form-group {{{$customField_class}}}">
-	<label for="{{{$field['id']}}}" class="control-label col-sm-4 hidden">
+<div class="akeeba-form-group{{{$customField_class}}}">
+	<label for="{{{$field['id']}}}">
 		{{$field['label']}}
 	</label>
 
-	<div class="col-sm-8">
-		{{$field['elementHTML']}}
-	</div>
+	{{$field['elementHTML']}}
 </div>
 @endRepeatable
 

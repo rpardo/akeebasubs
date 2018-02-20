@@ -7,11 +7,12 @@
 /**
  * Setup (required for Joomla! 3)
  */
-if (typeof(akeeba) == 'undefined')
+if (typeof(akeeba) === 'undefined')
 {
 	var akeeba = {};
 }
-if (typeof(akeeba.jQuery) == 'undefined')
+
+if (typeof(akeeba.jQuery) === 'undefined')
 {
 	akeeba.jQuery = window.jQuery.noConflict();
 }
@@ -80,7 +81,6 @@ function blockInterface()
 	(function ($)
 	{
 		$('#subscribenow').click(cacheSubmitAction);
-		$('.ui-disable-spinner').show();
 		//$('#subscribenow').attr('disabled','disabled');
 		akeebasubs_blocked_gui = true;
 	})(akeeba.jQuery);
@@ -91,7 +91,6 @@ function enableInterface()
 	(function ($)
 	{
 		$('#subscribenow').unbind('click');
-		$('.ui-disable-spinner').hide();
 		$('#subscribenow').removeAttr('disabled');
 		akeebasubs_blocked_gui = false;
 		if (akeebasubs_run_validation_after_unblock)

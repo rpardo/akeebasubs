@@ -11,14 +11,16 @@ use Akeeba\Subscriptions\Admin\Helper\Image;
 use Akeeba\Subscriptions\Admin\Helper\Message;
 ?>
 
-<div class="panel panel-default">
-	<div class="panel-heading">
-		<h3 class="panel-title">
+<div class="akeeba-panel--info">
+	<header class="akeeba-block-header">
+		<h3>
 			@lang('COM_AKEEBASUBS_LEVEL_LBL_YOURORDER')
-			<span class="label label-default label-inverse">{{{$this->item->title}}}</span>
 		</h3>
-	</div>
-	<div class="panel-body">
+	</header>
+	<p>
+		<span class="akeeba-label--grey">{{{$this->item->title}}}</span>
+	</p>
+	<div>
 		@jhtml('content.prepare', Message::processLanguage($this->item->description))
 	</div>
 </div>
