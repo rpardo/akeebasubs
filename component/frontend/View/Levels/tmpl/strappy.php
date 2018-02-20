@@ -21,7 +21,7 @@ $discounts = array();
 
 <?php $max = count($this->items); $width = count($this->items) ? (100/count($this->items)) : '100' ?>
 
-	<table class="table table-striped table-condensed table-bordered">
+	<table class="akeeba-table--striped">
 		<tr>
 		<?php foreach($this->items as $level):?>
 			<td class="akeebasubs-strappy-level" width="<?php echo $width?>%">
@@ -117,7 +117,7 @@ $discounts = array();
 		<?php foreach($this->items as $level):?>
 			<td class="akeebasubs-strappy-subscribe">
 				<button
-					class="btn btn-inverse btn-primary"
+					class="akeeba-btn--primary"
 					onclick="window.location='<?php echo \JRoute::_('index.php?option=com_akeebasubs&view=level&slug='.$level->slug.'&format=html&layout=default')?>'">
 					<?php echo JText::_('COM_AKEEBASUBS_LEVELS_SUBSCRIBE')?>
 				</button>

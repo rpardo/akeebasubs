@@ -1,0 +1,41 @@
+/**
+ * @package    akeebasubs
+ * @copyright  Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license    GNU GPLv3 <http://www.gnu.org/licenses/gpl.html> or later
+ */
+
+@import "frontend/variables";
+
+
+#akeebasubs {
+
+  /**
+   * Global rules
+   */
+  margin-bottom: 1em;
+  background: transparent;
+
+  /*
+   * Levels view. Subscription levels list pages; different layouts.
+   */
+  @import "frontend/levels";
+  @import "frontend/levels_default";
+  @import "frontend/levels_awesome";
+  @import "frontend/levels_strappy";
+
+  /*
+   * Level view. Subscription page.
+   */
+  @import "frontend/level";
+
+  /**
+   * Subscription view. View a single subscription.
+   */
+  @import "frontend/subscription";
+
+  /**
+   * Subscriptions view. My subscriptions.
+   */
+  @import "frontend/subscriptions";
+
+}
