@@ -56,7 +56,7 @@ if (!empty($this->returnURL))
 	<form action="<?php echo $formURL ?>" method="post" class="adminform" name="adminForm" id="adminForm">
 	<input type="hidden" name="<?php echo $this->container->platform->getToken(true);?>" value="1" />
 
-	<table class="table table-striped" width="100%">
+	<table class="akeeba-table--striped" width="100%">
 		<thead>
 			<tr>
 				<th width="40px">
@@ -172,17 +172,17 @@ if (!empty($this->returnURL))
 				</td>
 				<td align="center">
 					<?php if ($subscription->enabled):?>
-					<span class="icon icon-ok" title="<?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_ENABLED_ACTIVE') ?>"></span>
+					<span class="akion-checkmark" title="<?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_ENABLED_ACTIVE') ?>"></span>
 
 					<?php elseif($jPublishUp->toUnix() >= time()):?>
-						<span class="icon icon-time" title="<?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_ENABLED_PENDING') ?>"></span>
+						<span class="akion-android-time" title="<?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_ENABLED_PENDING') ?>"></span>
 
 					<?php else:?>
-						<span class="icon icon-ban-circle" title="<?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_ENABLED_INACTIVE') ?>"></span>
+						<span class="akion-close" title="<?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_ENABLED_INACTIVE') ?>"></span>
 					<?php endif;?>
 	            </td>
 	            <td>
-					<a class="btn btn-mini btn-xs btn-info" href="<?php echo JRoute::_('index.php?option=com_akeebasubs&view=Subscription&id=' . $subscription->akeebasubs_subscription_id . $returnURL)?>">
+					<a class="akeeba-btn--small--info" href="<?php echo JRoute::_('index.php?option=com_akeebasubs&view=Subscription&id=' . $subscription->akeebasubs_subscription_id . $returnURL)?>">
 						<?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_ACTION_VIEW')?>
 					</a>
 
@@ -207,15 +207,15 @@ if (!empty($this->returnURL))
 					}
 					if(!empty($url)):
 					?>
-					<a class="btn btn-mini btn-xs btn-default" href="<?php echo $url; ?>" <?php echo $target?>>
-						<span class="icon icon-eye-open"></span>
+					<a class="akeeba-btn--small--grey" href="<?php echo $url; ?>" <?php echo $target?>>
+						<span class="akion-document-text"></span>
 	            		<?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_ACTION_INVOICE')?>
 	            	</a>
 					<?php endif; ?>
 					<?php if(!empty($url2)):
 					?>
-					<a class="btn btn-mini btn-xs btn-default" href="<?php echo $url2; ?>">
-						<span class="icon icon-file"></span>
+					<a class="akeeba-btn--small--dark" href="<?php echo $url2; ?>">
+						<span class="akion-android-download"></span>
 	            		<?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_ACTION_INVOICE')?>
 	            	</a>
 					<?php endif; ?>
@@ -235,7 +235,7 @@ if (!empty($this->returnURL))
 						}
 
 					?>
-	            	<a class="btn btn-mini btn-xs btn-success" href="<?php echo $renewURL?>">
+	            	<a class="akeeba-btn--small--green" href="<?php echo $renewURL?>">
 	            		<?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_ACTION_RENEW')?>
 	            	</a>
 	            	<?php endif;?>
@@ -244,7 +244,7 @@ if (!empty($this->returnURL))
 		                if ($level->recurring):
 			                $cancelURL = JRoute::_('index.php?option=com_akeebasubs&view=callback&task=cancel&paymentmethod='.$subscription->processor.'&sid='.$subscription->akeebasubs_subscription_id);
 			        ?>
-		            <a class="btn btn-mini btn-xs btn-danger" href="<?php echo $cancelURL?>">
+		            <a class="akeeba-btn--small--red" href="<?php echo $cancelURL?>">
 			            <?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_ACTION_CANCEL_RECURRING')?>
 		            </a>
 		            <?php endif; ?>
