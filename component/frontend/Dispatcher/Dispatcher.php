@@ -25,19 +25,6 @@ class Dispatcher extends \FOF30\Dispatcher\Dispatcher
 		// Load Akeeba Strapper, if it is installed
 		\JLoader::import('joomla.filesystem.folder');
 
-		$useStrapper = $this->container->params->get('usestrapper', 3);
-
-		if (in_array($useStrapper, [1, 3]) && \JFolder::exists(JPATH_SITE . '/media/strapper30'))
-		{
-			@include_once JPATH_SITE . '/media/strapper30/strapper.php';
-
-			if (class_exists('\\AkeebaStrapper30', false))
-			{
-				\AkeebaStrapper30::bootstrap();
-				\AkeebaStrapper30Loader();
-			}
-		}
-
 		// Load common CSS JavaScript
 		\JHtml::_('jquery.framework');
 		$this->container->template->addCSS('media://com_akeebasubs/css/frontend.css', $this->container->mediaVersion);
