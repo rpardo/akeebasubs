@@ -72,9 +72,9 @@ var akeebasubs_form_specifier               = "signupForm";
 	{
 		var myElement = this;
 		var classList = [];
-		var myClass = this.attr("class");
+		var myClass   = this.attr("class");
 
-		if (typeof myClass !=='undefined')
+		if (typeof myClass !== "undefined")
 		{
 			classList = myClass.split(/\s+/);
 		}
@@ -816,11 +816,10 @@ function validateIsNotBusiness (e)
 	{
 		$("#businessfields").hide();
 
-		var tempData = {
-			businessname: true, novatrequired: true
-		};
+		akeebasubs_cached_response.businessname = true;
+		akeebasubs_cached_response.novatrequired = true;
 
-		applyValidation(tempData);
+		applyValidation(akeebasubs_cached_response);
 		akeebasubs_isbusiness = false;
 	})(akeeba.jQuery);
 }
@@ -829,7 +828,7 @@ function onIsBusinessClick (e)
 {
 	(function ($)
 	{
-		var isBusiness = $("#isbusiness").val() === 1;
+		var isBusiness = $("#isbusiness").val() == 1;
 
 		if (isBusiness)
 		{
@@ -1005,7 +1004,7 @@ function applyValidation (response, callback)
 			else
 			{
 				elBusinessName.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
-				if (elIsBusiness.val() === 1)
+				if (elIsBusiness.val() == 1)
 				{
 					akeebasubs_valid_form = false;
 				}
@@ -1021,7 +1020,7 @@ function applyValidation (response, callback)
 			{
 				elOccupation.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
 
-				if (elIsBusiness.val() === 1)
+				if (elIsBusiness.val() == 1)
 				{
 					akeebasubs_valid_form = false;
 				}
