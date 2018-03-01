@@ -11,6 +11,11 @@ use Akeeba\Subscriptions\Admin\Model\Levels;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 use Akeeba\Subscriptions\Admin\PluginAbstracts\AkpaymentBase;
 
+/**
+ * Untested code - new implementation of the VivaPayments plugin based on their documentation. The old code still works,
+ * but this new code forces the use of more modern versions of TLS. It's a good idea to eventually test it and replace
+ * the old plugin.
+ */
 class plgAkpaymentViva extends AkpaymentBase
 {
 	public function __construct(&$subject, $config = array())
@@ -53,20 +58,29 @@ class plgAkpaymentViva extends AkpaymentBase
 		);
 
 		// Create new order by a REST POST
-		$jsonResult = $this->httpRequest(
-			$this->getRESTHost(),
-			'/api/orders',
-			$data,
-			'POST',
-			$this->getRESTPort());
-
-		$orderResult = json_decode($jsonResult);
+		try
+		{
+			$orderResult = $this->httpRequest(
+				$this->getRESTHost(),
+				'/api/orders',
+				$data,
+				'POST',
+				$this->getRESTPort());
+		}
+		catch (RuntimeException $e)
+		{
+			$orderResult = (object)[
+				'ErrorCode' => 500,
+				'ErrorText' => $e->getMessage()
+			];
+		}
 
 		if ($orderResult->ErrorCode != 0)
 		{
 			$errorText = $orderResult->ErrorText;
 			$errorUrl = 'index.php?option=com_akeebasubs&view=Level&slug=' . $level->slug;
 			$errorUrl = JRoute::_($errorUrl, false);
+
 			$this->container->platform->redirect($errorUrl, 303, $errorText, 'error');
 		}
 
@@ -76,7 +90,7 @@ class plgAkpaymentViva extends AkpaymentBase
 			'processor_key' => $orderCode
 		));
 
-		// Get the payment URL that is used by the form
+		// Get the payment URL that is used by the form. $url is read by form.php
 		$url = $this->getPaymentURL($orderCode);
 
 		@ob_start();
@@ -128,6 +142,9 @@ class plgAkpaymentViva extends AkpaymentBase
 				$subscription = null;
 				$isValid = false;
 			}
+
+			/** @var Levels $level */
+			$level = $subscription->level;
 		}
 		else
 		{
@@ -139,10 +156,10 @@ class plgAkpaymentViva extends AkpaymentBase
 			$data['akeebasubs_failure_reason'] = 'The order code is invalid';
 		}
 
-
+		/** @var Subscriptions $subscription */
 		/** @var Levels $level */
-		$level = $subscription->level;
 
+		// TODO Is this actually returned?!
 		if ($isValid && $data['type'] == 'cancel')
 		{
 			// Redirect the user to the "cancel" page
@@ -155,18 +172,27 @@ class plgAkpaymentViva extends AkpaymentBase
 		// Get all details for transaction by a REST GET
 		if ($isValid)
 		{
-			$jsonResult = $this->httpRequest(
-				$this->getRESTHost(),
-				'/api/transactions',
-				array('OrderCode' => $orderCode),
-				'GET',
-				$this->getRESTPort());
-			$transactionResult = json_decode($jsonResult);
+			try
+			{
+				$transactionResult = $this->httpRequest(
+					$this->getRESTHost(),
+					'/api/transactions/',
+					array('ordercode' => $orderCode),
+					'GET',
+					$this->getRESTPort());
+			}
+			catch (RuntimeException $e)
+			{
+				$transactionResult = (object)[
+					'ErrorCode' => 500,
+					'ErrorText' => $e->getMessage()
+				];
+			}
 
 			if ($transactionResult->ErrorCode != 0)
 			{
 				$isValid = false;
-				$data['akeebasubs_failure_reason'] = $transactionResult->ErrorText;
+				$data['akeebasubs_failure_reason'] = $transactionResult->ErrorText;;
 			}
 			else
 			{
@@ -248,12 +274,17 @@ class plgAkpaymentViva extends AkpaymentBase
 		// Payment status
 		switch ($transaction->StatusId)
 		{
+			// Finalized (paid)
 			case 'F':
+			// Dispute won (we keep the money)
+			case 'MW':
 				$newStatus = 'C';
 				break;
+			// In progress (awaiting)
 			case 'A':
 				$newStatus = 'P';
 				break;
+			// All other codes per https://github.com/VivaPayments/API/wiki/GetTransactions
 			default:
 				$newStatus = 'X';
 				break;
@@ -287,6 +318,11 @@ class plgAkpaymentViva extends AkpaymentBase
 		return true;
 	}
 
+	/**
+	 * Return the hostname for the REST API endpoint. This depends on the sandbox setting.
+	 *
+	 * @return string
+	 */
 	private function getRESTHost()
 	{
 		$sandbox = $this->params->get('sandbox', 0);
@@ -301,6 +337,11 @@ class plgAkpaymentViva extends AkpaymentBase
 		}
 	}
 
+	/**
+	 * The HTTP port to use. Sandbox always uses plain HTTP (port 80), production uses HTTPS (port 443)
+	 *
+	 * @return  int
+	 */
 	private function getRESTPort()
 	{
 		$sandbox = $this->params->get('sandbox', 0);
@@ -315,6 +356,13 @@ class plgAkpaymentViva extends AkpaymentBase
 		}
 	}
 
+	/**
+	 * Get the VivaPayments interface language code. We map it to either Greek or English (US).
+	 *
+	 * TODO Maybe we can support more languages...?
+	 *
+	 * @return  string
+	 */
 	private function getLanguage()
 	{
 		$lang = $this->params->get('lang', 0);
@@ -327,84 +375,154 @@ class plgAkpaymentViva extends AkpaymentBase
 		return 'en-US';
 	}
 
+	/**
+	 * Get the VivaPayments redirect URL which lets the user pay for their order
+	 *
+	 * @param   string  $orderCode  The VivaPayments order code returned by the createOrder API endpoint
+	 *
+	 * @return  string
+	 *
+	 * @see     https://github.com/VivaPayments/API/wiki/Redirect-Checkout
+	 */
 	private function getPaymentURL($orderCode)
 	{
 		$sandbox = $this->params->get('sandbox', 0);
 
 		if ($sandbox)
 		{
-			return 'http://demo.vivapayments.com/web/newtransaction.aspx?ref=' . $orderCode;
+			return 'http://demo.vivapayments.com/web/checkout?ref=' . $orderCode;
 		}
 		else
 		{
-			return 'https://www.vivapayments.com/web/newtransaction.aspx?ref=' . $orderCode;
+			return 'https://www.vivapayments.com/web/checkout?ref=' . $orderCode;
 		}
 	}
 
-	private function getBasicAuthorization()
+	/**
+	 * Returns the authentication string for the API. This is in the form merchant_id:password
+	 *
+	 * @return  string
+	 */
+	private function getAuthentication()
 	{
 		$sandbox = $this->params->get('sandbox', 0);
 
 		if ($sandbox)
 		{
-			return base64_encode(
-				trim($this->params->get('merchant_id', '')) . ':'
-				. trim($this->params->get('pw', '')));
+			return trim($this->params->get('merchant_id', '')) . ':'
+				. trim($this->params->get('pw', ''));
 		}
 
-		return base64_encode(
-			trim($this->params->get('merchant_id', '')) . ':'
-			. trim($this->params->get('pw', '')));
+		return trim($this->params->get('merchant_id', '')) . ':'
+			. trim($this->params->get('pw', ''));
 	}
 
-	private function httpRequest($host, $path, $params, $method = 'POST', $port = 80)
+	/**
+	 * Performs a VIVA payments API HTTP request.
+	 *
+	 * @param   string  $host    The API hostname
+	 * @param   string  $path    The API path
+	 * @param   array   $params  Any parameters to pass to the API
+	 * @param   string  $method  HTTP method (GET, POST or DELETE, must be all caps)
+	 * @param   int     $port    Use 443 to force using SSL
+	 *
+	 * @return  object  The parsed JSON response as an stdClass object
+	 *
+	 * @throws  RuntimeException  When there is a cURL error, e.g. a network issue
+	 */
+	private function httpRequest($host, $path, array $params = [], $method = 'POST', $port = 80)
 	{
-		// Build the parameter string
-		$paramStr = "";
+		$protocol = ($port == 443) ? 'https' : 'http';
+		$url      = $protocol . '://' . $host . '/' . $path;
 
-		foreach ($params as $key => $val)
+		// Common cURL options
+		$options = [
+			CURLOPT_VERBOSE        => false,
+			CURLOPT_HEADER         => true,
+			CURLINFO_HEADER_OUT    => false,
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_USERPWD        => $this->getAuthentication(),
+			CURLOPT_HTTPHEADER     => [
+				'User-Agent: AkeebaSubscriptions',
+				'Connection: Close',
+			],
+			CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+			CURLOPT_CONNECTTIMEOUT => 30,
+			CURLOPT_FORBID_REUSE   => true,
+		];
+
+		// Are we connecting by SSL? Then add some necessary cURL options.
+		if ($protocol === 'https')
 		{
-			$paramStr .= $key . "=";
-			$paramStr .= urlencode($val);
-			$paramStr .= "&";
+			$options = array_merge($options, [
+				CURLOPT_SSLVERSION      => 6,
+				CURLOPT_SSL_VERIFYPEER  => true,
+				CURLOPT_SSL_VERIFYHOST  => 2,
+				CURLOPT_CAINFO          => JPATH_LIBRARIES . '/fof30/Download/Adapter/cacert.pem',
+				// Force the use of TLS (therefore SSLv3 is not used, mitigating POODLE; see https://github.com/paypal/merchant-sdk-php)
+				CURLOPT_SSL_CIPHER_LIST => 'TLSv1',
+				// This forces the use of TLS 1.x
+				CURLOPT_SSLVERSION      => CURL_SSLVERSION_TLSv1,
+			]);
 		}
 
-		$paramStr = substr($paramStr, 0, -1);
+		// Additional options handling based on request type
+		$extraOptions = [];
 
-		// Create the connection
-		$sandbox = $this->params->get('sandbox', 0);
-		$sockhost = $sandbox ? $host : 'ssl://' . $host;
-		$sock = fsockopen($sockhost, $port);
-
-		if ($method == 'GET')
+		switch ($method)
 		{
-			$path .= '?' . $paramStr;
+			case 'POST':
+				$extraOptions = [
+					CURLOPT_POST       => true,
+					CURLOPT_POSTFIELDS => $params,
+				];
+				break;
+
+			case 'GET':
+				$uri = new JUri($url);
+
+				foreach ($params as $k => $v)
+				{
+					$uri->setVar($k, $v);
+				}
+
+				$url = $uri->toString();
+				break;
+
+			case 'DELETE':
+				$extraOptions = [
+					CURLOPT_CUSTOMREQUEST => $method,
+					CURLOPT_POSTFIELDS    => $params,
+				];
+			default:
 		}
 
-		fputs($sock, "$method $path HTTP/1.1\r\n");
-		fputs($sock, "Host: $host\r\n");
-		fputs($sock, "Content-type: application/x-www-form-urlencoded\r\n");
-		fputs($sock, "Content-length: " . strlen($paramStr) . "\r\n");
-		fputs($sock, "Authorization: Basic " . $this->getBasicAuthorization() . "\r\n");
-		fputs($sock, "Connection: close\r\n\r\n");
-		fputs($sock, $paramStr);
-
-		// Buffer the result
-		$response = "";
-
-		while (!feof($sock))
+		if (!empty($extraOptions))
 		{
-			$response .= fgets($sock, 1024);
+			$options = array_merge($options, $extraOptions);
 		}
 
-		fclose($sock);
+		// Execute the request
+		$ch       = curl_init($url);
+		$response = curl_exec($ch);
 
-		// Get the json part of the response
-		$matches = array();
-		$pattern = '/[^{]*(.+)[^}]*/';
-		preg_match($pattern, $response, $matches);
-		$json = $matches[1];
+		// Separate Header from Body
+		$header_len = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+		$resHeader  = substr($response, 0, $header_len);
+		$resBody    = substr($response, $header_len);
+		curl_close($ch);
 
-		return $json;
+		if (is_object(json_decode($resBody)))
+		{
+			$resultObj = json_decode($resBody);
+		}
+		else
+		{
+			preg_match('#^HTTP/1.(?:0|1) [\d]{3} (.*)$#m', $resHeader, $match);
+
+			throw new RuntimeException("API Call failed! The error was: " . trim($match[1]), 500);
+		}
+
+		return $resultObj;
 	}
 }
