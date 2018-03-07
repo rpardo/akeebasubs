@@ -1,0 +1,50 @@
+Views to convert
+================================================================================
+Levels
+LevelGroups
+Relations
+Upgrades
+TaxConfig
+TaxRules
+States
+EmailTemplates
+BlockRules
+
+Subscriptions
+
+Coupons
+APICoupons
+MakeCoupons
+
+Import <-- DELETE // no longer needed
+Users
+Reports
+SubscriptionStatistics
+
+Invoices
+CreditNotes
+InvoiceTemplates
+CreditNoteTemplates
+
+Plugins to convert (frontend)
+================================================================================
+akeebasubs/agreetoeu
+akeebasubs/agreetotos
+akpayment/2checkout
+akpayment/2conew
+akpayment/offline
+akpayment/paymill
+akpayment/paymilldss3
+akpayment/paypal
+akpayment/paypalpaymentspro
+akpayment/paypalproexpress
+akpayment/skrill
+akpayment/stripe
+akpayment/viva
+
+Plugins to convert (backend)
+================================================================================
+akeebasubs/atscredits
+akeebasubs/contentpublish
+akeebasubs/joomla
+akeebasubs/reseller
