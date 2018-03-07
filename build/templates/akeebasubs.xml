@@ -63,6 +63,7 @@
             <folder>sql</folder>
             <folder>Toolbar</folder>
             <folder>View</folder>
+            <folder>ViewTemplates</folder>
         </files>
 
         <!-- Back-end translation files -->
