@@ -11,6 +11,7 @@
 
 * Clicking on "Reload update information" will fix Joomla! erroneously reporting an update is available when you have the latest version installed.
 * Removed redirection from the "System - Akeeba Subscriptions Logout user" plugin. Redirection caused the Thank You page to never appear until you logged in and only if you did not use the login module on the same page.
+* PayPal Collation plugin will use POST instead of GET on June 2018, per PayPal's docs.
 
 # 5.2.5
 

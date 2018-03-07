@@ -275,29 +275,86 @@ class plgSystemAspaypalcollation extends JPlugin
 
 		$fromDate = new Date($now->toUnix() - $timePeriod);
 
-		$targetURL = new JUri('https://api-3t.paypal.com/nvp');
-		$targetURL->setVar('USER', self::$username);
-		$targetURL->setVar('PWD', self::$password);
-		$targetURL->setVar('SIGNATURE', self::$signature);
-		$targetURL->setVar('METHOD', 'TransactionSearch');
-		$targetURL->setVar('VERSION', '106.0');
-		$targetURL->setVar('TRANSACTIONCLASS', 'Received');
-		$targetURL->setVar('STATUS', 'Success');
-		$targetURL->setVar('STARTDATE', $fromDate->format('Y-m-d\TH:i:s\Z', false, false));
+		/**
+		 * Should I use the classic NVP API with POST requests?
+		 *
+		 * According to PayPal's documentation, before June 2018 the live endpoints only support GET and after June 2018
+		 * they only support POST. Meanwhile, PayPal emails us that we need to swap to POST. They are clearly insane.
+		 * All I can do is add this ugly, time-based if-block, hoping that they will actually do the switchover on the
+		 * stroke of midnight of June 1st, 2018 as implied in their documentation and that my code won't crash and burn
+		 * in the process.
+		 *
+		 * Here's to hoping.
+		 *
+		 * PS: Yeah, I did try using POST with the NVP API today (March 7th, 2018) and it results in a timeout error
+		 *     being reported on their endpoint. So, clearly, their production system is not ready for POST requests.
+		 *     This didn't stop them from emailing me yet again today that I have to make that change. Good thing I test
+		 *     before removing code. Humph.
+		 */
+		$payPalCutoffDate = new Date('2018-06-01 00:00:00GMT+00');
+		$useClassicNVPWithPOST = time() >= $payPalCutoffDate->toUnix();
 
-		// Set up the request through cURL
-		$ch = curl_init($targetURL->toString());
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_USERAGENT, "AkeebaSubscriptions/5.0");
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-		curl_setopt($ch, CURLOPT_CAINFO, JPATH_LIBRARIES . '/fof30/Download/Adapter/cacert.pem');
-		curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-		curl_setopt($ch, CURLOPT_FORBID_REUSE, true);
-		// Force the use of TLS (therefore SSLv3 is not used, mitigating POODLE; see https://github.com/paypal/merchant-sdk-php)
-		curl_setopt($ch, CURLOPT_SSL_CIPHER_LIST, 'TLSv1');
-		// This forces the use of TLS 1.x
-		curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
+		if ($useClassicNVPWithPOST)
+		{
+			$url = 'https://api-3t.paypal.com/nvp';
+			$params = [
+				'USER' => self::$username,
+				'PWD' => self::$password,
+				'SIGNATURE' => self::$signature,
+				'METHOD' => 'TransactionSearch',
+				'VERSION' => '106.0',
+				'TRANSACTIONCLASS' => 'Received',
+				'STATUS' => 'Success',
+				'STARTDATE' => $fromDate->format('Y-m-d\TH:i:s\Z', false, false)
+			];
+
+			// Set up the request through cURL
+			$ch = curl_init($url);
+			/**
+			 * Note: always use POST for requests to the Classic NVP API. GET requests are forbidden since June 2018.
+			 *
+			 * @see https://www.paypal-notice.com/en/Discontinue-Use-of-GET-Method-for-Classic-APIs/
+			 */
+			curl_setopt($ch, CURLOPT_POST, true);
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_USERAGENT, "AkeebaSubscriptions/5.0");
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+			curl_setopt($ch, CURLOPT_CAINFO, JPATH_LIBRARIES . '/fof30/Download/Adapter/cacert.pem');
+			curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+			curl_setopt($ch, CURLOPT_FORBID_REUSE, true);
+			// Force the use of TLS (therefore SSLv3 is not used, mitigating POODLE; see https://github.com/paypal/merchant-sdk-php)
+			curl_setopt($ch, CURLOPT_SSL_CIPHER_LIST, 'TLSv1');
+			// This forces the use of TLS 1.x
+			curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
+		}
+		else
+		{
+			$targetURL = new JUri('https://api-3t.paypal.com/nvp');
+			$targetURL->setVar('USER', self::$username);
+			$targetURL->setVar('PWD', self::$password);
+			$targetURL->setVar('SIGNATURE', self::$signature);
+			$targetURL->setVar('METHOD', 'TransactionSearch');
+			$targetURL->setVar('VERSION', '106.0');
+			$targetURL->setVar('TRANSACTIONCLASS', 'Received');
+			$targetURL->setVar('STATUS', 'Success');
+			$targetURL->setVar('STARTDATE', $fromDate->format('Y-m-d\TH:i:s\Z', false, false));
+
+			// Set up the request through cURL
+			$ch = curl_init($targetURL->toString());
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_USERAGENT, "AkeebaSubscriptions/5.0");
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+			curl_setopt($ch, CURLOPT_CAINFO, JPATH_LIBRARIES . '/fof30/Download/Adapter/cacert.pem');
+			curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+			curl_setopt($ch, CURLOPT_FORBID_REUSE, true);
+			// Force the use of TLS (therefore SSLv3 is not used, mitigating POODLE; see https://github.com/paypal/merchant-sdk-php)
+			curl_setopt($ch, CURLOPT_SSL_CIPHER_LIST, 'TLSv1');
+			// This forces the use of TLS 1.x
+			curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1);
+		}
 
 		$rawResponse = curl_exec($ch);
 		curl_close($ch);
