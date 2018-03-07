@@ -19,15 +19,11 @@
  *      The table header. At the very least you need to add the table column headers. You can
  *      optionally add one or more <tr> with filters at the top.
  *
- * browse-table-record
- *      The prototypical <tr> for a single record. The record is available as $row.
+ * browse-table-body-withrecords
+ *      ] Loop through the records and create <tr>s.
  *
  * browse-table-body-norecords
  *      [ Optional ] The <tr> to show when no records are present. Default is the "no records" text.
- *
- * browse-table-body-withrecords
- *      [ Optional ] Loop through the records and create <tr>s. Don't override unless you have a
- *      reason. Note that adding custom TR classes is possible through browse-table-record.
  *
  * browse-table-footer
  *      [ Optional ] The table footer. By default that's just the pagination footer.
@@ -123,11 +119,6 @@ if (!isset($this->lists->sortFields) || empty($this->lists->sortFields))
 {{-- Table header. Column headers and optional filters displayed above the column headers. --}}
 @stop
 
-@section('browse-table-record')
-{{-- The table body for a single record --}}
-@stop
-
-
 @section('browse-table-body-norecords')
 {{-- Table body shown when no records are present. --}}
 <tr>
@@ -139,8 +130,11 @@ if (!isset($this->lists->sortFields) || empty($this->lists->sortFields))
 
 @section('browse-table-body-withrecords')
 {{-- Table body shown when records are present. --}}
+<?php $i = 0; ?>
 @foreach($this->items as $row)
-    @yield('browse-table-record')
+<tr>
+    {{-- You need to implement me! --}}
+</tr>
 @endforeach
 @stop
 
