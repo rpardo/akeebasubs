@@ -7,6 +7,7 @@
 
 use Akeeba\Subscriptions\Admin\Model\Levels;
 use FOF30\Utils\FEFHelper\Html as FEFHtml;
+use FOF30\Utils\FEFHelper\BrowseView;use FOF30\Utils\SelectOptions;
 
 defined('_JEXEC') or die();
 
@@ -22,13 +23,13 @@ $model = $this->getModel();
 {{-- ### FILTER ROW ### --}}
 <tr>
     {{-- Drag'n'drop reordering --}}
-    <th></th>
+    <th width="20px"></th>
     {{-- Row select --}}
-    <th></th>
+    <th width="32"></th>
     {{-- ID --}}
-    <th></th>
+    <th width="20px"></th>
     {{-- Image --}}
-    <th></th>
+    <th width="32px"></th>
     {{-- Title --}}
     <th>
         <input type="text" name="title" placeholder="@lang('COM_AKEEBASUBS_LEVELS_FIELD_TITLE')"
@@ -37,23 +38,28 @@ $model = $this->getModel();
                title="@lang('COM_AKEEBASUBS_LEVELS_FIELD_TITLE')"/>
     </th>
     {{-- Level Group --}}
-    @modelfilter('akeebasubs_levelgroup_id', 'title', 'LevelGroups')
-    <th></th>
+    <th width="8%">
+        {{ BrowseView::modelFilter('akeebasubs_levelgroup_id', 'title', 'LevelGroups', 'COM_AKEEBASUBS_LEVELS_FIELD_LEVELGROUP')  }}
+    </th>
     {{-- Duration --}}
     <th></th>
     {{-- Recurring --}}
     <th></th>
     {{-- Price --}}
     <th></th>
-    {{-- TODO Access --}}
-    <th></th>
-    {{-- TODO Enabled --}}
-    <th></th>
+    {{-- Access --}}
+    <th width="8%">
+        {{ BrowseView::accessFilter('access', 'JFIELD_ACCESS_LABEL') }}
+    </th>
+    {{-- Enabled --}}
+    <th width="8%">
+        {{ BrowseView::publishedFilter('enabled', 'JENABLED') }}
+    </th>
 </tr>
 {{-- ### HEADER ROW ### --}}
 <tr>
     {{-- Drag'n'drop reordering --}}
-    <th width="20px">
+    <th>
         <a href="#"
            onclick="Joomla.tableOrdering('ordering','asc','');return false;"
            class="hasPopover"
@@ -66,39 +72,39 @@ $model = $this->getModel();
         </a>
     </th>
     {{-- Row select --}}
-    <th width="32">
-        <input type="checkbox" name="toggle" value="" onclick="Joomla.checkAll(this);"/>
+    <th>
+        @jhtml('FEFHelper.browse.checkall')
     </th>
     {{-- ID --}}
-    <th width="20px">
-        @lang('JGLOBAL_NUM')
+    <th>
+        @sortgrid('akeebasubs_level_id', 'JGLOBAL_NUM')
     </th>
     {{-- Image --}}
-    <th width="32px">
-        &nbsp;
+    <th>
+        <span class="akion-camera hasTooltip" title="@jhtml('tooltipText', JText::_('COM_AKEEBASUBS_LEVEL_FIELD_IMAGE'))"></span>
     </th>
     {{-- Title --}}
     <th>
         @sortgrid('title')
     </th>
     {{-- Level Group --}}
-    <th width="8%">
+    <th>
         @sortgrid('akeebasubs_levelgroup_id', 'COM_AKEEBASUBS_LEVELS_FIELD_LEVELGROUP')
     </th>
     {{-- Duration --}}
     <th>
-        @fieldtitle('duration')
+        @sortgrid('duration')
     </th>
     {{-- Recurring --}}
     <th>
-        @fieldtitle('recurring')
+        @sortgrid('recurring')
     </th>
     {{-- Price --}}
     <th>
-        @fieldtitle('price')
+        @sortgrid('price')
     </th>
     {{-- Access --}}
-    <th width="8%">
+    <th>
         @sortgrid('access', 'JFIELD_ACCESS_LABEL')
     </th>
     {{-- Enabled --}}
@@ -119,30 +125,45 @@ $model = $this->getModel();
         </td>
         {{-- Row select --}}
         <td>
-            <?php echo \JHtml::_('grid.id', ++$i, $row->id); ?>
+            @jhtml('FEFHelper.browse.id', ++$i, $row->getId())
         </td>
         {{-- ID --}}
         <td>
-            {{{ $row->id }}}
+            {{{ $row->getId() }}}
         </td>
         {{-- Image --}}
         <td>
             @jhtml('image', $this->getContainer()->platform->URIroot() . '/' . $row->image, null, ['width' => '16'])
         </td>
-        {{-- TODO Title --}}
-        <td></td>
-        {{-- TODO Level Group --}}
-        <td></td>
-        {{-- TODO Duration --}}
-        <td></td>
-        {{-- TODO Recurring --}}
-        <td></td>
-        {{-- TODO Price --}}
-        <td></td>
-        {{-- TODO Access --}}
-        <td></td>
-        {{-- TODO Enabled --}}
-        <td></td>
+        {{-- Title --}}
+        <td>
+            <a href="@route(BrowseView::parseFieldTags('index.php?option=com_akeebasubs&view=Levels&task=edit&id=[ITEM:ID]', $row))">
+                {{{ $row->title }}}
+            </a>
+        </td>
+        {{-- Level Group --}}
+        <td>
+            {{{  BrowseView::modelOptionName($row->akeebasubs_levelgroup_id, 'LevelGroups') }}}
+        </td>
+        {{-- Duration --}}
+        <td>
+            {{{ $row->duration }}}
+        </td>
+        {{-- Recurring --}}
+        <td>
+            @jhtml('FEFHelper.browse.published', $row->enabled, $i, '', false)
+        </td>
+        <td>
+            @include('admin:com_akeebasubs/Common/LevelPrice', array('item' => $row, 'value' => $row->price))
+        </td>
+        {{-- Access --}}
+        <td>
+            {{ BrowseView::getOptionName($row->access, SelectOptions::getOptions('access')) }}
+        </td>
+        {{-- Enabled --}}
+        <td>
+            @jhtml('FEFHelper.browse.published', $row->enabled, $i)
+        </td>
     </tr>
 @endforeach
 @stop
