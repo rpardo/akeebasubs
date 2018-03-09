@@ -81,6 +81,11 @@ if (!isset($this->lists->sortFields) || empty($this->lists->sortFields))
 			$possibleKeys[] = $defaultFieldLabels[$field];
 		}
 
+		if ($field === $idField)
+		{
+			$possibleKeys[] = $defaultFieldLabels['id'];
+		}
+
 		$fieldLabel = '';
 
 		foreach ($possibleKeys as $langKey)
@@ -109,7 +114,30 @@ if (!isset($this->lists->sortFields) || empty($this->lists->sortFields))
 		$idField, $componentName, $viewNameSingular, $viewNamePlural);
 }
 
+$js = <<< JS
+
+Joomla.orderTable = function()
+{
+		var table = document.getElementById("sortTable");
+		var direction = document.getElementById("directionTable");
+		var order = table.options[table.selectedIndex].value;
+		var dirn = 'asc';
+
+		if (order != '{$this->getModel()->getKeyName()}')
+		{
+			dirn = 'asc';
+		}
+		else {
+			dirn = direction.options[direction.selectedIndex].value;
+		}
+
+		Joomla.tableOrdering(order, dirn);
+	};
+JS;
+
 ?>
+
+@inlineJs($js)
 
 @section('browse-filters')
 {{-- Filters above the table. --}}
