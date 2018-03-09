@@ -42,102 +42,7 @@ use FOF30\Utils\FEFHelper\Html as FEFHtml;
 
 /** @var  FOF30\View\DataView\Html  $this */
 
-// Make sure we have sort by fields. If they are not defined we determine them automatically.
-if (!isset($this->lists->sortFields) || empty($this->lists->sortFields))
-{
-	$this->lists->sortFields = [];
-	/** @var \FOF30\Model\DataModel $model */
-	$model              = $this->getModel();
-	$idField            = $model->getIdFieldName() ?: 'id';
-	$defaultFieldLabels = [
-		'publish_up'   => 'JGLOBAL_FIELD_PUBLISH_UP_LABEL',
-		'publish_down' => 'JGLOBAL_FIELD_PUBLISH_DOWN_LABEL',
-		'created_by'   => 'JGLOBAL_FIELD_CREATED_BY_LABEL',
-		'created_on'   => 'JGLOBAL_FIELD_CREATED_LABEL',
-		'modified_by'  => 'JGLOBAL_FIELD_MODIFIED_BY_LABEL',
-		'modified_on'  => 'JGLOBAL_FIELD_MODIFIED_LABEL',
-		'ordering'     => 'JGLOBAL_FIELD_FIELD_ORDERING_LABEL',
-		'id'           => 'JGLOBAL_FIELD_ID_LABEL',
-		'hits'         => 'JGLOBAL_HITS',
-		'title'        => 'JGLOBAL_TITLE',
-		'user_id'      => 'JGLOBAL_USERNAME',
-		'username'     => 'JGLOBAL_USERNAME',
-	];
-	$componentName      = $this->getContainer()->componentName;
-	$viewNameSingular   = $this->getContainer()->inflector->singularize($this->getName());
-	$viewNamePlural     = $this->getContainer()->inflector->pluralize($this->getName());
-
-	foreach ($model->getFields() as $field => $fieldDescriptor)
-	{
-		$possibleKeys = [
-			$componentName . '_' . $viewNamePlural . '_FIELD_' . $field,
-			$componentName . '_' . $viewNamePlural . '_' . $field,
-			$componentName . '_' . $viewNameSingular . '_FIELD_' . $field,
-			$componentName . '_' . $viewNameSingular . '_' . $field,
-		];
-
-		if (array_key_exists($field, $defaultFieldLabels))
-		{
-			$possibleKeys[] = $defaultFieldLabels[$field];
-		}
-
-		if ($field === $idField)
-		{
-			$possibleKeys[] = $defaultFieldLabels['id'];
-		}
-
-		$fieldLabel = '';
-
-		foreach ($possibleKeys as $langKey)
-		{
-			$langKey    = strtoupper($langKey);
-			$fieldLabel = JText::_($langKey);
-
-			if ($fieldLabel !== $langKey)
-			{
-				unset($langKey);
-				break;
-			}
-
-			$fieldLabel = '';
-			unset($langKey);
-		}
-
-		if (!empty($fieldLabel))
-		{
-			$this->lists->sortFields[$field] = (new Joomla\Filter\InputFilter())->clean($fieldLabel);
-		}
-
-		unset ($possibleKeys, $fieldLabel);
-	}
-	unset($field, $label, $fieldDescriptor, $model, $defaultFieldLabels,
-		$idField, $componentName, $viewNameSingular, $viewNamePlural);
-}
-
-$js = <<< JS
-
-Joomla.orderTable = function()
-{
-		var table = document.getElementById("sortTable");
-		var direction = document.getElementById("directionTable");
-		var order = table.options[table.selectedIndex].value;
-		var dirn = 'asc';
-
-		if (order != '{$this->getModel()->getKeyName()}')
-		{
-			dirn = 'asc';
-		}
-		else {
-			dirn = direction.options[direction.selectedIndex].value;
-		}
-
-		Joomla.tableOrdering(order, dirn);
-	};
-JS;
-
 ?>
-
-@inlineJs($js)
 
 @section('browse-filters')
 {{-- Filters above the table. --}}
@@ -186,9 +91,11 @@ JS;
         <div class="akeeba-filter-bar akeeba-filter-bar--left akeeba-form-section akeeba-form--inline">
             @yield('browse-filters')
         </div>
-
-		<?php echo FEFHtml::selectOrderingBackend($this->getPagination(), $this->lists->sortFields, $this->lists->order, $this->lists->order_Dir)?>
-    </section>
+		<div class="akeeba-filter-bar akeeba-filter-bar--right">
+			@jhtml('FEFHelper.browse.orderjs', $this->lists->order)
+			@jhtml('FEFHelper.browse.orderheader', $this)
+		</div>
+	</section>
 
     <table class="akeeba-table akeeba-table--striped" id="itemsList">
         <thead>
