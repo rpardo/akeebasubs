@@ -17,7 +17,6 @@ $jResponse = $model->getContainer()->platform->runPlugins('onSubscriptionLevelFo
 
 if (is_array($jResponse) && !empty($jResponse)):
 	?>
-	<h3><?php echo JText::_('COM_AKEEBASUBS_LEVEL_INTEGRATION_TITLE'); ?></h3>
 	<div class="tabbable">
 		<ul class="nav nav-tabs">
 			<?php $n = 0;
