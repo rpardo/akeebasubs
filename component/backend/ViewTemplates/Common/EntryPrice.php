@@ -33,7 +33,7 @@ $value   = $item->getFieldValue($field, $default);
         <?php echo $currencySymbol ?>
     </span>
 	<?php endif; ?>
-	<input type="text" size="15" id="<?php echo $field ?>" name="<?php echo $field ?>" value="<?php echo $value ?>"
+	<input type="number" size="15" step="any" min="0" id="<?php echo $field ?>" name="<?php echo $field ?>" value="<?php echo $value ?>"
            style="float: none"/>
 	<?php if ($currencyPosition == 'after'): ?>
     <span>

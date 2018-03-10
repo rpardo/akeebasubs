@@ -48,7 +48,7 @@ $this->addJavascriptInline($js);
             @lang('COM_AKEEBASUBS_LEVEL_TAB_ACTIONS')
         </label>
         <section id="akeebasubs-level-actions">
-            @include('admin:com_akeebasubs/Levels/form_actions', ['model' => $this->item])
+            @include('admin:com_akeebasubs/Levels/form.actions', ['model' => $this->item])
         </section>
 
 
@@ -56,7 +56,7 @@ $this->addJavascriptInline($js);
             @lang('COM_AKEEBASUBS_LEVEL_TAB_MESSAGE')
         </label>
         <section id="akeebasubs-level-message">
-bvcn
+            @include('admin:com_akeebasubs/Levels/form.messages', ['model' => $this->item])
         </section>
 
 
@@ -64,7 +64,7 @@ bvcn
             @lang('COM_AKEEBASUBS_LEVEL_TAB_RENEWALSNOTIFICATIONS')
         </label>
         <section id="akeebasubs-level-renewalsnotifications">
-vcefy
+            @include('admin:com_akeebasubs/Levels/form.renewalsnotifications', ['model' => $this->item])
         </section>
 
     </div>

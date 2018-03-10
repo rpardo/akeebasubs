@@ -29,7 +29,7 @@ defined('_JEXEC') or die();
     <label for="duration">
         @lang('COM_AKEEBASUBS_LEVEL_FIELD_DURATION')
     </label>
-    <input type="number" name="duration" id="duration" value="{{{ $model->getFieldValue('duration', 30) }}}" />
+    <input type="number" name="duration" id="duration" min="1" step="1" value="{{{ $model->getFieldValue('duration', 30) }}}" />
 </div>
 
 <div class="akeeba-form-group">
