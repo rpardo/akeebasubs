@@ -154,7 +154,7 @@ $model = $this->getModel();
             @jhtml('FEFHelper.browse.published', $row->enabled, $i, '', false)
         </td>
         <td>
-            @include('admin:com_akeebasubs/Common/LevelPrice', array('item' => $row, 'value' => $row->price))
+            @include('admin:com_akeebasubs/Common/ShowPrice', array('item' => $row, 'field' => 'price'))
         </td>
         {{-- Access --}}
         <td>

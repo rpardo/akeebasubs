@@ -11,6 +11,12 @@
  *
  * Override the following sections in your Blade template:
  *
+ * browse-page-top
+ *      Content to put above the form
+ *
+ * browse-page-bottom
+ *      Content to put below the form
+ *
  * browse-filters
  *      Filters to place above the table. They are placed inside an inline form. Wrap them in
  *      <div class="akeeba-filter-element akeeba-form-group">
@@ -56,7 +62,7 @@ use FOF30\Utils\FEFHelper\Html as FEFHtml;
 {{-- Table body shown when no records are present. --}}
 <tr>
     <td colspan="99">
-        @lang('COM_ARS_COMMON_NOITEMS_LABEL')
+        <?php echo JText::_($this->getContainer()->componentName . '_COMMON_NOITEMS_LABEL') ?>
     </td>
 </tr>
 @stop
@@ -83,6 +89,8 @@ use FOF30\Utils\FEFHelper\Html as FEFHtml;
 @section('browse-hidden-fields')
     {{-- Put your additional hidden fields in this section --}}
 @stop
+
+@yield('browse-page-top')
 
 {{-- Administrator form for browse views --}}
 <form action="index.php" method="post" name="adminForm" id="adminForm" class="akeeba-form">
@@ -127,3 +135,5 @@ use FOF30\Utils\FEFHelper\Html as FEFHtml;
         @yield('browse-hidden-fields')
     </div>
 </form>
+
+@yield('browse-page-bottom')
