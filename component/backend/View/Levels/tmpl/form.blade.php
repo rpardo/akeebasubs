@@ -28,7 +28,7 @@ $this->addJavascriptInline($js);
 @section('edit-form-body')
     <div class="akeeba-tabs" id="akeebasubs-level-tabs-outer">
 
-        <label for="akeebasubs-level-details">
+        <label for="akeebasubs-level-details" class="active">
             @lang('COM_AKEEBASUBS_LEVEL_TAB_DETAILS')
         </label>
         <section id="akeebasubs-level-details">
@@ -36,7 +36,7 @@ $this->addJavascriptInline($js);
         </section>
 
 
-        <label for="akeebasubs-level-priceduration" class="active">
+        <label for="akeebasubs-level-priceduration">
             @lang('COM_AKEEBASUBS_LEVEL_TAB_PRICEDURATION')
         </label>
         <section id="akeebasubs-level-priceduration">
