@@ -60,16 +60,7 @@ $model = $this->getModel();
 <tr>
     {{-- Drag'n'drop reordering --}}
     <th>
-        <a href="#"
-           onclick="Joomla.tableOrdering('ordering','asc','');return false;"
-           class="hasPopover"
-           title=""
-           data-content="@lang('JGLOBAL_CLICK_TO_SORT_THIS_COLUMN')"
-           data-placement="top"
-           data-original-title="Ordering"
-        >
-            <span class="icon-menu-2"></span>
-        </a>
+        @jhtml('FEFHelper.browse.orderfield', 'ordering')
     </th>
     {{-- Row select --}}
     <th>
@@ -121,7 +112,7 @@ $model = $this->getModel();
     <tr>
         {{-- Drag'n'drop reordering --}}
         <td>
-            <?php echo FEFHtml::dragDropReordering($this, 'ordering', $row->ordering)?>
+            @jhtml('FEFHelper.browse.order', 'ordering', $row->ordering)
         </td>
         {{-- Row select --}}
         <td>
