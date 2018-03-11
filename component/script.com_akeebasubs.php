@@ -162,6 +162,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeebasubs/View/CustomFields',
 
 			// Moving to FEF
+			'administrator/components/com_akeebasubs/View/ControlPanel/tmpl',
 			'administrator/components/com_akeebasubs/View/Levels',
 		]
 	];
