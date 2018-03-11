@@ -136,11 +136,6 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 
             // Moving to FEF
             'administrator/components/com_akeebasubs/View/ControlPanel/tmpl/2copromo.blade.php',
-            'administrator/components/com_akeebasubs/View/Levels/tmpl/default.form.xml',
-            'administrator/components/com_akeebasubs/View/Levels/tmpl/form.form.xml',
-            'administrator/components/com_akeebasubs/View/Levels/tmpl/form_price.php',
-            'administrator/components/com_akeebasubs/View/Levels/tmpl/form_paymentplugins.php',
-            'administrator/components/com_akeebasubs/View/Levels/tmpl/form_actions.php',
 		],
 		'folders' => [
 			'administrator/components/com_akeebasubs/commands',
@@ -165,6 +160,9 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			// Removed features no longer maintained
 			'administrator/components/com_akeebasubs/CustomField',
 			'administrator/components/com_akeebasubs/View/CustomFields',
+
+			// Moving to FEF
+			'administrator/components/com_akeebasubs/View/Levels',
 		]
 	];
 
