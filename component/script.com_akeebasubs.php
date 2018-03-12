@@ -164,6 +164,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			// Moving to FEF
 			'administrator/components/com_akeebasubs/View/ControlPanel/tmpl',
 			'administrator/components/com_akeebasubs/View/Levels',
+			'administrator/components/com_akeebasubs/View/LevelGroups',
 		]
 	];
 

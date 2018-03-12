@@ -1,7 +1,6 @@
 Views to convert
 ================================================================================
-* Levels
-LevelGroups
+* LevelGroups
 Relations
 Upgrades
 TaxConfig
