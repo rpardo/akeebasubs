@@ -32,10 +32,7 @@ $model = $this->getModel();
     <th width="32px"></th>
     {{-- Title --}}
     <th>
-        <input type="text" name="title" placeholder="@lang('COM_AKEEBASUBS_LEVELS_FIELD_TITLE')"
-               id="filter_title" onchange="document.adminForm.submit()"
-               value="{{{ $this->getModel()->getState('title') }}}"
-               title="@lang('COM_AKEEBASUBS_LEVELS_FIELD_TITLE')"/>
+        @searchfilter('title')
     </th>
     {{-- Level Group --}}
     <th width="8%">
