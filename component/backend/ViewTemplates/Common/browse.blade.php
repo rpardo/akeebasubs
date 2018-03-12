@@ -62,7 +62,7 @@ use FOF30\Utils\FEFHelper\Html as FEFHtml;
 {{-- Table body shown when no records are present. --}}
 <tr>
     <td colspan="99">
-        <?php echo JText::_($this->getContainer()->componentName . '_COMMON_NOITEMS_LABEL') ?>
+        <?php echo JText::_($this->getContainer()->componentName . '_COMMON_NORECORDS') ?>
     </td>
 </tr>
 @stop
