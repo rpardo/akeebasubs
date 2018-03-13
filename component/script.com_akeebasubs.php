@@ -167,6 +167,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeebasubs/View/LevelGroups',
 			'administrator/components/com_akeebasubs/View/Relations',
 			'administrator/components/com_akeebasubs/View/Upgrades',
+			'administrator/components/com_akeebasubs/View/TaxConfig',
 		]
 	];
 
