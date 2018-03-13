@@ -1,7 +1,6 @@
 Views to convert
 ================================================================================
-* Relations
-Upgrades
+* Upgrades
 TaxConfig
 TaxRules
 States

@@ -5,14 +5,17 @@
  * @license   GNU General Public License version 3, or later
  */
 
-use Akeeba\Subscriptions\Admin\Model\Levels;
+use Akeeba\Subscriptions\Admin\Model\Relations;
 use FOF30\Utils\FEFHelper\Html as FEFHtml;
 use FOF30\Utils\FEFHelper\BrowseView;use FOF30\Utils\SelectOptions;
 
 defined('_JEXEC') or die();
 
-/** @var  FOF30\View\DataView\Html  $this */
-/** @var  Levels  $row */
+/**
+ * @var  FOF30\View\DataView\Html $this
+ * @var  Relations  $row
+ * @var  Relations  $model
+ */
 $model = $this->getModel();
 
 // Options for the Mode column
