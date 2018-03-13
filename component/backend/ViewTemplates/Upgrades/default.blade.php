@@ -27,58 +27,40 @@ $modeOptions = [
 
 @extends('admin:com_akeebasubs/Common/browse')
 
-@section('browse-table-header')
-{{-- ### FILTER ROW ### --}}
-<tr>
-    {{-- Drag'n'drop reordering --}}
-    <th width="20px"></th>
-    {{-- Row select --}}
-    <th width="20px"></th>
-    {{-- ID --}}
-    <th width="20px"></th>
-	{{-- Title --}}
-	<th>
+@section('browse-filters')
+	<div class="akeeba-filter-element akeeba-form-group">
 		@searchfilter('title')
-	</th>
-    {{-- from_id --}}
-    <th>
-        {{ BrowseView::modelFilter('from_id', 'title', 'Levels')  }}
-    </th>
-    {{-- to_id --}}
-    <th>
-        {{ BrowseView::modelFilter('to_id', 'title', 'Levels')  }}
-    </th>
-	{{-- min_presence --}}
-	<th></th>
-	{{-- max_presence --}}
-	<th></th>
-	{{-- value --}}
-	<th></th>
-	{{-- combine --}}
-	<th>
+	</div>
+	<div class="akeeba-filter-element akeeba-form-group">
+		{{ BrowseView::modelFilter('from_id', 'title', 'Levels')  }}
+	</div>
+	<div class="akeeba-filter-element akeeba-form-group">
+		{{ BrowseView::modelFilter('to_id', 'title', 'Levels')  }}
+	</div>
+	<div class="akeeba-filter-element akeeba-form-group">
 		@selectfilter('combine', SelectOptions::getOptions('boolean'))
-	</th>
-	{{-- expired --}}
-	<th>
+	</div>
+	<div class="akeeba-filter-element akeeba-form-group">
 		@selectfilter('expired', SelectOptions::getOptions('boolean'))
-	</th>
-    {{-- Enabled --}}
-    <th width="8%">
-        {{ BrowseView::publishedFilter('enabled', 'JENABLED') }}
-    </th>
-</tr>
+	</div>
+	<div class="akeeba-filter-element akeeba-form-group">
+		{{ BrowseView::publishedFilter('enabled', 'JENABLED') }}
+	</div>
+@stop
+
+@section('browse-table-header')
 {{-- ### HEADER ROW ### --}}
 <tr>
     {{-- Drag'n'drop reordering --}}
-    <th>
+    <th width="20px">
         @jhtml('FEFHelper.browse.orderfield', 'ordering')
     </th>
     {{-- Row select --}}
-    <th>
+    <th width="20px">
         @jhtml('FEFHelper.browse.checkall')
     </th>
 	{{-- ID --}}
-	<th>
+	<th width="20px">
 		@sortgrid('akeebasubs_upgrade_id', 'JGLOBAL_NUM')
 	</th>
 	{{-- Title --}}
@@ -159,9 +141,9 @@ $modeOptions = [
 		<td>
 			{{{ $row->max_presence }}}
 		</td>
-		{{-- TODO Value --}}
+		{{-- Value --}}
 		<td>
-			TODO
+			@include('admin:com_akeebasubs/Common/ShowDiscount', ['item' => $row, 'field' => 'value'])
 		</td>
 		{{-- combine --}}
 		<td>
