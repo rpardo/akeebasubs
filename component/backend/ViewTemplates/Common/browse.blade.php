@@ -80,7 +80,7 @@ use FOF30\Utils\FEFHelper\Html as FEFHtml;
 @section('browse-table-footer')
     {{-- Table footer. The default is showing the pagination footer. --}}
     <tr>
-        <td colspan="11" class="center">
+        <td colspan="99" class="center">
             {{ $this->pagination->getListFooter() }}
         </td>
     </tr>
