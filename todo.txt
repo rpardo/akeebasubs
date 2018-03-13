@@ -1,6 +1,5 @@
 Views to convert
 ================================================================================
-TaxRules
 States
 EmailTemplates
 BlockRules
