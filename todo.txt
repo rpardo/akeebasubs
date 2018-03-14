@@ -1,8 +1,5 @@
 Views to convert
 ================================================================================
-EmailTemplates
-BlockRules
-
 Subscriptions
 
 Coupons
