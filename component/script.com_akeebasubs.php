@@ -169,6 +169,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeebasubs/View/Upgrades',
 			'administrator/components/com_akeebasubs/View/TaxConfig',
 			'administrator/components/com_akeebasubs/View/TaxRules',
+			'administrator/components/com_akeebasubs/View/States',
 		]
 	];
 
