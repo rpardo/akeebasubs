@@ -267,6 +267,41 @@ abstract class Format
 	}
 
 	/**
+	 * Format a value as money
+	 *
+	 * @param   float   $value  The money value to format
+	 *
+	 * @return  string  The HTML of the formatted price
+	 */
+	public static function formatPrice($value)
+	{
+		static $currencyPosition = null;
+		static $currencySymbol = null;
+
+		if (is_null($currencyPosition))
+		{
+			$currencyPosition = self::getContainer()->params->get('currencypos', 'before');
+			$currencySymbol = self::getContainer()->params->get('currencysymbol', '€');
+		}
+
+		$html = '';
+		if ($currencyPosition == 'before')
+		{
+			$html .= $currencySymbol . ' ';
+		}
+
+		$html .= sprintf('%2.2f', (float) $value);
+
+		if ($currencyPosition != 'before')
+		{
+			$html .= ' ' . $currencySymbol;
+		}
+
+		return $html;
+	}
+
+
+	/**
 	 * Returns the current Akeeba Subscriptions container object
 	 *
 	 * @return  Container

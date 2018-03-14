@@ -50,6 +50,12 @@ use FOF30\Utils\FEFHelper\Html as FEFHtml;
 
 ?>
 
+{{-- Allow tooltips, used in grid headers --}}
+@jhtml('behavior.tooltip')
+{{-- Allow SHIFT+click to select multiple rows --}}
+@jhtml('behavior.multiselect')
+
+
 @section('browse-filters')
 {{-- Filters above the table. --}}
 @stop
@@ -105,7 +111,7 @@ use FOF30\Utils\FEFHelper\Html as FEFHtml;
 		</div>
 	</section>
 
-    <table class="akeeba-table akeeba-table--striped--hover" id="itemsList">
+    <table class="akeeba-table akeeba-table--striped--hborder--hover" id="itemsList">
         <thead>
         @yield('browse-table-header')
         </thead>

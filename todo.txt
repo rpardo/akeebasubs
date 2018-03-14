@@ -1,6 +1,6 @@
 Views to convert
 ================================================================================
-Subscriptions
+* Subscriptions
 
 Coupons
 APICoupons
