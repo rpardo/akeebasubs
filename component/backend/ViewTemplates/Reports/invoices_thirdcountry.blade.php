@@ -9,22 +9,19 @@ use FOF30\Date\Date;
 
 defined('_JEXEC') or die;
 
-/** @var \FOF30\View\View $this */
-
-if ($this->input->getCmd('tmpl', 'html') != 'component')
-{
-	echo $this->loadAnyTemplate('admin:com_akeebasubs/Reports/invoices_controls', array('params' => $this->params));
-}
-else
-{
-	$this->addJavascriptInline("\n\nwindow.print();");
-}
+/** @var \Akeeba\Subscriptions\Admin\View\Reports\Html $this */
 
 $date = new Date($this->params['year'] . '-' . $this->params['month'] . '-01');
 ?>
 
+@if($this->input->getCmd('tmpl', 'html') != 'component')
+	@include('admin:com_akeebasubs/Reports/invoices_controls', array('params' => $this->params))
+@else
+	@inlineJs("\n\nwindow.print();\n\n");
+@endif
+
 <h1>
-	<?php echo JText::sprintf('COM_AKEEBASUBS_REPORTS_THIRDCOUNTRY_TITLE', $date->format('F Y')); ?>
+	@sprintf('COM_AKEEBASUBS_REPORTS_THIRDCOUNTRY_TITLE', $date->format('F Y'))
 </h1>
 
 <table width="100%" cellspacing="0" cellpadding="0" style="border-top: thin solid #c0c0c0">
