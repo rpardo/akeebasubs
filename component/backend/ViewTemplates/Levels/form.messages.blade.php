@@ -15,7 +15,7 @@ defined('_JEXEC') or die();
     <label for="orderurl">
         @lang('COM_AKEEBASUBS_LEVELS_FIELD_ORDERURL')
     </label>
-    <input type="text" name="orderurl" id="orderurl" value="{{{ $model->orderurl }}}">
+    <input type="text" name="orderurl" id="orderurl" value="{{{ $item->orderurl }}}">
     <p class="akeeba-help-text">
         @lang('COM_AKEEBASUBS_LEVELS_FIELD_ORDERURL_DESC')
     </p>
@@ -26,7 +26,7 @@ defined('_JEXEC') or die();
         @lang('COM_AKEEBASUBS_LEVEL_FIELD_ORDERTEXT')
     </label>
     <div class="akeeba-noreset">
-        @jhtml('FEFHelper.edit.editor', 'ordertext', $model->ordertext)
+        @jhtml('FEFHelper.edit.editor', 'ordertext', $item->ordertext)
     </div>
 </div>
 
@@ -34,7 +34,7 @@ defined('_JEXEC') or die();
     <label for="cancelurl">
         @lang('COM_AKEEBASUBS_LEVELS_FIELD_CANCELURL')
     </label>
-    <input type="text" name="cancelurl" id="cancelurl" value="{{{ $model->cancelurl }}}">
+    <input type="text" name="cancelurl" id="cancelurl" value="{{{ $item->cancelurl }}}">
     <p class="akeeba-help-text">
         @lang('COM_AKEEBASUBS_LEVELS_FIELD_CANCELURL_DESC')
     </p>
@@ -45,6 +45,6 @@ defined('_JEXEC') or die();
         @lang('COM_AKEEBASUBS_LEVEL_FIELD_CANCELTEXT')
     </label>
     <div class="akeeba-noreset">
-        @jhtml('FEFHelper.edit.editor', 'canceltext', $model->canceltext)
+        @jhtml('FEFHelper.edit.editor', 'canceltext', $item->canceltext)
     </div>
 </div>

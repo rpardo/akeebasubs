@@ -13,8 +13,8 @@ use \Akeeba\Subscriptions\Admin\Helper\Select;
 /** @var \Akeeba\Subscriptions\Admin\View\MakeCoupons\Html $this */
 /** @var \Akeeba\Subscriptions\Admin\Model\MakeCoupons $model */
 
-$model = $this->getModel();
-$subscriptions = $model->getState('subscriptions', '');
+$item          = $this->getModel();
+$subscriptions = $item->getState('subscriptions', '');
 
 if (is_array($subscriptions))
 {
@@ -53,7 +53,7 @@ if (is_array($subscriptions))
 
 				<div class="controls">
 					<input type="text" id="title" name="title" class="input-medium"
-					       value="<?php echo $model->getState('title', '') ?>"/>
+					       value="<?php echo $item->getState('title', '') ?>"/>
 				</div>
 			</div>
 
@@ -63,7 +63,7 @@ if (is_array($subscriptions))
 
 				<div class="controls">
 					<input type="text" id="prefix" name="prefix" class="input-medium"
-					       value="<?php echo $model->getState('prefix', '') ?>"/>
+					       value="<?php echo $item->getState('prefix', '') ?>"/>
 				</div>
 			</div>
 
@@ -73,7 +73,7 @@ if (is_array($subscriptions))
 
 				<div class="controls">
 					<input type="text" id="quantity" name="quantity" class="input-small"
-					       value="<?php echo $model->getState('quantity', 5) ?>"/>
+					       value="<?php echo $item->getState('quantity', 5) ?>"/>
 				</div>
 			</div>
 
@@ -82,7 +82,7 @@ if (is_array($subscriptions))
 				       for="type"><?php echo JText::_('COM_AKEEBASUBS_COUPON_FIELD_TYPE') ?></label>
 
 				<div class="controls">
-					<?php echo Select::coupontypes('type', $model->getState('type', 'percent')) ?>
+					<?php echo Select::coupontypes('type', $item->getState('type', 'percent')) ?>
 				</div>
 			</div>
 
@@ -92,7 +92,7 @@ if (is_array($subscriptions))
 
 				<div class="controls">
 					<input type="text" id="value" name="value" class="input-small"
-					       value="<?php echo $model->getState('value', 100) ?>"/>
+					       value="<?php echo $item->getState('value', 100) ?>"/>
 				</div>
 			</div>
 
@@ -115,7 +115,7 @@ if (is_array($subscriptions))
 
 				<div class="controls">
 					<input type="text" size="5" id="userhits" name="userhits"
-					       value="<?php echo $model->getState('userhits', 1) ?>"/>
+					       value="<?php echo $item->getState('userhits', 1) ?>"/>
 				</div>
 			</div>
 
@@ -126,7 +126,7 @@ if (is_array($subscriptions))
 
 				<div class="controls">
 					<input type="text" size="5" id="hits" name="hits"
-					       value="<?php echo $model->getState('hits', 0) ?>"/>
+					       value="<?php echo $item->getState('hits', 0) ?>"/>
 				</div>
 			</div>
 
@@ -136,7 +136,7 @@ if (is_array($subscriptions))
 
 				<div class="controls">
 			<span class="akeebasubs-nofloat-input">
-				<?php echo JHTML::_('calendar', $model->getState('expiration', ''), 'expiration', 'expiration'); ?>
+				<?php echo JHTML::_('calendar', $item->getState('expiration', ''), 'expiration', 'expiration'); ?>
 			</span>
 				</div>
 			</div>

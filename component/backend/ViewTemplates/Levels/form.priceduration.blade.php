@@ -15,28 +15,28 @@ defined('_JEXEC') or die();
     <label for="price">
         @lang('COM_AKEEBASUBS_LEVEL_FIELD_PRICE')
     </label>
-    @include('admin:com_akeebasubs/Common/EntryPrice', ['field' => 'price', 'item' => $model])
+    @include('admin:com_akeebasubs/Common/EntryPrice', ['field' => 'price', 'item' => $item])
 </div>
 
 <div class="akeeba-form-group">
     <label for="signupfee">
         @lang('COM_AKEEBASUBS_LEVEL_FIELD_SIGNUPFEE')
     </label>
-    @include('admin:com_akeebasubs/Common/EntryPrice', ['field' => 'signupfee', 'item' => $model])
+    @include('admin:com_akeebasubs/Common/EntryPrice', ['field' => 'signupfee', 'item' => $item])
 </div>
 
 <div class="akeeba-form-group">
     <label for="duration">
         @lang('COM_AKEEBASUBS_LEVEL_FIELD_DURATION')
     </label>
-    <input type="number" name="duration" id="duration" min="1" step="1" value="{{{ $model->getFieldValue('duration', 30) }}}" />
+    <input type="number" name="duration" id="duration" min="1" step="1" value="{{{ $item->getFieldValue('duration', 30) }}}" />
 </div>
 
 <div class="akeeba-form-group">
     <label for="fixed_date">
         @lang('COM_AKEEBASUBS_LEVEL_FIELD_FIXED_DATE')
     </label>
-    @jhtml('calendar', $model->fixed_date, 'fixed_date', 'fixed_date')
+    @jhtml('calendar', $item->fixed_date, 'fixed_date', 'fixed_date')
     <p class="akeeba-help-text">
         @lang('COM_AKEEBASUBS_LEVEL_FIELD_FIXED_DATE_TIP')
     </p>
@@ -46,14 +46,14 @@ defined('_JEXEC') or die();
     <label for="forever">
         @lang('COM_AKEEBASUBS_LEVEL_FIELD_FOREVER')
     </label>
-    @jhtml('FEFHelper.select.booleanswitch', 'forever', $model->forever)
+    @jhtml('FEFHelper.select.booleanswitch', 'forever', $item->forever)
 </div>
 
 <div class="akeeba-form-group">
     <label for="payment_plugins">
         @lang('COM_AKEEBASUBS_LEVEL_FIELD_PAYMENT_PLUGINS')
     </label>
-    @include('admin:com_akeebasubs/Common/EntryPaymentPlugins', ['field' => 'payment_plugins', 'item' => $model])
+    @include('admin:com_akeebasubs/Common/EntryPaymentPlugins', ['field' => 'payment_plugins', 'item' => $item])
 </div>
 
 <div class="akeeba-form-group">

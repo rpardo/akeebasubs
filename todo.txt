@@ -1,6 +1,7 @@
 Views to convert
 ================================================================================
 * Subscriptions
+Reports
 
 Coupons
 APICoupons
@@ -8,7 +9,6 @@ MakeCoupons
 
 Import <-- DELETE // no longer needed
 Users
-Reports
 SubscriptionStatistics
 
 Invoices

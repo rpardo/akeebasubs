@@ -15,14 +15,14 @@ defined('_JEXEC') or die();
     <label for="title">
         @lang('COM_AKEEBASUBS_LEVEL_FIELD_TITLE')
     </label>
-    <input type="text" class="title" name="title" id="title" value="{{{ $model->title }}}">
+    <input type="text" class="title" name="title" id="title" value="{{{ $item->title }}}">
 </div>
 
 <div class="akeeba-form-group">
     <label for="slug">
         @lang('COM_AKEEBASUBS_LEVEL_FIELD_SLUG')
     </label>
-    <input type="text" name="slug" id="slug" value="{{{ $model->slug }}}">
+    <input type="text" name="slug" id="slug" value="{{{ $item->slug }}}">
     <p class="akeeba-help-text">
         @lang('COM_AKEEBASUBS_LEVEL_FIELD_SLUG_TIP')
     </p>
@@ -32,7 +32,7 @@ defined('_JEXEC') or die();
     <label for="access">
         @lang('JFIELD_ACCESS_LABEL')
     </label>
-    @jhtml('FEFHelper.select.genericlist', \FOF30\Utils\SelectOptions::getOptions('access'), 'access', ['list.select' => $model->access])
+    @jhtml('FEFHelper.select.genericlist', \FOF30\Utils\SelectOptions::getOptions('access'), 'access', ['list.select' => $item->access])
 </div>
 
 
@@ -40,7 +40,7 @@ defined('_JEXEC') or die();
     <label for="image">
         @lang('COM_AKEEBASUBS_LEVEL_FIELD_IMAGE')
     </label>
-    <input type="text" name="image" id="image" value="{{{ $model->image }}}">
+    <input type="text" name="image" id="image" value="{{{ $item->image }}}">
 </div>
 
 
@@ -48,7 +48,7 @@ defined('_JEXEC') or die();
     <label for="enabled">
         @lang('JPUBLISHED')
     </label>
-    @jhtml('FEFHelper.select.booleanswitch', 'enabled', $model->enabled)
+    @jhtml('FEFHelper.select.booleanswitch', 'enabled', $item->enabled)
 </div>
 
 
@@ -57,6 +57,6 @@ defined('_JEXEC') or die();
         @lang('COM_AKEEBASUBS_LEVEL_FIELD_DESCRIPTION')
     </label>
     <div class="akeeba-noreset">
-    @jhtml('FEFHelper.edit.editor', 'description', $model->description)
+    @jhtml('FEFHelper.edit.editor', 'description', $item->description)
     </div>
 </div>

@@ -22,13 +22,13 @@ $model = $this->getModel();
         <label for="title">
             @fieldtitle('title')
         </label>
-        <input type="text" class="title" name="title" id="title" value="{{{ $model->title }}}">
+        <input type="text" class="title" name="title" id="title" value="{{{ $item->title }}}">
     </div>
 
     <div class="akeeba-form-group">
         <label for="enabled">
             @lang('JPUBLISHED')
         </label>
-        @jhtml('FEFHelper.select.booleanswitch', 'enabled', $model->enabled)
+        @jhtml('FEFHelper.select.booleanswitch', 'enabled', $item->enabled)
     </div>
 @stop
