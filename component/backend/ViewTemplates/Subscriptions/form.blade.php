@@ -53,16 +53,7 @@ $user = is_object($item->user) ? $item->user : JFactory::getUser(0);
 			<label for="user_id">
 				@lang('COM_AKEEBASUBS_SUBSCRIPTION_USER')
 			</label>
-			<div class="akeeba-input-group">
-				<input readonly type="text" id="user_id" value="{{{ $user->username }}}" placeholder="@lang('JLIB_FORM_SELECT_USER')" />
-				<span class="akeeba-input-group-btn">
-					<a href="@route("index.php?option=com_users&view=users&layout=modal&tmpl=component&required=0&field=user_id&required=1")"
-					class="akeeba-btn--grey userSelectModal_user_id" title="@lang('JLIB_FORM_CHANGE_USER')" rel="{handler: 'iframe', size: {x: 800, y: 500}}">
-						<span class="akion-person"></span>
-					</a>
-				</span>
-			</div>
-			<input type="hidden" id="user_id_id" name="user_id" value="{{ (int) $item->user_id }}" />
+			@include('admin:com_akeebasubs/Common/EntryUser', ['field' => 'user_id', 'item' => $item, 'required' => true])
 		</div>
 
 		<div class="akeeba-form-group">
