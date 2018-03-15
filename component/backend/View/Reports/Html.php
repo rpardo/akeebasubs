@@ -10,7 +10,7 @@ namespace Akeeba\Subscriptions\Admin\View\Reports;
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
-class Form extends \FOF30\View\DataView\Form
+class Html extends \FOF30\View\DataView\Html
 {
 	public function onBeforeRenewals()
 	{
