@@ -46,9 +46,6 @@ $user = is_object($item->user) ? $item->user : JFactory::getUser(0);
 			<?php echo BrowseView::modelSelect('akeebasubs_level_id', 'Levels', $item->akeebasubs_level_id, ['fof.autosubmit' => false, 'translate' => false]) ?>
 		</div>
 
-		{{-- JS required for the user selection modal box  --}}
-		@jhtml('behavior.modal', 'a.userSelectModal_user_id')
-		@jhtml('script', 'jui/fielduser.min.js', ['version' => 'auto', 'relative' => true])
 		<div class="akeeba-form-group">
 			<label for="user_id">
 				@lang('COM_AKEEBASUBS_SUBSCRIPTION_USER')
