@@ -1,8 +1,5 @@
 Views to convert
 ================================================================================
-APICoupons
-MakeCoupons
-
 Import <-- DELETE // no longer needed
 Users
 SubscriptionStatistics

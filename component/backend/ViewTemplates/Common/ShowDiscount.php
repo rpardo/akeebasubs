@@ -40,8 +40,8 @@ $type           = $item->{$typeField};
 $value          = $item->{$field};
 $extraClass     = ($type == 'value') ? $classValue : $classPercent;
 $extraClass     .= ($type == 'lastpercent') ? ' ' . $classLastPercent : '';
-$currencyPos    = $this->form->getContainer()->params->get('currencypos', 'before');
-$currencySymbol = $this->form->getContainer()->params->get('currencysymbol', '€');
+$currencyPos    = $this->getContainer()->params->get('currencypos', 'before');
+$currencySymbol = $this->getContainer()->params->get('currencysymbol', '€');
 
 ?>
 <span class="<?php echo $class . ' ' . $extraClass ?>">
