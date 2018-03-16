@@ -1,6 +1,5 @@
 Views to convert
 ================================================================================
-Coupons
 APICoupons
 MakeCoupons
 
