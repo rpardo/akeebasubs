@@ -1,7 +1,5 @@
 Views to convert
 ================================================================================
-Reports
-
 Coupons
 APICoupons
 MakeCoupons
