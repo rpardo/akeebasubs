@@ -40,7 +40,7 @@ class InvoiceActions extends Text
 			!is_object($this->item->creditNote) &&
 			is_object($this->item->template->creditNoteTemplate);
 
-		$canShowCreditNote = !$canIssueCreditNote &&
+		$hasCreditNote = !$canIssueCreditNote &&
 			($this->item->extension == 'akeebasubs') &&
 			is_object($this->item->subscription) &&
 			($this->item->subscription instanceof Subscriptions) &&
@@ -96,7 +96,7 @@ class InvoiceActions extends Text
 					JText::_('COM_AKEEBASUBS_CREDITNOTES_ACTION_REGENERATE') . '</a>'
 					. "\n";
 			}
-			elseif ($canShowCreditNote)
+			elseif ($hasCreditNote)
 			{
 				$html .= '<br/><br/><a href="index.php?option=com_akeebasubs&view=CreditNotes&task=download&id=' .
 					htmlentities($this->item->akeebasubs_subscription_id, ENT_COMPAT, 'UTF-8') .

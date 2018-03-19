@@ -11,11 +11,12 @@ use Akeeba\Subscriptions\Admin\Model\Invoices;
 
 defined('_JEXEC') or die;
 
-class Form extends \FOF30\View\DataView\Form
+class Html extends \FOF30\View\DataView\Html
 {
 	public function onBeforeRead($tpl = null)
 	{
 		$this->setPreRender(false);
 		$this->setPostRender(false);
+		parent::onBeforeRead($tpl);
 	}
 }

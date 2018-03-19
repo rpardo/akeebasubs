@@ -1,8 +1,5 @@
 Views to convert
 ================================================================================
-SubscriptionStatistics
-
-Invoices
 CreditNotes
 InvoiceTemplates
 CreditNoteTemplates
