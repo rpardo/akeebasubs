@@ -135,7 +135,13 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'cli/akeebasubs-update.php',
 
             // Moving to FEF
-            'administrator/components/com_akeebasubs/View/ControlPanel/tmpl/2copromo.blade.php',
+			'administrator/components/com_akeebasubs/View/eaccelerator.php',
+			'administrator/components/com_akeebasubs/View/errorhandler.php',
+			'administrator/components/com_akeebasubs/View/fef.php',
+			'administrator/components/com_akeebasubs/View/fof.php',
+			'administrator/components/com_akeebasubs/View/hhvm.php',
+			'administrator/components/com_akeebasubs/View/wrongphp.php',
+			'administrator/components/com_akeebasubs/View/Invoices/Form.php',
 		],
 		'folders' => [
 			'administrator/components/com_akeebasubs/commands',
@@ -162,6 +168,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeebasubs/View/CustomFields',
 
 			// Moving to FEF
+
 			'administrator/components/com_akeebasubs/View/ControlPanel/tmpl',
 			'administrator/components/com_akeebasubs/View/Levels',
 			'administrator/components/com_akeebasubs/View/LevelGroups',
@@ -179,7 +186,6 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeebasubs/View/Import',
 			'administrator/components/com_akeebasubs/View/Users',
 			'administrator/components/com_akeebasubs/View/Invoices/tmpl',
-			'administrator/components/com_akeebasubs/View/Invoices/Form.php',
 		]
 	];
 
