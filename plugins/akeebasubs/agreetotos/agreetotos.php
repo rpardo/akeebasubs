@@ -43,7 +43,7 @@ class plgAkeebasubsAgreetotos extends JPlugin
 		$html      = <<<HTML
 <label class="checkbox">
 	<input type="checkbox" name="custom[agreetotos]" id="agreetotos" />
-	<span class="glyphicon glyphicon-info-sign hasPopover" title="$labelText2" data-content="$extraText"></span>
+	<span class="akion-information-circled hasPopover" title="$labelText2" data-content="$extraText"></span>
 	$labelText
 </label>
 HTML;
