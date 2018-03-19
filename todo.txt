@@ -1,6 +1,5 @@
 Views to convert
 ================================================================================
-CreditNotes
 InvoiceTemplates
 CreditNoteTemplates
 

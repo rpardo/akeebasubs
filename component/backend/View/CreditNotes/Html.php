@@ -5,17 +5,17 @@
  * @license   GNU General Public License version 3, or later
  */
 
-namespace Akeeba\Subscriptions\Admin\View\Invoices;
-
-use Akeeba\Subscriptions\Admin\Model\Invoices;
+namespace Akeeba\Subscriptions\Admin\View\CreditNotes;
 
 defined('_JEXEC') or die;
 
-class Form extends \FOF30\View\DataView\Form
+class Html extends \FOF30\View\DataView\Html
 {
 	public function onBeforeRead($tpl = null)
 	{
 		$this->setPreRender(false);
 		$this->setPostRender(false);
+
+		return parent::onBeforeRead($tpl);
 	}
 }
