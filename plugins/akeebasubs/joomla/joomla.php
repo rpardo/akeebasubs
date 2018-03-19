@@ -132,10 +132,11 @@ class plgAkeebasubsJoomla extends \Akeeba\Subscriptions\Admin\PluginAbstracts\Ak
 			$groupList = array();
 		}
 
+		JHtml::_('formbehavior.chosen', 'select.akeebasubsChosenJoomlaGroups');
 		return JHtml::_('access.usergroup', "params[$key][]", $groupList, array(
 			'multiple' => 'multiple',
 			'size'     => 8,
-			'class'    => 'input-large'
+			'class'    => 'akeebasubsChosenJoomlaGroups'
 		), false);
 	}
 }

@@ -1,6 +1,0 @@
-Plugins to convert (backend)
-================================================================================
-akeebasubs/atscredits
-akeebasubs/contentpublish
-akeebasubs/joomla
-akeebasubs/reseller

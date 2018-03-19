@@ -7,13 +7,13 @@
 
 defined('_JEXEC') or die();
 
-/** @var  \Akeeba\Subscriptions\Admin\Model\Levels  $model */
+/** @var  \Akeeba\Subscriptions\Admin\Model\Levels  $item */
 
-$model->getContainer()->platform->importPlugin('akeebasubs');
+$item->getContainer()->platform->importPlugin('akeebasubs');
 
-$params = $model->params;
+$params = $item->params;
 
-$jResponse = $model->getContainer()->platform->runPlugins('onSubscriptionLevelFormRender', array($model));
+$jResponse = $item->getContainer()->platform->runPlugins('onSubscriptionLevelFormRender', array($item));
 $tabCounter = 0;
 
 if (is_array($jResponse) && !empty($jResponse)):

@@ -61,7 +61,7 @@ defined('_JEXEC') or die();
         @lang('COM_AKEEBASUBS_LEVELS_FIELD_LEVELGROUP')
     </label>
     <?php echo \FOF30\Utils\FEFHelper\BrowseView::modelSelect('akeebasubs_levelgroup_id', 'LevelGroups',
-        $model->akeebasubs_levelgroup_id, [
+		$item->akeebasubs_levelgroup_id, [
             'translate'=>false,
             'apply_access'=>false,
             'key_field'=>"akeebasubs_levelgroup_id",
