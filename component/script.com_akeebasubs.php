@@ -177,6 +177,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeebasubs/View/APICoupons',
 			'administrator/components/com_akeebasubs/View/MakeCoupons/tmpl',
 			'administrator/components/com_akeebasubs/View/Import',
+			'administrator/components/com_akeebasubs/View/Users',
 		]
 	];
 
