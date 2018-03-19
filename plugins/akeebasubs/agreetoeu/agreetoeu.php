@@ -29,11 +29,11 @@ class plgAkeebasubsAgreetoeu extends JPlugin
 		$labelText = JText::_('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_INFORMED_LABEL');
 		$extraText = JText::_('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_INFORMED_DESC');
 		$html = <<<HTML
-<label class="checkbox">
-	<input type="checkbox" name="custom[confirm_informed]" id="confirm_informed" />
-	<span class="glyphicon glyphicon-info-sign hasPopover" title="$labelText" data-content="$extraText"></span>
-	$labelText
-</label>
+	<label class="checkbox">
+		<input type="checkbox" name="custom[confirm_informed]" id="confirm_informed" />
+		<span class="akion-information-circled hasPopover" title="$labelText" data-content="$extraText"></span>
+		$labelText
+	</label>
 HTML;
 
 		// Setup the field
@@ -53,7 +53,7 @@ HTML;
 		$html = <<<HTML
 <label class="checkbox">
 	<input type="checkbox" name="custom[confirm_postal]" id="confirm_postal" />
-	<span class="glyphicon glyphicon-info-sign hasPopover" title="$labelText" data-content="$extraText"></span>
+	<span class="akion-information-circled hasPopover" title="$labelText" data-content="$extraText"></span>
 	$labelText
 </label>
 HTML;
@@ -75,7 +75,7 @@ HTML;
 		$html = <<<HTML
 <label class="checkbox">
 	<input type="checkbox" name="custom[confirm_withdrawal]" id="confirm_withdrawal" />
-	<span class="glyphicon glyphicon-info-sign hasPopover" title="$labelText" data-content="$extraText"></span>
+	<span class="akion-information-circled hasPopover" title="$labelText" data-content="$extraText"></span>
 	$labelText
 </label>
 HTML;
@@ -105,7 +105,7 @@ HTML;
 			$html = <<<HTML
 <label class="checkbox">
 	<input type="checkbox" name="custom[confirm_eudata]" id="confirm_eudata" />
-	<span class="glyphicon glyphicon-info-sign hasPopover" title="$labelText" data-content="$extraText"></span>
+	<span class="akion-information-circled hasPopover" title="$labelText" data-content="$extraText"></span>
 	$labelText
 </label>
 HTML;

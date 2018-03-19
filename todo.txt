@@ -1,7 +1,6 @@
 
 Plugins to convert (frontend)
 ================================================================================
-akeebasubs/agreetoeu
 akeebasubs/agreetotos
 akpayment/2checkout
 akpayment/2conew
