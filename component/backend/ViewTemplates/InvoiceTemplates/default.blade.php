@@ -51,7 +51,7 @@ $noinvoiceOptions = [
             @jhtml('FEFHelper.browse.orderfield', 'ordering')
         </th>
         <th width="20">
-            @sortgrid('akeebasubs_subscription_id', 'JGLOBAL_NUM')
+            @sortgrid('akeebasubs_invoicetemplate_id', 'JGLOBAL_NUM')
         </th>
         <th width="20">
             @lang('JGLOBAL_NUM')

@@ -188,6 +188,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeebasubs/View/Users',
 			'administrator/components/com_akeebasubs/View/Invoices/tmpl',
 			'administrator/components/com_akeebasubs/View/InvoiceTemplates',
+			'administrator/components/com_akeebasubs/View/CreditNoteTemplates',
 		]
 	];
 
