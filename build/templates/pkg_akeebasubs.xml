@@ -48,10 +48,6 @@
         <file type="plugin" group="akpayment" id="paymill">plg_akpayment_paymill.zip</file>
         <file type="plugin" group="akpayment" id="paymilldss3">plg_akpayment_paymilldss3.zip</file>
         <file type="plugin" group="akpayment" id="paypal">plg_akpayment_paypal.zip</file>
-        <file type="plugin" group="akpayment" id="paypalpaymentspro">plg_akpayment_paypalpaymentspro.zip</file>
-        <file type="plugin" group="akpayment" id="paypalproexpress">plg_akpayment_paypalproexpress.zip</file>
-        <file type="plugin" group="akpayment" id="skrill">plg_akpayment_skrill.zip</file>
-        <file type="plugin" group="akpayment" id="stripe">plg_akpayment_stripe.zip</file>
         <file type="plugin" group="akpayment" id="viva">plg_akpayment_viva.zip</file>
 
         <!-- Plugins: content -->

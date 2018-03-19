@@ -1,22 +1,3 @@
-
-Plugins to convert (frontend)
-================================================================================
-akpayment/2checkout
-akpayment/2conew
-akpayment/none
-akpayment/offline
-akpayment/paymill
-akpayment/paymilldss3
-akpayment/paypal
-akpayment/viva
-
-REMOVE:
-akpayment/paypalpaymentspro
-akpayment/paypalproexpress
-akpayment/skrill
-akpayment/stripe
-
-
 Plugins to convert (backend)
 ================================================================================
 akeebasubs/atscredits
