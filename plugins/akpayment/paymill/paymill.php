@@ -55,13 +55,13 @@ class plgAkpaymentPaymill extends AkpaymentBase
 		$container->template->addJS("https://bridge.paymill.de/");
 
 		$callbackUrl = JURI::base() . 'index.php?option=com_akeebasubs&view=Callback&paymentmethod=paymill&sid=' . $subscription->akeebasubs_subscription_id;
-		$data = (object)array(
+		$data = (object) [
 			'url'         => $callbackUrl,
-			'amount'      => (int)($subscription->gross_amount * 100),
+			'amount'      => (int) ($subscription->gross_amount * 100),
 			'currency'    => strtoupper($this->container->params->get('currency', 'EUR')),
 			'description' => $level->title . ' #' . $subscription->akeebasubs_subscription_id,
-			'carholder'   => $user->name,
-		);
+			'cardholder'  => $user->name,
+		];
 
 		@ob_start();
 		include dirname(__FILE__) . '/paymill/form.php';

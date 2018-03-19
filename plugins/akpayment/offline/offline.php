@@ -121,7 +121,18 @@ HTML;
 			$html = Message::processLanguage($html);
 		}
 
-		$html = '<div>' . $html . '</div>';
+		$paymentInstructionsLabel = JText::_('PLG_AKPAYMENT_OFFLINE_LABEL_INSTRUCTIONS');
+
+		$html = <<< HTML
+<div class="akeeba-panel--primary">
+    <header class="akeeba-block-header">
+        <h3>$paymentInstructionsLabel</h3>
+    </header>
+
+	$html
+</div>
+HTML;
+
 
 		return $html;
 	}

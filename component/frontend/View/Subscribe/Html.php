@@ -9,9 +9,9 @@ namespace Akeeba\Subscriptions\Site\View\Subscribe;
 
 defined('_JEXEC') or die;
 
-use FOF30\View\View;
+use FOF30\View\DataView\Html as BaseView;
 
-class Html extends View
+class Html extends BaseView
 {
 	/**
 	 * The subscription form, created by the payment plugin
@@ -29,6 +29,7 @@ class Html extends View
 	 */
 	public function onBeforeSubscribe($tpl = null)
 	{
+
 		\JFactory::getApplication()->setHeader('X-Cache-Control', 'False', true);
 	}
 }
