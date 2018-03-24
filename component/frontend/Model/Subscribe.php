@@ -1598,29 +1598,32 @@ TEXT;
 	/**
 	 * Gets the absolute path to the subscription failure log file.
 	 *
-	 * @param   Levels  $level  The level the user is subscribing to
+	 * @param   Levels $level The level the user is subscribing to
 	 *
 	 * @return  string
 	 *
 	 * @since   5.2.6
 	 *
 	 * @see     logSubscriptionCreationFailure()
+	 *
+	 * @throws \Exception
 	 */
 	public function getLogFilename(Levels $level = null)
 	{
 		if (empty($level))
 		{
 			/** @var Levels $levelsModel */
-			$levelsModel       = $this->container->factory->model('Levels')->tmpInstance();
-			$state             = $this->getStateVariables();
-			$level             = $levelsModel->getClone()->find($state->id);
+			$levelsModel = $this->container->factory->model('Levels')->tmpInstance();
+			$state       = $this->getStateVariables();
+			$level       = $levelsModel->getClone()->find($state->id);
 		}
 
 		$application       = JFactory::getApplication();
-		$sessionId         = $application->getSession()->getName();
+		$sessionId         = $application->getSession()->getId();
+		$userId            = JFactory::getUser()->id ?: 'guest';
 		$subscriptionLevel = $level->getId();
 		$logPath           = $application->get('log_path') . '/akeebasubs_failed';
-		$logFilepath       = $logPath . '/' . $sessionId . '_' . $subscriptionLevel . '.php';
+		$logFilepath       = $logPath . '/' . $sessionId . '_' . $userId . '_' . $subscriptionLevel . '.php';
 
 		if (!\JFolder::exists($logPath))
 		{
