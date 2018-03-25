@@ -121,8 +121,10 @@ class Subscribe extends Controller
 			$helpCode = basename($model->getLogFilename(), '.php');
 
 			$url = str_replace('&amp;', '&', \JRoute::_('index.php?option=com_akeebasubs&view=Level&layout=default&slug=' . $model->slug));
-			$msg = \JText::_('COM_AKEEBASUBS_LEVEL_ERR_VALIDATIONOVERALL');
 			$msg = \JText::sprintf('COM_AKEEBASUBS_LEVEL_ERR_VALIDATIONOVERALL_HELPCODE', $helpCode);
+
+			$resetUrl = str_replace('&amp;', '&', \JRoute::_('index.php?option=com_akeebasubs&view=Level&layout=default&slug=' . $model->slug . '&reset=1'));
+			$msg .= ' ' . \JText::sprintf('COM_AKEEBASUBS_LEVEL_ERR_VALIDATIONOVERALL_RESET', $resetUrl);
 
 			$this->setRedirect($url, $msg, 'error');
 

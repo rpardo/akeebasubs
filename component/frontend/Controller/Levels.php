@@ -224,6 +224,14 @@ class Levels extends DataController
 			}
 		}
 
+		// If the reset flag is passed to the URL we need to reset the cached data EXCEPT for the coupon code
+		$forceReset = $this->input->getBool('reset', false);
+
+		if ($forceReset)
+		{
+			$model->getContainer()->platform->setSessionVar('firstrun', true, 'com_akeebasubs');
+		}
+
         /** @var \Akeeba\Subscriptions\Site\View\Level\Html $view */
 		$view = $this->getView();
 

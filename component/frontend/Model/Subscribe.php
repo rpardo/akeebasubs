@@ -72,7 +72,9 @@ class Subscribe extends Model
 	{
 		parent::__construct($container, $config);
 
-		$this->validatorFactory = new ValidatorFactory($this->container, $this->getStateVariables(), $this->container->platform->getUser());
+		$forceReload = $this->getContainer()->platform->getSessionVar('firstrun', true, 'com_akeebasubs');
+
+		$this->validatorFactory = new ValidatorFactory($this->container, $this->getStateVariables($forceReload), $this->container->platform->getUser());
 	}
 
 	/**
@@ -671,9 +673,8 @@ class Subscribe extends Model
 			return false;
 		}
 
-		// Reset the session flag, so that future registrations will merge the
-		// data from the database
-		$this->container->platform->setSessionVar('firstrun', true, 'com_akeebasubs');
+		// Reset the session flag, so that future registrations will not merge data stored in the database
+		$this->container->platform->setSessionVar('firstrun', false, 'com_akeebasubs');
 
 		// Step #2.b. Apply block rules
 		// ----------------------------------------------------------------------
@@ -1153,6 +1154,8 @@ class Subscribe extends Model
 
 	/**
 	 * Returns the state data.
+	 *
+	 * @return  StateData
 	 */
 	public function getData()
 	{

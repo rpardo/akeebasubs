@@ -11,6 +11,10 @@
 * The following payment plugins have not been maintained since 2013 and have been removed: Skrill, Stripe, PayPal Payment Pro, PayPal Express.
 * The following payment plugins have been replaced by new versions and have been removed: 2Checkout (replaced by 2conew), PayMill (replaced by paymilldss3). Old versions of the plugins don't even work anymore so why ship them...? 
 
+**Bug fixes**
+
+* Inconsistent use of user-supplied data and data from the database in the subscription form in some cases.
+
 # 5.2.6
 
 **Added features**
