@@ -1500,7 +1500,8 @@ class Subscribe extends Model
 		$level             = $levelsModel->getClone()->find($state->id);
 		$logFilepath       = $this->getLogFilename($level);
 		$application       = JFactory::getApplication();
-		$sessionId         = $application->getSession()->getName();
+		$sessionName       = $application->getSession()->getName();
+		$sessionId         = $application->getSession()->getId();
 		$subscriptionLevel = $level->getId();
 		$user              = JFactory::getUser();
 		$txtValidation     = print_r($validation, true);
@@ -1524,10 +1525,11 @@ FAILED SUBSCRIPTION CREATION REPORT
 Identity
 --------------------------------------------------------------------------------
 Failure reason     : $reason
+Session Name       : $sessionId
 Session ID         : $sessionId
 IP Address         : $ip
 User Agent         : $ua
-Subscription Level : $subscriptionLevel [{$level->name}] 
+Subscription Level : $subscriptionLevel [{$level->title}] 
 Logged In Username : $user->username
 Logged In Email    : $user->email
 Requested Username : $state->username
