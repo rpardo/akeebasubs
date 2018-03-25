@@ -14,6 +14,7 @@
 **Bug fixes**
 
 * Inconsistent use of user-supplied data and data from the database in the subscription form in some cases.
+* Fatal error if we cannot retrieve the exchange rate information from the ECB
 
 # 5.2.6
 

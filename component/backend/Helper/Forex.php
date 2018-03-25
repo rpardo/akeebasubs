@@ -80,9 +80,22 @@ class Forex
 
 		$xmlData = $download->getFromURL(self::$rateSourceUrl);
 
+		if ($xmlData === false)
+		{
+			return;
+		}
+
 		// Parse the data into an array
 		$rates = [];
-		$xml = new \SimpleXMLElement($xmlData);
+
+		try
+		{
+			$xml = new \SimpleXMLElement($xmlData);
+		}
+		catch (\Exception $e)
+		{
+			return;
+		}
 
 		foreach($xml->Cube->Cube->Cube as $rate)
 		{
