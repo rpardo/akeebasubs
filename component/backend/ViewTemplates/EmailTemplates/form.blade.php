@@ -55,7 +55,7 @@ defined('_JEXEC') or die();
 		<label for="body">
 			@fieldtitle('body')
 		</label>
-		<div class="akeeba-noreset">
+		<div class="akeeba-nofef">
 			@jhtml('FEFHelper.edit.editor', 'body', $this->getItem()->body)
 		</div>
 	</div>

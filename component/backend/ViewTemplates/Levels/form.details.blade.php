@@ -56,7 +56,7 @@ defined('_JEXEC') or die();
     <label for="description">
         @lang('COM_AKEEBASUBS_LEVEL_FIELD_DESCRIPTION')
     </label>
-    <div class="akeeba-noreset">
+    <div class="akeeba-nofef">
     @jhtml('FEFHelper.edit.editor', 'description', $item->description)
     </div>
 </div>

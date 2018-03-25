@@ -74,7 +74,7 @@ $item = $this->getItem();
         <label for="template">
             @lang('COM_AKEEBASUBS_INVOICETEMPLATES_FIELD_TEMPLATE')
         </label>
-        <div class="akeeba-noreset">
+        <div class="akeeba-nofef">
             @jhtml('FEFHelper.edit.editor', 'template', $this->getItem()->template)
         </div>
     </div>

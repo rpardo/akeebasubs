@@ -25,7 +25,7 @@ defined('_JEXEC') or die();
     <label for="ordertext">
         @lang('COM_AKEEBASUBS_LEVEL_FIELD_ORDERTEXT')
     </label>
-    <div class="akeeba-noreset">
+    <div class="akeeba-nofef">
         @jhtml('FEFHelper.edit.editor', 'ordertext', $item->ordertext)
     </div>
 </div>
@@ -44,7 +44,7 @@ defined('_JEXEC') or die();
     <label for="canceltext">
         @lang('COM_AKEEBASUBS_LEVEL_FIELD_CANCELTEXT')
     </label>
-    <div class="akeeba-noreset">
+    <div class="akeeba-nofef">
         @jhtml('FEFHelper.edit.editor', 'canceltext', $item->canceltext)
     </div>
 </div>

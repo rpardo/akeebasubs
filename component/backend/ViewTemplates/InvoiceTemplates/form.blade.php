@@ -121,7 +121,7 @@ $item = $this->getItem();
         <label for="template">
             @fieldtitle('template')
         </label>
-        <div class="akeeba-noreset">
+        <div class="akeeba-nofef">
             @jhtml('FEFHelper.edit.editor', 'template', $this->getItem()->template)
         </div>
     </div>
