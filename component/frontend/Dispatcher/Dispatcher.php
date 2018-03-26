@@ -23,8 +23,8 @@ class Dispatcher extends \FOF30\Dispatcher\Dispatcher
 		}
 
 		// Renderer options (0=none, 1=frontend, 2=backend, 3=both)
-		$useFEF   = $this->container->params->get('use_fef', 3);
-		$fefReset = $this->container->params->get('use_fef_reset', 3);
+		$useFEF   = $this->container->params->get('load_fef', 3);
+		$fefReset = $this->container->params->get('fef_reset', 3);
 
 		$this->container->renderer->setOption('load_fef', in_array($useFEF, [1,3]));
 		$this->container->renderer->setOption('fef_reset', in_array($fefReset, [1,3]));
