@@ -3,34 +3,30 @@ defined('_JEXEC') or die();
 /** @var plgAkeebasubsJoomla $this */
 /** @var \Akeeba\Subscriptions\Site\Model\Levels $level */
 ?>
-<div class="row-fluid">
-	<div class="span6">
-		<div class="control-group">
+<div class="akeeba-container--50-50">
+	<div class="akeeba-panel--green">
+		<div class="akeeba-form-group">
 			<label for="params_joomla_addgroups" class="control-label">
 				<?php echo JText::_('PLG_AKEEBASUBS_JOOMLA_ADDGROUPS_TITLE'); ?>
 			</label>
-			<div class="controls">
-				<?php echo $this->getSelectField($level, 'add') ?>
-				<span class="help-block">
-					<?php echo JText::_('PLG_AKEEBASUBS_JOOMLA_ADDGROUPS_DESCRIPTION2') ?>
-				</span>
-			</div>
+			<?php echo $this->getSelectField($level, 'add') ?>
+            <p class="akeeba-help-text">
+				<?php echo JText::_('PLG_AKEEBASUBS_JOOMLA_ADDGROUPS_DESCRIPTION2') ?>
+            </p>
 		</div>
 	</div>
-	<div class="span6">
-		<div class="control-group">
+	<div class="akeeba-panel--red akeebasubs-panel-force-top-margin">
+		<div class="akeeba-form-group">
 			<label for="params_joomla_removegroups" class="control-label">
 				<?php echo JText::_('PLG_AKEEBASUBS_JOOMLA_REMOVEGROUPS_TITLE'); ?>
 			</label>
-			<div class="controls">
-				<?php echo $this->getSelectField($level, 'remove') ?>
-				<span class="help-block">
-					<?php echo JText::_('PLG_AKEEBASUBS_JOOMLA_REMOVEGROUPS_DESCRIPTION2') ?>
-				</span>
-			</div>
+			<?php echo $this->getSelectField($level, 'remove') ?>
+            <p class="akeeba-help-text">
+				<?php echo JText::_('PLG_AKEEBASUBS_JOOMLA_REMOVEGROUPS_DESCRIPTION2') ?>
+            </p>
 		</div>
 	</div>
 </div>
-<div class="alert alert-warning">
+<div class="akeeba-block--info">
 	<p><?php echo JText::_('PLG_AKEEBASUBS_JOOMLA_USAGENOTE'); ?></p>
 </div>

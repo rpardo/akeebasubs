@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -16,6 +16,12 @@ defined('_JEXEC') or die;
 
 class Html extends \FOF30\View\DataView\Html
 {
+	public $hasGeoIPPlugin;
+	public $geoIPPluginNeedsUpdate;
+	public $akeebaCommonDatePHP;
+	public $akeebaCommonDateObsolescence;
+	public $wizardstep;
+
 	protected function onBeforeMain($tpl = null)
 	{
 		/** @var ControlPanel $model */

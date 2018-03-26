@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -504,14 +504,14 @@ class CreditNotes extends DataModel
 			'[CN:ID]'                  => $creditNoteNumber,
 			'[CN:PLAIN_NUMBER]'        => $creditNoteNumber,
 			'[CN:NUMBER]'              => $formattedCreditNoteNumber,
-			'[CN:DATE]'                => Format::date($jCreditNoteDate->toUnix()),
+			'[CN:DATE]'                => Format::date($jCreditNoteDate->toUnix(), 'Y-m-d', false),
 			'[CN:DATE_EU]'             => $jCreditNoteDate->format('d/m/Y', true),
 			'[CN:DATE_USA]'            => $jCreditNoteDate->format('m/d/Y', true),
 			'[CN:DATE_JAPAN]'          => $jCreditNoteDate->format('Y/m/d', true),
 			'[INV:ID]'                 => $invoice->invoice_no,
 			'[INV:PLAIN_NUMBER]'       => $invoice->invoice_no,
 			'[INV:NUMBER]'             => $invoice->display_number,
-			'[INV:INVOICE_DATE]'       => Format::date($jInvoiceDate->toUnix()),
+			'[INV:INVOICE_DATE]'       => Format::date($jInvoiceDate->toUnix(), 'Y-m-d', false),
 			'[INV:INVOICE_DATE_EU]'    => $jInvoiceDate->format('d/m/Y', true),
 			'[INV:INVOICE_DATE_USA]'   => $jInvoiceDate->format('m/d/Y', true),
 			'[INV:INVOICE_DATE_JAPAN]' => $jInvoiceDate->format('Y/m/d', true),

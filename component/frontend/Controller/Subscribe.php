@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -118,9 +118,13 @@ class Subscribe extends Controller
 		if (!$result)
 		{
 			$this->container->platform->setSessionVar('firstrun', false, 'com_akeebasubs');
+			$helpCode = basename($model->getLogFilename(), '.php');
 
 			$url = str_replace('&amp;', '&', \JRoute::_('index.php?option=com_akeebasubs&view=Level&layout=default&slug=' . $model->slug));
-			$msg = \JText::_('COM_AKEEBASUBS_LEVEL_ERR_VALIDATIONOVERALL');
+			$msg = \JText::sprintf('COM_AKEEBASUBS_LEVEL_ERR_VALIDATIONOVERALL_HELPCODE', $helpCode);
+
+			$resetUrl = str_replace('&amp;', '&', \JRoute::_('index.php?option=com_akeebasubs&view=Level&layout=default&slug=' . $model->slug . '&reset=1'));
+			$msg .= ' ' . \JText::sprintf('COM_AKEEBASUBS_LEVEL_ERR_VALIDATIONOVERALL_RESET', $resetUrl);
 
 			$this->setRedirect($url, $msg, 'error');
 

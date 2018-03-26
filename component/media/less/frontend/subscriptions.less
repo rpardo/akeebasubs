@@ -1,0 +1,47 @@
+/**
+ * @package    akeebasubs
+ * @copyright  Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license    GNU GPLv3 <http://www.gnu.org/licenses/gpl.html> or later
+ *
+ * Subscriptions view (My subscriptions)
+ */
+table.asfelist {
+  border-collapse: collapse;
+  thead {
+    tr {
+      background-color: darken(@light-grey, 10%);
+      table-layout: fixed;
+      border-bottom: thin solid @grey;
+    }
+    th {
+      color: @grey;
+      font-weight: bold;
+      text-align: center;
+    }
+  }
+  td {
+    text-align: left;
+    vertical-align: middle;
+    padding: 0;
+  }
+  .row0 {
+    td {
+      background-color: @white;
+    }
+  }
+  .row1 {
+    td {
+      background-color: @light-grey;
+    }
+  }
+  tfoot {
+    tr {
+      background-color: darken(@light-grey, 10%);
+      border-top: thin solid @grey;
+      text-align: center;
+    }
+    td {
+      text-align: center;
+    }
+  }
+}

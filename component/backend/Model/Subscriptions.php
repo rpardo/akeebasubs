@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -54,7 +54,7 @@ use JLoader;
  *
  * Filters / state:
  *
- * @method  $this  akeebasubs_subscription_id()  akeebasubs_subscription_id(int $v)
+ * @method  $this  akeebasubs_subscription_id()  akeebasubs_subscription_id(int|array $v)
  * @method  $this  akeebasubs_level_id()         akeebasubs_level_id(int $v)
  * @method  $this  notes()                       notes(string $v)
  * @method  $this  processor_key()               processor_key(string $v)
@@ -69,7 +69,7 @@ use JLoader;
  * @method  $this  akeebasubs_upgrade_id()       akeebasubs_upgrade_id(int $v)
  * @method  $this  akeebasubs_affiliate_id()     akeebasubs_affiliate_id(int $v)
  * @method  $this  affiliate_comission()         affiliate_comission(float $v)
- * @method  $this  akeebasubs_invoice_id()       akeebasubs_invoice_id(int $v)
+ * @method  $this  akeebasubs_invoice_id()       akeebasubs_invoice_id(int|array $v)
  * @method  $this  prediscount_amount()          prediscount_amount(float $v)
  * @method  $this  discount_amount()             discount_amount(float $v)
  * @method  $this  contact_flag()                contact_flag(bool $v)
@@ -186,8 +186,7 @@ class Subscriptions extends DataModel
 		// akeebasubs_subscription_id state. However, the foreach below overrides the akeebasubs_subscription_id
 		// state with the contents of the subid state EVEN THOUGH subid may be null while akeebasubs_subscription_id not
 		// null. Therefore we need to cache these two model states, run the foreach and THEN decide if we have to
-		// unmask the akeebasubs_subscription_id state. Also, if anyone tells me that commenting code is discouraged
-		// I will print this comment on a dildo and stick it up their ass.
+		// unmask the akeebasubs_subscription_id state.
 		$subid = $this->getState('subid', null);
 		$subid2 = $this->getState('akeebasubs_subscription_id', null);
 		// DO NOT DELETE -- END
@@ -280,6 +279,8 @@ class Subscriptions extends DataModel
 		{
 			$query->where($query->qn($this->getKeyName()) . ' = ' . $query->q((int) $subId));
 		}
+
+		//echo (string)$query;die;
 	}
 
 	/**

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -75,6 +75,26 @@ class Subscriptions extends DataController
 		else
 		{
 			$subsModel->paystate(['C', 'P']);
+		}
+
+		if ($this->input->getInt('noInvoice', 0) && $isAdmin)
+		{
+			$db = $subsModel->getDbo();
+			$subsModel->whereRaw($db->qn('akeebasubs_invoice_id') . ' IS NULL');
+		}
+		elseif ($this->input->getInt('hasInvoice', 0) && $isAdmin)
+		{
+			$db = $subsModel->getDbo();
+			$subsModel->whereRaw($db->qn('akeebasubs_invoice_id') . ' IS NOT NULL');
+		}
+
+		// Search for subscriptions after but not including this subscription ID
+		$lastSubId = $this->input->getInt('last_subid', 0);
+
+		if ($lastSubId && $isAdmin)
+		{
+			$db = $subsModel->getDbo();
+			$subsModel->whereRaw($db->qn('akeebasubs_subscription_id') . ' > ' . $db->q($lastSubId));
 		}
 
 		// Let me cheat. If the request doesn't specify how many records to show, show them all!

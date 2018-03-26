@@ -1,7 +1,7 @@
 <?php
 /**
  * @package        akeebasubs
- * @copyright      Copyright (c)2010-2017 Nicholas K. Dionysopoulos / AkeebaBackup.com
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license        GNU GPLv3 <http://www.gnu.org/licenses/gpl.html> or later
  */
 
@@ -115,10 +115,11 @@ class plgAkpaymentViva extends AkpaymentBase
 			/** @var Subscriptions $subscription */
 			$subscription = $this->container->factory->model('Subscriptions')->tmpInstance();
 			$subscription
-				->processor($this->ppName)
-				->paystate('N')
-				->paykey($orderCode)
-				->firstOrNew(true);
+				->find([
+					'processor' => $this->ppName,
+					'state' => 'N',
+					'processor_key' => $orderCode
+				]);
 
 			$id = (int)$subscription->akeebasubs_subscription_id;
 
@@ -127,9 +128,6 @@ class plgAkpaymentViva extends AkpaymentBase
 				$subscription = null;
 				$isValid = false;
 			}
-
-			/** @var Levels $level */
-			$level = $subscription->level;
 		}
 		else
 		{
@@ -141,8 +139,9 @@ class plgAkpaymentViva extends AkpaymentBase
 			$data['akeebasubs_failure_reason'] = 'The order code is invalid';
 		}
 
-		/** @var Subscriptions $subscription */
+
 		/** @var Levels $level */
+		$level = $subscription->level;
 
 		if ($isValid && $data['type'] == 'cancel')
 		{
@@ -167,7 +166,7 @@ class plgAkpaymentViva extends AkpaymentBase
 			if ($transactionResult->ErrorCode != 0)
 			{
 				$isValid = false;
-				$data['akeebasubs_failure_reason'] = $transactionResult->ErrorText;;
+				$data['akeebasubs_failure_reason'] = $transactionResult->ErrorText;
 			}
 			else
 			{

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -24,22 +24,12 @@ class Dispatcher extends \FOF30\Dispatcher\Dispatcher
 			define('AKEEBASUBS_DATE', date('Y-m-d'));
 		}
 
-		// Load Akeeba Strapper, if it is installed
-		\JLoader::import('joomla.filesystem.folder');
+		// Renderer options (0=none, 1=frontend, 2=backend, 3=both)
+		$useFEF   = $this->container->params->get('load_fef', 3);
+		$fefReset = $this->container->params->get('fef_reset', 3);
 
-		$useStrapper = $this->container->params->get('usestrapper', 3);
-
-		if (in_array($useStrapper, [2, 3]) && \JFolder::exists(JPATH_SITE . '/media/strapper30'))
-		{
-			@include_once JPATH_SITE . '/media/strapper30/strapper.php';
-
-			if (class_exists('\\AkeebaStrapper30', false))
-			{
-				\AkeebaStrapper30::bootstrap();
-				\AkeebaStrapper30Loader();
-			}
-		}
-		// Render submenus as drop-down navigation bars powered by Bootstrap
+		$this->container->renderer->setOption('load_fef', in_array($useFEF, [2,3]));
+		$this->container->renderer->setOption('fef_reset', in_array($fefReset, [2,3]));
 		$this->container->renderer->setOption('linkbar_style', 'classic');
 
 		// Load common CSS and JavaScript

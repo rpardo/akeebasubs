@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -80,9 +80,22 @@ class Forex
 
 		$xmlData = $download->getFromURL(self::$rateSourceUrl);
 
+		if ($xmlData === false)
+		{
+			return;
+		}
+
 		// Parse the data into an array
 		$rates = [];
-		$xml = new \SimpleXMLElement($xmlData);
+
+		try
+		{
+			$xml = new \SimpleXMLElement($xmlData);
+		}
+		catch (\Exception $e)
+		{
+			return;
+		}
 
 		foreach($xml->Cube->Cube->Cube as $rate)
 		{

@@ -1,7 +1,7 @@
 <?php
 /**
  *  @package AkeebaSubs
- *  @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+ *  @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  *  @license GNU General Public License version 3, or later
  */
 
@@ -29,7 +29,7 @@ if ($this->returnURL)
 
 <div id="akeebasubs">
 
-<table class="table table-striped">
+<table class="akeeba-table--striped">
 	<tr>
 		<td class="subscription-label"><?php echo JText::_('COM_AKEEBASUBS_COMMON_ID')?></td>
 		<td class="subscription-info">
@@ -65,11 +65,11 @@ if ($this->returnURL)
 		<td class="subscription-label"><?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_ENABLED')?></td>
 		<td class="subscription-info">
 			<?php if($this->item->enabled):?>
-				<span class="icon icon-ok" title="<?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_ENABLED_ACTIVE') ?>"></span>
+				<span class="akion-checkmark" title="<?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_ENABLED_ACTIVE') ?>"></span>
 			<?php elseif($jPublishUp->toUnix() >= time()):?>
-				<span class="icon icon-time" title="<?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_ENABLED_PENDING') ?>"></span>
+				<span class="akion-android-time" title="<?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_ENABLED_PENDING') ?>"></span>
 			<?php else:?>
-				<span class="icon icon-ban-circle" title="<?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_ENABLED_INACTIVE') ?>"></span>
+				<span class="akion-close" title="<?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_ENABLED_INACTIVE') ?>"></span>
 			<?php endif;?>
 		</td>
 	</tr>
@@ -156,7 +156,7 @@ if(!empty($subfieldsHTML)):
 		<legend><?php echo JText::_('COM_AKEEBASUBS_LEVEL_PERSUBFIELDS')?></legend>
 		<form class="form form-horizontal" method="post" action="<?php echo JRoute::_('index.php?option=com_akeebasubs&view=subscriptions&task=save', false)?>">
 		<?php echo $subfieldsHTML ?>
-			<button type="submit" class="btn btn-primary pull-right">
+			<button type="submit" class="akeeba-btn--primary">
 				<?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTION_BUTTON_UPDATE') ?>
 			</button>
 
@@ -168,8 +168,8 @@ if(!empty($subfieldsHTML)):
 
 <div class="akeebasubs-goback">
 	<p>
-		<a class="btn btn-large btn-primary" href="<?php echo $goBackURL; ?>">
-			<span class="icon-white icon-arrow-left"></span>
+		<a class="akeeba-btn--primary--big" href="<?php echo $goBackURL; ?>">
+			<span class="akion-chevron-left"></span>
 			<?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_TITLE')?>
 		</a>
 	</p>

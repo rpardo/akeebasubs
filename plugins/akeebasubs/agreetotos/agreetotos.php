@@ -1,7 +1,7 @@
 <?php
 /**
  * @package        akeebasubs
- * @copyright      Copyright (c)2010-2017 Nicholas K. Dionysopoulos / AkeebaBackup.com
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license        GNU GPLv3 <http://www.gnu.org/licenses/gpl.html> or later
  */
 
@@ -43,7 +43,7 @@ class plgAkeebasubsAgreetotos extends JPlugin
 		$html      = <<<HTML
 <label class="checkbox">
 	<input type="checkbox" name="custom[agreetotos]" id="agreetotos" />
-	<span class="glyphicon glyphicon-info-sign hasPopover" title="$labelText2" data-content="$extraText"></span>
+	<span class="akion-information-circled hasPopover" title="$labelText2" data-content="$extraText"></span>
 	$labelText
 </label>
 HTML;

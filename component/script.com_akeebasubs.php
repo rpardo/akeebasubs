@@ -1,7 +1,7 @@
 <?php
 /**
  * @package      akeebasubs
- * @copyright    Copyright (c)2010-2017 Nicholas K. Dionysopoulos / AkeebaBackup.com
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license      GNU GPLv3 <http://www.gnu.org/licenses/gpl.html> or later
  * @version      $Id$
  *
@@ -133,6 +133,16 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'cli/akeebasubs-expiration-control.php',
 			'cli/akeebasubs-expiration-notify.php',
 			'cli/akeebasubs-update.php',
+
+            // Moving to FEF
+			'administrator/components/com_akeebasubs/View/eaccelerator.php',
+			'administrator/components/com_akeebasubs/View/errorhandler.php',
+			'administrator/components/com_akeebasubs/View/fef.php',
+			'administrator/components/com_akeebasubs/View/fof.php',
+			'administrator/components/com_akeebasubs/View/hhvm.php',
+			'administrator/components/com_akeebasubs/View/wrongphp.php',
+			'administrator/components/com_akeebasubs/View/Invoices/Form.php',
+			'administrator/components/com_akeebasubs/View/CreditNotes/Form.php',
 		],
 		'folders' => [
 			'administrator/components/com_akeebasubs/commands',
@@ -157,6 +167,28 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			// Removed features no longer maintained
 			'administrator/components/com_akeebasubs/CustomField',
 			'administrator/components/com_akeebasubs/View/CustomFields',
+
+			// Moving to FEF
+
+			'administrator/components/com_akeebasubs/View/ControlPanel/tmpl',
+			'administrator/components/com_akeebasubs/View/Levels',
+			'administrator/components/com_akeebasubs/View/LevelGroups',
+			'administrator/components/com_akeebasubs/View/Relations',
+			'administrator/components/com_akeebasubs/View/Upgrades',
+			'administrator/components/com_akeebasubs/View/TaxConfig',
+			'administrator/components/com_akeebasubs/View/TaxRules',
+			'administrator/components/com_akeebasubs/View/States',
+			'administrator/components/com_akeebasubs/View/BlockRules',
+			'administrator/components/com_akeebasubs/View/Subscriptions/tmpl',
+			'administrator/components/com_akeebasubs/View/Reports/tmpl',
+			'administrator/components/com_akeebasubs/View/Coupons',
+			'administrator/components/com_akeebasubs/View/APICoupons',
+			'administrator/components/com_akeebasubs/View/MakeCoupons/tmpl',
+			'administrator/components/com_akeebasubs/View/Import',
+			'administrator/components/com_akeebasubs/View/Users',
+			'administrator/components/com_akeebasubs/View/Invoices/tmpl',
+			'administrator/components/com_akeebasubs/View/InvoiceTemplates',
+			'administrator/components/com_akeebasubs/View/CreditNoteTemplates',
 		]
 	];
 
@@ -195,6 +227,9 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 	{
 		// Call the parent method
 		parent::postflight($type, $parent);
+
+		// Add ourselves to the list of extensions depending on Akeeba FEF
+		$this->addDependency('file_fef', $this->componentName);
 	}
 
 	public function uninstall($parent)

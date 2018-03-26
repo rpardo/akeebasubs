@@ -1,10 +1,8 @@
 <?php
 /**
- * @package     Akeeba\Subscriptions\Admin\Helper
- * @subpackage
- *
- * @copyright   A copyright
- * @license     A "Slug" license name e.g. GPL2
+ * @package   AkeebaSubs
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\Subscriptions\Admin\Helper;

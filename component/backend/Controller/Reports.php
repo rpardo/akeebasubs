@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -10,10 +10,9 @@ namespace Akeeba\Subscriptions\Admin\Controller;
 defined('_JEXEC') or die;
 
 use Akeeba\Subscriptions\Admin\Model\RenewalsForReports;
-use Akeeba\Subscriptions\Admin\Model\Subscriptions;
+use Akeeba\Subscriptions\Admin\View\Reports\Html;
 use FOF30\Container\Container;
 use FOF30\Controller\Controller;
-use FOF30\View\DataView\Form;
 
 class Reports extends Controller
 {
@@ -60,21 +59,17 @@ class Reports extends Controller
 		$model = $this->getModel();
 
 		$getRenewals = $model->getState('getRenewals', 1, 'int');
-		$model->setState('getRenewals', 1);
+		$getRenewals = ($getRenewals == 0) ? 1 : $getRenewals;
+		$model->setState('getRenewals', $getRenewals);
 
 		$model
 			->limit($this->input->getInt('limit', \JFactory::getApplication()->get('list_limit')))
 			->limitstart($this->input->getInt('limitstart', 0));
 
-		$model->setFormName('form.renewals');
-
 		// Override the layout
 		$this->layout = 'renewals';
 
-		// Setup a Form view, even though we're not a DataController
-		$this->viewInstances['Reports'] = $this->container->factory->view('Reports', 'form', []);
-
-		/** @var Form $view */
+		/** @var Html $view */
 		$view = $this->getView();
 		$view->setDefaultModel($model);
 
@@ -93,15 +88,10 @@ class Reports extends Controller
 			->limit($this->input->getInt('limit', \JFactory::getApplication()->get('list_limit')))
 			->limitstart($this->input->getInt('limitstart', 0));
 
-		$model->setFormName('form.missinginvoices');
-
 		// Override the layout
 		$this->layout = 'missinginvoices';
 
-		// Setup a Form view, even though we're not a DataController
-		$this->viewInstances['Reports'] = $this->container->factory->view('Reports', 'form', []);
-
-		/** @var Form $view */
+		/** @var Html $view */
 		$view = $this->getView();
 		$view->setDefaultModel($model);
 

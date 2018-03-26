@@ -1,12 +1,13 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
 namespace Akeeba\Subscriptions\Site\View\UserInfo;
 
+use FOF30\Render\RenderInterface;
 use FOF30\View\View;
 
 defined('_JEXEC') or die;
@@ -48,4 +49,48 @@ class Html extends View
 
         return $cacheValue;
     }
+
+	/**
+	 * Runs before rendering the view template, echoing HTML to put before the
+	 * view template's generated HTML
+	 *
+	 * Overridden because the plain vanilla View class doesn't implement it.
+	 *
+	 * @return  void
+	 *
+	 * @throws \Exception
+	 */
+	protected function preRender()
+	{
+		$view = $this->getName();
+		$task = $this->task;
+		$renderer = $this->container->renderer;
+
+		if ($renderer instanceof RenderInterface)
+		{
+			$renderer->preRender($view, $task);
+		}
+	}
+
+	/**
+	 * Runs after rendering the view template, echoing HTML to put after the
+	 * view template's generated HTML
+	 *
+	 * Overridden because the plain vanilla View class doesn't implement it.
+	 *
+	 * @return  void
+	 *
+	 * @throws \Exception
+	 */
+	protected function postRender()
+	{
+		$view = $this->getName();
+		$task = $this->task;
+		$renderer = $this->container->renderer;
+
+		if ($renderer instanceof RenderInterface)
+		{
+			$renderer->postRender($view, $task);
+		}
+	}
 }

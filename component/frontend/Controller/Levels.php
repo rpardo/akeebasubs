@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -15,7 +15,6 @@ use Akeeba\Subscriptions\Site\Model\TaxHelper;
 use Akeeba\Subscriptions\Site\Model\Users;
 use FOF30\Container\Container;
 use FOF30\Controller\DataController;
-use JFactory;
 
 class Levels extends DataController
 {
@@ -50,7 +49,9 @@ class Levels extends DataController
 	 */
 	public function onBeforeBrowse()
 	{
-		$params = \JFactory::getApplication()->getPageParameters();
+		/** @var \JApplicationSite $app */
+		$app    = \JFactory::getApplication();
+		$params = $app->getParams();
 
 		$ids = $params->get('ids', '');
 
@@ -69,7 +70,7 @@ class Levels extends DataController
 		}
 
 		// Working around Progressive Caching
-		$appInput = \JFactory::getApplication()->input;
+		$appInput = $app->input;
 
 		if (!empty($ids))
 		{
@@ -139,10 +140,13 @@ class Levels extends DataController
 	 */
 	public function onBeforeRead()
 	{
+		/** @var \JApplicationSite $app */
+		$app      = \JFactory::getApplication();
+
 		// Fetch the subscription slug from page parameters
-		$params = \JFactory::getApplication()->getPageParameters();
+		$params   = $app->getParams();
 		$pageslug = $params->get('slug', '');
-		$slug = $this->input->getString('slug', null);
+		$slug     = $this->input->getString('slug', null);
 
 		if ($pageslug)
 		{
@@ -182,8 +186,8 @@ class Levels extends DataController
 		$model->find($id);
 
 		// Working around Progressive Caching
-		\JFactory::getApplication()->input->set('slug', $slug);
-		\JFactory::getApplication()->input->set('id', $id);
+		$app->input->set('slug', $slug);
+		$app->input->set('id', $id);
 
 		$this->registerUrlParams(array(
 			'slug' => 'STRING',
@@ -218,6 +222,14 @@ class Levels extends DataController
 
 				return false;
 			}
+		}
+
+		// If the reset flag is passed to the URL we need to reset the cached data EXCEPT for the coupon code
+		$forceReset = $this->input->getBool('reset', false);
+
+		if ($forceReset)
+		{
+			$model->getContainer()->platform->setSessionVar('firstrun', true, 'com_akeebasubs');
 		}
 
         /** @var \Akeeba\Subscriptions\Site\View\Level\Html $view */

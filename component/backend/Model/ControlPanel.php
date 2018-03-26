@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -156,7 +156,6 @@ class ControlPanel extends Model
 		$params = new JRegistry();
 		$params->loadString($rawparams, 'JSON');
 
-		// Set the show2copromo parameter to 0
 		$params->set($parameter, $value);
 
 		// Save the component parameters

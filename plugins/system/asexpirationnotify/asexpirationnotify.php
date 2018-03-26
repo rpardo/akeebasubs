@@ -1,7 +1,7 @@
 <?php
 /**
  * @package        akeebasubs
- * @copyright      Copyright (c)2010-2017 Nicholas K. Dionysopoulos / AkeebaBackup.com
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license        GNU GPLv3 <http://www.gnu.org/licenses/gpl.html> or later
  */
 
@@ -114,7 +114,6 @@ class plgSystemAsexpirationnotify extends JPlugin
 		\JLog::add("Starting Expiration Notify - Time limit {$options['time_limit']} seconds", \JLog::DEBUG, "akeebasubs.cron.expirationnotify");
 
 		// Get today's date
-		JLoader::import('joomla.utilities.date');
 		$jNow = new Date();
 		$now  = $jNow->toUnix();
 
@@ -241,13 +240,17 @@ class plgSystemAsexpirationnotify extends JPlugin
 						continue;
 					}
 
-					// Get the user and level, load similar subscriptions with start date after this subscription's expiry date
-					$renewals = $subsModel->getClone()
-						->enabled(1)
-						->user_id($sub->user_id)
-						->level($sub->akeebasubs_level_id)
-						->publish_up($sub->publish_down)
-						->get(true);
+					// Given the user and the level, load similar subscriptions with start date after this subscription's expiry date
+					$subsModel = Container::getInstance('com_akeebasubs')->factory->model('Subscriptions')->tmpInstance();
+
+					// Renewals won't be enabled (since they're not started yet), however they MUST BE completed
+					// Otherwise a failed renewal will be considered as a "valid one"
+					$subsModel->state('C');
+					$subsModel->user_id($sub->user_id);
+					$subsModel->level($sub->akeebasubs_level_id);
+					$subsModel->publish_up($sub->publish_down);
+
+					$renewals = $subsModel->get(true);
 
 					if ($renewals->count())
 					{

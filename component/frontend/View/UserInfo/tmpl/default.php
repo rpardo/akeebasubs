@@ -1,7 +1,7 @@
 <?php
 /**
  *  @package AkeebaSubs
- *  @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+ *  @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  *  @license GNU General Public License version 3, or later
  */
 
@@ -10,7 +10,7 @@ defined('_JEXEC') or die();
 /** @var \Akeeba\Subscriptions\Site\View\UserInfo\Html $this */
 ?>
 
-<div id="akeebasubs" class="userinfo">
+<div class="userinfo">
 
 <?php echo $this->getContainer()->template->loadPosition('akeebasubscriptionsuserinfoheader'); ?>
 
@@ -21,15 +21,21 @@ defined('_JEXEC') or die();
 <hr/>
 </noscript>
 
-<form action="<?php echo JRoute::_('index.php?option=com_akeebasubs&view=UserInfo') ?>" method="post" id="userinfoForm" >
+<form action="<?php echo JRoute::_('index.php?option=com_akeebasubs&view=UserInfo') ?>"
+      method="post"
+      id="userinfoForm"
+      class="akeeba-form--horizontal" >
 	<input type="hidden" name="<?php echo $this->container->platform->getToken(true);?>" value="1" />
 	<input type="hidden" name="task" value="save" />
 
 	<?php echo $this->loadAnyTemplate('site:com_akeebasubs/Level/default_fields') ?>
 
-	<div class="form-actions">
-		<button class="btn btn-primary btn-large" id="update_userinfo" type="submit"><?php echo JText::_('COM_AKEEBASUBS_USERINFO_BUTTON_UPDATE_USER')?></button>
-	</div>
+    <div class="akeeba-form-group--pull-right">
+        <button id="update_userinfo" class="akeeba-btn--block akeeba-btn--teal akeebasubs-btn-big"
+                type="submit">
+	        <?php echo JText::_('COM_AKEEBASUBS_USERINFO_BUTTON_UPDATE_USER')?>
+        </button>
+    </div>
 </form>
 
 	<?php echo $this->getContainer()->template->loadPosition('akeebasubscriptionsuserinfofooter'); ?>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -23,6 +23,10 @@ $hidePaymentMethod   =
 		(($paymentMethodsCount <= 1) && $this->cparams->hidelonepaymentoption) || ($this->validation->price->gross < 0.01);
 
 ?>
+{{-- SUBSCRIPTION LEVEL NAME --}}
+<p>
+	<span class="akeeba-label--grey">{{{$this->item->title}}}</span>
+</p>
 {{-- SUBSCRIPTION LEVEL DESCRIPTION --}}
 <div>
 	@jhtml('content.prepare', Message::processLanguage($this->item->description))
@@ -32,12 +36,12 @@ $hidePaymentMethod   =
 
 {{-- PRICE INFORMATION SUMMARY AREA --}}
 @unless($this->validation->price->net < 0.01)
-<div id="akeebasubs-sum-original-container" style="display: none">
-	<div class="col-xs-6" id="akeebasubs-original-label">
+<div id="akeebasubs-sum-original-container" class="akeeba-container--50-50" style="display: none">
+	<div id="akeebasubs-original-label">
 		@lang('COM_AKEEBASUBS_LEVEL_SUM_ORIGINALLY')
 	</div>
 
-	<div class="col-xs-6" id="akeebasubs-sum-original-field">
+	<div id="akeebasubs-sum-original-field">
 		<del>
 		@if ($this->cparams->currencypos == 'before')
 			<span class="akeebasubs-level-price-currency">{{{ $this->cparams->currencysymbol }}}</span>
@@ -48,14 +52,14 @@ $hidePaymentMethod   =
 		@endif
 		</del>
 	</div>
-	<div class="clearfix"></div>
 </div>
-<div id="akeebasubs-sum-discount-container" style="display: none">
-	<div class="col-xs-6" id="akeebasubs-discount-label">
+
+<div id="akeebasubs-sum-discount-container" class="akeeba-container--50-50" style="display: none">
+	<div id="akeebasubs-discount-label">
 		@lang('COM_AKEEBASUBS_LEVEL_SUM_DISCOUNT')
 	</div>
 
-	<div class="col-xs-6" id="akeebasubs-sum-discount-field">
+	<div id="akeebasubs-sum-discount-field">
 		@if ($this->cparams->currencypos == 'before')
 			<span class="akeebasubs-level-price-currency">{{{ $this->cparams->currencysymbol }}}</span>
 		@endif
@@ -64,15 +68,15 @@ $hidePaymentMethod   =
 			<span class="akeebasubs-level-price-currency">{{{ $this->cparams->currencysymbol }}}</span>
 		@endif
 	</div>
-	<div class="clearfix"></div>
 </div>
-<div id="akeebasubs-sum-container">
-	<div class="col-xs-6" id="akeebasubs-sum-label">
+
+<div id="akeebasubs-sum-container" class="akeeba-container--50-50">
+	<div id="akeebasubs-sum-label">
 		@lang('COM_AKEEBASUBS_LEVEL_SUM_TOTAL')
 	</div>
 
-	<div class="col-xs-6" id="akeebasubs-sum-price">
-	<span class="label label-success">
+	<div id="akeebasubs-sum-price">
+	<span class="akeeba-label--green">
 		@if ($this->cparams->currencypos == 'before')
 			<span class="akeebasubs-level-price-currency">{{{ $this->cparams->currencysymbol }}}</span>
 		@endif
@@ -82,22 +86,22 @@ $hidePaymentMethod   =
 		@endif
 	</span>
 	</div>
-	<div class="clearfix"></div>
 </div>
 
-<div id="akeebasubs-vat-container" style="display:{{ ($this->validation->price->taxrate > 0) ? 'block' : 'none' }}">
-	<div class="col-xs-6 pull-right" id="akeebasubs-sum-vat-container">
+<div id="akeebasubs-vat-container" class="akeeba-container--50-50"
+	 style="display:{{ ($this->validation->price->taxrate > 0) ? 'block' : 'none' }}">
+	<div>{{-- Intentionally left blank to make the notice appear on the right --}}&nbsp;</div>
+	<div id="akeebasubs-sum-vat-container">
 		@lang('COM_AKEEBASUBS_LEVEL_SUM_VAT') <span id="akeebasubs-sum-vat-percent">{{{$this->validation->price->taxrate}}}</span>%
 	</div>
-	<div class="clearfix"></div>
 </div>
 
 <noscript>
-	<div class="alert alert-warning">
-		<h5>
+	<div class="akeeba-block--failure">
+		<h4>
 			<span class="glyphicon glyphicon-alert"></span>
 			@lang('COM_AKEEBASUBS_LEVEL_ERR_NOJS_HEADER')
-		</h5>
+		</h4>
 		<p>
 			@lang('COM_AKEEBASUBS_LEVEL_SUM_NOSCRIPT')
 		</p>
@@ -112,16 +116,21 @@ $hidePaymentMethod   =
 	<h3>
 		@lang('COM_AKEEBASUBS_LEVEL_FIELD_COUPON')
 	</h3>
-	<div class="input-group">
-		<input type="text" class="form-control" name="coupon" id="coupon"
-			   placeholder="@lang('COM_AKEEBASUBS_LEVEL_FIELD_COUPON')"
-			   value="{{{$this->cache['coupon']}}}"/>
-		<span class="input-group-btn">
-			<button class="btn btn-default" type="button" onclick="validateBusiness()">
-				@lang('COM_AKEEBASUBS_LEVEL_FIELD_COUPON_VALIDATE')
-			</button>
-		</span>
+
+	<div class="akeeba-form-group">
+		<label>&nbsp;</label>
+		<div class="akeeba-input-group">
+			<input type="text" name="coupon" id="coupon"
+				   placeholder="@lang('COM_AKEEBASUBS_LEVEL_FIELD_COUPON')"
+				   value="{{{$this->cache['coupon']}}}"/>
+			<span class="akeeba-input-group-btn">
+				<button class="akeeba-btn--dark" type="button" onclick="validateBusiness()">
+					@lang('COM_AKEEBASUBS_LEVEL_FIELD_COUPON_VALIDATE')
+				</button>
+			</span>
+		</div>
 	</div>
+
 @endif
 
 {{-- CUSTOM FIELDS --}}
@@ -132,13 +141,13 @@ $hidePaymentMethod   =
 </div>
 
 {{-- PAYMENT METHODS --}}
-<div id="paymentmethod-container" class="{{$hidePaymentMethod ? 'hidden' : ''}}">
-	<div class="form-group">
-		<label for="paymentmethod" class="control-label sr-only">
+<div id="paymentmethod-container" style="display: {{$hidePaymentMethod ? 'none' : 'inherit'}}">
+	<div class="akeeba-form-group">
+		<label for="paymentmethod">
 			@lang('COM_AKEEBASUBS_LEVEL_FIELD_METHOD')
 		</label>
 
-		<div id="paymentlist-container" class="col-xs-12">
+		<div id="paymentlist-container">
 			<?php
             $country = $this->getFieldValue('country', ['XX']);
 
@@ -165,11 +174,8 @@ $hidePaymentMethod   =
 </div>
 
 {{-- SUBSCRIBE BUTTON --}}
-<div class="well">
-	<img class="ui-disable-spinner pull-left" src="{{{JUri::base()}}}media/com_akeebasubs/images/throbber.gif"
-		 style="display: none"/>
-	<button id="subscribenow" class="btn btn-large btn-primary" type="submit"
-			style="display:block;margin:auto">
+<div class="akeeba-form-group--pull-right">
+	<button id="subscribenow" class="akeeba-btn--block akeeba-btn--teal akeebasubs-btn-big" type="submit">
 		@lang('COM_AKEEBASUBS_LEVEL_BUTTON_SUBSCRIBE')
 	</button>
 </div>

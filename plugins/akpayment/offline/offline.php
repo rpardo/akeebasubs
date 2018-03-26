@@ -1,7 +1,7 @@
 <?php
 /**
  * @package        akeebasubs
- * @copyright      Copyright (c)2010-2017 Nicholas K. Dionysopoulos / AkeebaBackup.com
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license        GNU GPLv3 <http://www.gnu.org/licenses/gpl.html> or later
  */
 
@@ -121,7 +121,18 @@ HTML;
 			$html = Message::processLanguage($html);
 		}
 
-		$html = '<div>' . $html . '</div>';
+		$paymentInstructionsLabel = JText::_('PLG_AKPAYMENT_OFFLINE_LABEL_INSTRUCTIONS');
+
+		$html = <<< HTML
+<div class="akeeba-panel--primary">
+    <header class="akeeba-block-header">
+        <h3>$paymentInstructionsLabel</h3>
+    </header>
+
+	$html
+</div>
+HTML;
+
 
 		return $html;
 	}

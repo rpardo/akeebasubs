@@ -1,7 +1,7 @@
 <?php
 /**
  * @package        akeebasubs
- * @copyright      Copyright (c)2010-2017 Nicholas K. Dionysopoulos / AkeebaBackup.com
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license        GNU GPLv3 <http://www.gnu.org/licenses/gpl.html> or later
  */
 
@@ -29,11 +29,11 @@ class plgAkeebasubsAgreetoeu extends JPlugin
 		$labelText = JText::_('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_INFORMED_LABEL');
 		$extraText = JText::_('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_INFORMED_DESC');
 		$html = <<<HTML
-<label class="checkbox">
-	<input type="checkbox" name="custom[confirm_informed]" id="confirm_informed" />
-	<span class="glyphicon glyphicon-info-sign hasPopover" title="$labelText" data-content="$extraText"></span>
-	$labelText
-</label>
+	<label class="checkbox">
+		<input type="checkbox" name="custom[confirm_informed]" id="confirm_informed" />
+		<span class="akion-information-circled hasPopover" title="$labelText" data-content="$extraText"></span>
+		$labelText
+	</label>
 HTML;
 
 		// Setup the field
@@ -53,7 +53,7 @@ HTML;
 		$html = <<<HTML
 <label class="checkbox">
 	<input type="checkbox" name="custom[confirm_postal]" id="confirm_postal" />
-	<span class="glyphicon glyphicon-info-sign hasPopover" title="$labelText" data-content="$extraText"></span>
+	<span class="akion-information-circled hasPopover" title="$labelText" data-content="$extraText"></span>
 	$labelText
 </label>
 HTML;
@@ -75,7 +75,7 @@ HTML;
 		$html = <<<HTML
 <label class="checkbox">
 	<input type="checkbox" name="custom[confirm_withdrawal]" id="confirm_withdrawal" />
-	<span class="glyphicon glyphicon-info-sign hasPopover" title="$labelText" data-content="$extraText"></span>
+	<span class="akion-information-circled hasPopover" title="$labelText" data-content="$extraText"></span>
 	$labelText
 </label>
 HTML;
@@ -90,6 +90,37 @@ HTML;
 
 		// Add the field to the return output
 		$fields[] = $field;
+
+		// ----- EU DATA PROTECTION POLICY (GDPR COMPLIANCE) -----
+		$eudataURL        = $this->params->get('eudataurl', '');
+		$eudataURL        = trim($eudataURL);
+		$hasEUData        = !empty($eudataURL);
+		$hasEUDataInteger = $hasEUData ? 1 : 0;
+
+		if ($hasEUData)
+		{
+			// Setup the combobox parameters
+			$labelText = JText::sprintf('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_EUDATA_LABEL', $eudataURL);
+			$extraText = JText::_('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_EUDATA_DESC');
+			$html = <<<HTML
+<label class="checkbox">
+	<input type="checkbox" name="custom[confirm_eudata]" id="confirm_eudata" />
+	<span class="akion-information-circled hasPopover" title="$labelText" data-content="$extraText"></span>
+	$labelText
+</label>
+HTML;
+
+			// Setup the field
+			$field = array(
+				'id'           => 'confirm_eudata',
+				'label'        => '* ',
+				'elementHTML'  => $html,
+				'isValid'      => false
+			);
+
+			// Add the field to the return output
+			$fields[] = $field;
+		}
 
 		// ----- ADD THE JAVASCRIPT -----
 		$javascript = <<<JS
@@ -127,6 +158,17 @@ HTML;
 					$('#confirm_withdrawal').parents('div.form-group').addClass('has-error');
 				}
 			});
+			
+			if ($hasEUDataInteger)
+			{
+				$('!#confirm_eudata').change(function(e){
+					if($('#confirm_eudata').is(':checked')) {
+						$('#confirm_eudata').parents('div.form-group').removeClass('has-error');
+					} else {
+						$('#confirm_withdrawal').parents('div.form-group').addClass('has-error');
+					}
+				});
+			}
 		}
 	});
 })(akeeba.jQuery);
@@ -139,6 +181,11 @@ function plg_akeebasubs_agreetoeu_fetch()
 		result.confirm_informed = $('#confirm_informed').is(':checked') ? 1 : 0;
 		result.confirm_postal = $('#confirm_postal').is(':checked') ? 1 : 0;
 		result.confirm_withdrawal = $('#confirm_withdrawal').is(':checked') ? 1 : 0;
+		
+		if ($hasEUDataInteger)
+		{
+			result.confirm_withdrawal = $('#confirm_eudata').is(':checked') ? 1 : 0;
+		}
 	})(akeeba.jQuery);
 
 	return result;
@@ -152,6 +199,10 @@ function plg_akeebasubs_agreetoeu_validate(response)
 		$('#confirm_informed').parents('div.form-group').removeClass('has-error');
 		$('#confirm_postal').parents('div.form-group').removeClass('has-error');
 		$('#confirm_withdrawal').parents('div.form-group').removeClass('has-error');
+		
+		if ($hasEUDataInteger) {
+			$('#confirm_eudata').parents('div.form-group').removeClass('has-error');
+		}
 
 		if (!akeebasubs_apply_validation)
 		{
@@ -173,6 +224,14 @@ function plg_akeebasubs_agreetoeu_validate(response)
 			$('#confirm_withdrawal').parents('div.form-group').addClass('has-error');
 			thisIsValid = false;
 		}
+		
+		if ($hasEUDataInteger) {
+			if (!response.custom_validation.confirm_eudata) {
+				$('#confirm_eudata').parents('div.form-group').addClass('has-error');
+				thisIsValid = false;
+			}
+		}
+		
 	})(akeeba.jQuery);
 
 	return thisIsValid;
@@ -188,6 +247,10 @@ JS;
 
 	function onValidate($data)
 	{
+		$eudataURL        = $this->params->get('eudataurl', '');
+		$eudataURL        = trim($eudataURL);
+		$hasEUData        = !empty($eudataURL);
+
 		$response = array(
 			'isValid'           => true,
 			'custom_validation' => array()
@@ -210,16 +273,32 @@ JS;
 			$custom['confirm_withdrawal'] = 0;
 		}
 
+		if (!array_key_exists('confirm_eudata', $custom))
+		{
+			$custom['confirm_eudata'] = 0;
+		}
+
 		$custom['confirm_informed'] = $this->isTruthism($custom['confirm_informed']) ? 1 : 0;
 		$custom['confirm_postal'] = $this->isTruthism($custom['confirm_postal']) ? 1 : 0;
 		$custom['confirm_withdrawal'] = $this->isTruthism($custom['confirm_withdrawal']) ? 1 : 0;
+		$custom['confirm_eudata'] = $this->isTruthism($custom['confirm_eudata']) ? 1 : 0;
+
+		// If we don't have a URL we don't show the field, therefore we force it validated to go on
+		if (!$hasEUData)
+		{
+			$custom['confirm_eudata'] = 2;
+		}
 
 		$response['custom_validation']['confirm_informed'] = $custom['confirm_informed'];
 		$response['custom_validation']['confirm_postal'] = $custom['confirm_postal'];
 		$response['custom_validation']['confirm_withdrawal'] = $custom['confirm_withdrawal'];
+		$response['custom_validation']['confirm_eudata'] = $custom['confirm_eudata'];
 
 		// Huh?
-		$response['valid'] = $response['custom_validation']['confirm_informed'] && $response['custom_validation']['confirm_postal'] && $response['custom_validation']['confirm_withdrawal'];
+		$response['valid'] = $response['custom_validation']['confirm_informed'] &&
+			$response['custom_validation']['confirm_postal'] &&
+			$response['custom_validation']['confirm_withdrawal'] &&
+			($response['custom_validation']['confirm_eudata'] != 0);
 
 		return $response;
 	}

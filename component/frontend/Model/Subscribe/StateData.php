@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -118,9 +118,27 @@ class StateData
 		// Is this the first run right after selecting a subscription level?
 		$firstRun = $model->getContainer()->platform->getSessionVar('firstrun', true, 'com_akeebasubs');
 
-		if (!$firstRun)
+		if ($firstRun)
 		{
-			$model->getContainer()->platform->setSessionVar('firstrun', true, 'com_akeebasubs');
+			// Reset the first run flag
+			$model->getContainer()->platform->setSessionVar('firstrun', false, 'com_akeebasubs');
+			/**
+			 * Save the level slug, level ID and coupon code
+			 *
+			 * The first two are required for the priceto be displayed. The latter must survive the reset, otherwise we
+			 * will have unhappy clients.
+			 */
+			$slug   = $model->getState('slug', '', 'string');
+			$id     = $model->getState('id', 0, 'int');
+			$coupon = $model->getState('coupon', '', 'string');
+			// Reset the object parameters
+			$this->reset();
+			// Re-apply the saved slug, ID and coupon code
+			$this->slug   = $slug;
+			$this->id     = $id;
+			$this->coupon = $coupon;
+			// Propagate the object properties to the model's state
+			$this->propagateToModelState($model);
 		}
 
 		// Apply the state variables from the model
@@ -186,7 +204,20 @@ class StateData
 	}
 
 	/**
-	 * Reset the state attributes to their default values
+	 * Reset the state attributes to their default values. This only affects the StateData object. You need to call
+	 * propagateToModelState to reset the Subscribe model we belong to. This is done automatically when the firstrun
+	 * flag is set to true in the session.
+	 *
+	 * In short, if you want to FULLY reset Akeeba Subscriptions' internal validation state you need to set the
+	 * firstrun session flag to true BEFORE creating an instance of the Susbcribe model. The model will pick up the
+	 * flag's value and create a new StateData object (the class you are looking at right now). The constructor of the
+	 * object will call both reset and propagateToModelState, fully resetting the internal state.
+	 *
+	 * This is done automatically when you pass the reset=1 option in the URL. The onBeforeRead of the Levels controller
+	 * will set the firstrun session variable. Moreover, after fetching the blank state, it will propagate the
+	 * UserParams (the result of the Users model's getMergedData method) into the data to be displayed in the page. As
+	 * a result the user will see the default data, as if they had logged out, flushed all cookies and then logged back
+	 * into our site. The only thing that's kept is the coupon code.
 	 *
 	 * @return  void
 	 */
@@ -199,10 +230,31 @@ class StateData
 			$this->$k = '';
 		}
 
-		$this->firstrun = false;
+		$this->firstrun = true;
 		$this->id = 0;
 		$this->isbusiness = 0;
 		$this->custom = [];
 		$this->subcustom = [];
+	}
+
+	/**
+	 * Propagates the state variables into the specified model's state.
+	 *
+	 * This is used when the firstrun flag is set (or when reset=1 is specified in the URL). This lets us reset the
+	 * Subscribe model's state to its default, i.e. no data from the user, read everything from the database. That's a
+	 * hard reset of the subscription form.
+	 *
+	 * @param   Model   $model  The model to propagate to.
+	 *
+	 * @return  void
+	 */
+	private function propagateToModelState(Model $model)
+	{
+		$properties = get_object_vars($this);
+
+		foreach ($properties as $k => $v)
+		{
+			$model->setState($k, $v);
+		}
 	}
 }

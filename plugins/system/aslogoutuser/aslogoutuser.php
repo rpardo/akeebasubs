@@ -1,7 +1,7 @@
 <?php
 /**
  * @package		akeebasubs
- * @copyright	Copyright (c)2010-2017 Nicholas K. Dionysopoulos / AkeebaBackup.com
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license		GNU GPLv3 <http://www.gnu.org/licenses/gpl.html> or later
  */
 
@@ -114,6 +114,7 @@ class plgSystemAslogoutuser extends JPlugin
 		$returnurl = base64_encode($returnurl->toString());
 
 		$app->logout();
-		$container->platform->redirect(JRoute::_('index.php?option=com_users&view=login&return=' . $returnurl));
+
+		// $container->platform->redirect(JRoute::_('index.php?option=com_users&view=login&return=' . $returnurl));
 	}
 }

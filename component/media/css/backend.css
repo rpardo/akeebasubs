@@ -1,32 +1,8 @@
 /**
  * @package		akeebasubs
- * @copyright	Copyright (c)2010-2017 Nicholas K. Dionysopoulos / AkeebaBackup.com
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license		GNU GPLv3 <http://www.gnu.org/licenses/gpl.html> or later
  */
-
- /**
- * Selective reset of Bootstrap styling
- */
-div.akeeba-bootstrap { background: transparent; }
-div.icon a.modal { position: relative; top: inherit; left: inherit; z-index: inherit; margin: 0 !important; box-shadow: none;  }
-div.ak_clr_left { clear: left; }
-div.ak_clr { clear: both; }
-div.icon-wrapper, .akeeba-bootstrap [class^="icon-wrapper"] { display: inline; }
-
-div.akeeba-bootstrap form.form-horizontal-wide label.control-label { width: 300px }
-div.akeeba-bootstrap form.form-horizontal-wide div.controls { margin-left: 320px }
-div.akeeba-bootstrap form.form-horizontal-wide textarea { width: 450px }
-
-td.order span { line-height: 16px; height: 16px; margin: 0; padding: 0; }
-td.order a.jgrid span.state { background-repeat: no-repeat; height: 12px; margin-bottom: 2px }
-td.order a.jgrid span.state span.text { line-height: 16px; }
-td.order input.text_area { width: 20px; }
-
-div.akeeba-bootstrap label.radiobtn { display: inline-block; }
-.decrapbooleanlist label.radiobtn { display: inline-block; float: none; clear: none; }
-.decrapbooleanlist input { display: inline-block; float: none; clear: none; }
-
-div.controls span.floatme { display: inline-block; float: left; padding: 5px; }
 
 /**
  * Icons and stuff
@@ -237,6 +213,10 @@ tr.pending-renewal td .akeebasubs-subscription-grossamount { color: gray; }
 	color: navy;
 }
 
+.akeebasubs-panel-force-top-margin {
+	margin-top: 20px !important;
+}
+
 /** User display **/
 .fof-usersfield-avatar {
 	padding-right: 6pt;
@@ -293,3 +273,33 @@ input#since {
  * Joomla! 3.7 broke span6 margins x_x
  */
 div#akeeba-renderjoomla [class*="span"] { margin-left: 0; }
+
+div.joomla-version-3{ padding:0 }
+
+div.akeeba-filter-bar--right{
+	text-align: right;
+}
+
+div.akeeba-filter-element {
+	display: inline-block;
+	margin-right: 0.5em;
+}
+
+div.akeeba-filter-element button[class*=--icon-only]+button[class*=--icon-only] {
+	margin-left: 0;
+}
+
+div.akeeba-filter-element button[class*=--icon-only] [class*=akion-] {
+	margin: 0;
+	vertical-align: baseline;
+}
+
+div.akeeba-filter-bar select.custom-select{
+	min-width: 0;
+	max-width: 115px;
+}
+
+.joomla-version-3 .akeeba-filter-joomlacalendarfix {
+	vertical-align: middle;
+	padding-top: 0.35em;
+}

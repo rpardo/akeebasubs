@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -20,8 +20,8 @@ class PublishRangeDates extends Text
 		/** @var Subscriptions $subscription */
 		$subscription = $this->item;
 
-		$publish_up = Format::date($subscription->publish_up, 'Y-m-d H:i');
-		$publish_down = Format::date($subscription->publish_down, 'Y-m-d H:i');
+		$publish_up = Format::date($subscription->publish_up, 'Y-m-d H:i T');
+		$publish_down = Format::date($subscription->publish_down, 'Y-m-d H:i T');
 
 		return <<< HTML
 <div class="akeebasubs-susbcription-publishup">

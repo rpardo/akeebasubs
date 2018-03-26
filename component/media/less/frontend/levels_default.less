@@ -1,0 +1,118 @@
+/**
+ * @package    akeebasubs
+ * @copyright  Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license    GNU GPLv3 <http://www.gnu.org/licenses/gpl.html> or later
+ *
+ * Levels view, default layout
+ */
+
+#vatlabel {
+  margin-right: 0;
+}
+
+div.level {
+  display: block;
+  margin: 0.5em 0.5%;
+  width: 48%;
+  height: 210px;
+  float: left;
+  background-color: darken(@light-grey, 10%);
+  border: thin solid @grey;
+}
+
+.level-title {
+  &:before {
+    content: " ";
+  }
+  display: block;
+  width: 100%;
+  padding: 0.4em 0;
+  margin: 0 0 0.5em 0;
+  font-size: 14pt;
+  font-weight: bold;
+  color: @grey;
+  background-color: @light-grey;
+  text-shadow: 1px 1px 1px white;
+  a {
+    font-size: 14pt;
+    font-weight: bold;
+    color: @grey;
+    text-shadow: 1px 1px 1px white;
+    text-decoration: none;
+  }
+}
+
+.level-price {
+  display: block;
+  float: right;
+  padding: 0 1em;
+  margin: 0;
+  font-size: 20pt;
+  color: darken(@teal, 10%);
+  text-shadow: 1px 1px 1px @grey;
+  font-style: italic;
+}
+
+.level-price-decimal {
+  font-size: 12pt;
+  color: @teal;
+}
+
+.level-price-separator {
+  font-size: 12pt;
+  color: @teal;
+}
+
+.level-price-taxnotice {
+  display: block;
+  float: right;
+  margin: 9px -17px 0 6pt;
+  width: 40px;
+  line-height: 100%;
+  text-shadow: none;
+  font-size: 7pt;
+  color: lighten(@grey, 10%);
+  text-align: right;
+}
+
+img.level-image {
+  display: block;
+  max-width: 64px;
+  max-height: 64px;
+  float: right;
+  margin: 0.3em 1.3em 0.3em 0.5em;
+  border: thin solid @grey;
+  -webkit-box-shadow: 1px 1px 4px @grey;
+  -moz-box-shadow: 1px 1px 4px @grey;
+  box-shadow: 1px 1px 4px @grey;
+}
+
+div.level-description {
+  min-height: 80px;
+  height: 120px;
+  padding: 0;
+  margin: 0 0.5em;
+  background-color: fadein(@white, 0.7);
+  border: thin solid @light-grey;
+  border-radius: 8px;
+  -moz-border-radius: 8px;
+}
+
+div.level-description-short {
+  min-height: 64px;
+  height: auto;
+  padding-bottom: 10px;
+}
+
+div.level-description-inner {
+  width: 100%;
+  padding: 8px;
+}
+
+div.level-clear {
+  clear: both;
+}
+
+.level-subscribe {
+  margin: 0.5em 1em 0.8em;
+}

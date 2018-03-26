@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -32,6 +32,11 @@ class Updates extends Update
 		$config['update_component'] = 'pkg_akeebasubs';
 		$config['update_sitename']  = 'Akeeba Subscriptions';
 		$config['update_site']      = 'https://raw.githubusercontent.com/akeeba/akeebasubs/master/update/pkg_akeebasubs_updates.xml';
+
+		if (defined('AKEEBASUBS_VERSION') && !in_array(substr(AKEEBASUBS_VERSION, 0, 3), ['dev', 'rev']))
+		{
+			$config['update_version'] = AKEEBASUBS_VERSION;
+		}
 
 		parent::__construct($config);
 	}

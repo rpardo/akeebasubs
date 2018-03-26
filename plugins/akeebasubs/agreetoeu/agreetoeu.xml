@@ -16,6 +16,14 @@
         <language tag="en-GB">en-GB/en-GB.plg_akeebasubs_agreetoeu.ini</language>
         <language tag="en-GB">en-GB/en-GB.plg_akeebasubs_agreetoeu.sys.ini</language>
     </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="eudataurl" type="text" default="" label="PLG_AKEEBASUBS_AGREETOEU_CONFIG_EUDATA_LABEL"
+                       description="PLG_AKEEBASUBS_AGREETOEU_CONFIG_EUDATA_DESC" length="50"/>
+            </fieldset>
+        </fields>
+    </config>
 
     <scriptfile>script.php</scriptfile>
 

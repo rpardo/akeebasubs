@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 @package AkeebaSubs
-@copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+@copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
 @license GNU General Public License version 3, or later
 -->
 <config addfieldpath="administrator/components/com_akeebasubs/assets/elements">
 	<fieldset name="currency" label="COM_AKEEBASUBS_CONFIG_CURRENCY_TITLE">
 		<field type="text"
-			name="currency"
-			default="EUR"
-			label="COM_AKEEBASUBS_CONFIG_CURRENCY_CODE"
-			description="COM_AKEEBASUBS_CONFIG_CURRENCY_CODE_DESC"
+			   name="currency"
+			   default="EUR"
+			   label="COM_AKEEBASUBS_CONFIG_CURRENCY_CODE"
+			   description="COM_AKEEBASUBS_CONFIG_CURRENCY_CODE_DESC"
 		/>
 		<field type="text"
-			name="currencysymbol"
-			default="€"
-			label="COM_AKEEBASUBS_CONFIG_CURRENCY_SYMBOL"
-			description="COM_AKEEBASUBS_CONFIG_CURRENCY_SYMBOL_DESC"
+			   name="currencysymbol"
+			   default="€"
+			   label="COM_AKEEBASUBS_CONFIG_CURRENCY_SYMBOL"
+			   description="COM_AKEEBASUBS_CONFIG_CURRENCY_SYMBOL_DESC"
 		/>
 		<field name="currencypos" type="list" default="before"
-			label="COM_AKEEBASUBS_CONFIG_CURRENCY_POS_LABEL"
-			description="COM_AKEEBASUBS_CONFIG_CURRENCY_POS_DESC">
+			   label="COM_AKEEBASUBS_CONFIG_CURRENCY_POS_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_CURRENCY_POS_DESC">
 			<option value="before">COM_AKEEBASUBS_CONFIG_CURRENCY_POS_BEFORE</option>
 			<option value="after">COM_AKEEBASUBS_CONFIG_CURRENCY_POS_AFTER</option>
 		</field>
@@ -28,156 +28,166 @@
 
 	<fieldset name="backend" label="COM_AKEEBASUBS_CONFIG_BACKEND_TITLE">
 		<field name="gravatar" type="list" default="1"
-			label="COM_AKEEBASUBS_CONFIG_BACKEND_GRAVATAR"
-			description="COM_AKEEBASUBS_CONFIG_BACKEND_GRAVATAR_DESC">
+			   label="COM_AKEEBASUBS_CONFIG_BACKEND_GRAVATAR"
+			   description="COM_AKEEBASUBS_CONFIG_BACKEND_GRAVATAR_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
+
 		<field name="imagedir" type="text"
-			default="images"
-			size="60"
-			label="COM_AKEEBASUBS_CONFIG_BACKEND_IMAGEDIR"
-			description="COM_AKEEBASUBS_CONFIG_BACKEND_IMAGEDIR_DESC"
+			   default="images"
+			   size="60"
+			   label="COM_AKEEBASUBS_CONFIG_BACKEND_IMAGEDIR"
+			   description="COM_AKEEBASUBS_CONFIG_BACKEND_IMAGEDIR_DESC"
 		/>
-		<field name="show2copromo" type="hidden" default="1" />
-		<field name="wizardstep" type="hidden" default="1" />
+
+		<field name="load_fef" type="list" default="3"
+			   label="COM_AKEEBASUBS_CONFIG_BACKEND_LOAD_FEF"
+			   description="COM_AKEEBASUBS_CONFIG_BACKEND_LOAD_FEF_DESC">
+			<option value="0">COM_AKEEBASUBS_CONFIG_BACKEND_LOAD_FEF_NEVER</option>
+			<option value="1">COM_AKEEBASUBS_CONFIG_BACKEND_LOAD_FEF_FRONTEND</option>
+			<option value="2">COM_AKEEBASUBS_CONFIG_BACKEND_LOAD_FEF_BACKEND</option>
+			<option value="3">COM_AKEEBASUBS_CONFIG_BACKEND_LOAD_FEF_BOTH</option>
+		</field>
+
+		<field name="fef_reset" type="list" default="3"
+			   label="COM_AKEEBASUBS_CONFIG_BACKEND_FEF_RESET"
+			   description="COM_AKEEBASUBS_CONFIG_BACKEND_FEF_RESET_DESC">
+			<option value="0">COM_AKEEBASUBS_CONFIG_BACKEND_LOAD_FEF_NEVER</option>
+			<option value="1">COM_AKEEBASUBS_CONFIG_BACKEND_LOAD_FEF_FRONTEND</option>
+			<option value="2">COM_AKEEBASUBS_CONFIG_BACKEND_LOAD_FEF_BACKEND</option>
+			<option value="3">COM_AKEEBASUBS_CONFIG_BACKEND_LOAD_FEF_BOTH</option>
+		</field>
+
+		<field name="wizardstep" type="hidden" default="1"/>
 	</fieldset>
 
 	<fieldset name="frontend" label="COM_AKEEBASUBS_CONFIG_FRONTEND_TITLE">
 		<field name="secret" type="text"
-			default=""
-			size="40"
-			label="COM_AKEEBASUBS_CONFIG_FRONTEND_SECRET"
-			description="COM_AKEEBASUBS_CONFIG_FRONTEND_SECRET_DESC"
+			   default=""
+			   size="40"
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_SECRET"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_SECRET_DESC"
 		/>
 		<field name="includesignup" type="list" default="2"
-			label="COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDESIGNUP"
-			description="COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDESIGNUP_DESC">
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDESIGNUP"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDESIGNUP_DESC">
 			<option value="0">COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDESIGNUP_NEVER</option>
 			<option value="1">COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDESIGNUP_INPRICE</option>
 			<option value="2">COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDESIGNUP_SEPARATE</option>
 		</field>
 		<field name="includediscount" type="list" default="0"
-			label="COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDEDISCOUNT"
-			description="COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDEDISCOUNT_DESC">
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDEDISCOUNT"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDEDISCOUNT_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
 
 		<field name="showrenew" type="list" default="1"
-			label="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWRENEW_LABEL"
-			description="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWRENEW_DESC">
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWRENEW_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWRENEW_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
-		</field >
+		</field>
 		<field name="noneuvat" type="list" default="0"
-			label="COM_AKEEBASUBS_CONFIG_FRONTEND_NONEUVAT_LABEL"
-			description="COM_AKEEBASUBS_CONFIG_FRONTEND_NONEUVAT_DESC">
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_NONEUVAT_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_NONEUVAT_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
-		</field >
+		</field>
 		<field name="hidelonepaymentoption" type="list" default="1"
-			label="COM_AKEEBASUBS_CONFIG_FRONTEND_HIDELONEPAYMENTOPTION_LABEL"
-			description="COM_AKEEBASUBS_CONFIG_FRONTEND_HIDELONEPAYMENTOPTION_DESC">
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_HIDELONEPAYMENTOPTION_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_HIDELONEPAYMENTOPTION_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
-		</field >
+		</field>
 		<field name="useppimages" type="list" default="1"
-			label="COM_AKEEBASUBS_CONFIG_FRONTEND_USEPPIMAGES_LABEL"
-			description="COM_AKEEBASUBS_CONFIG_FRONTEND_USEPPIMAGES_DESC">
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_USEPPIMAGES_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_USEPPIMAGES_DESC">
 			<option value="0">COM_AKEEBASUBS_CONFIG_FRONTEND_USEPPIMAGES_OPT_DROPDOWN</option>
 			<option value="1">COM_AKEEBASUBS_CONFIG_FRONTEND_USEPPIMAGES_OPT_IMAGEONLY</option>
 			<option value="2">COM_AKEEBASUBS_CONFIG_FRONTEND_USEPPIMAGES_OPT_IMAGEANDTEXT</option>
 		</field>
 		<field name="dateformat" type="text"
-			default="Y-m-d H:i"
-			size="30"
-			label="COM_AKEEBASUBS_CONFIG_FRONTEND_DATEFORMAT_LABEL"
-			description="COM_AKEEBASUBS_CONFIG_FRONTEND_DATEFORMAT_DESC"
+			   default="Y-m-d H:i"
+			   size="30"
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_DATEFORMAT_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_DATEFORMAT_DESC"
 		/>
 		<field name="showvat" type="list"
-			default="0"
-			label="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWVAT_LABEL"
-			description="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWVAT_DESC">
+			   default="0"
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWVAT_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWVAT_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
-		</field >
+		</field>
 		<field name="showlocalprices" type="list"
-			default="1"
-			label="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWLOCALPRICES_LABEL"
-			description="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWLOCALPRICES_DESC">
+			   default="1"
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWLOCALPRICES_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWLOCALPRICES_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
-		</field >
+		</field>
 		<field name="reqcoupon" type="list" default="0"
-			label="COM_AKEEBASUBS_CONFIG_FRONTEND_REQCOUPON_LABEL"
-			description="COM_AKEEBASUBS_CONFIG_FRONTEND_REQCOUPON_DESC">
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_REQCOUPON_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_REQCOUPON_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
-		</field >
+		</field>
 		<field name="confirmfree" type="list" default="0"
-			label="COM_AKEEBASUBS_CONFIG_FRONTEND_CONFIRMFREE_LABEL"
-			description="COM_AKEEBASUBS_CONFIG_FRONTEND_CONFIRMFREE_DESC">
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_CONFIRMFREE_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_CONFIRMFREE_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
-		</field >
+		</field>
 		<field name="renderasfree" type="list" default="0"
-			label="COM_AKEEBASUBS_CONFIG_FRONTEND_RENDERASFREE_LABEL"
-			description="COM_AKEEBASUBS_CONFIG_FRONTEND_RENDERASFREE_DESC">
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_RENDERASFREE_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_RENDERASFREE_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
-		</field >
+		</field>
 
-        <field name="warndnt" type="list" default="1"
-               label="COM_AKEEBASUBS_CONFIG_FRONTEND_WARNDNT_LABEL"
-               description="COM_AKEEBASUBS_CONFIG_FRONTEND_WARNDNT_DESC">
-            <option value="0">JNo</option>
-            <option value="1">JYes</option>
-        </field >
+		<field name="warndnt" type="list" default="1"
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_WARNDNT_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_WARNDNT_DESC">
+			<option value="0">JNo</option>
+			<option value="1">JYes</option>
+		</field>
 
-        <field name="summaryimages" type="list" default="0"
-			label="COM_AKEEBASUBS_CONFIG_FRONTEND_SUMMARYIMAGES_LABEL"
-			description="COM_AKEEBASUBS_CONFIG_FRONTEND_SUMMARYIMAGES_DESC">
+		<field name="summaryimages" type="list" default="0"
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_SUMMARYIMAGES_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_SUMMARYIMAGES_DESC">
 			<option value="0">COM_AKEEBASUBS_CONFIG_FRONTEND_SUMMARYIMAGES_OPT_DROPDOWN</option>
 			<option value="20">COM_AKEEBASUBS_CONFIG_FRONTEND_SUMMARYIMAGES_OPT_MICROIMAGE</option>
 			<option value="32">COM_AKEEBASUBS_CONFIG_FRONTEND_SUMMARYIMAGES_OPT_SMALLIMAGE</option>
 			<option value="64">COM_AKEEBASUBS_CONFIG_FRONTEND_SUMMARYIMAGES_OPT_MEDIUMIMAGE</option>
 			<option value="128">COM_AKEEBASUBS_CONFIG_FRONTEND_SUMMARYIMAGES_OPT_LARGEIMAGE</option>
-		</field >
+		</field>
 
-        <field name="usestrapper" type="list" default="3"
-               label="COM_AKEEBASUBS_CONFIG_FRONTEND_USESTRAPPER_LABEL"
-               description="COM_AKEEBASUBS_CONFIG_FRONTEND_USESTRAPPER_DESC">
-            <option value="0">COM_AKEEBASUBS_CONFIG_FRONTEND_USESTRAPPER_NONE</option>
-            <option value="1">COM_AKEEBASUBS_CONFIG_FRONTEND_USESTRAPPER_FRONTEND</option>
-            <option value="2">COM_AKEEBASUBS_CONFIG_FRONTEND_USESTRAPPER_BACKEND</option>
-            <option value="3">COM_AKEEBASUBS_CONFIG_FRONTEND_USESTRAPPER_BOTH</option>
-        </field >
-
-		<field name="siteurl" type="hidden" default="" />
+		<field name="siteurl" type="hidden" default=""/>
 	</fieldset>
 
 	<fieldset name="invoice"
-		label="COM_AKEEBASUBS_CONFIG_INVOICING_TITLE"
-		description="COM_AKEEBASUBS_CONFIG_INVOICING_DESC"
+			  label="COM_AKEEBASUBS_CONFIG_INVOICING_TITLE"
+			  description="COM_AKEEBASUBS_CONFIG_INVOICING_DESC"
 	>
 		<field name="invoice_number_format" type="text"
-				default="[N:5]"
-				size="30"
-				label="COM_AKEEBASUBS_CONFIG_INVOICE_NUMBER_FORMAT_TITLE"
-				description="COM_AKEEBASUBS_CONFIG_INVOICE_NUMBER_FORMAT_DESC"
+			   default="[N:5]"
+			   size="30"
+			   label="COM_AKEEBASUBS_CONFIG_INVOICE_NUMBER_FORMAT_TITLE"
+			   description="COM_AKEEBASUBS_CONFIG_INVOICE_NUMBER_FORMAT_DESC"
 		/>
 		<field name="invoice_autosend" type="list" default="1"
-			label="COM_AKEEBASUBS_CONFIG_INVOICE_AUTOSEND_TITLE"
-			description="COM_AKEEBASUBS_CONFIG_INVOICE_AUTOSEND_DESC">
+			   label="COM_AKEEBASUBS_CONFIG_INVOICE_AUTOSEND_TITLE"
+			   description="COM_AKEEBASUBS_CONFIG_INVOICE_AUTOSEND_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
 		<field name="invoice_override" type="text"
-				default="0"
-				size="6"
-				label="COM_AKEEBASUBS_CONFIG_INVOICE_OVERRIDE_TITLE"
-				description="COM_AKEEBASUBS_CONFIG_INVOICE_OVERRIDE_DESC"
+			   default="0"
+			   size="6"
+			   label="COM_AKEEBASUBS_CONFIG_INVOICE_OVERRIDE_TITLE"
+			   description="COM_AKEEBASUBS_CONFIG_INVOICE_OVERRIDE_DESC"
 		/>
 
 		<field name="creditnote_autosend" type="list" default="0"
@@ -198,79 +208,79 @@
 			   default=""
 			   label="COM_AKEEBASUBS_CONFIG_INVOICE_ALTCURRENCY_TITLE"
 			   description="COM_AKEEBASUBS_CONFIG_INVOICE_ALTCURRENCY_DESC"
-				/>
+		/>
 
 		<field name="invoice_vatnote" type="text"
-				default="VAT liability is transferred to the recipient, pursuant EU Directive nr 2006/112/EC and local tax laws implementing this directive."
-				size="50"
-				label="COM_AKEEBASUBS_CONFIG_INVOICE_VATNOTE_TITLE"
-				description="COM_AKEEBASUBS_CONFIG_INVOICE_VATNOTE_DESC"
+			   default="VAT liability is transferred to the recipient, pursuant EU Directive nr 2006/112/EC and local tax laws implementing this directive."
+			   size="50"
+			   label="COM_AKEEBASUBS_CONFIG_INVOICE_VATNOTE_TITLE"
+			   description="COM_AKEEBASUBS_CONFIG_INVOICE_VATNOTE_DESC"
 		/>
 		<field name="invoice_certificatefile" type="text"
-				default="certificate.cer"
-				size="30"
-				label="COM_AKEEBASUBS_CONFIG_INVOICE_CERTIFICATEFILE_TITLE"
-				description="COM_AKEEBASUBS_CONFIG_INVOICE_CERTIFICATEFILE_DESC"
+			   default="certificate.cer"
+			   size="30"
+			   label="COM_AKEEBASUBS_CONFIG_INVOICE_CERTIFICATEFILE_TITLE"
+			   description="COM_AKEEBASUBS_CONFIG_INVOICE_CERTIFICATEFILE_DESC"
 		/>
 		<field name="invoice_secretkeyfile" type="text"
-				default="secret.cer"
-				size="30"
-				label="COM_AKEEBASUBS_CONFIG_INVOICE_SECRETKEYFILE_TITLE"
-				description="COM_AKEEBASUBS_CONFIG_INVOICE_SECRETKEYFILE_DESC"
+			   default="secret.cer"
+			   size="30"
+			   label="COM_AKEEBASUBS_CONFIG_INVOICE_SECRETKEYFILE_TITLE"
+			   description="COM_AKEEBASUBS_CONFIG_INVOICE_SECRETKEYFILE_DESC"
 		/>
 		<field name="invoice_secretkeypass" type="password"
-				default=""
-				size="20"
-				label="COM_AKEEBASUBS_CONFIG_INVOICE_SECRETKEYPASS_TITLE"
-				description="COM_AKEEBASUBS_CONFIG_INVOICE_SECRETKEYPASS_DESC"
+			   default=""
+			   size="20"
+			   label="COM_AKEEBASUBS_CONFIG_INVOICE_SECRETKEYPASS_TITLE"
+			   description="COM_AKEEBASUBS_CONFIG_INVOICE_SECRETKEYPASS_DESC"
 		/>
 		<field name="invoice_extracert" type="text"
-				default="extra.cer"
-				size="30"
-				label="COM_AKEEBASUBS_CONFIG_INVOICE_EXTRACERT_TITLE"
-				description="COM_AKEEBASUBS_CONFIG_INVOICE_EXTRACERT_DESC"
+			   default="extra.cer"
+			   size="30"
+			   label="COM_AKEEBASUBS_CONFIG_INVOICE_EXTRACERT_TITLE"
+			   description="COM_AKEEBASUBS_CONFIG_INVOICE_EXTRACERT_DESC"
 		/>
-		<field name="invoice_country" type="hidden"	default=""/>
+		<field name="invoice_country" type="hidden" default=""/>
 	</fieldset>
 
-  <fieldset name="updates" label="CONFIG_UPDATES_LABEL">
+	<fieldset name="updates" label="CONFIG_UPDATES_LABEL">
 
-    <field name="autoupdateCli" type="list" default="1"
-           label="CONFIG_AUTOUPDATE_SETTINGS_LABEL"
-           description="CONFIG_AUTOUPDATE_SETTINGS_DESC">
-      <option value="1">CONFIG_AUTOUPDATE_NOTIFY_UPDATE</option>
-      <option value="2">CONFIG_AUTOUPDATE_NOTIFY</option>
-      <option value="3">CONFIG_AUTOUPDATE_UPDATE</option>
-    </field>
+		<field name="autoupdateCli" type="list" default="1"
+			   label="CONFIG_AUTOUPDATE_SETTINGS_LABEL"
+			   description="CONFIG_AUTOUPDATE_SETTINGS_DESC">
+			<option value="1">CONFIG_AUTOUPDATE_NOTIFY_UPDATE</option>
+			<option value="2">CONFIG_AUTOUPDATE_NOTIFY</option>
+			<option value="3">CONFIG_AUTOUPDATE_UPDATE</option>
+		</field>
 
-    <field name="notificationFreq" type="text" default="1"
-           label="CONFIG_NOTIFICATION_FREQ_LABEL" />
+		<field name="notificationFreq" type="text" default="1"
+			   label="CONFIG_NOTIFICATION_FREQ_LABEL"/>
 
-    <field name="notificationTime" type="list" default="day"
-           label="CONFIG_NOTIFICATION_TIME_LABEL" >
-      <option value="min">CONFIG_NOTIFICATION_TIME_MIN</option>
-      <option value="hour">CONFIG_NOTIFICATION_TIME_HOUR</option>
-      <option value="day">CONFIG_NOTIFICATION_TIME_DAY</option>
-    </field>
+		<field name="notificationTime" type="list" default="day"
+			   label="CONFIG_NOTIFICATION_TIME_LABEL">
+			<option value="min">CONFIG_NOTIFICATION_TIME_MIN</option>
+			<option value="hour">CONFIG_NOTIFICATION_TIME_HOUR</option>
+			<option value="day">CONFIG_NOTIFICATION_TIME_DAY</option>
+		</field>
 
-    <field name="notificationEmail" type="text" default=""
-           label="CONFIG_NOTIFICATION_EMAIL_LABEL"
-           description="CONFIG_NOTIFICATION_EMAIL_DESC"/>
-  </fieldset>
+		<field name="notificationEmail" type="text" default=""
+			   label="CONFIG_NOTIFICATION_EMAIL_LABEL"
+			   description="CONFIG_NOTIFICATION_EMAIL_DESC"/>
+	</fieldset>
 
 	<fieldset
-		name="permissions"
-		label="JCONFIG_PERMISSIONS_LABEL"
-		description="JCONFIG_PERMISSIONS_DESC"
-		>
+			name="permissions"
+			label="JCONFIG_PERMISSIONS_LABEL"
+			description="JCONFIG_PERMISSIONS_DESC"
+	>
 
 		<field
-			name="rules"
-			type="rules"
-			label="JCONFIG_PERMISSIONS_LABEL"
-			class="inputbox"
-			filter="rules"
-			component="com_akeebasubs"
-			section="component" />
+				name="rules"
+				type="rules"
+				label="JCONFIG_PERMISSIONS_LABEL"
+				class="inputbox"
+				filter="rules"
+				component="com_akeebasubs"
+				section="component"/>
 	</fieldset>
 </config>

@@ -1,6 +1,35 @@
+# 6.0.0
+
+**New**
+
+* Rewritten interface using our Akeeba Frontend Framework (FEF).
+* Warn the user if either FOF or FEF is not installed.
+* Warn the user about incompatible versions of PHP, use of eAccelerator on PHP 5.4 and use of HHVM.
+
+**Removed features**
+
+* The following payment plugins have not been maintained since 2013 and have been removed: Skrill, Stripe, PayPal Payment Pro, PayPal Express.
+* The following payment plugins have been replaced by new versions and have been removed: 2Checkout (replaced by 2conew), PayMill (replaced by paymilldss3). Old versions of the plugins don't even work anymore so why ship them...? 
+
+**Bug fixes**
+
+* Inconsistent use of user-supplied data and data from the database in the subscription form in some cases.
+* Fatal error if we cannot retrieve the exchange rate information from the ECB
+
 # 5.2.6
 
-(Placeholder)
+**Added features**
+
+* Log failed subscription for submissions (gh-298).
+* Display timezone in the My Subscriptions page (ongoing gh-295)
+* More EU checkboxes since we now have to also deal with GDPR.
+* Google Analytics for e-commerce integration.
+
+**Miscellaneous changes**
+
+* Clicking on "Reload update information" will fix Joomla! erroneously reporting an update is available when you have the latest version installed.
+* Removed redirection from the "System - Akeeba Subscriptions Logout user" plugin. Redirection caused the Thank You page to never appear until you logged in and only if you did not use the login module on the same page.
+* PayPal Collation plugin will use POST instead of GET on June 2018, per PayPal's docs.
 
 # 5.2.5
 

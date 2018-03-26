@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2017 Nicholas K. Dionysopoulos
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -72,7 +72,9 @@ class Subscribe extends Model
 	{
 		parent::__construct($container, $config);
 
-		$this->validatorFactory = new ValidatorFactory($this->container, $this->getStateVariables(), $this->container->platform->getUser());
+		$forceReload = $this->getContainer()->platform->getSessionVar('firstrun', true, 'com_akeebasubs');
+
+		$this->validatorFactory = new ValidatorFactory($this->container, $this->getStateVariables($forceReload), $this->container->platform->getUser());
 	}
 
 	/**
@@ -602,6 +604,8 @@ class Subscribe extends Model
 
 		if (!$isValid)
 		{
+			$this->logSubscriptionCreationFailure('Validation failure');
+
 			return false;
 		}
 
@@ -634,6 +638,8 @@ class Subscribe extends Model
 
 		if (!$allowed)
 		{
+			$this->logSubscriptionCreationFailure('Subscription level has the Only Once flag but the user has already a subscription in it.');
+
 			return false;
 		}
 
@@ -662,12 +668,13 @@ class Subscribe extends Model
 
 		if (!$found)
 		{
+			$this->logSubscriptionCreationFailure(sprintf('Cannot find payment method ‘%s’', htmlentities($state->paymentmethod)));
+
 			return false;
 		}
 
-		// Reset the session flag, so that future registrations will merge the
-		// data from the database
-		$this->container->platform->setSessionVar('firstrun', true, 'com_akeebasubs');
+		// Reset the session flag, so that future registrations will not merge data stored in the database
+		$this->container->platform->setSessionVar('firstrun', false, 'com_akeebasubs');
 
 		// Step #2.b. Apply block rules
 		// ----------------------------------------------------------------------
@@ -687,6 +694,8 @@ class Subscribe extends Model
 
 		if (!$userIsSaved)
 		{
+			$this->logSubscriptionCreationFailure(sprintf('Cannot update user information for user ID %d', $user->id));
+
 			return false;
 		}
 
@@ -1007,6 +1016,8 @@ class Subscribe extends Model
 
 			if (empty($jResponse))
 			{
+				$this->logSubscriptionCreationFailure(sprintf('Calling onAKPaymentNew for ‘%s’ resulted in an empty response', htmlentities($state->paymentmethod)));
+
 				return false;
 			}
 
@@ -1035,11 +1046,15 @@ class Subscribe extends Model
 			// and then just redirect
 			$this->container->platform->redirect(str_replace('&amp;', '&', \JRoute::_('index.php?option=com_akeebasubs&layout=default&view=message&slug=' . $level->slug . '&layout=order&subid=' . $subscription->akeebasubs_subscription_id)));
 
+			$this->removeSubscriptionCreationFailureLog($level);
+
 			return false;
 		}
 
 		// Return true
 		// ----------------------------------------------------------------------
+		$this->removeSubscriptionCreationFailureLog($level);
+
 		return true;
 	}
 
@@ -1139,6 +1154,8 @@ class Subscribe extends Model
 
 	/**
 	 * Returns the state data.
+	 *
+	 * @return  StateData
 	 */
 	public function getData()
 	{
@@ -1462,5 +1479,162 @@ class Subscribe extends Model
 		{
 			$unpaidSub->delete($unpaidSub->akeebasubs_subscription_id);
 		}
+	}
+
+	/**
+	 * Logs the failure of creating a subscription. The information is logged in a plain text file inside your site's
+	 * logs folder, under its akeebasubs_failed subdirectory. These files are generated every time the user submits the
+	 * subscription form with invalid data and are removed if the subscription is created successfully (even if it is
+	 * NOT paid / activated). For this reason we recommend NOT taking these files into account if they are newer than
+	 * 30': the user may still be collecting / reviewing information to fix the validation errors.
+	 *
+	 * @param   string  $reason  The failure reason
+	 *
+	 * @return  void
+	 *
+	 * @since   5.2.6
+	 */
+	private function logSubscriptionCreationFailure($reason = 'Validation failure')
+	{
+		/** @var Levels $levelsModel */
+		$levelsModel       = $this->container->factory->model('Levels')->tmpInstance();
+		$validation        = $this->getValidation();
+		$state             = $this->getStateVariables();
+		$level             = $levelsModel->getClone()->find($state->id);
+		$logFilepath       = $this->getLogFilename($level);
+		$application       = JFactory::getApplication();
+		$sessionName       = $application->getSession()->getName();
+		$sessionId         = $application->getSession()->getId();
+		$subscriptionLevel = $level->getId();
+		$user              = JFactory::getUser();
+		$txtValidation     = print_r($validation, true);
+		$txtState          = print_r($state, true);
+		$txtGET            = print_r($application->input->get->getArray(), true);
+		$txtPOST           = print_r($application->input->post->getArray(), true);
+		$txtREQUEST        = print_r($application->input->request->getArray(), true);
+		$txtCOOKIE         = print_r($application->input->cookie->getArray(), true);
+		$browser           = new JBrowser();
+		$ua                = $browser->getAgentString();
+		$ip                = Ip::getIp();
+		$modelState        = $this->getState();
+		$txtModelState     = print_r($modelState, true);
+
+		$text = <<< TEXT
+<?php die(); ?>
+================================================================================
+FAILED SUBSCRIPTION CREATION REPORT
+================================================================================
+
+Identity
+--------------------------------------------------------------------------------
+Failure reason     : $reason
+Session Name       : $sessionId
+Session ID         : $sessionId
+IP Address         : $ip
+User Agent         : $ua
+Subscription Level : $subscriptionLevel [{$level->title}] 
+Logged In Username : $user->username
+Logged In Email    : $user->email
+Requested Username : $state->username
+Requested Email    : $state->email
+
+Validation Results
+--------------------------------------------------------------------------------
+$txtValidation
+
+User State Information
+--------------------------------------------------------------------------------
+$txtState
+
+Model State
+--------------------------------------------------------------------------------
+$txtModelState
+
+\$_GET
+--------------------------------------------------------------------------------
+$txtGET
+
+\$_POST
+--------------------------------------------------------------------------------
+$txtPOST
+
+\$_COOKIE
+--------------------------------------------------------------------------------
+$txtCOOKIE
+
+\$_REQUEST
+--------------------------------------------------------------------------------
+$txtREQUEST
+
+================================================================================
+Important note:
+  This file is generated every time the user presses on Subscribe Now and the
+  subscription form is invalid. If the user resubmits the form during the same
+  session with valid information this file will be deleted. As a result you
+  should not take into account this file if it's less than 30' old.
+
+TEXT;
+
+		\JFile::write($logFilepath, $text);
+	}
+
+	/**
+	 * Removes the file created by logSubscriptionCreationFailure.
+	 *
+	 * This happens in two cases:
+	 *
+	 * - There is no charge for the subscription. This is called right before redirecting the user to the success page.
+	 * - The new subscription record has been created and we're handing over execution to the payment flow.
+	 *
+	 * @param   Levels  $level  The subscription level the user is subscribing to
+	 *
+	 * @since   5.2.6
+	 */
+	private function removeSubscriptionCreationFailureLog(Levels $level)
+	{
+		$logFilename = $this->getLogFilename($level);
+
+		if (\JFile::exists($logFilename))
+		{
+			\JFile::delete($logFilename);
+		}
+	}
+
+	/**
+	 * Gets the absolute path to the subscription failure log file.
+	 *
+	 * @param   Levels $level The level the user is subscribing to
+	 *
+	 * @return  string
+	 *
+	 * @since   5.2.6
+	 *
+	 * @see     logSubscriptionCreationFailure()
+	 *
+	 * @throws \Exception
+	 */
+	public function getLogFilename(Levels $level = null)
+	{
+		if (empty($level))
+		{
+			/** @var Levels $levelsModel */
+			$levelsModel = $this->container->factory->model('Levels')->tmpInstance();
+			$state       = $this->getStateVariables();
+			$level       = $levelsModel->getClone()->find($state->id);
+		}
+
+		$application       = JFactory::getApplication();
+		$sessionId         = $application->getSession()->getId();
+		$userId            = JFactory::getUser()->id ?: 'guest';
+		$subscriptionLevel = $level->getId();
+		$logPath           = $application->get('log_path') . '/akeebasubs_failed';
+		$logFilepath       = $logPath . '/' . $sessionId . '_' . $userId . '_' . $subscriptionLevel . '.php';
+
+		if (!\JFolder::exists($logPath))
+		{
+			\JFolder::create($logPath);
+		}
+
+		return $logFilepath;
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package        akeebasubs
- * @copyright      Copyright (c)2010-2017 Nicholas K. Dionysopoulos / AkeebaBackup.com
+ * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license        GNU GPLv3 <http://www.gnu.org/licenses/gpl.html> or later
  */
 
@@ -63,12 +63,18 @@ class plgAkpaymentNone extends AkpaymentBase
 		$t2 = JText::_('COM_AKEEBASUBS_LEVEL_REDIRECTING_BODY');
 
 		$form = <<<ENDFORM
-<h3>$t1</h3>
-<p>$t2</p>
-<form action="$uri" method="POST" id="paymentForm">
-	<input type="hidden" name="subscription" value="{$subscription->akeebasubs_subscription_id}" />
-	<input type="submit" class="btn" value="Complete subscription" />
-</form>
+<div class="akeeba-panel--info">
+    <header class="akeeba-block-header">
+        <h3>$t1</h3>
+    </header>
+    
+    <p>$t2</p>
+    
+    <form action="$uri" method="POST" id="paymentForm">
+		<input type="submit" class="akeeba-btn--primary" />
+		<input type="hidden" name="subscription" value="{$subscription->akeebasubs_subscription_id}" />
+	</form>
+</div>		
 ENDFORM;
 
 		// This is a demo script; just add some GET parameters to the URI
