@@ -3,6 +3,7 @@
 **Bug fixes**
 
 * [CRITICAL] Editing existing records in the backend results in creation of new records instead
+* [HIGH] Credit Notes page was off by one column and did not display the invoice number 
 
 # 6.0.0
 

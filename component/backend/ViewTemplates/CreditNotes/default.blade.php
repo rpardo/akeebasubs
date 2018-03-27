@@ -76,7 +76,7 @@ $invoicetemplates = $invoiceModel->getInvoiceTemplateNames();
     @foreach($this->items as $row)
         <tr>
             <td>
-                {{{ sprintf('%05d', $row->akeebasubs_subscription_id) }}}
+                {{{ sprintf('%05d', $row->akeebasubs_invoice_id) }}}
             </td>
             <td>
                 @jhtml('FEFHelper.browse.id', ++$i, $row->getId())
@@ -85,9 +85,6 @@ $invoicetemplates = $invoiceModel->getInvoiceTemplateNames();
                 @unless(is_null($row->invoice) || is_null($row->invoice->subscription))
                     @include('admin:com_akeebasubs/Common/ShowUser', ['item' => $row->invoice->subscription, 'field' => 'user_id', 'link_url' => 'index.php?option=com_akeebasubs&view=Users&task=edit&user_id=' . (int) $row->invoice->subscription->user_id])
                 @endunless
-            </td>
-            <td>
-                {{{ \FOF30\Utils\FEFHelper\BrowseView::getOptionName($row->extension, Akeeba\Subscriptions\Admin\Helper\Select::getInvoiceExtensions()) }}}
             </td>
             <td>
                 <span class="akeeba-label--teal">
