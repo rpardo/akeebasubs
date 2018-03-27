@@ -56,6 +56,7 @@ use FOF30\Utils\FEFHelper\Html as FEFHtml;
             <input type="hidden" name="option" id="option" value="{{{ $this->getContainer()->componentName }}}"/>
             <input type="hidden" name="view" id="view" value="{{{ $this->getName() }}}"/>
             <input type="hidden" name="task" id="task" value="{{{ $this->getTask() }}}"/>
+            <input type="hidden" name="id" id="id" value="{{{ $this->getItem()->getId() }}}"/>
             <input type="hidden" name="@token()" value="1"/>
         @show
         @yield('edit-hidden-fields')

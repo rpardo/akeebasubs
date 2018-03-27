@@ -1,3 +1,9 @@
+# 6.0.1
+
+**Bug fixes**
+
+* [CRITICAL] Editing existing records in the backend results in creation of new records instead
+
 # 6.0.0
 
 **New**
