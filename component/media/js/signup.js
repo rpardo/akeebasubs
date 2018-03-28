@@ -718,7 +718,7 @@ function validateBusiness ()
 		// Do I have to show the business fields?
 		var elIsBusiness = $("#isbusiness");
 
-		if (elIsBusiness.val())
+		if (elIsBusiness.val() === "1")
 		{
 			$("#businessfields").show();
 		}
