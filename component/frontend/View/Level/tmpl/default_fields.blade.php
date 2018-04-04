@@ -55,6 +55,9 @@ if ($this->container->platform->getUser()->guest)
 }
 
 $isBusiness = $this->getFieldValue('isbusiness');
+
+$returnURI = JUri::getInstance();
+$returnURI->setVar('reset', 1);
 ?>
 @js('media://com_akeebasubs/js/signup.js')
 @js('media://com_akeebasubs/js/autosubmit.js')
@@ -68,7 +71,7 @@ $isBusiness = $this->getFieldValue('isbusiness');
 	{{-- Login button --}}
 	<div id="akeebasubs-level-login" class="akeeba-form-group--pull-right">
 		<div class="akeeba-form-group--actions">
-			<a href="@route('index.php?option=com_users&view=login&return=' . base64_encode(JUri::getInstance()->toString())))"
+			<a href="@route('index.php?option=com_users&task=user&return=' . base64_encode($returnURI->toString())))"
 			   class="akeeba-btn--primary" rel="nofollow,noindex">
 				<span class="glyphicon glyphicon-log-in"></span>
 				@lang('COM_AKEEBASUBS_LEVEL_BTN_LOGINIFALERADY')
