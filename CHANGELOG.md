@@ -3,6 +3,7 @@
 **Bug fixes**
 
 * [CRITICAL] Editing existing records in the backend results in creation of new records instead
+* [HIGH] JavaScript error in the subscription page prevents users from using discount coupon codes (gh-311) 
 * [HIGH] Credit Notes page was off by one column and did not display the invoice number 
 * [LOW] Update information appeared unstyled 
 
