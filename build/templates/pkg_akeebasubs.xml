@@ -65,6 +65,7 @@
 
         <!-- Plugins: user -->
         <file type="plugin" group="user" id="aslogoutuser">plg_user_aslogoutuser.zip</file>
+        <file type="plugin" group="user" id="asresetform">plg_user_asresetform.zip</file>
     </files>
 
     <!-- Installation script -->
