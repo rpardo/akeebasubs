@@ -1105,8 +1105,6 @@ class Subscribe extends Model
 	 */
 	public function runCallback()
 	{
-		$state = $this->getStateVariables();
-
 		$data = $this->input->getData();
 
 		// Some plugins result in an empty Itemid being added to the request
@@ -1124,10 +1122,11 @@ class Subscribe extends Model
 		$paymentMethodsModel = $this->container->factory->model('PaymentMethods')->tmpInstance();
 		$paymentMethodsModel->getPaymentPlugins();
 
-		$jResponse = $this->container->platform->runPlugins('onAKPaymentCallback', array(
-			$state->paymentmethod,
-			$data
-		));
+		$paymentMethod = $this->input->getCmd('paymentmethod', 'none');
+		$jResponse     = $this->container->platform->runPlugins('onAKPaymentCallback', [
+			$paymentMethod,
+			$data,
+		]);
 
 		if (empty($jResponse))
 		{
