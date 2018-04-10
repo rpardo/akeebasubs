@@ -19,6 +19,7 @@
         <folder>Dispatcher</folder>
         <folder>elements</folder>
         <folder>Model</folder>
+        <folder>PrecompiledTemplates</folder>
         <folder>Toolbar</folder>
         <!-- Not a typo. We need BOTH views and View folders, for different reasons. -->
         <folder>View</folder>
@@ -60,6 +61,7 @@
             <folder>invoices</folder>
             <folder>Model</folder>
             <folder>PluginAbstracts</folder>
+            <folder>PrecompiledTemplates</folder>
             <folder>sql</folder>
             <folder>Toolbar</folder>
             <folder>View</folder>

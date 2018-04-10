@@ -1,5 +1,9 @@
 # 6.0.1
 
+**New**
+
+* Support for precompiled Blade templates, for those few servers which lack token_get_all support. IMPORTANT: On those servers you should do template overrides of the _precompiled_ .php template, not the Blade template. Otherwise you'll get a PHP Fatal error.
+
 **Bug fixes**
 
 * [CRITICAL] Editing existing records in the backend results in creation of new records instead
