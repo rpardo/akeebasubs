@@ -58,7 +58,6 @@ use JLoader;
  * @method  $this  akeebasubs_level_id()         akeebasubs_level_id(int $v)
  * @method  $this  notes()                       notes(string $v)
  * @method  $this  processor_key()               processor_key(string $v)
- * @method  $this  state()                       state(string $v)
  * @method  $this  net_amount()                  net_amount(float $v)
  * @method  $this  tax_amount()                  tax_amount(float $v)
  * @method  $this  gross_amount()                gross_amount(float $v)
@@ -76,28 +75,28 @@ use JLoader;
  * @method  $this  first_contact()               first_contact(string $v)
  * @method  $this  second_contact()              second_contact(string $v)
  * @method  $this  after_contact()               after_contact(string $v)
- * @method  $this _noemail()                     _noemail(bool $v)          	 Do not send email on save when true (resets after successful save)
- * @method  $this refresh()  					 refresh(int $v)            	 Set to 1 to ignore filters, used for running integrations on all subscriptions
- * @method  $this filter_discountmode() 		 filter_discountmode(string $v)  Discount filter mode (none, coupon, upgrade)
- * @method  $this filter_discountcode() 		 filter_discountcode(string $v)  Discount code search (coupon code/title or upgrade title)
- * @method  $this publish_up() 					 publish_up(string $v)      	 Subscriptions coming up after date
- * @method  $this publish_down() 				 publish_down(string $v)  	  	 Subscriptions coming up before date (if publish_up is set), or subscriptions expiring before date (if publish_up is not set)
- * @method  $this since() 						 since(string $v)              	 Subscriptions created after this date
- * @method  $this until() 						 until(string $v)              	 Subscriptions created before this date
- * @method  $this expires_from() 				 expires_from(string $v)  		 Subscriptions expiring from this date onwards
- * @method  $this expires_to()					 expires_to(string $v)      	 Subscriptions expiring before this date
- * @method  $this nozero() 						 nozero(bool $v)              	 Set to 1 to skip free (net_amount=0) subscriptions
- * @method  $this search() 						 search(string $v)            	 Search by user info (username, name, email, business name or VAT number)
- * @method  $this subid() 						 subid(mixed $ids)             	 Search by subscription ID (int or array of int)
- * @method  $this level() 						 level(mixed $ids)             	 Search by subscription level ID (int or array of int)
- * @method  $this coupon_id() 					 coupon_id(mixed $ids)     		 Search by coupon ID (int or array of int)
- * @method  $this paystate() 					 paystate(mixed $states)    	 Search by payment state (string or array of string)
- * @method  $this processor() 					 processor(string $v)      	 	 Search by payment processor identifier
- * @method  $this ip() 							 ip(string $v)                   Search by IP of user signing up
- * @method  $this ip_country() 					 ip_country(string $v)    		 Search by auto-detected country code based on IP
- * @method  $this paykey() 						 paykey(string $key)          	 Search by payment key
- * @method  $this user_id() 					 user_id(mixed $ids)         	 Search by user ID (int or array of int)
- * @method  $this enabled() 					 enabled(int $enabled)       	 Search by enabled status
+ * @method  $this _noemail()                     _noemail(bool $v)          	    Do not send email on save when true (resets after successful save)
+ * @method  $this refresh()  					 refresh(int $v)            	    Set to 1 to ignore filters, used for running integrations on all subscriptions
+ * @method  $this filter_discountmode() 		 filter_discountmode(string $v)     Discount filter mode (none, coupon, upgrade)
+ * @method  $this filter_discountcode() 		 filter_discountcode(string $v)     Discount code search (coupon code/title or upgrade title)
+ * @method  $this publish_up() 					 publish_up(string $v)      	    Subscriptions coming up after date
+ * @method  $this publish_down() 				 publish_down(string $v)  	  	    Subscriptions coming up before date (if publish_up is set), or subscriptions expiring before date (if publish_up is not set)
+ * @method  $this since() 						 since(string $v)              	    Subscriptions created after this date
+ * @method  $this until() 						 until(string $v)              	    Subscriptions created before this date
+ * @method  $this expires_from() 				 expires_from(string $v)  		    Subscriptions expiring from this date onwards
+ * @method  $this expires_to()					 expires_to(string $v)      	    Subscriptions expiring before this date
+ * @method  $this nozero() 						 nozero(bool $v)              	    Set to 1 to skip free (net_amount=0) subscriptions
+ * @method  $this search() 						 search(string $v)            	    Search by user info (username, name, email, business name or VAT number)
+ * @method  $this subid() 						 subid(int|int[] $ids)             	Search by subscription ID (int or array of int)
+ * @method  $this level() 						 level(int|int[] $ids)             	Search by subscription level ID (int or array of int)
+ * @method  $this coupon_id() 					 coupon_id(int|int[] $ids)     		Search by coupon ID (int or array of int)
+ * @method  $this paystate() 					 paystate(string|string[] $states)  Search by payment state (string or array of string)
+ * @method  $this processor() 					 processor(string $v)      	 	    Search by payment processor identifier
+ * @method  $this ip() 							 ip(string $v)                      Search by IP of user signing up
+ * @method  $this ip_country() 					 ip_country(string $v)    		    Search by auto-detected country code based on IP
+ * @method  $this paykey() 						 paykey(string $key)          	    Search by payment key
+ * @method  $this user_id() 					 user_id(int|int[] $ids)            Search by user ID (int or array of int)
+ * @method  $this enabled() 					 enabled(int $enabled)       	    Search by enabled status
  *
  * Relations:
  *

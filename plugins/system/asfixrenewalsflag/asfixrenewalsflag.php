@@ -176,10 +176,11 @@ class plgSystemAsfixrenewalsflag extends JPlugin
 
 				// Renewals won't be enabled (since they're not started yet), however they MUST BE completed
 				// Otherwise a failed renewal will be considered as a "valid one"
-				$subsModel->state('C');
-				$subsModel->user_id($sub->user_id);
-				$subsModel->level($sub->akeebasubs_level_id);
-				$subsModel->publish_up($sub->publish_down);
+				$subsModel
+					->paystate('C')
+					->user_id($sub->user_id)
+					->level($sub->akeebasubs_level_id)
+					->publish_up($sub->publish_down);
 
 				$renewals = $subsModel->get(true);
 
