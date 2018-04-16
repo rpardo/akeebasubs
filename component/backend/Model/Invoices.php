@@ -101,6 +101,61 @@ class Invoices extends DataModel
 	}
 
 	/**
+	 * Create a PDF representation of an invoice. This method returns the raw PDF binary file data created on the fly.
+	 *
+	 * @return  string
+	 *
+	 * @since   6.0.1
+	 */
+	public function getPDFData(): string
+	{
+		if (empty($this->html))
+		{
+			return '';
+		}
+
+		// Repair the input HTML
+		if (function_exists('tidy_repair_string'))
+		{
+			$tidyConfig = array(
+				'bare'                        => 'yes',
+				'clean'                       => 'yes',
+				'drop-proprietary-attributes' => 'yes',
+				'output-html'                 => 'yes',
+				'show-warnings'               => 'no',
+				'ascii-chars'                 => 'no',
+				'char-encoding'               => 'utf8',
+				'input-encoding'              => 'utf8',
+				'output-bom'                  => 'no',
+				'output-encoding'             => 'utf8',
+				'force-output'                => 'yes',
+				'tidy-mark'                   => 'no',
+				'wrap'                        => 0,
+			);
+			$repaired   = tidy_repair_string($this->html, $tidyConfig, 'utf8');
+
+			if ($repaired !== false)
+			{
+				$this->html = $repaired;
+			}
+		}
+
+		// Fix any relative URLs in the HTML
+		$this->html = $this->fixURLs($this->html);
+
+		// Create the PDF
+		$pdf = $this->getTCPDF();
+		$pdf->AddPage();
+		$pdf->writeHTML($this->html, true, false, true, false, '');
+		$pdf->lastPage();
+		$pdfData = $pdf->Output('', 'S');
+
+		unset($pdf);
+
+		return $pdfData;
+	}
+
+	/**
 	 * Set the default ordering
 	 *
 	 * @param   \JDatabaseQuery  $query
@@ -798,51 +853,14 @@ class Invoices extends DataModel
 	}
 
 	/**
-	 * Create a PDF representation of an invoice.
+	 * Create a PDF representation of an invoice and saves it to disk. If you need just the PDF binary data, created on
+	 * the fly, check out the getPDFData() method.
 	 *
 	 * @return  string  The (mangled) filename of the PDF file
 	 */
 	public function createPDF()
 	{
-		// Repair the input HTML
-		if (function_exists('tidy_repair_string'))
-		{
-			$tidyConfig = array(
-				'bare'                        => 'yes',
-				'clean'                       => 'yes',
-				'drop-proprietary-attributes' => 'yes',
-				'output-html'                 => 'yes',
-				'show-warnings'               => 'no',
-				'ascii-chars'                 => 'no',
-				'char-encoding'               => 'utf8',
-				'input-encoding'              => 'utf8',
-				'output-bom'                  => 'no',
-				'output-encoding'             => 'utf8',
-				'force-output'                => 'yes',
-				'tidy-mark'                   => 'no',
-				'wrap'                        => 0,
-			);
-			$repaired   = tidy_repair_string($this->html, $tidyConfig, 'utf8');
-
-			if ($repaired !== false)
-			{
-				$this->html = $repaired;
-			}
-		}
-
-		// Fix any relative URLs in the HTML
-		$this->html = $this->fixURLs($this->html);
-
-		//echo "<pre>" . htmlentities($invoiceRecord->html) . "</pre>"; die();
-
-		// Create the PDF
-		$pdf = $this->getTCPDF();
-		$pdf->AddPage();
-		$pdf->writeHTML($this->html, true, false, true, false, '');
-		$pdf->lastPage();
-		$pdfData = $pdf->Output('', 'S');
-
-		unset($pdf);
+		$pdfData = $this->getPDFData();
 
 		// Write the PDF data to disk using JFile::write();
 		\JLoader::import('joomla.filesystem.file');
@@ -914,15 +932,9 @@ class Invoices extends DataModel
 	 */
 	public function emailPDF($sub)
 	{
-		\JLoader::import('joomla.filesystem.file');
-		$path = $this->getInvoicePath();
+		$pdfData = $this->getPDFData();
 
-		if (empty($this->filename) || !\JFile::exists($path . $this->filename))
-		{
-			$this->filename = $this->createPDF();
-		}
-
-		if (empty($this->filename) || !\JFile::exists($path . $this->filename))
+		if (empty($pdfData))
 		{
 			return false;
 		}
@@ -942,7 +954,7 @@ class Invoices extends DataModel
 		}
 
 		// Attach the PDF invoice
-		$mailer->AddAttachment($path . $this->filename, 'invoice.pdf', 'base64', 'application/pdf');
+		$mailer->addStringAttachment($pdfData, 'invoice.pdf', 'base64', 'application/pdf');
 
 		// Set the recipient
 		$mailer->addRecipient($this->container->platform->getUser($sub->user_id)->email);

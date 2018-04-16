@@ -3,6 +3,7 @@
 **New**
 
 * Support for precompiled Blade templates, for those few servers which lack token_get_all support. IMPORTANT: On those servers you should do template overrides of the _precompiled_ .php template, not the Blade template. Otherwise you'll get a PHP Fatal error.
+* Downloading invoices and credit notes is decoupled from storing them on disk
 
 **Bug fixes**
 
