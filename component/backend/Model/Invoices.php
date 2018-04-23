@@ -9,10 +9,16 @@ namespace Akeeba\Subscriptions\Admin\Model;
 
 defined('_JEXEC') or die;
 
+use Akeeba\Engine\Postproc\Connector\S3v4\Acl;
+use Akeeba\Engine\Postproc\Connector\S3v4\Configuration;
+use Akeeba\Engine\Postproc\Connector\S3v4\Connector;
+use Akeeba\Engine\Postproc\Connector\S3v4\Exception\CannotPutFile;
+use Akeeba\Engine\Postproc\Connector\S3v4\Input;
 use Akeeba\Subscriptions\Admin\Helper\Email;
 use Akeeba\Subscriptions\Admin\Helper\EUVATInfo;
 use Akeeba\Subscriptions\Admin\Helper\Format;
 use Akeeba\Subscriptions\Admin\Helper\Message;
+use FOF30\Autoloader\Autoloader;
 use FOF30\Container\Container;
 use FOF30\Date\Date;
 use FOF30\Model\DataModel;
@@ -856,7 +862,7 @@ class Invoices extends DataModel
 	 * Create a PDF representation of an invoice and saves it to disk. If you need just the PDF binary data, created on
 	 * the fly, check out the getPDFData() method.
 	 *
-	 * @return  string  The (mangled) filename of the PDF file
+	 * @return  void
 	 */
 	public function createPDF()
 	{
@@ -897,14 +903,23 @@ class Invoices extends DataModel
 
 		$name = $hash . '_' . $this->invoice_no . '.pdf';
 
+		// Get the full filesystem path to the invoice folder
 		$path = $this->getInvoicePath();
+		// Get the relative path to the invoice (basically, a folder like 2018-04 for April 2018's invoices)
+		$relPath = basename($path);
 
-		$ret = \JFile::write($path . $name, $pdfData);
+		$written = $this->uploadToS3($relPath . '/' . $name, $pdfData);
 
-		if ($ret)
+		if (!$written)
+		{
+			$written = \JFile::write($path . $name, $pdfData);
+		}
+
+		if ($written)
 		{
 			// Delete the old invoice file
 			$oldName = $this->filename;
+
 			if (\JFile::exists($path . $oldName))
 			{
 				\JFile::delete($path . $oldName);
@@ -913,14 +928,67 @@ class Invoices extends DataModel
 			// Update the invoice record
 			$this->filename = $name;
 			$this->save();
-
-			// return the name of the file
-			return $name;
 		}
-		else
+	}
+
+	/**
+	 * Try to upload an invoice to Amazon S3.
+	 *
+	 * @param   string  $relativePath  The relative path of the file inside the configured Amazon S3 bucket and directory
+	 * @param   string  $pdfData       The raw binary PDF data to upload
+	 *
+	 * @return  bool  True on success
+	 */
+	private function uploadToS3($relativePath, $pdfData)
+	{
+		$autoloader = Autoloader::getInstance();
+
+		$namespace = '\\Akeeba\\Engine\\Postproc\\Connector\\S3v4\\';
+		if (!$autoloader->hasMap($namespace))
+		{
+			$autoloader->addMap($namespace, $this->container->backEndPath . '/vendor/akeeba/s3/src');
+		}
+
+		if (!defined('AKEEBAENGINE'))
+		{
+			define('AKEEBAENGINE', 1);
+		}
+
+		\JLog::add("Trying to upload invoice file $relativePath to Amazon S3.", \JLog::DEBUG, 'com_akeebasubs');
+
+		$s3access = $this->container->params->get('s3access', '');
+		$s3secret = $this->container->params->get('s3secret', '');
+		$s3method = $this->container->params->get('s3method', 'v4');
+		$s3region = $this->container->params->get('s3region', 'us-east-1');
+		$s3bucket = $this->container->params->get('s3bucket', '');
+		$s3dir    = $this->container->params->get('s3dir', '/');
+
+		// Has the user configured Amazon S3 at all?
+		if (empty($s3access) || empty($s3secret) || empty($s3bucket))
 		{
 			return false;
 		}
+
+		// Get the S3 connector
+		$s3Config = new Configuration($s3access, $s3secret, $s3method, $s3region);
+		$s3Config->setSSL(true);
+		$s3 = new Connector($s3Config);
+
+		// Try to upload the file to S3
+		$input        = Input::createFromData($pdfData, null);
+		$absolutePath = trim($s3dir, '/') . '/' . trim($relativePath, '/');
+
+		try
+		{
+			$s3->putObject($input, $s3bucket, $absolutePath, Acl::ACL_PRIVATE);
+		}
+		catch (CannotPutFile $e)
+		{
+			\JLog::add("Cannot upload invoice file to Amazon S3. Reason: {$e->getMessage()}", \JLog::WARNING, 'com_akeebasubs');
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
