@@ -1313,4 +1313,35 @@ class Invoices extends DataModel
 
 		return JPATH_ADMINISTRATOR . '/components/com_akeebasubs/invoices/'. $date->format('Y-m', true, false) . '/';
     }
+
+	protected function setHtmlAttribute($value)
+	{
+		return $this->container->crypto->encrypt($value);
+	}
+
+	protected function setAtxtAttribute($value)
+	{
+		return $this->container->crypto->encrypt($value);
+	}
+
+	protected function setBtxtAttribute($value)
+	{
+		return $this->container->crypto->encrypt($value);
+	}
+
+	protected function getHtmlAttribute($value)
+	{
+		return $this->container->crypto->decrypt($value);
+	}
+
+	protected function getAtxtAttribute($value)
+	{
+		return $this->container->crypto->decrypt($value);
+	}
+
+	protected function getBtxtAttribute($value)
+	{
+		return $this->container->crypto->decrypt($value);
+	}
+
 }
