@@ -1,4 +1,4 @@
-# 6.0.1
+# 6.1.0
 
 **New**
 
@@ -9,6 +9,7 @@
 **Bug fixes**
 
 * [CRITICAL] Editing existing records in the backend results in creation of new records instead
+* [HIGH] PayPal and 2Checkout collation plugins do not trigger the fixSubscriptionDates code
 * [HIGH] JavaScript error in the subscription page prevents users from using discount coupon codes (gh-311) 
 * [HIGH] Payment callbacks may not be triggered (gh-310) 
 * [HIGH] Credit Notes page was off by one column and did not display the invoice number 

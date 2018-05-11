@@ -9,6 +9,7 @@ defined('_JEXEC') or die();
 
 JLoader::import('joomla.plugin.plugin');
 
+use Akeeba\Subscriptions\Admin\PluginAbstracts\AkpaymentBase;
 use FOF30\Container\Container;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 use FOF30\Date\Date;
@@ -213,7 +214,16 @@ class plgSystemAs2cocollation extends JPlugin
 					'state'         => 'C',
 					'processor_key' => $processorKey,
 				);
+
+				AkpaymentBase::fixSubscriptionDates($sub, $updates);
+
 				$sub->save($updates);
+
+				// Run the onAKAfterPaymentCallback events
+				Container::getInstance('com_akeebasubs')->platform->importPlugin('akeebasubs');
+				Container::getInstance('com_akeebasubs')->platform->runPlugins('onAKAfterPaymentCallback', array(
+					$sub
+				));
 			}
 			catch (Exception $e)
 			{
