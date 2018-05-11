@@ -18,6 +18,7 @@ use FOF30\Utils\Ip;
 use JBrowser;
 use JFactory;
 use JLoader;
+use JLog;
 use JUser;
 
 defined('_JEXEC') or die;
@@ -1105,6 +1106,9 @@ class Subscribe extends Model
 	 */
 	public function runCallback()
 	{
+		// Debug log
+		JLog::addLogger(['text_file' => "akeebasubs_payment.php"], JLog::ALL, ['akeebasubs.payment']);
+
 		$data = $this->input->getData();
 
 		// Some plugins result in an empty Itemid being added to the request
@@ -1123,6 +1127,9 @@ class Subscribe extends Model
 		$paymentMethodsModel->getPaymentPlugins();
 
 		$paymentMethod = $this->input->getCmd('paymentmethod', 'none');
+
+		JLog::add("Got payment callback for “{$paymentMethod}”.", JLog::INFO, 'akeebasubs.payment');
+
 		$jResponse     = $this->container->platform->runPlugins('onAKPaymentCallback', [
 			$paymentMethod,
 			$data,
@@ -1130,8 +1137,12 @@ class Subscribe extends Model
 
 		if (empty($jResponse))
 		{
+			JLog::add("No response from plugins: FAILED.", JLog::ERROR, 'akeebasubs.payment');
+
 			return false;
 		}
+
+		JLog::add(sprintf("Raw response array: %s", json_encode($jResponse)), JLog::DEBUG, 'akeebasubs.payment');
 
 		$status = false;
 
@@ -1139,6 +1150,8 @@ class Subscribe extends Model
 		{
 			$status = $status || $response;
 		}
+
+		JLog::add(sprintf("Final decision: %s", $status ? 'OK' : 'FAILED'), JLog::DEBUG, 'akeebasubs.payment');
 
 		return $status;
 	}
