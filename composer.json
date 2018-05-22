@@ -14,7 +14,24 @@
       "role": "Developer"
     }
   ],
+  "config": {
+    "vendor-dir": "component/backend/vendor"
+  },
+  "repositories": [
+    {
+      "type": "package",
+      "package": {
+        "name": "akeeba/s3",
+        "version": "master",
+        "source": {
+          "url": "https://github.com/akeeba/s3",
+          "type": "git",
+          "reference": "master"
+        }
+      }
+    }
+  ],
   "require": {
-    "phpunit/phpunit": "4.6.4"
+    "akeeba/s3": "dev-master"
   }
 }

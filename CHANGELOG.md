@@ -1,3 +1,21 @@
+# 6.1.0
+
+**New**
+
+* Support for precompiled Blade templates, for those few servers which lack token_get_all support. IMPORTANT: On those servers you should do template overrides of the _precompiled_ .php template, not the Blade template. Otherwise you'll get a PHP Fatal error.
+* Downloading invoices and credit notes is decoupled from storing them on disk
+* Automatically encrypt invoices stored in the database
+
+**Bug fixes**
+
+* [CRITICAL] Editing existing records in the backend results in creation of new records instead
+* [HIGH] PayPal and 2Checkout collation plugins do not trigger the fixSubscriptionDates code
+* [HIGH] JavaScript error in the subscription page prevents users from using discount coupon codes (gh-311) 
+* [HIGH] Payment callbacks may not be triggered (gh-310) 
+* [HIGH] Credit Notes page was off by one column and did not display the invoice number 
+* [LOW] Subscription form is not prefilled when logging in after visiting the subscription page as guest in the same session (gh-309) 
+* [LOW] Update information appeared unstyled 
+
 # 6.0.0
 
 **New**

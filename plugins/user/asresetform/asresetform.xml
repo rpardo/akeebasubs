@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.3.0" type="plugin" group="user" method="upgrade">
+    <name>PLG_USER_ASRESETFORM</name>
+    <author>Nicholas K. Dionysopoulos</author>
+    <authorEmail>nicholas@dionysopoulos.me</authorEmail>
+    <authorUrl>http://www.akeebabackup.com</authorUrl>
+    <copyright>Copyright (c)2010-2017 Nicholas K. Dionysopoulos</copyright>
+    <license>GNU General Public License version 3, or later</license>
+    <creationDate>April 2018</creationDate>
+    <version>6.0</version>
+    <description>PLG_USER_ASRESETFORM_DESCRIPTION</description>
+
+    <files>
+        <filename plugin="asresetform">asresetform.php</filename>
+    </files>
+    <languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.plg_user_asresetform.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_user_asresetform.sys.ini</language>
+    </languages>
+
+    <scriptfile>script.php</scriptfile>
+
+</extension>

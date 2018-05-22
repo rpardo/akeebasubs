@@ -243,12 +243,17 @@ class plgSystemAsexpirationnotify extends JPlugin
 					// Given the user and the level, load similar subscriptions with start date after this subscription's expiry date
 					$subsModel = Container::getInstance('com_akeebasubs')->factory->model('Subscriptions')->tmpInstance();
 
-					// Renewals won't be enabled (since they're not started yet), however they MUST BE completed
-					// Otherwise a failed renewal will be considered as a "valid one"
-					$subsModel->state('C');
-					$subsModel->user_id($sub->user_id);
-					$subsModel->level($sub->akeebasubs_level_id);
-					$subsModel->publish_up($sub->publish_down);
+					/**
+					 * Renewal subscriptions won't be enabled at this point (since they have not reached the publish_up
+					 * date yet) however their payment status MUST BE completed. If we do not look for the payment state
+					 * a failed renewal would be considered as a "valid one".
+					 */
+					$subsModel
+						->enabled(0)
+						->paystate('C')
+						->user_id($sub->user_id)
+						->level($sub->akeebasubs_level_id)
+						->publish_up($sub->publish_down);
 
 					$renewals = $subsModel->get(true);
 

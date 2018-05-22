@@ -79,6 +79,7 @@ class Pkg_AkeebasubsInstallerScript
 		['plugin', 'asexpirationnotify', 1, 'system'],
 		['plugin', 'aslogoutuser', 1, 'system'],
 		['plugin', 'aslogoutuser', 1, 'user'],
+		['plugin', 'asresetform', 1, 'user'],
 	];
 
 	/**

@@ -79,37 +79,14 @@ class Invoice extends DataController
 			throw new AccessForbidden;
 		}
 
-		// Make sure we have a PDF file or try to generate one
-		\JLoader::import('joomla.filesystem.file');
-
-		// In previous versions of Akeeba Subscriptions we're storing everything inside a single folder
-		$old_path = JPATH_ADMINISTRATOR . '/components/com_akeebasubs/invoices/';
-		// While in new ones every year/month has its own folder
-		$year_path = $model->getInvoicePath();
-
-		$filename   = $model->filename;
-		$saved_path = '';
-
-		foreach (array($old_path, $year_path) as $path)
-		{
-			if (\JFile::exists($path . $filename))
-			{
-				$saved_path = $path;
-				break;
-			}
-		}
+		// Get the PDF data (generated on the fly)
+		$fileData = $model->getPDFData();
 
 		// Our invoice wasn't in any directory? Well, let's create it
-		if (!$saved_path)
+		if (empty($fileData))
 		{
-			$filename   = $model->createPDF();
-			$saved_path = $model->getInvoicePath();
-
-			if ($filename == false)
-			{
-				$key = strtoupper($this->container->componentName . '_ERR_' . $model->getName() . '_NOTFOUND');
-				throw new ItemNotFound(\JText::_($key), 404);
-			}
+			$key = strtoupper($this->container->componentName . '_ERR_' . $model->getName() . '_NOTFOUND');
+			throw new ItemNotFound(\JText::_($key), 404);
 		}
 
 		// Clear any existing data
@@ -133,7 +110,7 @@ class Invoice extends DataController
 
 		if (isset($_SERVER['HTTP_USER_AGENT']) && strstr($_SERVER['HTTP_USER_AGENT'], 'MSIE'))
 		{
-			$header_file = preg_replace('/\./', '%2e', $filename, substr_count($basename, '.') - 1);
+			$header_file = preg_replace('/\./', '%2e', $basename, substr_count($basename, '.') - 1);
 
 			if (ini_get('zlib.output_compression'))
 			{
@@ -147,8 +124,6 @@ class Invoice extends DataController
 
 		// Get the PDF file's data
 		@clearstatcache();
-
-		$fileData = @file_get_contents($saved_path . $filename);
 
 		// Disable caching
 		header("Pragma: public");

@@ -71,8 +71,19 @@ var akeebasubs_form_specifier               = "signupForm";
 	$.fn.removePartial = function (baseClass, removeThis)
 	{
 		var myElement = this;
-		var classList = [];
-		var myClass   = this.attr("class");
+
+        if (this.length !== undefined)
+        {
+            if (this.length === 0)
+            {
+                return;
+            }
+
+            myElement = $(this[0]);
+        }
+
+		var myClass   = myElement.attr('class');
+        var classList = [];
 
 		if (typeof myClass !== "undefined")
 		{
@@ -120,9 +131,20 @@ var akeebasubs_form_specifier               = "signupForm";
 	$.fn.addPartial = function (baseClass, addThis)
 	{
 		var myElement = this;
-		var classList = this.attr("class").split(/\s+/);
 
-		$.each(classList, function (index, wholeClass)
+		if (this.length !== undefined)
+        {
+            if (this.length === 0)
+            {
+                return;
+            }
+
+            myElement = $(this[0]);
+        }
+
+		var classList = myElement.attr("class").split(/\s+/);
+
+        $.each(classList, function (index, wholeClass)
 		{
 			// Wrong base class?
 			if (!wholeClass.startsWith(baseClass))
@@ -718,7 +740,7 @@ function validateBusiness ()
 		// Do I have to show the business fields?
 		var elIsBusiness = $("#isbusiness");
 
-		if (elIsBusiness.val())
+		if (elIsBusiness.val() === "1")
 		{
 			$("#businessfields").show();
 		}

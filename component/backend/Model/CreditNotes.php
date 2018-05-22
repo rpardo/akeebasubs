@@ -62,8 +62,6 @@ use FOF30\Model\DataModel;
  */
 class CreditNotes extends DataModel
 {
-	use Mixin\Assertions;
-
 	/**
 	 * Public constructor. We override it to set up behaviours and relations
 	 *
@@ -90,6 +88,58 @@ class CreditNotes extends DataModel
 		// Set up relations. Note that the invoice ID is also the subscription ID.
 		$this->hasOne('invoice', 'Invoices', 'akeebasubs_invoice_id', 'akeebasubs_subscription_id');
 		$this->hasOne('subscription', 'Subscriptions', 'akeebasubs_invoice_id', 'akeebasubs_subscription_id');
+	}
+
+	/**
+	 * Create a PDF representation of a credit note. This method returns the raw PDF binary file data created on the fly.
+	 *
+	 * @return  string
+	 *
+	 * @since   6.0.1
+	 */
+	public function getPDFData(): string
+	{
+		// Repair the input HTML
+		if (function_exists('tidy_repair_string'))
+		{
+			$tidyConfig = array(
+				'bare'                        => 'yes',
+				'clean'                       => 'yes',
+				'drop-proprietary-attributes' => 'yes',
+				'output-html'                 => 'yes',
+				'show-warnings'               => 'no',
+				'ascii-chars'                 => 'no',
+				'char-encoding'               => 'utf8',
+				'input-encoding'              => 'utf8',
+				'output-bom'                  => 'no',
+				'output-encoding'             => 'utf8',
+				'force-output'                => 'yes',
+				'tidy-mark'                   => 'no',
+				'wrap'                        => 0,
+			);
+			$repaired   = tidy_repair_string($this->html, $tidyConfig, 'utf8');
+
+			if ($repaired !== false)
+			{
+				$this->html = $repaired;
+			}
+		}
+
+		// Fix any relative URLs in the HTML
+		$this->html = $this->fixURLs($this->html);
+
+		//echo "<pre>" . htmlentities($invoiceRecord->html) . "</pre>"; die();
+
+		// Create the PDF
+		$pdf = $this->getTCPDF();
+		$pdf->AddPage();
+		$pdf->writeHTML($this->html, true, false, true, false, '');
+		$pdf->lastPage();
+		$pdfData = $pdf->Output('', 'S');
+
+		unset($pdf);
+
+		return $pdfData;
 	}
 
 	/**
@@ -619,45 +669,7 @@ class CreditNotes extends DataModel
 	 */
 	public function createPDF()
 	{
-		// Repair the input HTML
-		if (function_exists('tidy_repair_string'))
-		{
-			$tidyConfig = array(
-				'bare'                        => 'yes',
-				'clean'                       => 'yes',
-				'drop-proprietary-attributes' => 'yes',
-				'output-html'                 => 'yes',
-				'show-warnings'               => 'no',
-				'ascii-chars'                 => 'no',
-				'char-encoding'               => 'utf8',
-				'input-encoding'              => 'utf8',
-				'output-bom'                  => 'no',
-				'output-encoding'             => 'utf8',
-				'force-output'                => 'yes',
-				'tidy-mark'                   => 'no',
-				'wrap'                        => 0,
-			);
-			$repaired   = tidy_repair_string($this->html, $tidyConfig, 'utf8');
-
-			if ($repaired !== false)
-			{
-				$this->html = $repaired;
-			}
-		}
-
-		// Fix any relative URLs in the HTML
-		$this->html = $this->fixURLs($this->html);
-
-		//echo "<pre>" . htmlentities($invoiceRecord->html) . "</pre>"; die();
-
-		// Create the PDF
-		$pdf = $this->getTCPDF();
-		$pdf->AddPage();
-		$pdf->writeHTML($this->html, true, false, true, false, '');
-		$pdf->lastPage();
-		$pdfData = $pdf->Output('', 'S');
-
-		unset($pdf);
+		$pdfData = $this->getPDFData();
 
 		// Write the PDF data to disk using JFile::write();
 		\JLoader::import('joomla.filesystem.file');
@@ -730,15 +742,9 @@ class CreditNotes extends DataModel
 	 */
 	public function emailPDF(Invoices $invoice)
 	{
-		\JLoader::import('joomla.filesystem.file');
-		$path = $this->getCreditNotePath();
+		$pdfData = $this->getPDFData();
 
-		if (empty($this->filename) || !\JFile::exists($path . $this->filename))
-		{
-			$this->filename = $this->createPDF();
-		}
-
-		if (empty($this->filename) || !\JFile::exists($path . $this->filename))
+		if (empty($pdfData))
 		{
 			return false;
 		}
@@ -758,7 +764,7 @@ class CreditNotes extends DataModel
 		}
 
 		// Attach the PDF invoice
-		$mailer->addAttachment($path . $this->filename, 'credit_note.pdf', 'base64', 'application/pdf');
+		$mailer->addStringAttachment($pdfData, 'credit_note.pdf', 'base64', 'application/pdf');
 
 		// Set the recipient
 		$mailer->addRecipient($invoice->subscription->juser->email);
@@ -969,5 +975,35 @@ class CreditNotes extends DataModel
 		}
 
 		return JPATH_ADMINISTRATOR . '/components/com_akeebasubs/creditnotes/' . $date->format('Y-m', true, false) . '/';
+	}
+
+	protected function setHtmlAttribute($value)
+	{
+		return $this->container->crypto->encrypt($value);
+	}
+
+	protected function setAtxtAttribute($value)
+	{
+		return $this->container->crypto->encrypt($value);
+	}
+
+	protected function setBtxtAttribute($value)
+	{
+		return $this->container->crypto->encrypt($value);
+	}
+
+	protected function getHtmlAttribute($value)
+	{
+		return $this->container->crypto->decrypt($value);
+	}
+
+	protected function getAtxtAttribute($value)
+	{
+		return $this->container->crypto->decrypt($value);
+	}
+
+	protected function getBtxtAttribute($value)
+	{
+		return $this->container->crypto->decrypt($value);
 	}
 }

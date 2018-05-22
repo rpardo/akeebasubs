@@ -139,6 +139,8 @@ class plgAkpaymentPaypal extends AkpaymentBase
 
 		if ($this->params->get('debug', 0))
 		{
+			JLog::add("PayPal: Debug mode enabled.", JLog::DEBUG, 'akeebasubs.payment');
+
 			$isValid = true;
 		}
 
@@ -148,6 +150,9 @@ class plgAkpaymentPaypal extends AkpaymentBase
 			if (!$isValid)
 			{
 				$isValid = $this->isValidIPN($data);
+
+				JLog::add(sprintf("PayPal: PayPal responds that the IPN is %s", $isValid ? 'valid' : 'INVALID'), JLog::DEBUG, 'akeebasubs.payment');
+
 			}
 		}
 		catch (RuntimeException $e)
@@ -162,6 +167,8 @@ class plgAkpaymentPaypal extends AkpaymentBase
 		}
 		catch (RuntimeException $e)
 		{
+			JLog::add("PayPal: IPN postback requirements are not met.", JLog::ERROR, 'akeebasubs.payment');
+
 			$data['akeebasubs_ipn_warning'] = $e->getMessage();
 		}
 
@@ -187,6 +194,8 @@ class plgAkpaymentPaypal extends AkpaymentBase
 
 			if (!$isValid)
 			{
+				JLog::add(sprintf("PayPal: Transaction type “%s” cannot be processed.", $data['txn_type']), JLog::ERROR, 'akeebasubs.payment');
+
 				$data['akeebasubs_failure_reason'] =
 					"Transaction type " . $data['txn_type'] . " can't be processed by this payment plugin.";
 			}
@@ -216,6 +225,8 @@ class plgAkpaymentPaypal extends AkpaymentBase
 			}
 			else
 			{
+				JLog::add(sprintf("PayPal: Cannot find subscription %u", $id), JLog::ERROR, 'akeebasubs.payment');
+
 				$isValid = false;
 			}
 
@@ -243,6 +254,8 @@ class plgAkpaymentPaypal extends AkpaymentBase
 
 			if (!$isValid)
 			{
+				JLog::add("PayPal: Merchant ID is not valid", JLog::ERROR, 'akeebasubs.payment');
+
 				$data['akeebasubs_failure_reason'] = 'Merchant ID does not match receiver_email or receiver_id';
 			}
 		}
@@ -283,6 +296,8 @@ class plgAkpaymentPaypal extends AkpaymentBase
 
 			if (!$isValid)
 			{
+				JLog::add("PayPal: Paid amount does not match the susbcription amount", JLog::ERROR, 'akeebasubs.payment');
+
 				$data['akeebasubs_failure_reason'] = 'Paid amount does not match the subscription amount';
 			}
 		}
@@ -300,6 +315,8 @@ class plgAkpaymentPaypal extends AkpaymentBase
 					{
 						$isValid                           = false;
 						$data['akeebasubs_failure_reason'] = "I will not process the same txn_id twice";
+
+						JLog::add("PayPal: I will not process the same txn_id twice", JLog::ERROR, 'akeebasubs.payment');
 					}
 				}
 				elseif ($subscription->state == 'X')
@@ -308,6 +325,8 @@ class plgAkpaymentPaypal extends AkpaymentBase
 					{
 						$isValid                           = false;
 						$data['akeebasubs_failure_reason'] = "I will not process the same txn_id twice";
+
+						JLog::add("PayPal: I will not process the same txn_id twice (canceled subscription)", JLog::ERROR, 'akeebasubs.payment');
 					}
 				}
 			}
@@ -323,6 +342,8 @@ class plgAkpaymentPaypal extends AkpaymentBase
 			{
 				$isValid                           = false;
 				$data['akeebasubs_failure_reason'] = "Invalid currency; expected $currency, got $mc_currency";
+
+				JLog::add("PayPal: Invalid currency; expected $currency, got $mc_currency", JLog::ERROR, 'akeebasubs.payment');
 			}
 		}
 
@@ -370,6 +391,8 @@ class plgAkpaymentPaypal extends AkpaymentBase
 				break;
 		}
 
+		JLog::add("PayPal: Collecting update information for the subscription", JLog::DEBUG, 'akeebasubs.payment');
+
 		// Update subscription status (this also automatically calls the plugins)
 		$updates = array(
 			'akeebasubs_subscription_id' => $id,
@@ -397,6 +420,8 @@ class plgAkpaymentPaypal extends AkpaymentBase
 		// In the case of a successful recurring payment, fetch the old subscription's data
 		if ($recurring && ($newStatus == 'C') && ($subscription->state == 'C'))
 		{
+			JLog::add("PayPal: Handling recurring subscription", JLog::DEBUG, 'akeebasubs.payment');
+
 			$this->handleRecurringSubscription($subscription, $updates);
 		}
 		elseif ($recurring && ($newStatus != 'C'))
@@ -409,6 +434,8 @@ class plgAkpaymentPaypal extends AkpaymentBase
 			return true;
 		}
 		// Save the changes
+		JLog::add("PayPal: Saving subscription updates", JLog::DEBUG, 'akeebasubs.payment');
+
 		$subscription->save($updates);
 
 		// Run the onAKAfterPaymentCallback events

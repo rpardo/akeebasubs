@@ -12,7 +12,11 @@
 /Tests/config.php
 
 # Composer dependencies
-vendor
+/component/backend/vendor
+
+# Precompiled Blade templates
+/component/frontend/PrecompiledTemplates
+/component/backend/PrecompiledTemplates
 
 # TCPDF
 /component/backend/assets/tcpdf/certificates/*.cer
@@ -23,11 +27,12 @@ vendor
 /component/backend/creditnotes/*.pdf
 /component/backend/creditnotes/*/*.pdf
 
-# Version and manifest files
+# Version, encryption key and manifest files
 /component/akeebasubs.xml
 /component/pkg_akeebasubs.xml
 /component/cli/*akeebasubs.xml
 /component/backend/version.php
+/component/backend/secretkey.php
 
 # Documentation backups
 /documentation/*.xml~

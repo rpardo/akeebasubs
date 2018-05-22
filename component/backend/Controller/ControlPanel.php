@@ -91,16 +91,17 @@ class ControlPanel extends Controller
 			);
 
 			$result = <<<ENDRESULT
-	<div class="alert alert-warning">
+	<div class="akeeba-block--warning">
 		<h3>
-			<span class="icon icon-exclamation-sign glyphicon glyphicon-exclamation-sign"></span>
 			{$strings['header']}
 		</h3>
 		<p>
-			<a href="index.php?option=com_installer&view=update" class="btn btn-primary">
+			<a href="index.php?option=com_installer&view=update" class="akeeba-btn--primary">
+				<span class="akion-refresh"></span>
 				{$strings['button']}
 			</a>
-			<a href="{$strings['infourl']}" target="_blank" class="btn btn-small btn-info">
+			<a href="{$strings['infourl']}" target="_blank" class="akeeba-btn--small--ghost">
+				<span class="akion-information-circled"></span>
 				{$strings['infolbl']}
 			</a>
 		</p>

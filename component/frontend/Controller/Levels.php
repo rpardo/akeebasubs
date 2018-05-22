@@ -226,6 +226,7 @@ class Levels extends DataController
 
 		// If the reset flag is passed to the URL we need to reset the cached data EXCEPT for the coupon code
 		$forceReset = $this->input->getBool('reset', false);
+		$forceReset = $forceReset || $this->container->platform->getSessionVar('forcereset', false, 'com_akeebasubs');
 
 		if ($forceReset)
 		{
