@@ -1,3 +1,9 @@
+# 6.1.1
+
+**New**
+
+* Allow the use of custom layouts in the Level view using the 'layout' query string parameter
+
 # 6.1.0
 
 **New**

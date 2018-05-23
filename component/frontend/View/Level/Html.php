@@ -63,8 +63,19 @@ class Html extends \FOF30\View\DataView\Html
 	{
 		parent::onBeforeRead();
 
-		// Force the layout
-		$this->layout = 'default';
+		// Make sure the layout exists. Otherwise use the "default" layout
+		try
+		{
+			$uri            = "auto:com_akeebasubs/Level/{$this->layout}";
+			$uri            = isset($this->viewTemplateAliases[$uri]) ? $this->viewTemplateAliases[$uri] : $uri;
+			$layoutTemplate = $this->getLayoutTemplate();
+			$extraPaths     = empty($this->templatePaths) ? array() : $this->templatePaths;
+			$path           = $this->viewFinder->resolveUriToPath($uri, $this->getLayoutTemplate(), $extraPaths);
+		}
+		catch (\Exception $e)
+		{
+			$this->setLayout('default');
+		}
 
 		$this->dnt = $this->getDoNotTrackStatus();
 
