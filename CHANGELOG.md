@@ -3,6 +3,7 @@
 **New**
 
 * Allow the use of custom layouts in the Level view using the 'layout' query string parameter
+* Allow EU fields to be disabled per subscription level. Useful, for example, for free subscriptions where confirming the refund policy makes no sense.
 
 # 6.1.0
 

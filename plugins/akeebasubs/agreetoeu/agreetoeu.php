@@ -5,6 +5,7 @@
  * @license        GNU GPLv3 <http://www.gnu.org/licenses/gpl.html> or later
  */
 
+use Akeeba\Subscriptions\Site\Model\Subscribe\StateData;
 use FOF30\Container\Container;
 
 defined('_JEXEC') or die();
@@ -16,6 +17,8 @@ class plgAkeebasubsAgreetoeu extends JPlugin
 {
 	function onSubscriptionFormPrepaymentRender($userparams, $cache)
 	{
+		$level_id = $cache['id'];
+
 		// Load the language
 		$lang = JFactory::getLanguage();
 		$lang->load('plg_akeebasubs_agreetoeu', JPATH_ADMINISTRATOR, 'en-GB', true);
@@ -25,10 +28,15 @@ class plgAkeebasubsAgreetoeu extends JPlugin
 		$fields = array();
 
 		// ----- CONFIRM BEING INFORMED FIELD -----
-		// Setup the combobox parameters
-		$labelText = JText::_('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_INFORMED_LABEL');
-		$extraText = JText::_('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_INFORMED_DESC');
-		$html = <<<HTML
+		$hasInformed = 0;
+
+		if (!$this->isExcluded('informed', $level_id))
+		{
+			$hasInformed = 1;
+			// Setup the combobox parameters
+			$labelText = JText::_('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_INFORMED_LABEL');
+			$extraText = JText::_('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_INFORMED_DESC');
+			$html = <<<HTML
 	<label class="checkbox">
 		<input type="checkbox" name="custom[confirm_informed]" id="confirm_informed" />
 		<span class="akion-information-circled hasPopover" title="$labelText" data-content="$extraText"></span>
@@ -36,21 +44,28 @@ class plgAkeebasubsAgreetoeu extends JPlugin
 	</label>
 HTML;
 
-		// Setup the field
-		$field = array(
-			'id'           => 'confirm_informed',
-			'label'        => '* ',
-			'elementHTML'  => $html,
-			'isValid'      => false
-		);
-		// Add the field to the return output
-		$fields[] = $field;
+			// Setup the field
+			$field = array(
+				'id'           => 'confirm_informed',
+				'label'        => '* ',
+				'elementHTML'  => $html,
+				'isValid'      => false
+			);
+			// Add the field to the return output
+			$fields[] = $field;
+		}
 
 		// ----- CONFIRM POSTAL ADDRESS FIELD -----
-		// Setup the combobox parameters
-		$labelText = JText::_('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_POSTAL_LABEL');
-		$extraText = JText::_('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_POSTAL_DESC');
-		$html = <<<HTML
+		$hasPostal = 0;
+
+		if (!$this->isExcluded('postal', $level_id))
+		{
+			$hasPostal = 1;
+
+			// Setup the combobox parameters
+			$labelText = JText::_('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_POSTAL_LABEL');
+			$extraText = JText::_('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_POSTAL_DESC');
+			$html = <<<HTML
 <label class="checkbox">
 	<input type="checkbox" name="custom[confirm_postal]" id="confirm_postal" />
 	<span class="akion-information-circled hasPopover" title="$labelText" data-content="$extraText"></span>
@@ -58,21 +73,28 @@ HTML;
 </label>
 HTML;
 
-		// Setup the field
-		$field = array(
-			'id'           => 'confirm_postal',
-			'label'        => '* ',
-			'elementHTML'  => $html,
-			'isValid'      => false
-		);
-		// Add the field to the return output
-		$fields[] = $field;
+			// Setup the field
+			$field = array(
+				'id'           => 'confirm_postal',
+				'label'        => '* ',
+				'elementHTML'  => $html,
+				'isValid'      => false
+			);
+			// Add the field to the return output
+			$fields[] = $field;
+		}
 
 		// ----- CONFIRM RIGHT TO WITHDRAWAL FIELD -----
-		// Setup the combobox parameters
-		$labelText = JText::_('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_WITHDRAWAL_LABEL');
-		$extraText = JText::_('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_WITHDRAWAL_DESC');
-		$html = <<<HTML
+		$hasWithdrawal = 0;
+
+		if (!$this->isExcluded('withdrawal', $level_id))
+		{
+			$hasWithdrawal = 0;
+
+			// Setup the combobox parameters
+			$labelText = JText::_('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_WITHDRAWAL_LABEL');
+			$extraText = JText::_('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_WITHDRAWAL_DESC');
+			$html = <<<HTML
 <label class="checkbox">
 	<input type="checkbox" name="custom[confirm_withdrawal]" id="confirm_withdrawal" />
 	<span class="akion-information-circled hasPopover" title="$labelText" data-content="$extraText"></span>
@@ -80,16 +102,17 @@ HTML;
 </label>
 HTML;
 
-		// Setup the field
-		$field = array(
-			'id'           => 'confirm_withdrawal',
-			'label'        => '* ',
-			'elementHTML'  => $html,
-			'isValid'      => false
-		);
+			// Setup the field
+			$field = array(
+				'id'           => 'confirm_withdrawal',
+				'label'        => '* ',
+				'elementHTML'  => $html,
+				'isValid'      => false
+			);
 
-		// Add the field to the return output
-		$fields[] = $field;
+			// Add the field to the return output
+			$fields[] = $field;
+		}
 
 		// ----- EU DATA PROTECTION POLICY (GDPR COMPLIANCE) -----
 		$eudataURL        = $this->params->get('eudataurl', '');
@@ -97,7 +120,7 @@ HTML;
 		$hasEUData        = !empty($eudataURL);
 		$hasEUDataInteger = $hasEUData ? 1 : 0;
 
-		if ($hasEUData)
+		if (!$this->isExcluded('eudata', $level_id) && $hasEUData)
 		{
 			// Setup the combobox parameters
 			$labelText = JText::sprintf('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_EUDATA_LABEL', $eudataURL);
@@ -135,29 +158,38 @@ HTML;
 		// Immediate validation of the field
 		if (akeebasubs_apply_validation)
 		{
-			$('#confirm_informed').change(function(e){
-				if($('#confirm_informed').is(':checked')) {
-					$('#confirm_informed').parents('div.form-group').removeClass('has-error');
-				} else {
-					$('#confirm_informed').parents('div.form-group').addClass('has-error');
-				}
-			});
+			if ($hasInformed)
+			{
+				$('#confirm_informed').change(function(e){
+					if($('#confirm_informed').is(':checked')) {
+						$('#confirm_informed').parents('div.form-group').removeClass('has-error');
+					} else {
+						$('#confirm_informed').parents('div.form-group').addClass('has-error');
+					}
+				});
+			}
 
-			$('#confirm_postal').change(function(e){
-				if($('#confirm_postal').is(':checked')) {
-					$('#confirm_postal').parents('div.form-group').removeClass('has-error');
-				} else {
-					$('#confirm_postal').parents('div.form-group').addClass('has-error');
-				}
-			});
+			if ($hasPostal)
+			{
+				$('#confirm_postal').change(function(e){
+					if($('#confirm_postal').is(':checked')) {
+						$('#confirm_postal').parents('div.form-group').removeClass('has-error');
+					} else {
+						$('#confirm_postal').parents('div.form-group').addClass('has-error');
+					}
+				});				
+			}
 
-			$('#confirm_withdrawal').change(function(e){
-				if($('#confirm_withdrawal').is(':checked')) {
-					$('#confirm_withdrawal').parents('div.form-group').removeClass('has-error');
-				} else {
-					$('#confirm_withdrawal').parents('div.form-group').addClass('has-error');
-				}
-			});
+			if ($hasWithdrawal)
+			{
+				$('#confirm_withdrawal').change(function(e){
+					if($('#confirm_withdrawal').is(':checked')) {
+						$('#confirm_withdrawal').parents('div.form-group').removeClass('has-error');
+					} else {
+						$('#confirm_withdrawal').parents('div.form-group').addClass('has-error');
+					}
+				});
+			}
 			
 			if ($hasEUDataInteger)
 			{
@@ -245,43 +277,25 @@ JS;
 		return $fields;
 	}
 
+	/**
+	 * @param   StateData $data
+	 *
+	 * @return  array
+	 */
 	function onValidate($data)
 	{
-		$eudataURL        = $this->params->get('eudataurl', '');
-		$eudataURL        = trim($eudataURL);
-		$hasEUData        = !empty($eudataURL);
+		$level_id  = $data->id;
+		$eudataURL = $this->params->get('eudataurl', '');
+		$eudataURL = trim($eudataURL);
+		$hasEUData = !empty($eudataURL);
 
 		$response = array(
+			'valid'             => true,
 			'isValid'           => true,
-			'custom_validation' => array()
+			'custom_validation' => array(),
 		);
 
 		$custom = $data->custom;
-
-		if (!array_key_exists('confirm_informed', $custom))
-		{
-			$custom['confirm_informed'] = 0;
-		}
-
-		if (!array_key_exists('confirm_postal', $custom))
-		{
-			$custom['confirm_postal'] = 0;
-		}
-
-		if (!array_key_exists('confirm_withdrawal', $custom))
-		{
-			$custom['confirm_withdrawal'] = 0;
-		}
-
-		if (!array_key_exists('confirm_eudata', $custom))
-		{
-			$custom['confirm_eudata'] = 0;
-		}
-
-		$custom['confirm_informed'] = $this->isTruthism($custom['confirm_informed']) ? 1 : 0;
-		$custom['confirm_postal'] = $this->isTruthism($custom['confirm_postal']) ? 1 : 0;
-		$custom['confirm_withdrawal'] = $this->isTruthism($custom['confirm_withdrawal']) ? 1 : 0;
-		$custom['confirm_eudata'] = $this->isTruthism($custom['confirm_eudata']) ? 1 : 0;
 
 		// If we don't have a URL we don't show the field, therefore we force it validated to go on
 		if (!$hasEUData)
@@ -289,16 +303,22 @@ JS;
 			$custom['confirm_eudata'] = 2;
 		}
 
-		$response['custom_validation']['confirm_informed'] = $custom['confirm_informed'];
-		$response['custom_validation']['confirm_postal'] = $custom['confirm_postal'];
-		$response['custom_validation']['confirm_withdrawal'] = $custom['confirm_withdrawal'];
-		$response['custom_validation']['confirm_eudata'] = $custom['confirm_eudata'];
+		foreach (['informed', 'postal', 'withdrawal', 'eudata'] as $fieldName)
+		{
+			if ($this->isExcluded($fieldName, $level_id))
+			{
+				continue;
+			}
 
-		// Huh?
-		$response['valid'] = $response['custom_validation']['confirm_informed'] &&
-			$response['custom_validation']['confirm_postal'] &&
-			$response['custom_validation']['confirm_withdrawal'] &&
-			($response['custom_validation']['confirm_eudata'] != 0);
+			if (!array_key_exists('confirm_' . $fieldName, $custom))
+			{
+				$custom['confirm_' . $fieldName] = 0;
+			}
+
+			$custom['confirm_' . $fieldName]                        = $this->isTruthism($custom['confirm_' . $fieldName]) ? 1 : 0;
+			$response['custom_validation']['confirm_' . $fieldName] = $custom['confirm_' . $fieldName];
+			$response['valid']                                      = $response['valid'] && ($response['custom_validation']['confirm_' . $fieldName] != 0);
+		}
 
 		return $response;
 	}
@@ -315,4 +335,16 @@ JS;
 		return false;
 	}
 
+	private function isExcluded($type, $levelID)
+	{
+		$paramName = 'excluded_levels_' . $type;
+		$excludedLevels = $this->params->get($paramName, '');
+
+		if (empty($excludedLevels))
+		{
+			return false;
+		}
+
+		return in_array($levelID, $excludedLevels);
+	}
 }
