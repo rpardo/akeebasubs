@@ -89,7 +89,7 @@ HTML;
 
 		if (!$this->isExcluded('withdrawal', $level_id))
 		{
-			$hasWithdrawal = 0;
+			$hasWithdrawal = 1;
 
 			// Setup the combobox parameters
 			$labelText = JText::_('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_WITHDRAWAL_LABEL');
@@ -115,13 +115,16 @@ HTML;
 		}
 
 		// ----- EU DATA PROTECTION POLICY (GDPR COMPLIANCE) -----
+		$hasEUDataInteger = 0;
+
 		$eudataURL        = $this->params->get('eudataurl', '');
 		$eudataURL        = trim($eudataURL);
 		$hasEUData        = !empty($eudataURL);
-		$hasEUDataInteger = $hasEUData ? 1 : 0;
+//		$hasEUDataInteger = $hasEUData ? 1 : 0;
 
 		if (!$this->isExcluded('eudata', $level_id) && $hasEUData)
 		{
+			$hasEUDataInteger = 1;
 			// Setup the combobox parameters
 			$labelText = JText::sprintf('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_EUDATA_LABEL', $eudataURL);
 			$extraText = JText::_('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_EUDATA_DESC');
@@ -197,7 +200,7 @@ HTML;
 					if($('#confirm_eudata').is(':checked')) {
 						$('#confirm_eudata').parents('div.form-group').removeClass('has-error');
 					} else {
-						$('#confirm_withdrawal').parents('div.form-group').addClass('has-error');
+						$('#confirm_eudata').parents('div.form-group').addClass('has-error');
 					}
 				});
 			}
@@ -216,7 +219,7 @@ function plg_akeebasubs_agreetoeu_fetch()
 		
 		if ($hasEUDataInteger)
 		{
-			result.confirm_withdrawal = $('#confirm_eudata').is(':checked') ? 1 : 0;
+			result.confirm_eudata = $('#confirm_eudata').is(':checked') ? 1 : 0;
 		}
 	})(akeeba.jQuery);
 
@@ -298,10 +301,10 @@ JS;
 		$custom = $data->custom;
 
 		// If we don't have a URL we don't show the field, therefore we force it validated to go on
-		if (!$hasEUData)
-		{
-			$custom['confirm_eudata'] = 2;
-		}
+//		if (!$hasEUData)
+//		{
+//			$custom['confirm_eudata'] = 2;
+//		}
 
 		foreach (['informed', 'postal', 'withdrawal', 'eudata'] as $fieldName)
 		{
@@ -316,6 +319,10 @@ JS;
 			}
 
 			$custom['confirm_' . $fieldName]                        = $this->isTruthism($custom['confirm_' . $fieldName]) ? 1 : 0;
+			// If we don't have a URL we don't show the field, therefore we force it validated to go on
+			if ($fieldName == 'eudata' && !$hasEUData) {
+				$custom[ 'confirm_' . $fieldName ] = 2;
+			}
 			$response['custom_validation']['confirm_' . $fieldName] = $custom['confirm_' . $fieldName];
 			$response['valid']                                      = $response['valid'] && ($response['custom_validation']['confirm_' . $fieldName] != 0);
 		}
