@@ -6,6 +6,10 @@
 * Allow EU fields to be disabled per subscription level. Useful, for example, for free subscriptions where confirming the refund policy makes no sense.
 * New “Personal Information” privilege for accessing views with personally identifiable information
 
+**Miscellaneous changes**
+
+* Support more Amazon S3 regions
+
 **Bug fixes**
 
 * [HIGH] New format for Irish VAT numbers was not taken into account

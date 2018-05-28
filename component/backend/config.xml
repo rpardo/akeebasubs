@@ -264,22 +264,24 @@
 			   label="COM_AKEEBASUBS_CONFIG_S3_REGION_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_S3_REGION_DESC">
 			<option value="">COM_AKEEBASUBS_CONFIG_S3_REGION_NONE</option>
-			<option value="us-east-1">COM_AKEEBASUBS_CONFIG_S3_REGION_USEAST1</option>
-			<option value="us-east-2">COM_AKEEBASUBS_CONFIG_S3_REGION_USEAST2</option>
+            <option value="us-east-2">COM_AKEEBASUBS_CONFIG_S3_REGION_USEAST2</option>
+            <option value="us-east-1">COM_AKEEBASUBS_CONFIG_S3_REGION_USEAST1</option>
 			<option value="us-west-2">COM_AKEEBASUBS_CONFIG_S3_REGION_USWEST2</option>
 			<option value="us-west-1">COM_AKEEBASUBS_CONFIG_S3_REGION_USWEST1</option>
-			<option value="eu-west-1">COM_AKEEBASUBS_CONFIG_S3_REGION_EUWEST1</option>
-			<option value="eu-west-2">COM_AKEEBASUBS_CONFIG_S3_REGION_EUWEST2</option>
-			<option value="eu-central-1">COM_AKEEBASUBS_CONFIG_S3_REGION_EUCENTRAL1</option>
-			<option value="eu-central-2">COM_AKEEBASUBS_CONFIG_S3_REGION_EUCENTRAL2</option>
-			<option value="ap-southeast-1">COM_AKEEBASUBS_CONFIG_S3_REGION_APSE1</option>
-			<option value="ap-southeast-2">COM_AKEEBASUBS_CONFIG_S3_REGION_APSE2</option>
-			<option value="ap-northeast-1">COM_AKEEBASUBS_CONFIG_S3_REGION_APNE1</option>
-			<option value="ap-northeast-2">COM_AKEEBASUBS_CONFIG_S3_REGION_APNE2</option>
+			<option value="ca-central-1">COM_AKEEBASUBS_CONFIG_S3_REGION_CACENTRAL1</option>
+			<option value="ap-south-1">COM_AKEEBASUBS_CONFIG_S3_REGION_APSOUTH1</option>
+            <option value="ap-northeast-1">COM_AKEEBASUBS_CONFIG_S3_REGION_APNORTHEAST1</option>
+            <option value="ap-northeast-2">COM_AKEEBASUBS_CONFIG_S3_REGION_APNORTHEAST2</option>
+            <option value="ap-northeast-3">COM_AKEEBASUBS_CONFIG_S3_REGION_APNORTHEAST3</option>
+            <option value="ap-southeast-1">COM_AKEEBASUBS_CONFIG_S3_REGION_APSOUTHEAST1</option>
+            <option value="ap-southeast-2">COM_AKEEBASUBS_CONFIG_S3_REGION_APSOUTHEAST2</option>
+            <option value="cn-north-1">COM_AKEEBASUBS_CONFIG_S3_REGION_CNNORTH1</option>
+            <option value="cn-northwest-2">COM_AKEEBASUBS_CONFIG_S3_REGION_CNNORTHWEST1</option>
+            <option value="eu-central-1">COM_AKEEBASUBS_CONFIG_S3_REGION_EUCENTRAL1</option>
+            <option value="eu-west-1">COM_AKEEBASUBS_CONFIG_S3_REGION_EUWEST1</option>
+            <option value="eu-west-2">COM_AKEEBASUBS_CONFIG_S3_REGION_EUWEST2</option>
+            <option value="eu-west-3">COM_AKEEBASUBS_CONFIG_S3_REGION_EUWEST3</option>
 			<option value="sa-east-1">COM_AKEEBASUBS_CONFIG_S3_REGION_SAEAST1</option>
-			<option value="sa-east-2">COM_AKEEBASUBS_CONFIG_S3_REGION_SAEAST2</option>
-			<option value="sa-west-1">COM_AKEEBASUBS_CONFIG_S3_REGION_SAWEST1</option>
-			<option value="sa-west-2">COM_AKEEBASUBS_CONFIG_S3_REGION_SAWEST2</option>
 		</field>
 	</fieldset>
 
