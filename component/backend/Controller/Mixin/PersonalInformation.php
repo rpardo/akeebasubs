@@ -7,6 +7,8 @@
 
 namespace Akeeba\Subscriptions\Admin\Controller\Mixin;
 
+use FOF30\Container\Container;
+
 defined('_JEXEC') or die;
 
 trait PersonalInformation
@@ -20,8 +22,17 @@ trait PersonalInformation
 	 */
 	public function onBeforeExecute($task)
 	{
+		/** @var Container $container */
+		$container = $this->container;
+
+		// Only apply the check in the backend. In the frontend I have different kinds of access control.
+		if (!$container->platform->isBackend())
+		{
+			return true;
+		}
+
 		/** @var \JUser $user */
-		$user = $this->container->platform->getUser();
+		$user = $container->platform->getUser();
 
 		if (!$user->authorise('akeebasubs.pii', 'com_akeebasubs'))
 		{
