@@ -11,11 +11,13 @@ defined('_JEXEC') or die;
 
 use Akeeba\Subscriptions\Admin\Model\RenewalsForReports;
 use Akeeba\Subscriptions\Admin\View\Reports\Html;
+use Akeeba\Subscriptions\Admin\Controller\Mixin\PersonalInformation;
 use FOF30\Container\Container;
 use FOF30\Controller\Controller;
 
 class Reports extends Controller
 {
+	use PersonalInformation;
 	use Mixin\PredefinedTaskList;
 
 	public function __construct(Container $container, array $config = array())

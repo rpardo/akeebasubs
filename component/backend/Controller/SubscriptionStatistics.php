@@ -9,6 +9,7 @@ namespace Akeeba\Subscriptions\Admin\Controller;
 
 defined('_JEXEC') or die;
 
+use Akeeba\Subscriptions\Admin\Controller\Mixin\PersonalInformation;
 use FOF30\Container\Container;
 use FOF30\Controller\DataController;
 use FOF30\View\Exception\AccessForbidden;
@@ -16,6 +17,7 @@ use FOF30\View\Exception\AccessForbidden;
 class SubscriptionStatistics extends DataController
 {
 	use Mixin\PredefinedTaskList;
+	use PersonalInformation;
 
 	/**
 	 * Overridden. We want to use a custom model name and limit the task list to "browse" only.
