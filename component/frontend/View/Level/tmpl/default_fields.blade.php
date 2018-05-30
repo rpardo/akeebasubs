@@ -71,7 +71,7 @@ $returnURI->setVar('reset', 1);
 	{{-- Login button --}}
 	<div id="akeebasubs-level-login" class="akeeba-form-group--pull-right">
 		<div class="akeeba-form-group--actions">
-			<a href="@route('index.php?option=com_users&task=user&return=' . base64_encode($returnURI->toString())))"
+			<a href="@route('index.php?option=com_users&view=login&return=' . base64_encode($returnURI->toString())))"
 			   class="akeeba-btn--primary" rel="nofollow,noindex">
 				<span class="glyphicon glyphicon-log-in"></span>
 				@lang('COM_AKEEBASUBS_LEVEL_BTN_LOGINIFALERADY')
