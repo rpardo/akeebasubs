@@ -196,7 +196,7 @@ HTML;
 			
 			if ($hasEUDataInteger)
 			{
-				$('!#confirm_eudata').change(function(e){
+				$('#confirm_eudata').change(function(e){
 					if($('#confirm_eudata').is(':checked')) {
 						$('#confirm_eudata').parents('div.form-group').removeClass('has-error');
 					} else {
