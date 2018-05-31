@@ -119,11 +119,13 @@ class Subscribe extends Controller
 		{
 			$this->container->platform->setSessionVar('firstrun', false, 'com_akeebasubs');
 			$helpCode = basename($model->getLogFilename(), '.php');
+			$layout = $this->input->getCmd('layout', 'default');
 
-			$url = str_replace('&amp;', '&', \JRoute::_('index.php?option=com_akeebasubs&view=Level&layout=default&slug=' . $model->slug));
+
+			$url = str_replace('&amp;', '&', \JRoute::_('index.php?option=com_akeebasubs&view=Level&layout='.$layout.'&slug=' . $model->slug));
 			$msg = \JText::sprintf('COM_AKEEBASUBS_LEVEL_ERR_VALIDATIONOVERALL_HELPCODE', $helpCode);
 
-			$resetUrl = str_replace('&amp;', '&', \JRoute::_('index.php?option=com_akeebasubs&view=Level&layout=default&slug=' . $model->slug . '&reset=1'));
+			$resetUrl = str_replace('&amp;', '&', \JRoute::_('index.php?option=com_akeebasubs&view=Level&layout='.$layout.'&slug=' . $model->slug . '&reset=1'));
 			$msg .= ' ' . \JText::sprintf('COM_AKEEBASUBS_LEVEL_ERR_VALIDATIONOVERALL_RESET', $resetUrl);
 
 			$this->setRedirect($url, $msg, 'error');

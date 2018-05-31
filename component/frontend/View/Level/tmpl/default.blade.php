@@ -17,7 +17,7 @@ akeebasubs_level_id = {$this->item->akeebasubs_level_id};
 
 JS;
 $this->addJavascriptInline($script);
-
+$layout = $this->input->getCmd('layout', 'default');
 ?>
 
 <div id="akeebasubs">
@@ -48,7 +48,7 @@ $this->addJavascriptInline($script);
 	</noscript>
 
 	<form
-		action="@route('index.php?option=com_akeebasubs&view=Subscribe&layout=default&slug=' . $this->input->getString('slug', ''))"
+		action="@route('index.php?option=com_akeebasubs&view=Subscribe&layout='.$layout.'&slug=' . $this->input->getString('slug', ''))"
 		method="post"
 		id="signupForm" class="akeeba-form--horizontal">
 		<input type="hidden" name="@token()" value="1"/>

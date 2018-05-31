@@ -66,6 +66,8 @@ class Html extends \FOF30\View\DataView\Html
 		// Make sure the layout exists. Otherwise use the "default" layout
 		try
 		{
+			// Read the layout from the request and try to apply it
+			$this->layout	= $this->input->getCmd('layout', $this->layout);
 			$uri            = "auto:com_akeebasubs/Level/{$this->layout}";
 			$uri            = isset($this->viewTemplateAliases[$uri]) ? $this->viewTemplateAliases[$uri] : $uri;
 			$layoutTemplate = $this->getLayoutTemplate();
