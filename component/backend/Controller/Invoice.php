@@ -10,6 +10,7 @@ namespace Akeeba\Subscriptions\Admin\Controller;
 defined('_JEXEC') or die;
 
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
+use Akeeba\Subscriptions\Admin\Controller\Mixin\PersonalInformation;
 use FOF30\Container\Container;
 use FOF30\Controller\DataController;
 use FOF30\Controller\Exception\ItemNotFound;
@@ -17,6 +18,8 @@ use FOF30\View\Exception\AccessForbidden;
 
 class Invoice extends DataController
 {
+	use PersonalInformation;
+
 	public function __construct(Container $container, array $config = array())
 	{
 		parent::__construct($container, $config);

@@ -9,11 +9,14 @@ namespace Akeeba\Subscriptions\Admin\Controller;
 
 defined('_JEXEC') or die;
 
+use Akeeba\Subscriptions\Admin\Controller\Mixin\PersonalInformation;
 use FOF30\Controller\DataController;
 use FOF30\Inflector\Inflector;
 
 class Subscription extends DataController
 {
+	use PersonalInformation;
+
 	public function publish()
 	{
 		$this->noop();

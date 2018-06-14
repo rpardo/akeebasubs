@@ -21,6 +21,42 @@
             <fieldset name="basic">
                 <field name="eudataurl" type="text" default="" label="PLG_AKEEBASUBS_AGREETOEU_CONFIG_EUDATA_LABEL"
                        description="PLG_AKEEBASUBS_AGREETOEU_CONFIG_EUDATA_DESC" length="50"/>
+
+                <field name="excluded_levels_informed" type="sql" default=""
+                       label="PLG_AKEEBASUBS_AGREETOEU_CONFIG_EXCLUDE_INFORMED_LABEL"
+                       description="PLG_AKEEBASUBS_AGREETOEU_CONFIG_EXCLUDE_INFORMED_DESC"
+                       query="SELECT `akeebasubs_level_id`, `title` FROM `#__akeebasubs_levels`"
+                       key_field="akeebasubs_level_id"
+                       value_field="title"
+                       multiple="1"
+                />
+
+                <field name="excluded_levels_postal" type="sql" default=""
+                       label="PLG_AKEEBASUBS_AGREETOEU_CONFIG_EXCLUDE_POSTAL_LABEL"
+                       description="PLG_AKEEBASUBS_AGREETOEU_CONFIG_EXCLUDE_POSTAL_DESC"
+                       query="SELECT `akeebasubs_level_id`, `title` FROM `#__akeebasubs_levels`"
+                       key_field="akeebasubs_level_id"
+                       value_field="title"
+                       multiple="1"
+                />
+
+                <field name="excluded_levels_withdrawal" type="sql" default=""
+                       label="PLG_AKEEBASUBS_AGREETOEU_CONFIG_EXCLUDE_WITHDRAWAL_LABEL"
+                       description="PLG_AKEEBASUBS_AGREETOEU_CONFIG_EXCLUDE_WITHDRAWAL_DESC"
+                       query="SELECT `akeebasubs_level_id`, `title` FROM `#__akeebasubs_levels`"
+                       key_field="akeebasubs_level_id"
+                       value_field="title"
+                       multiple="1"
+                />
+
+                <field name="excluded_levels_eudata" type="sql" default=""
+                       label="PLG_AKEEBASUBS_AGREETOEU_CONFIG_EXCLUDE_EUDATA_LABEL"
+                       description="PLG_AKEEBASUBS_AGREETOEU_CONFIG_EXCLUDE_EUDATA_DESC"
+                       query="SELECT `akeebasubs_level_id`, `title` FROM `#__akeebasubs_levels`"
+                       key_field="akeebasubs_level_id"
+                       value_field="title"
+                       multiple="1"
+                />
             </fieldset>
         </fields>
     </config>

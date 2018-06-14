@@ -1,3 +1,20 @@
+# 6.1.1
+
+**New**
+
+* Allow the use of custom layouts in the Level view using the 'layout' query string parameter
+* Allow EU fields to be disabled per subscription level. Useful, for example, for free subscriptions where confirming the refund policy makes no sense.
+* New “Personal Information” privilege for accessing views with personally identifiable information
+
+**Miscellaneous changes**
+
+* Support more Amazon S3 regions
+
+**Bug fixes**
+
+* [HIGH] New format for Irish VAT numbers was not taken into account
+* [MEDIUM] Clicking on a user from the Subscriptions page resulted in an error instead of opening their profile
+
 # 6.1.0
 
 **New**

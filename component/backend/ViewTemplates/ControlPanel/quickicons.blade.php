@@ -13,10 +13,12 @@ defined('_JEXEC') or die;
     <span>@lang('COM_AKEEBASUBS_DASHBOARD_ADD_LEVEL')</span>
 </a>
 
+@if ($this->container->platform->getUser()->authorise('com_akeebasubs.pii', 'com_akeebasubs'))
 <a href="index.php?option=com_akeebasubs&view=Subscription" class="akeeba-btn--dark--small">
     <span class="akion-bookmark"></span>
     <span>@lang('COM_AKEEBASUBS_DASHBOARD_ADD_SUBSCRIPTION')</span>
 </a>
+@endif
 
 <a href="index.php?option=com_akeebasubs&view=Coupon" class="akeeba-btn--dark--small">
     <span class="akion-ios-pricetag"></span>

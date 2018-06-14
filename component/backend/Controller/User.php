@@ -10,10 +10,13 @@ namespace Akeeba\Subscriptions\Admin\Controller;
 defined('_JEXEC') or die;
 
 use Akeeba\Subscriptions\Admin\Model\Users;
+use Akeeba\Subscriptions\Admin\Controller\Mixin\PersonalInformation;
 use FOF30\Controller\DataController;
 
 class User extends DataController
 {
+	use PersonalInformation;
+
 	protected function onBeforeEdit()
 	{
 		$user_id = $this->input->getInt('user_id', 0);

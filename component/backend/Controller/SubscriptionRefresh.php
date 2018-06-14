@@ -10,12 +10,14 @@ namespace Akeeba\Subscriptions\Admin\Controller;
 defined('_JEXEC') or die;
 
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
+use Akeeba\Subscriptions\Admin\Controller\Mixin\PersonalInformation;
 use FOF30\Container\Container;
 use FOF30\Controller\Controller;
 
 class SubscriptionRefresh extends Controller
 {
 	use Mixin\PredefinedTaskList;
+	use PersonalInformation;
 
 	public function __construct(Container $container, array $config = array())
 	{

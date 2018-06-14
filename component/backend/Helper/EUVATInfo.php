@@ -8,7 +8,6 @@
 namespace Akeeba\Subscriptions\Admin\Helper;
 
 use FOF30\Container\Container;
-use JFactory;
 use JHttpFactory;
 use SoapClient;
 use SoapFault;
@@ -160,9 +159,8 @@ abstract class EUVATInfo
 
 		// Sanitize the VAT number
 		$vatFormatCheck = self::checkVATFormat($country, $vat);
-
-		$vat    = $vatFormatCheck->vatnumber;
-		$prefix = $vatFormatCheck->prefix;
+		$vat            = $vatFormatCheck->vatnumber;
+		$prefix         = $vatFormatCheck->prefix;
 
 		if (!$vatFormatCheck->valid || empty($vat))
 		{
@@ -534,29 +532,57 @@ abstract class EUVATInfo
 			case 'IE':
 				// IRELAND
 				// VAT number is called: VAT.
-				// Format: seven digits and a letter; or six digits and two letters
-				// Eg: 1234567X or 1X34567X
-				if (strlen($vat) != 8)
+				// Format: 8 or 9 characters. Includes one or two alphabetical characters (last, or second and last, or last 2).
+				// Eg: 1234567X, 1X23456X, 1234567XX
+
+				$vatLength = strlen($vat);
+
+				if (!in_array($vatLength, [8, 9]))
 				{
 					$ret->valid = false;
+
+					break;
 				}
+
 				if ($ret->valid)
 				{
-					// The last position must be a letter
+					// The last position must ALWAYS be a letter
 					$check = substr($vat, -1);
+
 					if (preg_replace('/[0-9]/', '', $check) == '')
 					{
 						$ret->valid = false;
 					}
 				}
+
 				if ($ret->valid)
 				{
-					// Skip the second position (it's a number or letter, who cares), check the rest
-					$check = substr($vat, 0, 1) . substr($vat, 2, -1);
-					if (preg_replace('/[0-9]/', '', $check) != '')
+					// If it's an 8-digit VAT number everything except the SECOND character must be numeric
+					if ($vatLength == 8)
 					{
-						$ret->valid = false;
+						// Skip the second position (it's a number or letter, who cares), check the rest
+						$check = substr($vat, 0, 1) . substr($vat, 2, -1);
+						if (preg_replace('/[0-9]/', '', $check) != '')
+						{
+							$ret->valid = false;
+						}
 					}
+					else
+					// If it's a 9-digit VAT number the SECOND TO LAST character must be a letter, everything else numeric
+					{
+						$check1 = substr($vat, -2, 1);
+						$check2 = substr($vat, 0, -2);
+
+						if (preg_replace('/[0-9]/', '', $check1) == '')
+						{
+							$ret->valid = false;
+						}
+						elseif(preg_replace('/[0-9]/', '', $check2) != '')
+						{
+							$ret->valid = false;
+						}
+					}
+
 				}
 				break;
 

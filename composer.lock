@@ -4,18 +4,52 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "7bd43d609ba7a3fed855f2b0a38d4e18",
+    "content-hash": "eb5bcb452448aa95269417480fb37ab5",
     "packages": [
         {
             "name": "akeeba/s3",
-            "version": "master",
+            "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/akeeba/s3",
-                "reference": "master"
+                "url": "https://github.com/akeeba/s3.git",
+                "reference": "b98b84cc2518f803a3d7dbc7369cf7c33c471161"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/akeeba/s3/zipball/b98b84cc2518f803a3d7dbc7369cf7c33c471161",
+                "reference": "b98b84cc2518f803a3d7dbc7369cf7c33c471161",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.4"
             },
             "type": "library",
-            "time": "2018-03-27T13:28:27+00:00"
+            "autoload": {
+                "psr-4": {
+                    "Akeeba\\Engine\\Postproc\\Connector\\S3v4\\": "src"
+                }
+            },
+            "license": [
+                "GPL-3.0+"
+            ],
+            "authors": [
+                {
+                    "name": "Nicholas K. Dionysopoulos",
+                    "email": "nicholas_NO_SPAM_PLEASE@akeebabackup.com",
+                    "homepage": "http://www.dionysopoulos.me",
+                    "role": "Lead Developer"
+                }
+            ],
+            "description": "Akeeba Engine connector for Amazon S3",
+            "homepage": "https://github.com/akeeba/s3",
+            "keywords": [
+                "s3"
+            ],
+            "support": {
+                "source": "https://github.com/akeeba/s3/tree/master",
+                "issues": "https://github.com/akeeba/s3/issues"
+            },
+            "time": "2018-05-23T09:17:56+00:00"
         }
     ],
     "packages-dev": [],
