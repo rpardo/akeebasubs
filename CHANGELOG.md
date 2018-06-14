@@ -13,6 +13,7 @@
 **Bug fixes**
 
 * [HIGH] New format for Irish VAT numbers was not taken into account
+* [MEDIUM] Clicking on a user from the Subscriptions page resulted in an error instead of opening their profile
 
 # 6.1.0
 
