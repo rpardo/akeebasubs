@@ -106,6 +106,26 @@ class plgAkpaymentViva extends AkpaymentBase
 
 		$isValid = true;
 
+		/**
+		 * If this URL is accessed via GET we need to return the webhook authorization code which we retrieve from
+		 * Viva's API.
+		 *
+		 * @see https://github.com/VivaPayments/API/wiki/Webhooks#Webhook-Url-Verification
+		 */
+		$verb = $_SERVER['REQUEST_METHOD'];
+
+		if (strtoupper($verb) == 'GET')
+		{
+			echo $this->httpRequest(
+				'www.vivapayments.com',
+				'/api/messages/config/token',
+				array(),
+				'GET',
+				443);
+
+			$this->container->platform->closeApplication();
+		}
+
 		// Load the relevant subscription row
 		$orderCode = $data['s'];
 		$subscription = null;
@@ -373,10 +393,10 @@ class plgAkpaymentViva extends AkpaymentBase
 
 		// Create the connection
 		$sandbox = $this->params->get('sandbox', 0);
-		$sockhost = $sandbox ? $host : 'ssl://' . $host;
+		$sockhost = ($port == 80) ? $host : 'ssl://' . $host;
 		$sock = fsockopen($sockhost, $port);
 
-		if ($method == 'GET')
+		if (($method == 'GET') && !empty($paramStr))
 		{
 			$path .= '?' . $paramStr;
 		}
