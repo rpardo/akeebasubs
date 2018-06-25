@@ -48,6 +48,10 @@
                        description="PLG_AKPAYMENT_VIVA_MERCHANTID_DESC"/>
                 <field name="pw" type="text" size="50" default="" label="PLG_AKPAYMENT_VIVA_PASSWORD_LABEL"
                        description="PLG_AKPAYMENT_VIVA_PASSWORD_DESC"/>
+                <field name="demo_merchant_id" type="text" size="50" default="" label="PLG_AKPAYMENT_VIVA_DEMO_MERCHANTID_LABEL"
+                       description="PLG_AKPAYMENT_VIVA_DEMO_MERCHANTID_DESC"/>
+                <field name="demo_pw" type="text" size="50" default="" label="PLG_AKPAYMENT_VIVA_DEMO_PASSWORD_LABEL"
+                       description="PLG_AKPAYMENT_VIVA_DEMO_PASSWORD_DESC"/>
                 <field type="spacer"/>
                 <field name="lang" type="radio" default="en" label="PLG_AKPAYMENT_VIVA_LANG_LABEL"
                        description="PLG_AKPAYMENT_VIVA_LANG_DESC">

@@ -368,8 +368,8 @@ class plgAkpaymentViva extends AkpaymentBase
 		if ($sandbox)
 		{
 			return base64_encode(
-				trim($this->params->get('merchant_id', '')) . ':'
-				. trim($this->params->get('pw', '')));
+				trim($this->params->get('demo_merchant_id', '')) . ':'
+				. trim($this->params->get('demo_pw', '')));
 		}
 
 		return base64_encode(

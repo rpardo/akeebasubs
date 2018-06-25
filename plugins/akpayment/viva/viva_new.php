@@ -48,7 +48,7 @@ class plgAkpaymentViva extends AkpaymentBase
 			return false;
 		}
 
-		$data = (object)array(
+		$data = array(
 			'Email'        => trim($user->email),
 			'FullName'     => trim($user->name),
 			'RequestLang'  => $this->getLanguage(),
@@ -429,8 +429,8 @@ class plgAkpaymentViva extends AkpaymentBase
 
 		if ($sandbox)
 		{
-			return trim($this->params->get('merchant_id', '')) . ':'
-				. trim($this->params->get('pw', ''));
+			return trim($this->params->get('demo_merchant_id', '')) . ':'
+				. trim($this->params->get('demo_pw', ''));
 		}
 
 		return trim($this->params->get('merchant_id', '')) . ':'
@@ -453,22 +453,22 @@ class plgAkpaymentViva extends AkpaymentBase
 	private function httpRequest($host, $path, array $params = [], $method = 'POST', $port = 80)
 	{
 		$protocol = ($port == 443) ? 'https' : 'http';
-		$url      = $protocol . '://' . $host . '/' . $path;
+		$url      = $protocol . '://' . $host . '/' . ltrim($path, '/');
 
 		// Common cURL options
 		$options = [
-			CURLOPT_VERBOSE        => false,
-			CURLOPT_HEADER         => true,
-			CURLINFO_HEADER_OUT    => false,
-			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_USERPWD        => $this->getAuthentication(),
+			CURLOPT_VERBOSE         => false,
+			CURLOPT_HEADER          => false,
+			CURLINFO_HEADER_OUT     => false,
+			CURLOPT_RETURNTRANSFER  => true,
 			CURLOPT_HTTPHEADER     => [
 				'User-Agent: AkeebaSubscriptions',
 				'Connection: Close',
+				'Authorization: Basic ' . base64_encode($this->getAuthentication())
 			],
-			CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+			//CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
 			CURLOPT_CONNECTTIMEOUT => 30,
-			CURLOPT_FORBID_REUSE   => true,
+			CURLOPT_FORBID_REUSE   => 1,
 		];
 
 		// Are we connecting by SSL? Then add some necessary cURL options.
@@ -523,14 +523,19 @@ class plgAkpaymentViva extends AkpaymentBase
 		}
 
 		// Execute the request
-		$ch       = curl_init($url);
-		$response = curl_exec($ch);
+		$ch = curl_init($url);
+		curl_setopt_array($ch, $options);
+		@curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 
-		// Separate Header from Body
-		$header_len = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-		$resHeader  = substr($response, 0, $header_len);
-		$resBody    = substr($response, $header_len);
+		$response     = curl_exec($ch);
+		$errNo        = curl_errno($ch);
+		$error        = curl_error($ch);
+		$lastHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
 		curl_close($ch);
+
+		echo "<h1>FOLA</h1><pre>";
+		var_dump($response);die;
 
 		if (is_object(json_decode($resBody)))
 		{
