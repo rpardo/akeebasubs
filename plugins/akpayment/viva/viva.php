@@ -114,7 +114,7 @@ class plgAkpaymentViva extends AkpaymentBase
 		 */
 		$verb = $_SERVER['REQUEST_METHOD'];
 
-		if (strtoupper($verb) == 'GET')
+		if ((strtoupper($verb) == 'GET') && (!isset($data['s']) || empty($data['s'])))
 		{
 			echo $this->httpRequest(
 				'www.vivapayments.com',
