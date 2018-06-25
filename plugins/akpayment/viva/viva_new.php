@@ -12,9 +12,11 @@ use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 use Akeeba\Subscriptions\Admin\PluginAbstracts\AkpaymentBase;
 
 /**
- * Untested code - new implementation of the VivaPayments plugin based on their documentation. The old code still works,
- * but this new code forces the use of more modern versions of TLS. It's a good idea to eventually test it and replace
- * the old plugin.
+ * I can't get this code to work. The cURL code seems to not be working on my test site, causing an infinite wait while
+ * trying to get a response from the VivaPayments API. I suspect it's something with the way Viva expects the POST data
+ * to be formatted but I can't debug it since I don't have access to the logs on the remote endpoint and I receive no
+ * error to go by. So I'm just not going to use this code. Luckily, the fsockopen code seems to work with TLS so, dunno,
+ * let it be?
  */
 class plgAkpaymentViva extends AkpaymentBase
 {
@@ -534,20 +536,11 @@ class plgAkpaymentViva extends AkpaymentBase
 
 		curl_close($ch);
 
-		echo "<h1>FOLA</h1><pre>";
-		var_dump($response);die;
-
-		if (is_object(json_decode($resBody)))
+		if ($errNo)
 		{
-			$resultObj = json_decode($resBody);
-		}
-		else
-		{
-			preg_match('#^HTTP/1.(?:0|1) [\d]{3} (.*)$#m', $resHeader, $match);
-
-			throw new RuntimeException("API Call failed! The error was: " . trim($match[1]), 500);
+			throw new RuntimeException("API Call failed! The error was: [$errNo] $error", 500);
 		}
 
-		return $resultObj;
+		return json_decode($response);
 	}
 }
