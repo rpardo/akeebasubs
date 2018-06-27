@@ -1,5 +1,8 @@
 # 6.1.2
-(placeholder)
+
+**New**
+
+* Improved VivaWallet (formerly VivaPayments) plugin
 
 # 6.1.1
 
