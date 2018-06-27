@@ -104,6 +104,36 @@ class plgAkpaymentViva extends AkpaymentBase
 			return false;
 		}
 
+		/**
+		 * If this URL is accessed via GET we need to return the webhook authorization code which we retrieve from
+		 * Viva's API.
+		 *
+		 * @see https://github.com/VivaPayments/API/wiki/Webhooks#Webhook-Url-Verification
+		 */
+		$verb = $_SERVER['REQUEST_METHOD'];
+
+		if ((strtoupper($verb) == 'GET') && (!isset($data['s']) || empty($data['s'])))
+		{
+			echo $this->httpRequest(
+				$this->getRESTHost(),
+				'/api/messages/config/token',
+				array(),
+				'GET',
+				443);
+
+			$this->container->platform->closeApplication();
+		}
+
+		/**
+		 * Is this a Webhook message? If so, handle differently.
+		 */
+		if (($verb == 'POST') && ($data['type'] == 'webhook'))
+		{
+			$this->_processWebhook();
+
+			return true;
+		}
+
 		$isValid = true;
 
 		// Load the relevant subscription row
@@ -348,8 +378,8 @@ class plgAkpaymentViva extends AkpaymentBase
 		if ($sandbox)
 		{
 			return base64_encode(
-				trim($this->params->get('merchant_id', '')) . ':'
-				. trim($this->params->get('pw', '')));
+				trim($this->params->get('demo_merchant_id', '')) . ':'
+				. trim($this->params->get('demo_pw', '')));
 		}
 
 		return base64_encode(
@@ -373,10 +403,10 @@ class plgAkpaymentViva extends AkpaymentBase
 
 		// Create the connection
 		$sandbox = $this->params->get('sandbox', 0);
-		$sockhost = $sandbox ? $host : 'ssl://' . $host;
+		$sockhost = ($port == 80) ? $host : 'ssl://' . $host;
 		$sock = fsockopen($sockhost, $port);
 
-		if ($method == 'GET')
+		if (($method == 'GET') && !empty($paramStr))
 		{
 			$path .= '?' . $paramStr;
 		}
@@ -406,5 +436,165 @@ class plgAkpaymentViva extends AkpaymentBase
 		$json = $matches[1];
 
 		return $json;
+	}
+
+	/**
+	 * Process a Viva Payments webhook postback. We only process refunds through these hooks.
+	 *
+	 * The postback URL for webhooks is index.php?option=com_akeebasubs&view=callback&paymentmethod=viva&type=webhook
+	 *
+	 * @return  void
+	 *
+	 * @see     https://github.com/VivaPayments/API/wiki/Webhooks
+	 */
+	private function _processWebhook()
+	{
+		// Get the POST message
+		$message = file_get_contents('php://input');
+
+		// No message, no JSON message or empty JSON message? No joy.
+		if (empty($message))
+		{
+			$this->logIPN([
+				'akeebasubs_failure_reason' => 'Empty POST message in the webhook notification'
+			], false);
+
+			return;
+		}
+
+		$message = @json_decode($message, true);
+
+		if (empty($message))
+		{
+			$this->logIPN([
+				'akeebasubs_failure_reason' => 'Empty JSON message in the webhook notification'
+			], false);
+
+			return;
+		}
+
+		// Check that "EventTypeId" is 1797 (refund)
+		if (!isset($message['EventTypeId']))
+		{
+			$this->logIPN(array_merge($message, [
+				'akeebasubs_failure_reason' => 'No EventTypeId key in the webhook notification'
+			]), false);
+
+			return;
+		}
+
+		$eventTypeId = $message['EventTypeId'];
+
+		if ($eventTypeId != 1797)
+		{
+			$this->logIPN(array_merge($message, [
+				'akeebasubs_failure_reason' => 'Not a refund message (EventTypeId is not 1797)'
+			]), false);
+
+			return;
+		}
+
+		// Get the EventData
+		if (!isset($message['EventData']))
+		{
+			$this->logIPN(array_merge($message, [
+				'akeebasubs_failure_reason' => 'No EventData found in the message'
+			]), false);
+
+			return;
+		}
+
+		$eventData = $message['EventData'];
+
+		// Double check this is a refund message
+
+		if (!isset($eventData['TransactionTypeId']))
+		{
+			$this->logIPN(array_merge($message['EventData'], [
+				'akeebasubs_failure_reason' => 'No TransactionTypeId key found in the EventData'
+			]), false);
+
+			return;
+		}
+
+		$transactionTypeId = $eventData['TransactionTypeId'];
+
+		if (!in_array($transactionTypeId, [4, 7, 11, 13, 17]))
+		{
+			$this->logIPN(array_merge($message['EventData'], [
+				'akeebasubs_failure_reason' => 'TransactionTypeId does not indicate a refund message'
+			]), false);
+
+			return;
+		}
+
+		// Get the payment key
+		if (!isset($eventData['OrderCode']))
+		{
+			$this->logIPN(array_merge($message['EventData'], [
+				'akeebasubs_failure_reason' => 'No OrderCode key found in the EventData'
+			]), false);
+
+			return;
+		}
+
+		$payKey = $eventData['OrderCode'];
+
+		// Load thje subscription
+		/** @var Subscriptions $subscription */
+		$subscription = $this->container->factory->model('Subscriptions')->tmpInstance();
+		try
+		{
+			$subscription = $subscription->paykey($payKey)->firstOrFail();
+		}
+		catch (RuntimeException $e)
+		{
+			$this->logIPN(array_merge($message['EventData'], [
+				'akeebasubs_failure_reason' => sprintf('No such subscription (Order ID %s)', $payKey)
+			]), false);
+
+			return;
+		}
+
+		// Do I have a refunded amount? Also note that the refunded amount is sent as a NEGATIVE number in the request.
+		$refundedAmount = isset($eventData['Amount']) ? $eventData['Amount'] : 0.00;
+		$refundedAmount = -$refundedAmount;
+
+		if ($refundedAmount < 0.01)
+		{
+			$this->logIPN(array_merge($message['EventData'], [
+				'akeebasubs_failure_reason' => 'The refund amount is zero'
+			]), false);
+
+			return;
+		}
+
+		$isPartialRefund = abs($subscription->gross_amount - $refundedAmount) > 0.01;
+
+		if ($isPartialRefund)
+		{
+			$this->logIPN(array_merge($message['EventData'], [
+				'akeebasubs_failure_reason' => sprintf('!!! PARTIAL REFUND (%0.2f)!!! The subscription status will not change.', $refundedAmount)
+			]), true);
+
+			return;
+		}
+
+		// Record the payment notification
+		$this->logIPN(array_merge($message['EventData'], [
+			'akeebasubs_failure_reason' => '!!! FULL REFUND !!! The subscription is cancelled.'
+		]), true);
+
+		// Save the subscription changes
+		$subscription->save([
+			'state'   => 'X',
+			'enabled' => 0,
+		]);
+
+		// Run the onAKAfterPaymentCallback events
+		$this->container->platform->importPlugin('akeebasubs');
+		$this->container->platform->runPlugins('onAKAfterPaymentCallback', array(
+			$subscription
+		));
 	}
 }

@@ -12,9 +12,11 @@ use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 use Akeeba\Subscriptions\Admin\PluginAbstracts\AkpaymentBase;
 
 /**
- * Untested code - new implementation of the VivaPayments plugin based on their documentation. The old code still works,
- * but this new code forces the use of more modern versions of TLS. It's a good idea to eventually test it and replace
- * the old plugin.
+ * I can't get this code to work. The cURL code seems to not be working on my test site, causing an infinite wait while
+ * trying to get a response from the VivaPayments API. I suspect it's something with the way Viva expects the POST data
+ * to be formatted but I can't debug it since I don't have access to the logs on the remote endpoint and I receive no
+ * error to go by. So I'm just not going to use this code. Luckily, the fsockopen code seems to work with TLS so, dunno,
+ * let it be?
  */
 class plgAkpaymentViva extends AkpaymentBase
 {
@@ -48,7 +50,7 @@ class plgAkpaymentViva extends AkpaymentBase
 			return false;
 		}
 
-		$data = (object)array(
+		$data = array(
 			'Email'        => trim($user->email),
 			'FullName'     => trim($user->name),
 			'RequestLang'  => $this->getLanguage(),
@@ -119,6 +121,26 @@ class plgAkpaymentViva extends AkpaymentBase
 		}
 
 		$isValid = true;
+
+		/**
+		 * If this URL is accessed via GET we need to return the webhook authorization code which we retrieve from
+		 * Viva's API.
+		 *
+		 * @see https://github.com/VivaPayments/API/wiki/Webhooks#Webhook-Url-Verification
+		 */
+		$verb = $_SERVER['REQUEST_METHOD'];
+
+		if ((strtoupper($verb) == 'GET') && (!isset($data['s']) || empty($data['s'])))
+		{
+			echo $this->httpRequest(
+				'www.vivapayments.com',
+				'/api/messages/config/token',
+				array(),
+				'GET',
+				443);
+
+			$this->container->platform->closeApplication();
+		}
 
 		// Load the relevant subscription row
 		$orderCode = $data['s'];
@@ -409,8 +431,8 @@ class plgAkpaymentViva extends AkpaymentBase
 
 		if ($sandbox)
 		{
-			return trim($this->params->get('merchant_id', '')) . ':'
-				. trim($this->params->get('pw', ''));
+			return trim($this->params->get('demo_merchant_id', '')) . ':'
+				. trim($this->params->get('demo_pw', ''));
 		}
 
 		return trim($this->params->get('merchant_id', '')) . ':'
@@ -433,22 +455,22 @@ class plgAkpaymentViva extends AkpaymentBase
 	private function httpRequest($host, $path, array $params = [], $method = 'POST', $port = 80)
 	{
 		$protocol = ($port == 443) ? 'https' : 'http';
-		$url      = $protocol . '://' . $host . '/' . $path;
+		$url      = $protocol . '://' . $host . '/' . ltrim($path, '/');
 
 		// Common cURL options
 		$options = [
-			CURLOPT_VERBOSE        => false,
-			CURLOPT_HEADER         => true,
-			CURLINFO_HEADER_OUT    => false,
-			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_USERPWD        => $this->getAuthentication(),
+			CURLOPT_VERBOSE         => false,
+			CURLOPT_HEADER          => false,
+			CURLINFO_HEADER_OUT     => false,
+			CURLOPT_RETURNTRANSFER  => true,
 			CURLOPT_HTTPHEADER     => [
 				'User-Agent: AkeebaSubscriptions',
 				'Connection: Close',
+				'Authorization: Basic ' . base64_encode($this->getAuthentication())
 			],
-			CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+			//CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
 			CURLOPT_CONNECTTIMEOUT => 30,
-			CURLOPT_FORBID_REUSE   => true,
+			CURLOPT_FORBID_REUSE   => 1,
 		];
 
 		// Are we connecting by SSL? Then add some necessary cURL options.
@@ -503,26 +525,22 @@ class plgAkpaymentViva extends AkpaymentBase
 		}
 
 		// Execute the request
-		$ch       = curl_init($url);
-		$response = curl_exec($ch);
+		$ch = curl_init($url);
+		curl_setopt_array($ch, $options);
+		@curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
 
-		// Separate Header from Body
-		$header_len = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-		$resHeader  = substr($response, 0, $header_len);
-		$resBody    = substr($response, $header_len);
+		$response     = curl_exec($ch);
+		$errNo        = curl_errno($ch);
+		$error        = curl_error($ch);
+		$lastHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
 		curl_close($ch);
 
-		if (is_object(json_decode($resBody)))
+		if ($errNo)
 		{
-			$resultObj = json_decode($resBody);
-		}
-		else
-		{
-			preg_match('#^HTTP/1.(?:0|1) [\d]{3} (.*)$#m', $resHeader, $match);
-
-			throw new RuntimeException("API Call failed! The error was: " . trim($match[1]), 500);
+			throw new RuntimeException("API Call failed! The error was: [$errNo] $error", 500);
 		}
 
-		return $resultObj;
+		return json_decode($response);
 	}
 }
