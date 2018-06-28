@@ -132,7 +132,7 @@ class plgAkpayment2conew extends AkpaymentBase
 		// Load the relevant subscription row
 		if ($isValid)
 		{
-			$id = array_key_exists('merchant_order_id', $data) ? (int)$data['merchant_order_id'] : -1;
+			$id = array_key_exists('vendor_order_id', $data) ? (int)$data['vendor_order_id'] : -1;
 			$subscription = null;
 			if ($id > 0)
 			{
@@ -152,7 +152,7 @@ class plgAkpayment2conew extends AkpaymentBase
 			}
 			if (!$isValid)
 			{
-				$data['akeebasubs_failure_reason'] = 'The referenced subscription ID ("merchant_order_id" field) is invalid';
+				$data['akeebasubs_failure_reason'] = 'The referenced subscription ID ("vendor_order_id" field) is invalid';
 			}
 		}
 
