@@ -152,7 +152,7 @@ class plgAkpayment2conew extends AkpaymentBase
 			}
 			if (!$isValid)
 			{
-				$data['akeebasubs_failure_reason'] = 'The referenced subscription ID ("merchant_order_id" field) is invalid';
+				$data['akeebasubs_failure_reason'] = 'The referenced subscription ID ("vendor_order_id" field) is invalid';
 			}
 		}
 
