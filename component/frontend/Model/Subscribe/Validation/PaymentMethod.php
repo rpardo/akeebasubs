@@ -22,29 +22,38 @@ class PaymentMethod extends Base
 	{
 		$paymentmethod = trim($this->state->paymentmethod);
 
-		if (empty($paymentmethod))
-		{
-			return false;
-		}
-
 		// I have to access to the plugin params, so I have to load them all and pick the correct one
 		/** @var PaymentMethods $pluginsModel */
 		$pluginsModel = $this->container->factory->model('PaymentMethods')->tmpInstance();
 
 		//First of all, let's get the whole list of plugins
-        $country = $this->state->country;
-		$plugins = $pluginsModel->getPaymentPlugins($country);
+		$country       = $this->state->country;
+		$plugins       = $pluginsModel->getPaymentPlugins($country);
+		$defaultMethod = null;
 
-		foreach($plugins as $plugin)
+		foreach ($plugins as $plugin)
 		{
-            // Did I found the payment method I was looking for? If so let's return true
-			if($plugin->name == $paymentmethod)
+			if (is_null($defaultMethod))
+			{
+				$defaultMethod = $plugin->name;
+			}
+
+			if (empty($paymentmethod))
+			{
+				$this->state->paymentmethod = $defaultMethod;
+				$paymentmethod              = $this->state->paymentmethod;
+			}
+
+			// Did I find the payment method I was looking for? If so let's return true
+			if ($plugin->name == $paymentmethod)
 			{
 				return true;
 			}
 		}
 
-        // ... otherwise false
-		return false;
+		// An invalid method was being used. Please use the default payment method instead.
+		$this->state->paymentmethod = $defaultMethod;
+
+		return true;
 	}
 }

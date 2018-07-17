@@ -1,3 +1,9 @@
+# 6.1.3
+
+**Miscellaneous changes**
+
+* Select the default payment method if no or an invalid method was selected (instead of simply failing) 
+
 # 6.1.2
 
 **New**
