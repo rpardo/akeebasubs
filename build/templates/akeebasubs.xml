@@ -43,7 +43,7 @@
     <!-- Administrator back-end section -->
     <administration>
         <!-- Administration menu -->
-        <menu view="cpanel" img="../media/com_akeebasubs/images/akeebasubs-16.png">COM_AKEEBASUBS</menu>
+        <menu>COM_AKEEBASUBS</menu>
         <!-- Back-end files -->
         <files folder="backend">
             <filename>access.xml</filename>
