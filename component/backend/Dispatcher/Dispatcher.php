@@ -32,6 +32,8 @@ class Dispatcher extends \FOF30\Dispatcher\Dispatcher
 
 	public function onBeforeDispatch()
 	{
+		$this->onBeforeDispatchViewAliases();
+
 		if (!@include_once(JPATH_ADMINISTRATOR . '/components/com_akeebasubs/version.php'))
 		{
 			define('AKEEBASUBS_VERSION', 'dev');
