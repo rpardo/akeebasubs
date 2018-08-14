@@ -12,10 +12,6 @@ Akeeba Subscriptions is a project internal to Akeeba Ltd. We use it as own site'
 
 We provide _infrequent_ builds available for download from [this repository's Releases section](https://github.com/akeeba/akeebasubs/releases). Please note that these are not released or maintained regularly. We urge developers to build their own packages using the instructions provided below.
 
-## Language files
-
-Akeeba Subscriptions comes with English (Great Britain) language built-in. Installation packages for other languages are available [on our language download page](https://cdn.akeebabackup.com/language/akeebasubs/index.html).
-
 ## Build instructions
 
 ### Prerequisites
