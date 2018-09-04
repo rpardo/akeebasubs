@@ -1,3 +1,10 @@
+# 6.1.3
+
+**Miscellaneous changes**
+
+* Select the default payment method if no or an invalid method was selected (instead of simply failing) 
+* Joomla! 3.9 backend Components menu item compatibility
+
 # 6.1.2
 
 **New**
