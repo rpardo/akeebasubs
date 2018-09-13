@@ -1,3 +1,9 @@
+# 6.1.4
+
+**Bug fixes**
+
+* [LOW] Cannot select multiple subscriptions when creating a coupon
+
 # 6.1.3
 
 **Miscellaneous changes**
