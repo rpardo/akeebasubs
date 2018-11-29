@@ -2,6 +2,7 @@
 
 **Bug fixes**
 
+* [HIGH] My Subscriptions shows timestamps in GMT despite a different timezone suffix printed on the page
 * [LOW] Cannot select multiple subscriptions when creating a coupon
 
 # 6.1.3
