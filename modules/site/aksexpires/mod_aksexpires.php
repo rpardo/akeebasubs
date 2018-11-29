@@ -20,6 +20,7 @@
  */
 
 // no direct access
+use Akeeba\Subscriptions\Admin\Helper\Format;
 use FOF30\Date\Date;
 
 defined('_JEXEC') or die;
@@ -82,5 +83,5 @@ else
 	}
 
 	$ed = new Date($expires);
-	echo JText::sprintf('MOD_AKSEXPIRES_EXPIRESON', $ed->format(JText::_('DATE_FORMAT_LC1'), true));
+	echo JText::sprintf('MOD_AKSEXPIRES_EXPIRESON', Format::date($ed, JText::_('DATE_FORMAT_LC1') , ' Z', true));
 }

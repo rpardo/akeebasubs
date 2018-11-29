@@ -1,4 +1,7 @@
 # 6.1.4
+**Miscellaneous changes**
+
+* Improved use of timezones throughout the component (gh-295)
 
 **Bug fixes**
 
