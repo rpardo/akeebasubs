@@ -6,6 +6,7 @@
 **Bug fixes**
 
 * [HIGH] My Subscriptions shows timestamps in GMT despite a different timezone suffix printed on the page
+* [MEDIUM] Subscription Relations edit page, the target level was incorrectly populated with the source level
 * [LOW] Cannot select multiple subscriptions when creating a coupon
 
 # 6.1.3

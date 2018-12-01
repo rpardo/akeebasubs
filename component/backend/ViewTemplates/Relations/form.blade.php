@@ -100,7 +100,7 @@ $this->addJavascriptInline($js);
 			<label for="target_level_id">
 				@fieldtitle('target_level_id')
 			</label>
-			<?php echo BrowseView::modelSelect('target_level_id', 'Levels', $this->getItem()->source_level_id, ['fof.autosubmit' => false, 'none' => BrowseView::fieldLabelKey('target_level_id'), 'translate' => false]) ?>
+			<?php echo BrowseView::modelSelect('target_level_id', 'Levels', $this->getItem()->target_level_id, ['fof.autosubmit' => false, 'none' => BrowseView::fieldLabelKey('target_level_id'), 'translate' => false]) ?>
 		</div>
 
 		<div class="akeeba-form-group">
