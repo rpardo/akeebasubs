@@ -7,6 +7,7 @@
 **Bug fixes**
 
 * [HIGH] My Subscriptions shows timestamps in GMT despite a different timezone suffix printed on the page
+* [HIGH] Subscription Expiration Control plugin did not auto-publish early renewals
 * [MEDIUM] Subscription Relations edit page, the target level was incorrectly populated with the source level
 * [LOW] Cannot select multiple subscriptions when creating a coupon
 * [LOW] Subscription editor: could not view or modify the publish up/down time, only the date part was viewable and editable 

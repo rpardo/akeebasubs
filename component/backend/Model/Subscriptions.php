@@ -79,7 +79,8 @@ use JLoader;
  * @method  $this refresh()  					 refresh(int $v)            	    Set to 1 to ignore filters, used for running integrations on all subscriptions
  * @method  $this filter_discountmode() 		 filter_discountmode(string $v)     Discount filter mode (none, coupon, upgrade)
  * @method  $this filter_discountcode() 		 filter_discountcode(string $v)     Discount code search (coupon code/title or upgrade title)
- * @method  $this publish_up() 					 publish_up(string $v)      	    Subscriptions coming up after date
+ * @method  $this publish_up() 					 publish_up(string $v)      	    Subscriptions coming up after date (publish_up >= this value)
+ * @method  $this publish_upto() 			     publish_upto(string $v)      	    Subscriptions coming up until this date (publish_up <= this value). If this is set both publish_up and publish_down are IGNORED.
  * @method  $this publish_down() 				 publish_down(string $v)  	  	    Subscriptions coming up before date (if publish_up is set), or subscriptions expiring before date (if publish_up is not set)
  * @method  $this since() 						 since(string $v)              	    Subscriptions created after this date
  * @method  $this until() 						 until(string $v)              	    Subscriptions created before this date
@@ -486,13 +487,22 @@ class Subscriptions extends DataModel
 		$tableAlias = !empty($tableAlias) ? ($db->qn($tableAlias) . '.') : '';
 
 		\JLoader::import('joomla.utilities.date');
-		$publish_up = $this->getState('publish_up', null, 'string');
+		$publish_up   = $this->getState('publish_up', null, 'string');
+		$publish_upto = $this->getState('publish_upto', null, 'string');
 		$publish_down = $this->getState('publish_down', null, 'string');
 
 		$regex = '/^\d{1,4}(\/|-)\d{1,2}(\/|-)\d{2,4}[[:space:]]{0,}(\d{1,2}:\d{1,2}(:\d{1,2}){0,1}){0,1}$/';
 
 		// Filter the dates
-		$from = trim($publish_up);
+		$from    = trim($publish_up);
+		$fromAlt = trim($publish_upto);
+		$useUpTo = false;
+
+		if (!empty($fromAlt))
+		{
+			$from    = $fromAlt;
+			$useUpTo = true;
+		}
 
 		if (empty($from))
 		{
@@ -516,6 +526,11 @@ class Subscriptions extends DataModel
 			{
 				$from = $jFrom->toSql();
 			}
+		}
+
+		if (empty($from))
+		{
+			$useUpTo = false;
 		}
 
 		$to = trim($publish_down);
@@ -544,11 +559,18 @@ class Subscriptions extends DataModel
 			}
 		}
 
-		if (!empty($from) && !empty($to))
+		if (!empty($from) && $useUpTo)
+		{
+			// Filter before date
+			$query->where(
+				$tableAlias . $db->qn('publish_up') . ' <= ' . $db->q($from)
+			);
+		}
+		elseif (!empty($from) && !empty($to))
 		{
 			// Filter from-to dates
 			$query->where(
-				$tableAlias . $db->qn('publish_up') . ' >= ' .  $db->q($from)
+				$tableAlias . $db->qn('publish_up') . ' >= ' . $db->q($from)
 			);
 			$query->where(
 				$tableAlias . $db->qn('publish_up') . ' <= ' . $db->q($to)
@@ -818,11 +840,13 @@ class Subscriptions extends DataModel
 
 			if (is_null($row->params) || empty($row->params))
 			{
-				$row->params = array();
+				$row->params = [];
 			}
 
-			$triggered = false;
-
+			/**
+			 * If the payment state is other than Complete i.e. N -- New, P -- Pending or X -- Cancelled we will disable
+			 * the subscription and exit early.
+			 */
 			if (($row->getFieldValue('state', 'N') != 'C') && $row->enabled)
 			{
 				$row->enabled = false;
@@ -831,38 +855,63 @@ class Subscriptions extends DataModel
 				continue;
 			}
 
-			if ($row->publish_down && ($row->publish_down != $this->getDbo()->getNullDate()))
+			/**
+			 * Automatic subscription expiration or activation based on the publish_up and publish_down dates.
+			 *
+			 * First, make sure we have a valid date for publish_up and publish_down.
+			 *
+			 * We make the following checks:
+			 *
+			 * - Is the date empty?
+			 * - Is the date equal to the MySQL null date (0000-00-00 00:00:00).
+			 * - Is the date matching a RegEx for database date format?
+			 *
+			 * These checks will only fire if there was a mistake creating the subscription, typically something
+			 * happening when you create a subscription manually (interface or directly in the DB) or importing from a
+			 * source with broken data. The behavior in these cases is to set a ridiculously early publish_up (January
+			 * 2001) and a far away publish_down (January 2037).
+			 */
+			$regex    = '/^\d{1,4}(\/|-)\d{1,2}(\/|-)\d{2,4}[[:space:]]{0,}(\d{1,2}:\d{1,2}(:\d{1,2}){0,1}){0,1}$/';
+			$nullDate = $this->getDbo()->getNullDate();
+
+			if (empty($row->publish_down) || ($row->publish_down == $nullDate) || !preg_match($regex, $row->publish_down))
 			{
-				$regex = '/^\d{1,4}(\/|-)\d{1,2}(\/|-)\d{2,4}[[:space:]]{0,}(\d{1,2}:\d{1,2}(:\d{1,2}){0,1}){0,1}$/';
-
-				if (!preg_match($regex, $row->publish_down))
-				{
-					$row->publish_down = '2037-01-01';
-				}
-
-				if (!preg_match($regex, $row->publish_up))
-				{
-					$row->publish_up = '2001-01-01';
-				}
-
-				$jDown = new Date($row->publish_down);
-				$jUp   = new Date($row->publish_up);
-
-				if (($uNow >= $jDown->toUnix()) && $row->enabled)
-				{
-					$row->enabled = 0;
-					$triggered    = true;
-				}
-				elseif (($uNow >= $jUp->toUnix()) && !$row->enabled && ($uNow < $jDown->toUnix()))
-				{
-					$row->enabled = 1;
-					$triggered    = true;
-				}
+				$row->publish_down = '2037-01-01';
 			}
 
-			if ($triggered)
+			if (empty($row->publish_up) || ($row->publish_up == $nullDate) || !preg_match($regex, $row->publish_up))
 			{
+				$row->publish_up = '2001-01-01';
+			}
+
+			$jDown = new Date($row->publish_down);
+			$jUp   = new Date($row->publish_up);
+
+			/**
+			 * Automatic expiration.
+			 *
+			 * This is triggered if we are past the subscription's expiration date and the subscription is still enabled
+			 */
+			if (($uNow >= $jDown->toUnix()) && $row->enabled)
+			{
+				$row->enabled = 0;
 				$row->save();
+
+				continue;
+			}
+
+			/**
+			 * Automatic activation.
+			 *
+			 * This is triggered if we are past the subscription's activation date and the subscription is not yet
+			 * enabled.
+			 */
+			if (($uNow >= $jUp->toUnix()) && !$row->enabled && ($uNow < $jDown->toUnix()))
+			{
+				$row->enabled = 1;
+				$row->save();
+
+				continue;
 			}
 		}
 
