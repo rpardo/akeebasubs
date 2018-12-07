@@ -245,13 +245,13 @@ tr.pending-renewal td .akeebasubs-subscription-grossamount { color: gray; }
 }
 
 /** Joomla! 3 workaround for calendar fields */
-input#publish_up {
+div.task-browse input#publish_up {
 	width: 90px;
 }
-input#publish_down {
+div.task-browse input#publish_down {
 	width: 90px;
 }
-input#since {
+div.task-browse input#since {
 	width: 90px;
 }
 

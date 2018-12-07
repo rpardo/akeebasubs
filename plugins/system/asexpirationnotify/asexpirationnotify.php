@@ -169,7 +169,7 @@ class plgSystemAsexpirationnotify extends JPlugin
 				 ->expires_to($jTo->toSql())
 				 ->get(true);
 
-			\JLog::add("First Notification - From " . $jFrom->format('Y/m/d H:i:s') . ' - To ' . $jTo->format('Y/m/d H:i:s') . ' - Contact flag 0 - Found ' . $subs1->count(), \JLog::DEBUG, "akeebasubs.cron.expirationnotify");
+			\JLog::add("First Notification - From " . $jFrom->format('Y/m/d H:i:s T') . ' - To ' . $jTo->format('Y/m/d H:i:s T') . ' - Contact flag 0 - Found ' . $subs1->count(), \JLog::DEBUG, "akeebasubs.cron.expirationnotify");
 
 			// Get the subscriptions expiring within the next $notify2 days for
 			// users which we have contacted only once
@@ -188,7 +188,7 @@ class plgSystemAsexpirationnotify extends JPlugin
 					->expires_to($jTo->toSql())
 					->get(true);
 
-				\JLog::add("Second Notification - From " . $jFrom->format('Y/m/d H:i:s') . ' - To ' . $jTo->format('Y/m/d H:i:s') . ' - Contact flag 1 - Found ' . $subs1->count(), \JLog::DEBUG, "akeebasubs.cron.expirationnotify");
+				\JLog::add("Second Notification - From " . $jFrom->format('Y/m/d H:i:s T') . ' - To ' . $jTo->format('Y/m/d H:i:s T') . ' - Contact flag 1 - Found ' . $subs1->count(), \JLog::DEBUG, "akeebasubs.cron.expirationnotify");
 			}
 
 			// Get the subscriptions expired $notifyAfter days ago
@@ -211,7 +211,7 @@ class plgSystemAsexpirationnotify extends JPlugin
 					->expires_to($jTo->toSql())
 					->get(true);
 
-				\JLog::add("After Expiration Notification - From " . $jFrom->format('Y/m/d H:i:s') . ' - To ' . $jTo->format('Y/m/d H:i:s') . ' - Contact flag 3 - Found ' . $subs1->count(), \JLog::DEBUG, "akeebasubs.cron.expirationnotify");
+				\JLog::add("After Expiration Notification - From " . $jFrom->format('Y/m/d H:i:s T') . ' - To ' . $jTo->format('Y/m/d H:i:s T') . ' - Contact flag 3 - Found ' . $subs1->count(), \JLog::DEBUG, "akeebasubs.cron.expirationnotify");
 			}
 
 			// If there are no subscriptions, bail out

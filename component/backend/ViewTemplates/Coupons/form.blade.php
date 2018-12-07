@@ -136,7 +136,7 @@ $item = $this->getItem();
                 <label for="subscriptions">
                     @fieldtitle('subscriptions')
                 </label>
-				<?php echo BrowseView::modelSelect('subscriptions', 'Levels', $item->subscriptions, [
+				<?php echo BrowseView::modelSelect('subscriptions[]', 'Levels', $item->subscriptions, [
 					'fof.autosubmit' => false, 'translate' => false, 'list.attr' => ['multiple' => 'multiple']
 				]) ?>
             </div>

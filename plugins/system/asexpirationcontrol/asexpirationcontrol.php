@@ -121,6 +121,15 @@ class plgSystemAsexpirationcontrol extends JPlugin
 			->expires_to($jNow->toSql())
 			->get();
 
+		// Load a list of renewed subscriptions not already active -- FOF does the rest magically!
+		/** @var Subscriptions $subsModel */
+		$subsModel = Container::getInstance('com_akeebasubs')->factory->model('Subscriptions')->tmpInstance();
+		$subs = $subsModel
+			->enabled(0)
+			->paystate('C')
+			->expires_to($jNow->toSql())
+			->get();
+
 		// Update the last run info and quit
 		$this->setLastRunTimestamp();
 	}

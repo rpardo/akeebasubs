@@ -38,7 +38,8 @@ abstract class Format
 	 */
 	public static function date($date, $format = null, $tzAware = true)
 	{
-		JLoader::import('joomla.utilities.date');
+		$utcTimeZone = new DateTimeZone('UTC');
+		$jDate       = new Date($date, $utcTimeZone);
 
 		// Which timezone should I use?
 		$tz = null;
@@ -53,14 +54,27 @@ abstract class Format
 			}
 			catch (\Exception $e)
 			{
-				$tzDefault = new DateTimeZone('GMT');
+				$tzDefault = 'GMT';
 			}
 
 			$user      = Factory::getUser($userId);
 			$tz        = $user->getParam('timezone', $tzDefault);
 		}
 
-		$jDate = new Date($date, $tz);
+		if (!empty($tz))
+		{
+			try
+			{
+				$userTimeZone = new DateTimeZone($tz);
+
+				$jDate->setTimezone($userTimeZone);
+			}
+			catch(\Exception $e)
+			{
+				// Nothing. Fall back to UTC.
+			}
+		}
+
 
 		if (empty($format))
 		{

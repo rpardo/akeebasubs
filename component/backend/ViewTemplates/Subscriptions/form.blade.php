@@ -71,14 +71,14 @@ $user = is_object($item->user) ? $item->user : JFactory::getUser(0);
 			<label for="publish_up">
 				@lang('COM_AKEEBASUBS_SUBSCRIPTION_PUBLISH_UP')
 			</label>
-			@jhtml('calendar', $item->publish_up, 'publish_up', 'publish_up')
+			@jhtml('calendar', $item->publish_up, 'publish_up', 'publish_up', '%Y-%m-%d %H:%M:%S', ['showtime' => 1])
 		</div>
 
 		<div class="akeeba-form-group">
 			<label for="publish_down">
 				@lang('COM_AKEEBASUBS_SUBSCRIPTION_PUBLISH_DOWN')
 			</label>
-			@jhtml('calendar', $item->publish_down, 'publish_down', 'publish_down')
+			@jhtml('calendar', $item->publish_down, 'publish_down', 'publish_down', '%Y-%m-%d %H:%M:%S', ['showtime' => 1])
 		</div>
 
 		<div class="akeeba-form-group">

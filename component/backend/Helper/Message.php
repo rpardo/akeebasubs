@@ -493,14 +493,14 @@ abstract class Message
 			'[ENABLED]'                => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_COMMON_' . ($sub->enabled ? 'ENABLED' :
 					'DISABLED')),
 			'[PAYSTATE]'               => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_STATE_' . $sub->getFieldValue('state', 'N')),
-			'[PUBLISH_UP]'             => $jFrom->format(JText::_('DATE_FORMAT_LC2'), true),
-			'[PUBLISH_UP_EU]'          => $jFrom->format('d/m/Y H:i:s', true),
-			'[PUBLISH_UP_USA]'         => $jFrom->format('m/d/Y h:i:s a', true),
-			'[PUBLISH_UP_JAPAN]'       => $jFrom->format('Y/m/d H:i:s', true),
-			'[PUBLISH_DOWN]'           => $jTo->format(JText::_('DATE_FORMAT_LC2'), true),
-			'[PUBLISH_DOWN_EU]'        => $jTo->format('d/m/Y H:i:s', true),
-			'[PUBLISH_DOWN_USA]'       => $jTo->format('m/d/Y h:i:s a', true),
-			'[PUBLISH_DOWN_JAPAN]'     => $jTo->format('Y/m/d H:i:s', true),
+			'[PUBLISH_UP]'             => Format::date($jFrom,JText::_('DATE_FORMAT_LC2') . ' T', $sub->user_id),
+			'[PUBLISH_UP_EU]'          => Format::date($jFrom,'d/m/Y H:i:s T', $sub->user_id),
+			'[PUBLISH_UP_USA]'         => Format::date($jFrom,'m/d/Y h:i:s a T', $sub->user_id),
+			'[PUBLISH_UP_JAPAN]'       => Format::date($jFrom,'Y/m/d H:i:s T', $sub->user_id),
+			'[PUBLISH_DOWN]'           => Format::date($jTo,JText::_('DATE_FORMAT_LC2'). ' T', $sub->user_id),
+			'[PUBLISH_DOWN_EU]'        => Format::date($jTo,'d/m/Y H:i:s T', $sub->user_id),
+			'[PUBLISH_DOWN_USA]'       => Format::date($jTo,'m/d/Y h:i:s a T', $sub->user_id),
+			'[PUBLISH_DOWN_JAPAN]'     => Format::date($jTo,'Y/m/d H:i:s T', $sub->user_id),
 			'[MYSUBSURL]'              => $mysubsurl,
 			'[URL]'                    => $mysubsurl,
 			'[CURRENCY]'               => $currency,
@@ -515,8 +515,8 @@ abstract class Message
 			// Legacy keys
 			'[NAME]'                   => $firstname,
 			'[STATE]'                  => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_STATE_' . $sub->getFieldValue('state', 'N')),
-			'[FROM]'                   => $jFrom->format(JText::_('DATE_FORMAT_LC2'), true),
-			'[TO]'                     => $jTo->format(JText::_('DATE_FORMAT_LC2'), true),
+			'[FROM]'                   => Format::date($jFrom,JText::_('DATE_FORMAT_LC2'). ' T', $sub->user_id),
+			'[TO]'                     => Format::date($jTo,JText::_('DATE_FORMAT_LC2'). ' T', $sub->user_id),
 		), $extras);
 
 		foreach ($extras as $key => $value)
