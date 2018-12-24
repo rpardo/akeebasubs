@@ -58,6 +58,12 @@ class plgAkeebasubsGacommerce extends JPlugin
 		$jLanguage->load('plg_akeebasubs_' . $name, JPATH_ADMINISTRATOR, $jLanguage->getDefault(), true);
 		$jLanguage->load('plg_akeebasubs_' . $name, JPATH_ADMINISTRATOR, null, true);
 
+		// Load FOF if not already loaded
+		if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/include.php'))
+		{
+			throw new RuntimeException('This extension requires FOF 3.0.');
+		}
+
 		// Load the container
 		$this->container = Container::getInstance('com_akeebasubs');
 	}
