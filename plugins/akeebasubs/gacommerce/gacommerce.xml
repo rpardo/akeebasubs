@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @package   AkeebaSubs
+  ~ @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+  ~ @license   GNU General Public License version 3, or later
+  -->
+
 <extension version="3.3.0" type="plugin" group="akeebasubs" method="upgrade">
     <name>PLG_AKEEBASUBS_GACOMMERCE</name>
     <author>Nicholas K. Dionysopoulos</author>

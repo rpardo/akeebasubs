@@ -1,8 +1,8 @@
 <?php
 /**
- * @package        akeebasubs
- * @copyright      Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
- * @license        GNU GPLv3 <http://www.gnu.org/licenses/gpl.html> or later
+ * @package   AkeebaSubs
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 use Akeeba\Subscriptions\Site\Model\Levels;
