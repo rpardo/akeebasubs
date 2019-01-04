@@ -5,11 +5,6 @@
  * @license   GNU General Public License version 3, or later
  */
 
-if (!file_exists(__DIR__ . '/../vendor/autoload.php'))
-{
-	die('You need to install Composer and run `composer install` before running the tests.');
-}
-
 define('_JEXEC', 1);
 
 // Maximise error reporting.
