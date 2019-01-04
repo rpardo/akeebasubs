@@ -4,6 +4,10 @@
 
 * PHP versions supported: 7.2.x, 7.3.x
 
+**Bug fixes**
+
+* [MEDIUM] The "Yes, do not check again" option in the user's Is VIES Registered field had no effect.
+
 # 6.1.4
 
 **Miscellaneous changes**

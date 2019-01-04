@@ -10,11 +10,14 @@ namespace Akeeba\Subscriptions\Site\Model\Subscribe\Validation;
 defined('_JEXEC') or die;
 
 use Akeeba\Subscriptions\Admin\Helper\EUVATInfo;
+use Akeeba\Subscriptions\Site\Model\Subscribe\Validation\ValidationTrait\VATCheckOverride;
 use Akeeba\Subscriptions\Site\Model\TaxRules;
 use Akeeba\Subscriptions\Site\Model\TaxHelper;
 
 class Price extends Base
 {
+	use VATCheckOverride;
+
 	/**
 	 * Return the pricing information.
 	 *
@@ -144,7 +147,7 @@ class Price extends Base
 		// field consisting of spaces as a valid VAT number.
 		if ($isVIES)
 		{
-			$isVIES = EUVATInfo::isVIESValidVATNumber($this->state->country, $this->state->vatnumber);
+			$isVIES = $this->isVIESRegisteredRespectingOverrides($this->state->country, $this->state->vatnumber);
 		}
 
 		/** @var TaxHelper $taxModel */
