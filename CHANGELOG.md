@@ -1,3 +1,9 @@
+# 6.2.0
+
+**Miscellaneous changes**
+
+* PHP versions supported: 7.2.x, 7.3.x
+
 # 6.1.4
 
 **Miscellaneous changes**

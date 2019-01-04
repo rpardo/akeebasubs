@@ -35,7 +35,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 	 *
 	 * @var   string
 	 */
-	protected $minimumPHPVersion = '5.4.0';
+	protected $minimumPHPVersion = '7.2.0';
 
 	/**
 	 * The minimum Joomla! version required to install this extension

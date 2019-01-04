@@ -29,7 +29,7 @@ class Pkg_AkeebasubsInstallerScript
 	 *
 	 * @var   string
 	 */
-	protected $minimumPHPVersion = '5.4.0';
+	protected $minimumPHPVersion = '7.2.0';
 
 	/**
 	 * The minimum Joomla! version required to install this extension

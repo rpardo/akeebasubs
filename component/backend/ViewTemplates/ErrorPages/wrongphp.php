@@ -6,8 +6,8 @@
  */
 
 // PHP 5.6 is modern enough. Anything else gets a warning.
-$minPHPVersion = '5.4.0';
-$recommendedPHPVersion = '5.6.0';
+$minPHPVersion = '7.2.0';
+$recommendedPHPVersion = '7.3.0';
 
 if (!version_compare(PHP_VERSION, $minPHPVersion, 'lt'))
 {
@@ -16,33 +16,8 @@ if (!version_compare(PHP_VERSION, $minPHPVersion, 'lt'))
 
 $tx = new DateTimeZone('GMT');
 
-// PHP 5.3
-if (version_compare(PHP_VERSION, '5.4.0', 'lt'))
-{
-	$akeebaCommonDatePHP = new DateTime('2014-08-14 00:00:00', $tx);
-}
-// PHP 5.4
-elseif (version_compare(PHP_VERSION, '5.5.0', 'lt'))
-{
-	$akeebaCommonDatePHP = new DateTime('2015-09-03 00:00:00', $tx);
-}
-// PHP 5.5
-elseif (version_compare(PHP_VERSION, '5.6.0', 'lt'))
-{
-	$akeebaCommonDatePHP = new DateTime('2016-07-10 00:00:00', $tx);
-}
-// PHP 5.6
-elseif (version_compare(PHP_VERSION, '5.7.0', 'lt'))
-{
-	$akeebaCommonDatePHP = new DateTime('2018-12-31 00:00:00', $tx);
-}
-// PHP 7.0
-elseif (version_compare(PHP_VERSION, '7.1.0', 'lt'))
-{
-	$akeebaCommonDatePHP = new DateTime('2018-12-03 00:00:00', $tx);
-}
 // PHP 7.1
-elseif (version_compare(PHP_VERSION, '7.2.0', 'lt'))
+if (version_compare(PHP_VERSION, '7.2.0', 'lt'))
 {
 	$akeebaCommonDatePHP = new DateTime('2019-12-1 00:00:00', $tx);
 }
@@ -50,6 +25,11 @@ elseif (version_compare(PHP_VERSION, '7.2.0', 'lt'))
 elseif (version_compare(PHP_VERSION, '7.3.0', 'lt'))
 {
 	$akeebaCommonDatePHP = new DateTime('2020-11-30 00:00:00', $tx);
+}
+// PHP 7.3
+elseif (version_compare(PHP_VERSION, '7.3.0', 'lt'))
+{
+	$akeebaCommonDatePHP = new DateTime('2021-12-6 00:00:00', $tx);
 }
 
 ?>
