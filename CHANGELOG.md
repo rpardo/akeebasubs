@@ -3,6 +3,7 @@
 **Miscellaneous changes**
 
 * PHP versions supported: 7.2.x, 7.3.x
+* Do not cache VIES validation failure in the session when the VIES service does not return a definitive result e.g. a member state's service is non-responsive
 
 **Bug fixes**
 
