@@ -62,10 +62,11 @@ defined('_JEXEC') or die();
     </label>
     <?php echo \FOF30\Utils\FEFHelper\BrowseView::modelSelect('akeebasubs_levelgroup_id', 'LevelGroups',
 		$item->akeebasubs_levelgroup_id, [
-            'translate'=>false,
-            'apply_access'=>false,
-            'key_field'=>"akeebasubs_levelgroup_id",
-            'value_field'=>"title",
-            'none'=>"COM_AKEEBASUBS_SELECT_LEVELGROUP",
-        ]) ?>
+			'translate'      => false,
+			'apply_access'   => false,
+			'key_field'      => "akeebasubs_levelgroup_id",
+			'value_field'    => "title",
+			'none'           => "COM_AKEEBASUBS_SELECT_LEVELGROUP",
+			'fof.autosubmit' => false
+		]) ?>
 </div>

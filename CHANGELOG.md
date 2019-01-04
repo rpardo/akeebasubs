@@ -7,6 +7,7 @@
 
 **Bug fixes**
 
+* [HIGH] Cannot set the subscription level's Level Group (page reloads) gh-325 
 * [HIGH] Modified subscription information wouldn't be remembered if the validation failed 
 * [MEDIUM] The "Yes, do not check again" option in the user's Is VIES Registered field had no effect.
 
