@@ -14,7 +14,7 @@ use FOF30\Container\Container;
 use JUser;
 use JUserHelper;
 
-abstract class ValidatorTestCase extends \PHPUnit_Framework_TestCase
+abstract class ValidatorTestCase extends \PHPUnit\Framework\TestCase
 {
 	/** @var   ValidatorFactory  The validator factory for this class */
 	public static $factory = null;

@@ -13,7 +13,7 @@ use Akeeba\Subscriptions\Tests\Stubs\ValidatorWithSubsTestCase;
 use FOF30\Container\Container;
 use FOF30\Date\Date;
 
-class AkpaymentBaseFixDatesTest extends \PHPUnit_Framework_TestCase
+class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 {
 
 	/** @var   Container  The container of the component */

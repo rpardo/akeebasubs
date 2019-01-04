@@ -12,7 +12,7 @@ use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 use FOF30\Container\Container;
 use Akeeba\Subscriptions\Admin\Helper\Message;
 
-class MessageTest extends \PHPUnit_Framework_TestCase
+class MessageTest extends \PHPUnit\Framework\TestCase
 {
 	/** @var   Container  The container of the component */
 	public static $container = null;

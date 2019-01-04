@@ -10,7 +10,7 @@ namespace Akeeba\Subscriptions\Tests\Admin\Helper;
 use FOF30\Container\Container;
 use Akeeba\Subscriptions\Admin\Helper\EUVATInfo;
 
-class EUVATInfoTest extends \PHPUnit_Framework_TestCase
+class EUVATInfoTest extends \PHPUnit\Framework\TestCase
 {
 	/** @var   Container  The container of the component */
 	public static $container = null;
