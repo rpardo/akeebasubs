@@ -118,6 +118,7 @@ class Subscribe extends Controller
 		if (!$result)
 		{
 			$this->container->platform->setSessionVar('firstrun', false, 'com_akeebasubs');
+			$this->container->platform->setSessionVar('forcereset', false, 'com_akeebasubs');
 			$helpCode = basename($model->getLogFilename(), '.php');
 			$layout = $this->input->getCmd('layout', 'default');
 
