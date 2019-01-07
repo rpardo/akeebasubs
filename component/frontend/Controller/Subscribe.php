@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -118,6 +118,7 @@ class Subscribe extends Controller
 		if (!$result)
 		{
 			$this->container->platform->setSessionVar('firstrun', false, 'com_akeebasubs');
+			$this->container->platform->setSessionVar('forcereset', false, 'com_akeebasubs');
 			$helpCode = basename($model->getLogFilename(), '.php');
 			$layout = $this->input->getCmd('layout', 'default');
 

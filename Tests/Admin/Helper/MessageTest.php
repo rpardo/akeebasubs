@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -12,7 +12,7 @@ use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 use FOF30\Container\Container;
 use Akeeba\Subscriptions\Admin\Helper\Message;
 
-class MessageTest extends \PHPUnit_Framework_TestCase
+class MessageTest extends \PHPUnit\Framework\TestCase
 {
 	/** @var   Container  The container of the component */
 	public static $container = null;

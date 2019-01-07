@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -10,11 +10,14 @@ namespace Akeeba\Subscriptions\Site\Model\Subscribe\Validation;
 defined('_JEXEC') or die;
 
 use Akeeba\Subscriptions\Admin\Helper\EUVATInfo;
+use Akeeba\Subscriptions\Site\Model\Subscribe\Validation\ValidationTrait\VATCheckOverride;
 use Akeeba\Subscriptions\Site\Model\TaxRules;
 use Akeeba\Subscriptions\Site\Model\Users;
 
 class Business extends Base
 {
+	use VATCheckOverride;
+
 	/**
 	 * Validate the business fields: business name, activity, VAT number
 	 *
@@ -23,35 +26,35 @@ class Business extends Base
 	protected function getValidationResult()
 	{
 		$ret = [
-			'businessname'	=> false,
-			'occupation'	=> false,
-			'vatnumber'		=> false,
-			'novatrequired' => false
+			'businessname'  => false,
+			'occupation'    => false,
+			'vatnumber'     => false,
+			'novatrequired' => false,
 		];
 
 		// Get some state data
-		$country = trim($this->state->country);
-		$vatNumber = trim($this->state->vatnumber);
-		$businessName = trim($this->state->businessname);
+		$country          = trim($this->state->country);
+		$vatNumber        = trim($this->state->vatnumber);
+		$businessName     = trim($this->state->businessname);
 		$businessActivity = trim($this->state->occupation);
-		$isBusiness = (bool)$this->state->isbusiness;
+		$isBusiness       = (bool) $this->state->isbusiness;
 
 		// If this is not a business registration (or we're not supposed to collect personal information) we have
 		// to return.
 		if (!$isBusiness)
 		{
 			$ret['businessname'] = true;
-			$ret['occupation'] = true;
+			$ret['occupation']   = true;
 
 			return $ret;
 		}
 
 		// Otherwise make sure the business name and activity are not empty
 		$ret['businessname'] = !empty($businessName);
-		$ret['occupation'] = !empty($businessActivity);
+		$ret['occupation']   = !empty($businessActivity);
 
 		// Fix the VAT number's format
-		$vatCheckResult = EUVATInfo::checkVATFormat($country, $vatNumber);
+		$vatCheckResult         = EUVATInfo::checkVATFormat($country, $vatNumber);
 		$this->state->vatnumber = '';
 
 		if ($vatCheckResult->valid)
@@ -99,7 +102,7 @@ class Business extends Base
 		}
 
 		$catchRules = 0;
-		$lastVies = null;
+		$lastVies   = null;
 
 		if ($taxRules->count())
 		{
@@ -129,37 +132,7 @@ class Business extends Base
 
 		// Since I'm required to check the VAT number, keep a note
 		$ret['novatrequired'] = false;
-
-		// Can I use cached result? In order to do so...
-		$useCachedResult = false;
-
-		// ...I have to be logged in...
-		if (!$this->jUser->guest)
-		{
-			// ...and I must have my viesregistered flag set to 2
-			// and my VAT number must match the saved record.
-			/** @var Users $subsUsersModel */
-			$subsUsersModel = $this->container->factory->model('Users')->tmpInstance();
-
-			$userparams = $subsUsersModel
-				->getMergedData($this->jUser->id);
-
-			if (($userparams->viesregistered == 2) && ($userparams->vatnumber == $vatNumber))
-			{
-				$useCachedResult = true;
-			}
-		}
-
-		if ($useCachedResult)
-		{
-			// Use the cached VIES validation result
-			$ret['vatnumber'] = true;
-
-			return $ret;
-		}
-
-		// No, check the VAT number against the VIES web service
-		$ret['vatnumber'] = EUVATInfo::isVIESValidVATNumber($country, $vatNumber);
+		$ret['vatnumber']     = $this->isVIESRegisteredRespectingOverrides($country, $vatNumber);
 
 		return $ret;
 	}

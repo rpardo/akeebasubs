@@ -1,8 +1,8 @@
 <?php
 /**
- * @package        akeebasubs
- * @copyright      Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
- * @license        GNU GPLv3 <http://www.gnu.org/licenses/gpl.html> or later
+ * @package   AkeebaSubs
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
 
 use Akeeba\Subscriptions\Site\Model\Levels;
@@ -57,6 +57,12 @@ class plgAkeebasubsGacommerce extends JPlugin
 		$jLanguage->load('plg_akeebasubs_' . $name, JPATH_ADMINISTRATOR, 'en-GB', true);
 		$jLanguage->load('plg_akeebasubs_' . $name, JPATH_ADMINISTRATOR, $jLanguage->getDefault(), true);
 		$jLanguage->load('plg_akeebasubs_' . $name, JPATH_ADMINISTRATOR, null, true);
+
+		// Load FOF if not already loaded
+		if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/include.php'))
+		{
+			throw new RuntimeException('This extension requires FOF 3.0.');
+		}
 
 		// Load the container
 		$this->container = Container::getInstance('com_akeebasubs');

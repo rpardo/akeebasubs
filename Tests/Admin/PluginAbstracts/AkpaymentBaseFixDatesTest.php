@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -13,7 +13,7 @@ use Akeeba\Subscriptions\Tests\Stubs\ValidatorWithSubsTestCase;
 use FOF30\Container\Container;
 use FOF30\Date\Date;
 
-class AkpaymentBaseFixDatesTest extends \PHPUnit_Framework_TestCase
+class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 {
 
 	/** @var   Container  The container of the component */

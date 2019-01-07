@@ -1,7 +1,7 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
  */
 
@@ -135,27 +135,7 @@ abstract class EUVATInfo
 
 	public static function isVIESValidVATNumber($country, $vat)
 	{
-		$container = Container::getInstance('com_akeebasubs');
-
-		// Get the VAT validation cache from the session
-		if (!array_key_exists('vat', self::$cache))
-		{
-			$encodedCacheData = $container->platform->getSessionVar('vat_validation_cache_data', null, 'com_akeebasubs');
-
-			if (!empty($encodedCacheData))
-			{
-				self::$cache = json_decode($encodedCacheData, true);
-			}
-			else
-			{
-				self::$cache = array();
-			}
-		}
-
-		if (!is_array(self::$cache))
-		{
-			self::$cache = array();
-		}
+		self::initializeCache();
 
 		// Sanitize the VAT number
 		$vatFormatCheck = self::checkVATFormat($country, $vat);
@@ -168,15 +148,7 @@ abstract class EUVATInfo
 		}
 
 		$key = $prefix . $vat;
-		$ret = null;
-
-		if (array_key_exists('vat', self::$cache))
-		{
-			if (array_key_exists($key, self::$cache['vat']))
-			{
-				$ret = self::$cache['vat'][$key];
-			}
-		}
+		$ret = self::getCachedValue($key);
 
 		if (!is_null($ret))
 		{
@@ -185,88 +157,29 @@ abstract class EUVATInfo
 
 		if (class_exists('SoapClient'))
 		{
-			// Using the SOAP API
-			// Code credits: Angel Melguiz / KMELWEBDESIGN SLNE (www.kmelwebdesign.com)
-			try
-			{
-				$sOptions = array(
-					'user_agent'         => 'PHP',
-					'connection_timeout' => 5,
-				);
-				$sClient  = new SoapClient('http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl', $sOptions);
-				$params   = array('countryCode' => $prefix, 'vatNumber' => $vat);
-
-				for ($i = 0; $i < 2; $i ++)
-				{
-					$response = $sClient->checkVat($params);
-					if (is_object($response))
-					{
-						$ret = ($response->valid ? true : false);
-						break;
-					}
-					else
-					{
-						sleep(1);
-					}
-				}
-			}
-			catch (SoapFault $e)
-			{
-			}
+			$ret = self::queryVIESusingSOAP($prefix, $vat);
 		}
-
-		if (is_null($ret))
+		else
 		{
-			try
-			{
-				$http = JHttpFactory::getHttp();
-				$url  = 'http://ec.europa.eu/taxation_customs/vies/viesquer.do?locale=en'
-				        . '&ms=' . urlencode($prefix)
-				        . '&iso=' . urlencode($prefix)
-				        . '&vat=' . urlencode($vat);
-
-				for ($i = 0; $i < 2; $i ++)
-				{
-					$response = $http->get($url, null, 5);
-					if ($response->code >= 200 && $response->code < 400)
-					{
-						if (preg_match('/invalid VAT number/i', $response->body))
-						{
-							$ret = false;
-							break;
-						}
-						elseif (preg_match('/valid VAT number/i', $response->body))
-						{
-							$ret = true;
-							break;
-						}
-					}
-					else
-					{
-						sleep(1);
-					}
-				}
-			}
-			catch (\RuntimeException $e)
-			{
-			}
+			$ret = self::queryVIESusingHTTP($prefix, $vat);
 		}
+
+		/**
+		 * DO NOT MOVE THIS AFTER THE NEXT IF-BLOCK.
+		 *
+		 * The query methods can return true (valid VAT number), false (definitely invalid VAT number) or null (soft
+		 * failure, i.e. the VIES service could not tell us for sure if the VAT number is valid or invalid). In the
+		 * latter case we send the null to setCachedValue which has the effect of removing the VAT number from the
+		 * session cache. As a result, the code will hit the VIES service again in the next validation, hoping that it
+		 * will return a hard result. This prevents being stuck in "invalidation hell" where a valid VAT number is
+		 * reported as invalid because our code cached a soft failure as a definitive response.
+		 */
+		self::setCachedValue($key, $ret);
 
 		if (is_null($ret))
 		{
 			$ret = false;
 		}
-
-		// Cache the result
-		if (!array_key_exists('vat', self::$cache))
-		{
-			self::$cache['vat'] = array();
-		}
-
-		self::$cache['vat'][$key] = $ret;
-
-		$encodedCacheData = json_encode(self::$cache);
-		$container->platform->setSessionVar('vat_validation_cache_data', $encodedCacheData, 'com_akeebasubs');
 
 		// Return the result
 		return $ret;
@@ -848,4 +761,203 @@ abstract class EUVATInfo
 
 		return $container;
 	}
+
+	/**
+	 * Makes sure the VAT cache is initialized
+	 *
+	 * @return  void
+	 */
+	private static function initializeCache()
+	{
+		if (!is_array(self::$cache))
+		{
+			self::$cache = ['vat' => []];
+
+			return;
+		}
+
+		if (array_key_exists('vat', self::$cache))
+		{
+			return;
+		}
+
+		$container        = Container::getInstance('com_akeebasubs');
+		$encodedCacheData = $container->platform->getSessionVar('vat_validation_cache_data', null, 'com_akeebasubs');
+
+		self::$cache = ['vat' => []];
+
+		if (!empty($encodedCacheData))
+		{
+			$decoded     = json_decode($encodedCacheData, true);
+			self::$cache = is_array($decoded) ? $decoded : [];
+		}
+
+		if (!array_key_exists('vat', self::$cache))
+		{
+			self::$cache['vat'] = [];
+		}
+
+	}
+
+	/**
+	 * Get a value from the VAT cache
+	 *
+	 * @param   string  $key
+	 *
+	 * @return  mixed
+	 */
+	private static function getCachedValue(string $key)
+	{
+		if (!array_key_exists('vat', self::$cache))
+		{
+			return null;
+		}
+
+		if (!array_key_exists($key, self::$cache['vat']))
+		{
+			return null;
+		}
+
+		return self::$cache['vat'][$key];
+	}
+
+	/**
+	 * @param   string     $key
+	 * @param   bool|null  $ret
+	 */
+	private static function setCachedValue(string $key, $ret)
+	{
+		// Cache the result
+		if (!array_key_exists('vat', self::$cache))
+		{
+			self::$cache['vat'] = [];
+		}
+
+		self::$cache['vat'][$key] = $ret;
+
+		if (is_null($ret) && isset(self::$cache['vat'][$key]))
+		{
+			unset (self::$cache['vat'][$key]);
+		}
+
+		$encodedCacheData = json_encode(self::$cache);
+		$container        = Container::getInstance('com_akeebasubs');
+		$container->platform->setSessionVar('vat_validation_cache_data', $encodedCacheData, 'com_akeebasubs');
+	}
+
+	/**
+	 * Query the VIES web service using the SOAP extension
+	 *
+	 * @param   string  $prefix
+	 * @param   string  $vat
+	 *
+	 * @return  bool|null
+	 */
+	public static function queryVIESusingSOAP(string $prefix, string $vat): ?bool
+	{
+		$ret = null;
+
+		// Using the SOAP API
+		// Code credits: Angel Melguiz / KMELWEBDESIGN SLNE (www.kmelwebdesign.com)
+		try
+		{
+			$sOptions = [
+				'user_agent'         => 'PHP',
+				'connection_timeout' => 5,
+			];
+			$sClient  = new SoapClient('http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl', $sOptions);
+			$params   = ['countryCode' => $prefix, 'vatNumber' => $vat];
+
+			for ($i = 0; $i < 2; $i++)
+			{
+				$response = $sClient->checkVat($params);
+
+				if (is_object($response))
+				{
+					$ret = ($response->valid ? true : false);
+					break;
+				}
+
+				sleep(1);
+			}
+		}
+		catch (SoapFault $e)
+		{
+			/**
+			 * Possible error messages, according to the service's WSDL
+			 *
+			 * - INVALID_INPUT: The provided CountryCode is invalid or the VAT number is empty;
+			 * - GLOBAL_MAX_CONCURRENT_REQ: The EU VIES service is overloaded
+			 * - MS_MAX_CONCURRENT_REQ: The Member State service is overloaded
+			 * - SERVICE_UNAVAILABLE: an error was encountered either at the network level or the Web application level
+			 * - MS_UNAVAILABLE: The Member State service is not replying or not available
+			 * - TIMEOUT: The application did not receive a reply within the allocated time period, try again later.
+			 */
+
+			// The default behavior on error is to return null which is a soft failure and uncaches this invalid result
+			$ret = null;
+
+			// If, however, VIES says the country or VAT number is invalid we return hard failure (false)
+			if ($e->getMessage() == 'INVALID_INPUT')
+			{
+				$ret = false;
+			}
+		}
+
+		return $ret;
+	}
+
+	/**
+	 * Query the VIES web service using a simple HTTP request to the HTML VIES page and a RegEx to scrape the results
+	 *
+	 * @param   string  $prefix
+	 * @param   string  $vat
+	 *
+	 * @return  bool|null
+	 */
+	private static function queryVIESusingHTTP(string $prefix, string $vat): ?bool
+	{
+		// The default response is null (soft failure) which uncaches the invalid result
+		$ret = null;
+
+		try
+		{
+			$http = JHttpFactory::getHttp();
+			$url  = 'http://ec.europa.eu/taxation_customs/vies/viesquer.do?locale=en'
+				. '&ms=' . urlencode($prefix)
+				. '&iso=' . urlencode($prefix)
+				. '&vat=' . urlencode($vat);
+
+			for ($i = 0; $i < 2; $i++)
+			{
+				$response = $http->get($url, null, 5);
+
+				if ($response->code >= 200 && $response->code < 400)
+				{
+					if (preg_match('/invalid VAT number/i', $response->body))
+					{
+						$ret = false;
+
+						break;
+					}
+
+					if (preg_match('/valid VAT number/i', $response->body))
+					{
+						$ret = true;
+
+						break;
+					}
+
+					break;
+				}
+
+				sleep(1);
+			}
+		}
+		catch (\RuntimeException $e)
+		{
+		}
+
+		return $ret;
+}
 }

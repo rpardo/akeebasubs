@@ -1,15 +1,9 @@
 <?php
 /**
- * @package    AkeebaSubs
- * @subpackage Tests
- * @copyright Copyright (c)2010-2018 Nicholas K. Dionysopoulos / Akeeba Ltd
- * @license    GNU General Public License version 3, or later
+ * @package   AkeebaSubs
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
  */
-
-if (!file_exists(__DIR__ . '/../vendor/autoload.php'))
-{
-	die('You need to install Composer and run `composer install` before running the tests.');
-}
 
 define('_JEXEC', 1);
 

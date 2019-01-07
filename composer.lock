@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eb5bcb452448aa95269417480fb37ab5",
+    "content-hash": "52b9129ea773220d0aac6ee3aee066f3",
     "packages": [
         {
             "name": "akeeba/s3",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/akeeba/s3.git",
-                "reference": "b98b84cc2518f803a3d7dbc7369cf7c33c471161"
+                "reference": "19e8d4170f63fcb93d4b10c304c1adc96710578d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/akeeba/s3/zipball/b98b84cc2518f803a3d7dbc7369cf7c33c471161",
-                "reference": "b98b84cc2518f803a3d7dbc7369cf7c33c471161",
+                "url": "https://api.github.com/repos/akeeba/s3/zipball/19e8d4170f63fcb93d4b10c304c1adc96710578d",
+                "reference": "19e8d4170f63fcb93d4b10c304c1adc96710578d",
                 "shasum": ""
             },
             "require": {
@@ -49,7 +49,7 @@
                 "source": "https://github.com/akeeba/s3/tree/master",
                 "issues": "https://github.com/akeeba/s3/issues"
             },
-            "time": "2018-05-23T09:17:56+00:00"
+            "time": "2019-01-01T12:06:40+00:00"
         }
     ],
     "packages-dev": [],
@@ -60,6 +60,10 @@
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": "^7.2",
+        "ext-soap": "*",
+        "ext-json": "*"
+    },
     "platform-dev": []
 }

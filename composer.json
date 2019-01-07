@@ -2,7 +2,7 @@
   "name": "akeeba/subscriptions",
   "description": "Akeeba Subscriptions – Subscriptions management for Joomla!",
   "minimum-stability": "stable",
-  "license": "GPL-3.0+",
+  "license": "GPL-3.0-or-later",
   "authors": [
     {
       "name": "Nicholas K. Dionysopoulos",
@@ -24,6 +24,9 @@
     }
   ],
   "require": {
-    "akeeba/s3": "dev-master"
+    "php": "^7.2",
+    "akeeba/s3": "dev-master",
+    "ext-soap": "*",
+    "ext-json": "*"
   }
 }

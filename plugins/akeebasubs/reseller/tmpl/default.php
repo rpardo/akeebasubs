@@ -1,4 +1,10 @@
 <?php defined('_JEXEC') or die();
+/**
+ * @package   AkeebaSubs
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
+ */
+
 /** @var plgAkeebasubsAcymailing $this */
 /** @var \Akeeba\Subscriptions\Site\Model\Levels $level */
 
