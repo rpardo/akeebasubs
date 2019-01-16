@@ -46,6 +46,12 @@ class Password extends Base
 			return false;
 		}
 		
+		// Check if we need to measure the password strength requirements using Joomla! config
+		if (!$this->container->params->get('apply_joomla_password_requirements', false)) 
+		{
+			return true;
+		}
+		
 		// If we have parameters from com_users, use those instead.
 		// Some of these may be empty for legacy reasons.
 		$params = ComponentHelper::getParams('com_users');
