@@ -27,7 +27,7 @@
 	</fieldset>
 
 	<fieldset name="backend" label="COM_AKEEBASUBS_CONFIG_BACKEND_TITLE">
-		<field name="gravatar" type="list" default="1"
+		<field name="gravatar" type="radio" class="switcher btn-group" default="1"
 			   label="COM_AKEEBASUBS_CONFIG_BACKEND_GRAVATAR"
 			   description="COM_AKEEBASUBS_CONFIG_BACKEND_GRAVATAR_DESC">
 			<option value="0">JNo</option>
@@ -76,26 +76,26 @@
 			<option value="1">COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDESIGNUP_INPRICE</option>
 			<option value="2">COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDESIGNUP_SEPARATE</option>
 		</field>
-		<field name="includediscount" type="list" default="0"
+		<field name="includediscount" type="radio" class="switcher btn-group" default="0"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDEDISCOUNT"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDEDISCOUNT_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
 
-		<field name="showrenew" type="list" default="1"
+		<field name="showrenew" type="radio" class="switcher btn-group" default="1"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWRENEW_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWRENEW_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
-		<field name="noneuvat" type="list" default="0"
+		<field name="noneuvat" type="radio" class="switcher btn-group" default="0"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_NONEUVAT_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_NONEUVAT_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
-		<field name="hidelonepaymentoption" type="list" default="1"
+		<field name="hidelonepaymentoption" type="radio" class="switcher btn-group" default="1"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_HIDELONEPAYMENTOPTION_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_HIDELONEPAYMENTOPTION_DESC">
 			<option value="0">JNo</option>
@@ -114,40 +114,40 @@
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_DATEFORMAT_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_DATEFORMAT_DESC"
 		/>
-		<field name="showvat" type="list"
+		<field name="showvat" type="radio" class="switcher btn-group"
 			   default="0"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWVAT_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWVAT_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
-		<field name="showlocalprices" type="list"
+		<field name="showlocalprices" type="radio" class="switcher btn-group"
 			   default="1"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWLOCALPRICES_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWLOCALPRICES_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
-		<field name="reqcoupon" type="list" default="0"
+		<field name="reqcoupon" type="radio" class="switcher btn-group" default="0"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_REQCOUPON_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_REQCOUPON_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
-		<field name="confirmfree" type="list" default="0"
+		<field name="confirmfree" type="radio" class="switcher btn-group" default="0"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_CONFIRMFREE_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_CONFIRMFREE_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
-		<field name="renderasfree" type="list" default="0"
+		<field name="renderasfree" type="radio" class="switcher btn-group" default="0"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_RENDERASFREE_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_RENDERASFREE_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
 
-		<field name="warndnt" type="list" default="1"
+		<field name="warndnt" type="radio" class="switcher btn-group" default="1"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_WARNDNT_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_WARNDNT_DESC">
 			<option value="0">JNo</option>
@@ -164,7 +164,7 @@
 			<option value="128">COM_AKEEBASUBS_CONFIG_FRONTEND_SUMMARYIMAGES_OPT_LARGEIMAGE</option>
 		</field>
 		
-		<field name="apply_joomla_password_requirements" type="list" default="0"
+		<field name="apply_joomla_password_requirements" type="radio" class="switcher btn-group" default="0"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_APPLY_JOOMLA_PASSWORD_REQUIREMENTS_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_APPLY_JOOMLA_PASSWORD_REQUIREMENTS_DESC">
 			<option value="0">JNo</option>
@@ -184,7 +184,7 @@
 			   label="COM_AKEEBASUBS_CONFIG_INVOICE_NUMBER_FORMAT_TITLE"
 			   description="COM_AKEEBASUBS_CONFIG_INVOICE_NUMBER_FORMAT_DESC"
 		/>
-		<field name="invoice_autosend" type="list" default="1"
+		<field name="invoice_autosend" type="radio" class="switcher btn-group" default="1"
 			   label="COM_AKEEBASUBS_CONFIG_INVOICE_AUTOSEND_TITLE"
 			   description="COM_AKEEBASUBS_CONFIG_INVOICE_AUTOSEND_DESC">
 			<option value="0">JNo</option>
@@ -197,7 +197,7 @@
 			   description="COM_AKEEBASUBS_CONFIG_INVOICE_OVERRIDE_DESC"
 		/>
 
-		<field name="creditnote_autosend" type="list" default="0"
+		<field name="creditnote_autosend" type="radio" class="switcher btn-group" default="0"
 			   label="COM_AKEEBASUBS_CONFIG_CREDITNOTE_AUTOSEND_TITLE"
 			   description="COM_AKEEBASUBS_CONFIG_CREDITNOTE_AUTOSEND_DESC">
 			<option value="0">JNo</option>
