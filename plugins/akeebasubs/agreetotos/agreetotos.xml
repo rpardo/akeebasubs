@@ -17,6 +17,8 @@
     <description>PLG_AKEEBASUBS_AGREETOTOS_DESCRIPTION</description>
     <files>
         <filename plugin="agreetotos">agreetotos.php</filename>
+        <filename>.htaccess</filename>
+        <filename>web.config</filename>
     </files>
     <languages folder="language">
         <language tag="en-GB">en-GB/en-GB.plg_akeebasubs_agreetotos.ini</language>

@@ -8,6 +8,8 @@
 /** @var plgAkeebasubsAcymailing $this */
 /** @var \Akeeba\Subscriptions\Site\Model\Levels $level */
 
+defined('_JEXEC') or die;
+
 $params = $level->params;
 ?>
 

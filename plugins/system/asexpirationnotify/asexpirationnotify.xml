@@ -17,6 +17,8 @@
     <description>PLG_SYSTEM_ASEXPIRATIONNOTIFY_XML_DESC</description>
     <files>
         <filename plugin="asexpirationnotify">asexpirationnotify.php</filename>
+        <filename>.htaccess</filename>
+        <filename>web.config</filename>
         <folder>asexpirationnotify</folder>
     </files>
     <languages folder="language">

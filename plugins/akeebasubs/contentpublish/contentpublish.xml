@@ -17,6 +17,8 @@
     <description>PLG_AKEEBASUBS_CONTENTPUBLISH_DESCRIPTION</description>
     <files>
         <filename plugin="contentpublish">contentpublish.php</filename>
+        <filename>.htaccess</filename>
+        <filename>web.config</filename>
         <folder>tmpl</folder>
     </files>
     <languages folder="language">

@@ -17,6 +17,8 @@
     <description>MOD_AKSUBSLIST_DESCRIPTION</description>
     <files>
         <file module="mod_aksubslist">mod_aksubslist.php</file>
+        <file>.htaccess</file>
+        <file>web.config</file>
     </files>
     <languages folder="language">
         <language tag="en-GB">en-GB/en-GB.mod_aksubslist.ini</language>

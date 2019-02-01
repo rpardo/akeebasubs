@@ -1,3 +1,10 @@
+# 6.2.1
+
+**Miscellaneous changes**
+
+* Protection of all component and plugin folders against direct web access
+
+
 # 6.2.0
 
 **Miscellaneous changes**

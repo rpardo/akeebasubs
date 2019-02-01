@@ -7,9 +7,10 @@
 
 namespace Akeeba\Subscriptions\Site\Model\Subscribe\Validation\ValidationTrait;
 
-
 use Akeeba\Subscriptions\Admin\Helper\EUVATInfo;
 use Akeeba\Subscriptions\Site\Model\Users;
+
+defined('_JEXEC') or die;
 
 trait VATCheckOverride
 {

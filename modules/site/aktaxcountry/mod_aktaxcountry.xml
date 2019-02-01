@@ -17,6 +17,8 @@
     <description>MOD_AKTAXCOUNTRY_DESC</description>
     <files>
         <file module="mod_aktaxcountry">mod_aktaxcountry.php</file>
+        <file>.htaccess</file>
+        <file>web.config</file>
         <folder>tmpl</folder>
     </files>
     <languages folder="language">

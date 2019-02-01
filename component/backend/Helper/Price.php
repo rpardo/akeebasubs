@@ -11,6 +11,8 @@ use Akeeba\Subscriptions\Site\Model\Levels;
 use Akeeba\Subscriptions\Site\Model\Subscriptions;
 use FOF30\Container\Container;
 
+defined('_JEXEC') or die;
+
 abstract class Price
 {
 	/**

@@ -18,6 +18,8 @@
 
     <files>
         <filename plugin="paypal">paypal.php</filename>
+        <filename>.htaccess</filename>
+        <filename>web.config</filename>
         <folder>paypal</folder>
     </files>
 
