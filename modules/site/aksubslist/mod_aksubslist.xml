@@ -13,7 +13,7 @@
     <authorEmail>nicholas@akeebabackup.com</authorEmail>
     <authorUrl>www.akeebabackup.com</authorUrl>
     <creationDate>2019-03-13</creationDate>
-    <version>rev7103F0215</version>
+    <version>6.2.2</version>
     <description>MOD_AKSUBSLIST_DESCRIPTION</description>
     <files>
         <file module="mod_aksubslist">mod_aksubslist.php</file>

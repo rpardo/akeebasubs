@@ -13,7 +13,7 @@
     <copyright>Copyright (c)2010-2019 Nicholas K. Dionysopoulos</copyright>
     <license>GNU General Public License version 3, or later</license>
     <creationDate>2019-03-13</creationDate>
-    <version>rev7103F0215</version>
+    <version>6.2.2</version>
     <description>PLG_AKEEBASUBS_AGREETOEU_DESCRIPTION</description>
     <files>
         <filename plugin="agreetoeu">agreetoeu.php</filename>
