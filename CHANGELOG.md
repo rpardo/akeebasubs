@@ -1,3 +1,13 @@
+# 6.2.1
+
+**Miscellaneous changes**
+
+* Protection of all component and plugin folders against direct web access
+
+**Bug fixes**
+
+* [MEDIUM] Expiration Control plugin did not, in fact, auto-publish early renewals (despite supposedly fixing this issue in 6.1.4) 
+
 # 6.2.0
 
 **Miscellaneous changes**

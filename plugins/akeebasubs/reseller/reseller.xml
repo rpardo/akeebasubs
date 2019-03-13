@@ -19,6 +19,8 @@
     <files>
         <folder>tmpl</folder>
         <filename plugin="reseller">reseller.php</filename>
+        <filename>.htaccess</filename>
+        <filename>web.config</filename>
     </files>
 
     <languages folder="language">

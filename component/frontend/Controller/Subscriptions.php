@@ -68,9 +68,14 @@ class Subscriptions extends DataController
 			$subsModel->user_id($user->id);
 		}
 
+		$paystateFilter = $this->input->getString('state', '');
 		if ($this->input->getInt('allStates', 0) && $isAdmin)
 		{
 			$subsModel->paystate(null);
+		}
+		elseif (!empty($paystateFilter) && $isAdmin)
+		{
+			$subsModel->paystate($paystateFilter);
 		}
 		else
 		{

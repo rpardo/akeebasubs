@@ -17,6 +17,8 @@
     <description>PLG_AKPAYMENT_VIVA_DESCRIPTION</description>
     <files>
         <filename plugin="viva">viva.php</filename>
+        <filename>.htaccess</filename>
+        <filename>web.config</filename>
         <folder>viva</folder>
     </files>
     <languages folder="language">

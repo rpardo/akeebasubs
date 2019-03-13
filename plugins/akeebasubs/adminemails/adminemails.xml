@@ -17,6 +17,8 @@
     <description>PLG_AKEEBASUBS_ADMINEMAILS_DESCRIPTION</description>
     <files>
         <filename plugin="adminemails">adminemails.php</filename>
+        <filename>.htaccess</filename>
+        <filename>web.config</filename>
     </files>
     <languages folder="language">
         <language tag="en-GB">en-GB/en-GB.plg_akeebasubs_adminemails.ini</language>

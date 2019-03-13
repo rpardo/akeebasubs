@@ -17,6 +17,8 @@
     <description>MOD_AKMYSUBS_DESCRIPTION</description>
     <files>
         <file module="mod_akmysubs">mod_akmysubs.php</file>
+        <file>.htaccess</file>
+        <file>web.config</file>
     </files>
     <languages folder="language">
         <language tag="en-GB">en-GB/en-GB.mod_akmysubs.ini</language>

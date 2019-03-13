@@ -175,6 +175,10 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeebasubs/View/Invoices/tmpl',
 			'administrator/components/com_akeebasubs/View/InvoiceTemplates',
 			'administrator/components/com_akeebasubs/View/CreditNoteTemplates',
+
+			// I no longer need precompiled tempaltes
+			'administrator/components/com_akeebasubs/PrecompiledTemplates',
+			'components/com_akeebasubs/PrecompiledTemplates',
 		]
 	];
 

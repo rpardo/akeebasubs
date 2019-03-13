@@ -17,6 +17,8 @@
     <description>PLG_AKEEBASUBS_GACOMMERCE_DESCRIPTION</description>
     <files>
         <filename plugin="gacommerce">gacommerce.php</filename>
+        <filename>.htaccess</filename>
+        <filename>web.config</filename>
     </files>
     <languages folder="language">
         <language tag="en-GB">en-GB/en-GB.plg_akeebasubs_gacommerce.ini</language>

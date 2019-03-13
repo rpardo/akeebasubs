@@ -17,6 +17,8 @@
     <description>PLG_AKPAYMENT_2CONEW_DESCRIPTION</description>
     <files>
         <filename plugin="2conew">2conew.php</filename>
+        <filename>.htaccess</filename>
+        <filename>web.config</filename>
         <folder>2conew</folder>
     </files>
     <languages folder="language">

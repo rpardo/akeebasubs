@@ -17,6 +17,8 @@
     <description>PLG_SYSTEM_ASFIXRENEWALSFLAG_XML_DESC</description>
     <files>
         <filename plugin="asfixrenewalsflag">asfixrenewalsflag.php</filename>
+        <filename>.htaccess</filename>
+        <filename>web.config</filename>
     </files>
     <languages folder="language">
         <language tag="en-GB">en-GB/en-GB.plg_system_asfixrenewalsflag.ini</language>

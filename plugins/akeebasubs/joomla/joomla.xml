@@ -17,6 +17,8 @@
     <description>PLG_AKEEBASUBS_JOOMLA_DESCRIPTION</description>
     <files>
         <filename plugin="joomla">joomla.php</filename>
+        <filename>.htaccess</filename>
+        <filename>web.config</filename>
         <folder>tmpl</folder>
     </files>
     <languages folder="language">

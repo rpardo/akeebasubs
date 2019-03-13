@@ -17,6 +17,8 @@
     <description>MOD_AKSLEVELS_DESCRIPTION</description>
     <files>
         <file module="mod_akslevels">mod_akslevels.php</file>
+        <file>.htaccess</file>
+        <file>web.config</file>
         <folder>elements</folder>
     </files>
     <languages folder="language">

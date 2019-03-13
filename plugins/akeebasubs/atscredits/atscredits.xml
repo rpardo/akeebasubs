@@ -17,6 +17,8 @@
     <description>PLG_AKEEBASUBS_ATSCREDITS_DESCRIPTION</description>
     <files>
         <filename plugin="atscredits">atscredits.php</filename>
+        <filename>.htaccess</filename>
+        <filename>web.config</filename>
         <folder>tmpl</folder>
     </files>
     <languages folder="language">

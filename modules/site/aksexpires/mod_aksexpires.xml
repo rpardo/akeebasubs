@@ -17,6 +17,8 @@
     <description>MOD_AKSEXPIRES_DESCRIPTION</description>
     <files>
         <file module="mod_aksexpires">mod_aksexpires.php</file>
+        <file>.htaccess</file>
+        <file>web.config</file>
     </files>
     <languages folder="language">
         <language tag="en-GB">en-GB/en-GB.mod_aksexpires.ini</language>

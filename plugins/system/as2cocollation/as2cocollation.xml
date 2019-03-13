@@ -17,6 +17,8 @@
     <description>PLG_SYSTEM_AS2COCOLLATION_XMLDESC</description>
     <files>
         <filename plugin="as2cocollation">as2cocollation.php</filename>
+        <filename>.htaccess</filename>
+        <filename>web.config</filename>
     </files>
     <languages folder="language">
         <language tag="en-GB">en-GB/en-GB.plg_system_as2cocollation.ini</language>

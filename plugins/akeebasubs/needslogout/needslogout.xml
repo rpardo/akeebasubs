@@ -17,6 +17,8 @@
     <description>PLG_AKEEBASUBS_NEEDSLOGOUT_DESCRIPTION</description>
     <files>
         <filename plugin="needslogout">needslogout.php</filename>
+        <filename>.htaccess</filename>
+        <filename>web.config</filename>
     </files>
     <languages folder="language">
         <language tag="en-GB">en-GB/en-GB.plg_akeebasubs_needslogout.ini</language>

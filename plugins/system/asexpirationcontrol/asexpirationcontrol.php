@@ -113,7 +113,13 @@ class plgSystemAsexpirationcontrol extends JPlugin
 		JLoader::import('joomla.utilities.date');
 		$jNow = new Date();
 
-		// Load a list of subscriptions which have to expire -- FOF does the rest magically!
+		/**
+		 * Load a list of subscriptions which are about to expire -- FOF does the rest magically!
+		 *
+		 * Criteria for subscriptions about to expire:
+		 * - Active subscription (enabled = 1)
+		 * - publish_down <= now (hence expires_to)
+		 */
 		/** @var Subscriptions $subsModel */
 		$subsModel = Container::getInstance('com_akeebasubs')->factory->model('Subscriptions')->tmpInstance();
 		$subs = $subsModel
@@ -121,14 +127,27 @@ class plgSystemAsexpirationcontrol extends JPlugin
 			->expires_to($jNow->toSql())
 			->get();
 
-		// Load a list of renewed subscriptions not already active -- FOF does the rest magically!
+		unset($subs);
+		unset($subsModel);
+
+		/**
+		 * Load a list of renewed subscriptions not already active -- FOF does the rest magically!
+		 *
+		 * Criteria for subscriptions which got renewed:
+		 * - Inactive subscriptions (enabled = 0)
+		 * - Valid payment (payment state = C)
+		 * - publish_up <= now (hence publish_upto)
+		 */
 		/** @var Subscriptions $subsModel */
 		$subsModel = Container::getInstance('com_akeebasubs')->factory->model('Subscriptions')->tmpInstance();
 		$subs = $subsModel
 			->enabled(0)
 			->paystate('C')
-			->expires_to($jNow->toSql())
+			->publish_upto($jNow->toSql())
 			->get();
+
+		unset($subs);
+		unset($subsModel);
 
 		// Update the last run info and quit
 		$this->setLastRunTimestamp();
