@@ -1,3 +1,9 @@
+# 6.2.2
+
+**Bug fixes**
+
+* Cannot install 6.2.1
+
 # 6.2.1
 
 **Miscellaneous changes**
