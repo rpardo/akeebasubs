@@ -12,8 +12,8 @@
     <authorUrl>http://www.akeebabackup.com</authorUrl>
     <copyright>Copyright (c)2010-2019 Nicholas K. Dionysopoulos</copyright>
     <license>GNU General Public License version 3, or later</license>
-    <creationDate>February 2018</creationDate>
-    <version>5.0</version>
+    <creationDate>2019-03-13</creationDate>
+    <version>rev7103F0215</version>
     <description>PLG_AKEEBASUBS_GACOMMERCE_DESCRIPTION</description>
     <files>
         <filename plugin="gacommerce">gacommerce.php</filename>

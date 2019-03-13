@@ -12,8 +12,8 @@
     <authorUrl>http://www.akeebabackup.com</authorUrl>
     <copyright>Copyright (c)2010-2019 Nicholas K. Dionysopoulos</copyright>
     <license>GNU General Public License version 3, or later</license>
-    <creationDate>August 2015</creationDate>
-    <version>5.0</version>
+    <creationDate>2019-03-13</creationDate>
+    <version>rev7103F0215</version>
     <description>PLG_CONTENT_ASPRICE_DESCRIPTION</description>
     <files>
         <filename plugin="asprice">asprice.php</filename>
