@@ -12,8 +12,8 @@
     <authorUrl>http://www.akeebabackup.com</authorUrl>
     <copyright>Copyright (c)2010-2019 Nicholas K. Dionysopoulos</copyright>
     <license>GNU General Public License version 3, or later</license>
-    <creationDate>2017-09-18</creationDate>
-    <version>1.0</version>
+    <creationDate>2019-03-13</creationDate>
+    <version>6.2.2</version>
     <description>PLG_SYSTEM_ASFIXRENEWALSFLAG_XML_DESC</description>
     <files>
         <filename plugin="asfixrenewalsflag">asfixrenewalsflag.php</filename>
