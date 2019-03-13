@@ -14,11 +14,8 @@ Akeeba Subscriptions should be compatible with:
 
 **Miscellaneous changes**
 
-* PHP versions supported: 7.2.x, 7.3.x
-* Do not cache VIES validation failure in the session when the VIES service does not return a definitive result e.g. a member state's service is non-responsive
+* Protection of all component and plugin folders against direct web access
 
 **Bug fixes**
 
-* [HIGH] Cannot set the subscription level's Level Group (page reloads) gh-325 
-* [HIGH] Modified subscription information wouldn't be remembered if the validation failed 
-* [MEDIUM] The "Yes, do not check again" option in the user's Is VIES Registered field had no effect.
+* [MEDIUM] Expiration Control plugin did not, in fact, auto-publish early renewals (despite supposedly fixing this issue in 6.1.4) 
