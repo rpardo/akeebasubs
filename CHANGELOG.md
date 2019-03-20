@@ -3,6 +3,7 @@
 **Bug fixes**
 
 * [HIGH] Cannot select "Last percent" when setting up a coupon
+* [HIGH] Cannot advance the Configuration Wizard when caching is enabled
 * [LOW] Wrong icons and documentation URL in configuration wizard
 
 # 6.2.2

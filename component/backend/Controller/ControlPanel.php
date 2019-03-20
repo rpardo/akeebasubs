@@ -12,8 +12,8 @@ defined('_JEXEC') or die;
 use Akeeba\Subscriptions\Admin\Model\Updates;
 use FOF30\Container\Container;
 use FOF30\Controller\Controller;
-use JUri;
 use JText;
+use JUri;
 
 class ControlPanel extends Controller
 {
@@ -50,8 +50,8 @@ class ControlPanel extends Controller
 		$wizardstep = (int)$this->input->getInt('wizardstep', 0);
 
 		/** @var \Akeeba\Subscriptions\Admin\Model\ControlPanel $model */
-		$model = $this->getModel();
-		$model->setComponentParameter('wizardstep', $wizardstep);
+		$this->container->params->set('wizardstep', $wizardstep);
+		$this->container->params->save();
 
 		// Redirect back to the control panel
 		$url = '';
