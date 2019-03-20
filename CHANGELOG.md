@@ -1,3 +1,9 @@
+# 6.2.3
+
+**Bug fixes**
+
+* Cannot select "Last percent" when setting up a coupon
+
 # 6.2.2
 
 **Bug fixes**

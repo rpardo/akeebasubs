@@ -172,7 +172,7 @@ class Coupons extends DataModel
 		}
 
 		// Check the type
-		if (!in_array($this->type, array('value', 'percent')))
+		if (!in_array($this->type, array('value', 'percent', 'lastpercent')))
 		{
 			$this->type = 'value';
 		}
