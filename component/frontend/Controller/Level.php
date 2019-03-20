@@ -22,11 +22,11 @@ class Level extends Levels
 	 */
 	public function __construct(Container $container, array $config = array())
 	{
+		$config['cacheableTasks'] = [];
+
 		parent::__construct($container, $config);
 
 		$this->predefinedTaskList = ['read'];
-
-		$this->cacheableTasks = [];
 
 		// Force the view name, required because I am extending the Levels (plural) controller but I want my view
 		// templates to be read from the Level (singular) directory.

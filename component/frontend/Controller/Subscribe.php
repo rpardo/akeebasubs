@@ -30,6 +30,7 @@ class Subscribe extends Controller
 	public function __construct(Container $container, array $config = array())
 	{
 		$config['modelName'] = 'Subscribe';
+		$config['cacheableTasks'] = [];
 
 		parent::__construct($container, $config);
 

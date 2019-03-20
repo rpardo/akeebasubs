@@ -26,6 +26,8 @@ class Invoices extends \Akeeba\Subscriptions\Admin\Controller\Invoice
 	 */
 	public function __construct(Container $container, array $config = array())
 	{
+		$config['cacheableTasks'] = [];
+
 		parent::__construct($container, $config);
 
 		// In the front-end we only allow displaying and downloading an invoice. Access control is performed by the

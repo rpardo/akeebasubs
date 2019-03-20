@@ -28,9 +28,10 @@ class Levels extends DataController
 	 */
 	public function __construct(Container $container, array $config = array())
 	{
-		parent::__construct($container, $config);
+		// We can't cache anything since level prices may be user-specific and modified by session settings
+		$config['cacheableTasks'] = [];
 
-		$this->predefinedTaskList = ['browse', 'read'];
+		parent::__construct($container, $config);
 
 		if ($this->input->getBool('caching', true))
 		{

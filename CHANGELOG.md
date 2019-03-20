@@ -1,5 +1,9 @@
 # 6.2.3
 
+**Miscellaneous changes**
+
+* Remove frontend caching (all pages are user-specific and / or their content is modifiable by the session state)
+
 **Bug fixes**
 
 * [HIGH] Cannot select "Last percent" when setting up a coupon
