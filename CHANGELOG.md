@@ -2,7 +2,8 @@
 
 **Bug fixes**
 
-* Cannot select "Last percent" when setting up a coupon
+* [HIGH] Cannot select "Last percent" when setting up a coupon
+* [LOW] Wrong icons and documentation URL in configuration wizard
 
 # 6.2.2
 

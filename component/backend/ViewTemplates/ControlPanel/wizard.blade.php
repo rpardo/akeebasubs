@@ -89,7 +89,7 @@ defined('_JEXEC') or die;
             @lang('COM_AKEEBASUBS_CPANEL_WIZARD_STEP5_TEXT')
         </p>
         <p>
-            <a href="https://www.akeebabackup.com/documentation/akeeba-subscriptions.html" class="akeeba-btn--primary">
+            <a href="https://github.com/akeeba/akeebasubs/wiki" class="akeeba-btn--primary">
                 @lang('COM_AKEEBASUBS_CPANEL_WIZARD_STEP5_BUTTON')
             </a>
         </p>
@@ -98,13 +98,13 @@ defined('_JEXEC') or die;
         {{-- No content; wizard is complete --}}
     @endif
 
-    <div class="form-actions">
+    <div class="akeeba-form-actions">
         <a href="index.php?option=com_akeebasubs&view=ControlPanel&task=wizardstep&wizardstep=<?php echo ++$wizardstep ?>" class="akeeba-btn--green">
-            <span class="icon icon-white icon-check"></span>
+            <span class="akion-checkmark"></span>
             @lang('COM_AKEEBASUBS_CPANEL_WIZARD_COMMON_COMPLETE')
         </a>
         <a href="index.php?option=com_akeebasubs&view=ControlPanel&task=wizardstep&wizardstep=6" class="akeeba-btn--orange">
-            <span class="icon icon-remove"></span>
+            <span class="akion-close"></span>
             @lang('COM_AKEEBASUBS_CPANEL_WIZARD_COMMON_HIDE')
         </a>
     </div>
