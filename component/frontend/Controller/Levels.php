@@ -18,8 +18,6 @@ use FOF30\Controller\DataController;
 
 class Levels extends DataController
 {
-	use Mixin\PredefinedTaskList;
-
 	/**
 	 * Overridden. Limit the tasks we're allowed to execute.
 	 *
