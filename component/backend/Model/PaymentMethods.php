@@ -28,8 +28,7 @@ class PaymentMethods extends Model
 		JLoader::import('joomla.plugin.helper');
 		JPluginHelper::importPlugin('akpayment');
 
-		$app = JFactory::getApplication();
-		$jResponse = $app->triggerEvent('onAKPaymentGetIdentity');
+		$jResponse = $this->container->platform->runPlugins('onAKPaymentGetIdentity', []);
 
 		$ret = array();
 
