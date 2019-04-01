@@ -205,7 +205,9 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 		// modules => { (folder) => { (module) }* }*
 		'modules' => array(
 			'admin' => [],
-			'site'  => []
+			'site'  => [
+				'aktaxcountry',
+			],
 		),
 		// plugins => { (folder) => { (element) }* }*
 		'plugins' => [
