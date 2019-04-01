@@ -38,7 +38,6 @@ CREATE TABLE `#__akeebasubs_levels` (
 	`akeebasubs_levelgroup_id` BIGINT(20) UNSIGNED NULL,
 	`access` int(11) NOT NULL DEFAULT '1',
 	`fixed_date` DATETIME NULL,
-	`payment_plugins` VARCHAR(2096) NOT NULL DEFAULT '',
 	`renew_url` VARCHAR(2048) NULL DEFAULT '',
 	`content_url` VARCHAR(2048) NULL DEFAULT '',
 	`params` TEXT,
@@ -887,9 +886,9 @@ ALTER TABLE `#__akeebasubs_invoices`
         </action>
 
         <action table="#__akeebasubs_levels" canfail="1">
-            <condition type="missing" value="payment_plugins" />
+            <condition type="missing" value="payment_plugins" operator="not" />
             <query><![CDATA[
-ALTER TABLE `#__akeebasubs_levels` ADD COLUMN `payment_plugins` VARCHAR(2096) NOT NULL DEFAULT '' AFTER `fixed_date`;
+ALTER TABLE `#__akeebasubs_levels` DROP COLUMN `payment_plugins`;
             ]]></query>
         </action>
 
@@ -931,7 +930,7 @@ ALTER TABLE `#__akeebasubs_levels` ADD COLUMN `access` int(11) NOT NULL DEFAULT 
         <action table="#__akeebasubs_levels" canfail="1">
             <condition type="missing" value="renew_url" />
             <query><![CDATA[
-ALTER TABLE `#__akeebasubs_levels` ADD COLUMN `renew_url` VARCHAR(2048) NULL DEFAULT '' AFTER `payment_plugins`;
+ALTER TABLE `#__akeebasubs_levels` ADD COLUMN `renew_url` VARCHAR(2048) NULL DEFAULT '' AFTER `fixed_date`;
             ]]></query>
         </action>
 

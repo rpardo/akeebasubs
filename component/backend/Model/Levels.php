@@ -35,7 +35,6 @@ use JFactory;
  * @property  int       $akeebasubs_levelgroup_id
  * @property  int       $access
  * @property  string    $fixed_date
- * @property  string[]  $payment_plugins
  * @property  string    $renew_url
  * @property  string    $content_url
  * @property  array     $params
@@ -62,7 +61,6 @@ use JFactory;
  * @method  $this  akeebasubs_levelgroup_id()  akeebasubs_levelgroup_id(int $v)
  * @method  $this  access()                    access(int $v)
  * @method  $this  fixed_date()                fixed_date(string $v)
- * @method  $this  payment_plugins()           payment_plugins(string $v)
  * @method  $this  renew_url()                 renew_url(string $v)
  * @method  $this  content_url()               content_url(string $v)
  * @method  $this  enabled()                   enabled(bool $v)

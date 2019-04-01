@@ -939,48 +939,6 @@ abstract class Select
 
         $plugins = $pluginsModel->getPaymentPlugins($country);
 
-		// Per-level payment option filtering
-		if ($level_id > 0)
-		{
-			/** @var DataModel $levelsModel */
-			$levelsModel =  Container::getInstance('com_akeebasubs')->factory
-				->model('Levels')->tmpInstance();
-
-			try
-			{
-				$level           = $levelsModel->findOrFail($level_id);
-				$payment_plugins = $level->payment_plugins;
-
-				if (!empty($payment_plugins) && !is_array($payment_plugins))
-				{
-					$payment_plugins = explode(',', $payment_plugins);
-				}
-			}
-			catch (\Exception $e)
-			{
-				$payment_plugins = '';
-			}
-
-
-			if (is_array($payment_plugins) && !empty($payment_plugins))
-			{
-				$temp            = array();
-
-				foreach ($plugins as $plugin)
-				{
-					if (in_array($plugin->name, $payment_plugins))
-					{
-						$temp[] = $plugin;
-					}
-				}
-
-				if (!empty($temp))
-				{
-					$plugins = $temp;
-				}
-			}
-		}
-
 		$returnRawList = false;
 
 		if (isset($attribs['return_raw_list']))

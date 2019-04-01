@@ -6,6 +6,7 @@
 
 * Removed “Do Not Track” warning (gh-328)
 * Removed Sign-up Fee feature (gh-329)
+* Removed “Payment Methods” option in subscription level setup page (gh-330)
 
 # 6.2.3
 

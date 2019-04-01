@@ -310,7 +310,6 @@ class Debug extends Controller
 			'akeebasubs_levelgroup_id' => 0,
 			'access'                   => 1,
 			'fixed_date'               => $db->getNullDate(),
-			'payment_plugins'          => '',
 			'renew_url'                => '',
 			'content_url'              => '',
 			'params'                   => [],

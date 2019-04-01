@@ -43,13 +43,6 @@ defined('_JEXEC') or die();
 </div>
 
 <div class="akeeba-form-group">
-    <label for="payment_plugins">
-        @lang('COM_AKEEBASUBS_LEVEL_FIELD_PAYMENT_PLUGINS')
-    </label>
-    @include('admin:com_akeebasubs/Common/EntryPaymentPlugins', ['field' => 'payment_plugins', 'item' => $item])
-</div>
-
-<div class="akeeba-form-group">
     <label for="akeebasubs_levelgroup_id">
         @lang('COM_AKEEBASUBS_LEVELS_FIELD_LEVELGROUP')
     </label>
