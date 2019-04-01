@@ -13,7 +13,8 @@
 * Removed obsolete “automatic invoicing” plugin (gh-336)
 * Removed obsolete “Akeeba Subscriptions - Country selection for tax display” module (gh-339)
 * Removed post-installation wizard (gh-335)
-* Remove Import feature (gh-340)
+* Removed the Import feature (gh-340)
+* Removed the API Coupons feature (gh-352)
 
 # 6.2.3
 

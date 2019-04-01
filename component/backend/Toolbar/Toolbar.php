@@ -33,10 +33,7 @@ class Toolbar extends \FOF30\Toolbar\Toolbar
 				'BlockRules',
 			],
 			'Subscriptions',
-			'COM_AKEEBASUBS_MAINMENU_COUPONS'  => [
-				'Coupons',
-				'APICoupons',
-			],
+			'Coupons',
 			'Users',
 			'Reports',
 			'COM_AKEEBASUBS_MAINMENU_INVOICES' => [

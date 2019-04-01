@@ -1214,25 +1214,6 @@ abstract class Select
 		return self::genericlist($options, $name, $attribs, $selected, $name);
 	}
 
-	/**
-	 * Drop down list of API coupon limits preferences
-	 *
-	 * @param   string  $name      The field's name
-	 * @param   string  $selected  Pre-selected value
-	 * @param   array   $attribs   Field attributes
-	 *
-	 * @return  string  The HTML of the drop-down
-	 */
-	public static function apicouponLimits($name, $selected, $attribs = array())
-	{
-		$options   = array();
-		$options[] = JHtml::_('select.option', '1', JText::_('COM_AKEEBASUBS_APICOUPONS_FIELD_CREATION_LIMIT'));
-		$options[] = JHtml::_('select.option', '2', JText::_('COM_AKEEBASUBS_APICOUPONS_FIELD_SUBSCRIPTION_LIMIT'));
-		$options[] = JHtml::_('select.option', '3', JText::_('COM_AKEEBASUBS_APICOUPONS_FIELD_VALUE_LIMIT'));
-
-		return self::genericlist($options, $name, $attribs, $selected, $name);
-	}
-
 	public static function getAllPaymentMethods()
 	{
 		/** @var PaymentMethods $pluginsModel */

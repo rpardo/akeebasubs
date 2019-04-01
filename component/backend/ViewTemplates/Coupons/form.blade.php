@@ -68,15 +68,6 @@ $item = $this->getItem();
             </div>
 
             <div class="akeeba-form-group">
-                <label for="akeebasubs_apicoupon_id">
-                    @lang('COM_AKEEBASUBS_COUPON_FIELD_API')
-                </label>
-				<?php echo BrowseView::modelSelect('akeebasubs_apicoupon_id', 'APICoupons', $item->akeebasubs_apicoupon_id, [
-					'fof.autosubmit' => false, 'translate' => false, 'none' => '&mdash;&mdash;&mdash;'
-				]) ?>
-            </div>
-
-            <div class="akeeba-form-group">
                 <label for="hits">
                     @lang('COM_AKEEBASUBS_COMMON_HITS')
                 </label>

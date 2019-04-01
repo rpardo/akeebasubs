@@ -20,7 +20,6 @@ use JText;
  * Fields:
  *
  * @property  int     $akeebasubs_coupon_id
- * @property  int     $akeebasubs_apicoupon_id
  * @property  string  $title
  * @property  string  $coupon
  * @property  string  $publish_up
@@ -48,7 +47,6 @@ use JText;
  *
  * @method  $this  search()                   search(string $search)
  * @method  $this  akeebasubs_coupon_id()     akeebasubs_coupon_id(int $v)
- * @method  $this  akeebasubs_apicoupon_id()  akeebasubs_apicoupon_id(int $v)
  * @method  $this  title()                    title(string $v)
  * @method  $this  coupon()                   coupon(string $v)
  * @method  $this  publish_up()               publish_up(string $v)
@@ -74,7 +72,6 @@ use JText;
  *
  * Relations:
  *
- * @property-read  APICoupons  $apiCoupon
  * @property-read  Users       $forUser
  */
 class Coupons extends DataModel
@@ -88,7 +85,6 @@ class Coupons extends DataModel
 		// Always load the Filters behaviour
 		$this->addBehaviour('Filters');
 
-		$this->hasOne('apiCoupon', 'APICoupons', 'akeebasubs_apicoupon_id', 'akeebasubs_apicoupon_id');
 		$this->hasOne('forUser', 'Users', 'user', 'user_id');
 	}
 

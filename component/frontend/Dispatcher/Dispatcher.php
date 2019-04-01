@@ -46,8 +46,6 @@ class Dispatcher extends \FOF30\Dispatcher\Dispatcher
 	{
 		// Map Akeeba Subscriptions 1.x-4.x view name to Akeeba Subscriptions 5.x+ view name
 		$map = [
-			'apicoupons'    => 'APICoupons',
-			'apicoupon'     => 'APICoupons',
 			'callbacks'     => 'Callbacks',
 			'callback'      => 'Callbacks',
 			'cron'          => 'Cron',

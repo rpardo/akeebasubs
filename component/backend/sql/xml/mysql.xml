@@ -19,26 +19,6 @@
     <sql>
 
         <!-- Create missing tables from scratch -->
-        <action table="#__akeebasubs_apicoupons" canfail="0">
-            <condition type="missing" value="" />
-            <query><![CDATA[
-CREATE TABLE `#__akeebasubs_apicoupons` (
-  `akeebasubs_apicoupon_id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(30) NOT NULL,
-  `key` varchar(32) NOT NULL,
-  `password` varchar(32) NOT NULL,
-  `enabled` tinyint(1) NOT NULL,
-  `creation_limit` int(11) NOT NULL,
-  `subscriptions` varchar(255) NOT NULL,
-  `subscription_limit` int(11) NOT NULL,
-  `type` enum('value','percent') NOT NULL DEFAULT 'value',
-  `value` float NOT NULL DEFAULT '0',
-  `value_limit` int(11) NOT NULL,
-  PRIMARY KEY (`akeebasubs_apicoupon_id`)
-) DEFAULT COLLATE utf8_general_ci;
-            ]]></query>
-        </action>
-
         <action table="#__akeebasubs_blockrules" canfail="0">
             <condition type="missing" value="" />
             <query><![CDATA[
@@ -137,7 +117,6 @@ VALUES
             <query><![CDATA[
 CREATE TABLE `#__akeebasubs_coupons` (
     `akeebasubs_coupon_id` bigint(20) unsigned NOT NULL auto_increment,
-    `akeebasubs_apicoupon_id` INT NOT NULL,
     `title` varchar(255) NOT NULL,
 	`coupon` varchar(255) NOT NULL,
 	`publish_up` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -540,6 +519,13 @@ CREATE TABLE `#__akeebasubs_users` (
 
 
         <!-- Obsolete columns -->
+        <action table="#__akeebasubs_coupons" canfail="1">
+            <condition type="missing" value="akeebasubs_apicoupon_id" operator="not" />
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_coupons` DROP COLUMN `akeebasubs_apicoupon_id`;
+            ]]></query>
+        </action>
+
         <action table="#__akeebasubs_levels" canfail="1">
             <condition type="missing" value="akeebasubs_levelgroup_id" operator="not" />
             <query><![CDATA[
@@ -634,6 +620,13 @@ ALTER TABLE `#__akeebasubs_users` DROP COLUMN `state`;
 
 
         <!-- Obsolete tables -->
+        <action table="#__akeebasubs_apicoupons" canfail="0">
+            <condition type="missing" value="" operator="not" />
+            <query><![CDATA[
+DROP TABLE IF EXISTS `#__akeebasubs_apicoupons`
+            ]]></query>
+        </action>
+
         <action table="#__akeebasubs_affiliates" canfail="0">
             <condition type="missing" value="" operator="not" />
             <query><![CDATA[
