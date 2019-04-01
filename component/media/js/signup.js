@@ -277,7 +277,6 @@ function validateForm (callback_function)
 			"address1"     : $("#address1").val(),
 			"address2"     : $("#address2").val(),
 			"country"      : $("#" + akeebasubs_form_specifier + " select[name$=\"country\"]").val(),
-			"state"        : $("#" + akeebasubs_form_specifier + " select[name$=\"state\"]").val(),
 			"city"         : $("#city").val(),
 			"zip"          : $("#zip").val(),
 			"isbusiness"   : $("#isbusiness").val(),
@@ -369,11 +368,6 @@ function validateForm (callback_function)
 							   var cur_method = $("input[name=\"paymentmethod\"]:checked").val();
 							   $("#paymentlist-container").html(JSON.parse(html[1]).html);
 							   $("input[name=\"paymentmethod\"][value=\"" + cur_method + "\"]").prop("checked", true);
-
-							   if (html[1].states !== "undefined")
-							   {
-								   $("#akeebasubs-statescontainer").html(JSON.parse(html[1]).states);
-							   }
 						   }
 
 						   enableInterface();
@@ -615,16 +609,13 @@ function validateAddress ()
 		var elCity           = $("#city");
 		var elZip            = $("#zip");
 		var elCountry        = $("#country");
-		var elState          = $("#state");
 		var elAdddress1Empty = $("#address1_empty");
 		var elCountryEmpty   = $("#country_empty");
 		var elCityEmpty      = $("#city_empty");
 		var elZipEmpty       = $("#zip_empty");
-		var elStateEmpty     = $("#state_empty");
 
 		var address = elAddress1.val();
 		var country = elCountry.val();
-		var state   = elState.val();
 		var city    = elCity.val();
 		var zip     = elZip.val();
 
@@ -635,13 +626,11 @@ function validateAddress ()
 			elAddress1.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
 			elCountry.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
 			elCity.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-			elState.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
 			elZip.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
 
 			elAdddress1Empty.hide();
 			elCountryEmpty.hide();
 			elCityEmpty.hide();
-			elStateEmpty.hide();
 			elZipEmpty.hide();
 
 			return;
@@ -799,7 +788,6 @@ function validateBusiness ()
 
 		var data = {
 			country     : elCountry.val(),
-			state       : $("#" + akeebasubs_form_specifier + " select[name$=\"state\"]").val(),
 			city        : $("#city").val(),
 			zip         : $("#zip").val(),
 			isbusiness  : elIsBusiness.val(),
@@ -966,27 +954,6 @@ function applyValidation (response, callback)
 				akeebasubs_valid_form = false;
 				elCountry.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
 				$("#country_empty").show();
-			}
-
-			var elState      = $("#state");
-			var elStateEmpty = $("#state_empty");
-
-			elState.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-
-			if (response.state)
-			{
-				elStateEmpty.hide();
-			}
-			else
-			{
-				elState.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
-
-				if (elStateEmpty.css("display") !== "none")
-				{
-					akeebasubs_valid_form = false;
-				}
-
-				elStateEmpty.show();
 			}
 
 			var elCity = $("#city");
@@ -1270,7 +1237,6 @@ function addToSubValidationQueue (myfunction)
 						  $("#vatnumber").blur(validateBusiness);
 
 						  $("#" + akeebasubs_form_specifier + " select[name$=\"country\"]").change(validateBusiness);
-						  $("#" + akeebasubs_form_specifier + " select[name$=\"state\"]").change(validateBusiness);
 						  $("#" + akeebasubs_form_specifier + " select[name$=\"isbusiness\"]").change(
 							  onIsBusinessClick);
 

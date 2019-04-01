@@ -30,13 +30,6 @@ defined('_JEXEC') or die();
 	</div>
 
 	<div class="akeeba-form-group">
-		<label for="state">
-			@lang('COM_AKEEBASUBS_TAXRULES_STATE')
-		</label>
-		{{ BrowseView::genericSelect('state', Select::getStates(), $this->getItem()->state, ['fof.autosubmit' => false, 'none' => '&mdash;&mdash;&mdash;', 'translate' => false]) }}
-	</div>
-
-	<div class="akeeba-form-group">
 		<label for="city">
 			@lang('COM_AKEEBASUBS_TAXRULES_CITY')
 		</label>

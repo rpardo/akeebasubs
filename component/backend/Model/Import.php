@@ -319,7 +319,6 @@ class Import extends Model
 			'address1'			=> $this->getCsvData('address1'),
 			'address2'			=> $this->getCsvData('address2'),
 			'city'				=> $this->getCsvData('city'),
-			'state'				=> $this->getCsvData('state'),
 			'zip'				=> $this->getCsvData('zip'),
 			'country'			=> $this->getCsvData('country'),
 		);

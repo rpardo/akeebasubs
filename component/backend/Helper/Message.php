@@ -451,15 +451,6 @@ abstract class Message
 			$dlid = Filter::myDownloadID($sub->user_id);
 		}
 
-		// User's state, human readable
-		$formatted_state = '';
-		$state           = $subsUser->getFieldValue('state', 'N');
-
-		if (!empty($state))
-		{
-			$formatted_state = Select::formatState($state);
-		}
-
 		// User's country, human readable
 		$formatted_country = '';
 		$country           = $subsUser->country;
@@ -503,7 +494,6 @@ abstract class Message
 			'[EXCHANGE_RATE]'          => $exchange_rate,
 			'[DLID]'                   => $dlid,
 			'[COUPONCODE]'             => $couponCode,
-			'[USER:STATE_FORMATTED]'   => $formatted_state,
 			'[USER:COUNTRY_FORMATTED]' => $formatted_country,
 			// Legacy keys
 			'[NAME]'                   => $firstname,

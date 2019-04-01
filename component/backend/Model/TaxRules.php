@@ -19,7 +19,6 @@ use FOF30\Model\DataModel;
  *
  * @property  int     $akeebasubs_taxrule_id
  * @property  string  $country
- * @property  string  $state
  * @property  string  $city
  * @property  bool    $vies
  * @property  float   $taxrate
@@ -29,7 +28,6 @@ use FOF30\Model\DataModel;
  *
  * @method  $this  akeebasubs_taxrule_id()  akeebasubs_taxrule_id(int $v)
  * @method  $this  country()                country(string $v)
- * @method  $this  state()                  state(string $v)
  * @method  $this  city()                   city(string $v)
  * @method  $this  vies()                   vies(bool $v)
  * @method  $this  taxrate()                taxrate(float $v)

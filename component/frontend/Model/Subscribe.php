@@ -533,7 +533,6 @@ class Subscribe extends Model
 			'address1'           => $state->address1,
 			'address2'           => $state->address2,
 			'city'               => $state->city,
-			'state'              => $state->state,
 			'zip'                => $state->zip,
 			'country'            => $state->country,
 			'params'             => $state->custom

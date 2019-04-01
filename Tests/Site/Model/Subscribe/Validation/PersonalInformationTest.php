@@ -24,29 +24,6 @@ class PersonalInformationTest extends ValidatorTestCase
 		// Create the base objects
 		parent::setUpBeforeClass();
 
-		// Only enable the USA, Greece and Spain states
-		$db = \JFactory::getDbo();
-		$query = $db->getQuery(true)
-		            ->update($db->qn('#__akeebasubs_states'))
-		            ->set($db->qn('enabled') . ' = ' . $db->q(0))
-		            ->where($db->qn('country') . ' != ' . $db->q('US'));
-		$db->setQuery($query)->execute();
-		$query = $db->getQuery(true)
-		            ->update($db->qn('#__akeebasubs_states'))
-		            ->set($db->qn('enabled') . ' = ' . $db->q(1))
-		            ->where($db->qn('country') . ' = ' . $db->q('US'));
-		$db->setQuery($query)->execute();
-		$query = $db->getQuery(true)
-		            ->update($db->qn('#__akeebasubs_states'))
-		            ->set($db->qn('enabled') . ' = ' . $db->q(1))
-		            ->where($db->qn('country') . ' = ' . $db->q('GR'));
-		$db->setQuery($query)->execute();
-		$query = $db->getQuery(true)
-		            ->update($db->qn('#__akeebasubs_states'))
-		            ->set($db->qn('enabled') . ' = ' . $db->q(1))
-		            ->where($db->qn('country') . ' = ' . $db->q('ES'));
-		$db->setQuery($query)->execute();
-
 		\Akeeba\Subscriptions\Admin\Helper\akeebasubsHelperSelect_init();
 
 		// Fake the EU VAT checks
@@ -78,7 +55,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'       => '',
 					'address1'     => '',
 					'country'      => '',
-					'state'        => '',
 					'city'         => '',
 					'zip'          => '',
 					'isbusiness'   => 1,
@@ -93,7 +69,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'        => false,
 					'address1'      => false,
 					'country'       => false,
-					'state'         => false,
 					'city'          => false,
 					'zip'           => false,
 					'businessname'  => false,
@@ -116,7 +91,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'       => '',
 					'address1'     => '',
 					'country'      => '',
-					'state'        => '',
 					'city'         => '',
 					'zip'          => '',
 					'isbusiness'   => 1,
@@ -131,7 +105,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'        => false,
 					'address1'      => false,
 					'country'       => false,
-					'state'         => false,
 					'city'          => false,
 					'zip'           => false,
 					'businessname'  => false,
@@ -154,7 +127,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'       => '',
 					'address1'     => '',
 					'country'      => '',
-					'state'        => '',
 					'city'         => '',
 					'zip'          => '',
 					'isbusiness'   => 1,
@@ -169,7 +141,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'        => false,
 					'address1'      => false,
 					'country'       => false,
-					'state'         => false,
 					'city'          => false,
 					'zip'           => false,
 					'businessname'  => false,
@@ -192,7 +163,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'       => '',
 					'address1'     => '',
 					'country'      => '',
-					'state'        => '',
 					'city'         => '',
 					'zip'          => '',
 					'isbusiness'   => 1,
@@ -207,7 +177,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'        => false,
 					'address1'      => false,
 					'country'       => false,
-					'state'         => false,
 					'city'          => false,
 					'zip'           => false,
 					'businessname'  => false,
@@ -230,7 +199,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'       => 'newuser@test.web',
 					'address1'     => '',
 					'country'      => '',
-					'state'        => '',
 					'city'         => '',
 					'zip'          => '',
 					'isbusiness'   => 1,
@@ -245,7 +213,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'        => false,
 					'address1'      => false,
 					'country'       => false,
-					'state'         => false,
 					'city'          => false,
 					'zip'           => false,
 					'businessname'  => false,
@@ -268,7 +235,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'       => 'newuser_NOTREALLY@test.web',
 					'address1'     => '',
 					'country'      => '',
-					'state'        => '',
 					'city'         => '',
 					'zip'          => '',
 					'isbusiness'   => 1,
@@ -283,7 +249,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'        => false,
 					'address1'      => false,
 					'country'       => false,
-					'state'         => false,
 					'city'          => false,
 					'zip'           => false,
 					'businessname'  => false,
@@ -306,7 +271,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'       => 'newuser@test.web',
 					'address1'     => '',
 					'country'      => '',
-					'state'        => '',
 					'city'         => '',
 					'zip'          => '',
 					'isbusiness'   => 1,
@@ -321,7 +285,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'        => true,
 					'address1'      => false,
 					'country'       => false,
-					'state'         => false,
 					'city'          => false,
 					'zip'           => false,
 					'businessname'  => false,
@@ -344,7 +307,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'       => 'newuser@test.web',
 					'address1'     => '123 Someplace Drive',
 					'country'      => '',
-					'state'        => '',
 					'city'         => '',
 					'zip'          => '',
 					'isbusiness'   => 1,
@@ -359,7 +321,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'        => true,
 					'address1'      => true,
 					'country'       => false,
-					'state'         => false,
 					'city'          => false,
 					'zip'           => false,
 					'businessname'  => false,
@@ -382,7 +343,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'       => 'newuser@test.web',
 					'address1'     => '123 Someplace Drive',
 					'country'      => 'US',
-					'state'        => '',
 					'city'         => '',
 					'zip'          => '',
 					'isbusiness'   => 1,
@@ -397,7 +357,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'        => true,
 					'address1'      => true,
 					'country'       => true,
-					'state'         => false,
 					'city'          => false,
 					'zip'           => false,
 					'businessname'  => false,
@@ -420,7 +379,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'       => 'newuser@test.web',
 					'address1'     => '123 Someplace Drive',
 					'country'      => 'US',
-					'state'        => 'AL',
 					'city'         => '',
 					'zip'          => '',
 					'isbusiness'   => 1,
@@ -435,7 +393,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'        => true,
 					'address1'      => true,
 					'country'       => true,
-					'state'         => true,
 					'city'          => false,
 					'zip'           => false,
 					'businessname'  => false,
@@ -458,7 +415,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'       => 'newuser@test.web',
 					'address1'     => '123 Someplace Drive',
 					'country'      => 'GR',
-					'state'        => 'GR-ATT',
 					'city'         => 'Αθήνα',
 					'zip'          => '',
 					'isbusiness'   => 1,
@@ -473,7 +429,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'        => true,
 					'address1'      => true,
 					'country'       => true,
-					'state'         => true,
 					'city'          => true,
 					'zip'           => false,
 					'businessname'  => false,
@@ -496,7 +451,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'       => 'newuser@test.web',
 					'address1'     => '123 Someplace Drive',
 					'country'      => 'GR',
-					'state'        => 'GR-ATT',
 					'city'         => 'Αθήνα',
 					'zip'          => '123 45',
 					'isbusiness'   => 1,
@@ -511,7 +465,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'        => true,
 					'address1'      => true,
 					'country'       => true,
-					'state'         => true,
 					'city'          => true,
 					'zip'           => true,
 					'businessname'  => false,
@@ -534,7 +487,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'       => 'newuser@test.web',
 					'address1'     => '123 Someplace Drive',
 					'country'      => 'GR',
-					'state'        => 'GR-ATT',
 					'city'         => 'Αθήνα',
 					'zip'          => '123 45',
 					'isbusiness'   => 1,
@@ -549,7 +501,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'        => true,
 					'address1'      => true,
 					'country'       => true,
-					'state'         => true,
 					'city'          => true,
 					'zip'           => true,
 					'businessname'  => true,
@@ -572,7 +523,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'       => 'newuser@test.web',
 					'address1'     => '123 Someplace Drive',
 					'country'      => 'GR',
-					'state'        => 'GR-ATT',
 					'city'         => 'Αθήνα',
 					'zip'          => '123 45',
 					'isbusiness'   => 1,
@@ -587,7 +537,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'        => true,
 					'address1'      => true,
 					'country'       => true,
-					'state'         => true,
 					'city'          => true,
 					'zip'           => true,
 					'businessname'  => true,
@@ -610,7 +559,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'       => 'newuser@test.web',
 					'address1'     => '123 Someplace Drive',
 					'country'      => 'GR',
-					'state'        => 'GR-ATT',
 					'city'         => 'Αθήνα',
 					'zip'          => '123 45',
 					'isbusiness'   => 1,
@@ -625,7 +573,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'        => true,
 					'address1'      => true,
 					'country'       => true,
-					'state'         => true,
 					'city'          => true,
 					'zip'           => true,
 					'businessname'  => true,
@@ -648,7 +595,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'       => 'newuser@test.web',
 					'address1'     => '123 Someplace Drive',
 					'country'      => 'GR',
-					'state'        => 'GR-ATT',
 					'city'         => 'Αθήνα',
 					'zip'          => '123 45',
 					'isbusiness'   => 1,
@@ -663,7 +609,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'        => true,
 					'address1'      => true,
 					'country'       => true,
-					'state'         => true,
 					'city'          => true,
 					'zip'           => true,
 					'businessname'  => true,
@@ -686,7 +631,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'       => 'newuser@test.web',
 					'address1'     => '123 Someplace Drive',
 					'country'      => 'GR',
-					'state'        => 'GR-ATT',
 					'city'         => 'Αθήνα',
 					'zip'          => '123 45',
 					'isbusiness'   => 1,
@@ -701,7 +645,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'        => true,
 					'address1'      => true,
 					'country'       => true,
-					'state'         => true,
 					'city'          => true,
 					'zip'           => true,
 					'businessname'  => true,
@@ -724,7 +667,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'       => 'newuser@test.web',
 					'address1'     => '123 Someplace Drive',
 					'country'      => 'GR',
-					'state'        => 'GR-ATT',
 					'city'         => 'Αθήνα',
 					'zip'          => '123 45',
 					'isbusiness'   => 1,
@@ -739,7 +681,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'        => true,
 					'address1'      => true,
 					'country'       => true,
-					'state'         => true,
 					'city'          => true,
 					'zip'           => true,
 					'businessname'  => true,
@@ -762,7 +703,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'       => 'newuser@test.web',
 					'address1'     => '123 Someplace Drive',
 					'country'      => 'GR',
-					'state'        => 'GR-ATT',
 					'city'         => 'Αθήνα',
 					'zip'          => '123 45',
 					'isbusiness'   => 1,
@@ -777,7 +717,6 @@ class PersonalInformationTest extends ValidatorTestCase
 					'email2'        => true,
 					'address1'      => true,
 					'country'       => true,
-					'state'         => true,
 					'city'          => true,
 					'zip'           => true,
 					'businessname'  => true,

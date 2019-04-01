@@ -20,7 +20,6 @@ $field_data = [
         'address1'     => $this->getFieldValue('address1'),
         'address2'     => $this->getFieldValue('address2'),
         'city'         => $this->getFieldValue('city'),
-        'state'        => $this->getFieldValue('state'),
         'zip'          => $this->getFieldValue('zip'),
         'country'      => $this->getFieldValue('country', ['XX']),
         'businessname' => $this->getFieldValue('businessname'),
@@ -37,7 +36,6 @@ $group_classes                 = [
 	'email2'       => $this->validation->validation->email2 ? '' : '--error',
 	'address1'     => $this->validation->validation->address1 ? '' : '--error',
 	'city'         => $this->validation->validation->city ? '' : '--error',
-	'state'        => $this->validation->validation->state ? '' : '--error',
 	'zip'          => $this->validation->validation->zip ? '' : '--error',
 	'country'      => $this->validation->validation->country ? '' : '--error',
 	'businessname' => $this->validation->validation->businessname ? '' : '--error',
@@ -177,21 +175,6 @@ $returnURI->setVar('reset', 1);
 		{{Select::countries($field_data['country'], 'country', array())}}
 		<p id="country_empty" class="akeeba-help-text"
 		   <?php if (strpos($group_classes['country'], 'error') === false): ?>style="display:none"<?php endif ?>>
-			@lang('COM_AKEEBASUBS_LEVEL_ERR_REQUIRED')
-		</p>
-	</div>
-
-	{{-- State --}}
-	<div class="akeeba-form-group{{$group_classes['state']}}" id="stateField">
-		<label for="state">
-			@lang('COM_AKEEBASUBS_LEVEL_FIELD_STATE')
-		</label>
-
-		<div id="akeebasubs-statescontainer">
-			{{Select::states($field_data['state'], 'state', array('country' => $field_data['country']))}}
-		</div>
-		<p id="state_empty" class="akeeba-help-text"
-		   <?php if (strpos($group_classes['city'], 'error') === false): ?>style="display:none"<?php endif ?>>
 			@lang('COM_AKEEBASUBS_LEVEL_ERR_REQUIRED')
 		</p>
 	</div>

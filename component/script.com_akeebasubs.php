@@ -131,8 +131,14 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeebasubs/View/CreditNotes/Form.php',
 
             // Akeeba Subscriptions 7 - Only support MoR integrations
-            'components/com_akeebasubs/View/Level/tmpl/default_donottrack.blade.php',
-            'components/com_akeebasubs/Model/LevelGroups.php',
+			'administrator/components/com_akeebasubs/Model/States.php',
+
+			'components/com_akeebasubs/Model/LevelGroups.php',
+			'components/com_akeebasubs/Model/States.php',
+			'components/com_akeebasubs/Model/Subscribe/Validation/State.php',
+
+			'components/com_akeebasubs/View/Level/tmpl/default_donottrack.blade.php',
+			'components/com_akeebasubs/View/Validate/tmpl/statelist.php',
 		],
 		'folders' => [
 			'administrator/components/com_akeebasubs/commands',
@@ -186,6 +192,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 
 			// Akeeba Subscriptions 7 - Only support MoR integrations
 			'administrator/components/com_akeebasubs/ViewTemplates/LevelGroups',
+			'administrator/components/com_akeebasubs/ViewTemplates/States',
 		]
 	];
 

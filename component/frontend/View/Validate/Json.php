@@ -16,12 +16,8 @@ class Json extends \FOF30\View\DataView\Json
         $this->setLayout('paymentlist');
         $paymentHtml = $this->loadTemplate($tpl, true);
 
-        $this->setLayout('statelist');
-        $stateHtml = $this->loadTemplate($tpl, true);
-
         echo '###'.json_encode([
                 'html'   => $paymentHtml,
-                'states' => $stateHtml,
             ]).'###';
     }
 }

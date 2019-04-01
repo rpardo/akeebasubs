@@ -93,7 +93,7 @@ class Csv extends BaseCsvView
 
 			$extraKeys = [
 				'isbusiness', 'businessname', 'occupation', 'vatnumber', 'viesregistered', 'address1', 'address2',
-				'city', 'state', 'zip', 'country'
+				'city', 'zip', 'country'
 			];
 
 			$userKeys = [

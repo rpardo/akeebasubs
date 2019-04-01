@@ -30,7 +30,6 @@ class TaxHelper extends Model
 	{
 		$result = array(
 			'country'	=> 'XX',
-			'state'		=> '',
 			'city'		=> '',
 			'vies'		=> 0,
 		);
@@ -59,11 +58,6 @@ class TaxHelper extends Model
 				$result['country'] = $userparams->country;
 			}
 
-			if ($userparams->state)
-			{
-				$result['state'] = $userparams->state;
-			}
-
 			if ($userparams->viesregistered && $userparams->isbusiness)
 			{
 				$result['vies'] = 1;
@@ -87,15 +81,14 @@ class TaxHelper extends Model
 	 * @param   int     $akeebasubs_level_id  The subscription level to get the rule for. 0 looks for "All levels"
 	 *                                        rules.
 	 * @param   string  $country              The country code, e.g. 'DE' for Germany
-	 * @param   string  $state                The state of the client
 	 * @param   string  $city                 The city of the client
 	 * @param   int     $vies                 Is the user VIES-registered?
 	 *
 	 * @return  object  Information object. The taxrate property has the effective tax rate in percentage points.
 	 */
-	public function getTaxRule($akeebasubs_level_id = 0, $country = 'XX', $state = '', $city = '', $vies = 0)
+	public function getTaxRule($akeebasubs_level_id = 0, $country = 'XX', $city = '', $vies = 0)
 	{
-		$hash = (int) $akeebasubs_level_id . '_' . strtoupper($country) . '_' . strtoupper($state) . '_' .
+		$hash = (int) $akeebasubs_level_id . '_' . strtoupper($country) . '_' .
 			strtoupper($city) . '_' . (int) $vies;
 
 		if (!array_key_exists($hash, self::$cachedTaxRates))
@@ -113,7 +106,7 @@ class TaxHelper extends Model
 			// If this level has no rules use the "All levels" rules
 			if (!$taxrules->count() && ($akeebasubs_level_id != 0))
 			{
-				self::$cachedTaxRates[$hash] = $this->getTaxRule(0, $country, $state, $city, $vies);
+				self::$cachedTaxRates[$hash] = $this->getTaxRule(0, $country, $city, $vies);
 
 				return self::$cachedTaxRates[$hash];
 			}
@@ -143,19 +136,6 @@ class TaxHelper extends Model
 					$fuzzy++;
 				}
 				elseif ($rule->country == $country)
-				{
-					$match++;
-				}
-
-				// Note: you can't use $rule->state, it returns the model's state
-				$rule_state = $rule->getFieldValue('state', null);
-
-				if (empty($rule_state))
-				{
-					$match++;
-					$fuzzy++;
-				}
-				elseif ($rule_state == $state)
 				{
 					$match++;
 				}

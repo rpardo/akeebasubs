@@ -30,7 +30,6 @@ class Toolbar extends \FOF30\Toolbar\Toolbar
 				'Upgrades',
 				'TaxConfig',
 				'TaxRules',
-				'States',
 				'EmailTemplates',
 				'BlockRules',
 			),

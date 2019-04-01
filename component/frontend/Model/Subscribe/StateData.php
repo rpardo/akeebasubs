@@ -157,7 +157,6 @@ class StateData
 			'address1'      => $model->getState('address1', '', 'string'),
 			'address2'      => $model->getState('address2', '', 'string'),
 			'country'       => $model->getState('country', '', 'cmd'),
-			'state'         => $model->getState('state', '', 'cmd'),
 			'city'          => $model->getState('city', '', 'string'),
 			'zip'           => $model->getState('zip', '', 'string'),
 			'isbusiness'    => $model->getState('isbusiness', '', 'int'),

@@ -37,7 +37,6 @@ class PersonalInformation extends Base
 			'email2'        => !empty($state->email2) && ($state->email == $state->email2),
 			'address1'      => !empty($state->address1),
 			'country'       => !empty($state->country),
-			'state'         => !empty($state->state),
 			'city'          => !empty($state->city),
 			'zip'           => !empty($state->zip),
 			'businessname'  => !empty($state->businessname),
@@ -58,10 +57,7 @@ class PersonalInformation extends Base
 		// 2. Country validation
 		$ret['country'] = $this->factory->getValidator('Country')->execute();
 
-		// 3. State validation
-		$ret['state'] = $this->factory->getValidator('State')->execute();
-
-		// 4. Business validation
+		// 3. Business validation
 		$businessValidation   = $this->factory->getValidator('Business')->execute();
 		$ret['businessname']  = $businessValidation['businessname'];
 		$ret['occupation']    = $businessValidation['occupation'];
@@ -71,7 +67,7 @@ class PersonalInformation extends Base
 		// After the business validation $this->state->vatnumber contains the reformatted VAT number
 		$this->container->factory->model('Subscribe')->setState('vatnumber', $state->vatnumber);
 
-		// 5. Coupon validation
+		// 4. Coupon validation
 		$couponValidation = $this->factory->getValidator('Coupon')->execute();
 		$ret['coupon']    = $couponValidation['valid'];
 

@@ -37,9 +37,6 @@ $model = $this->getModel();
         @selectfilter('country', \Akeeba\Subscriptions\Admin\Helper\Select::getCountriesForHeader(), 'COM_AKEEBASUBS_TAXRULES_COUNTRY')
     </div>
     <div class="akeeba-filter-element akeeba-form-group">
-        @selectfilter('state', \Akeeba\Subscriptions\Admin\Helper\Select::getStates(), 'COM_AKEEBASUBS_TAXRULES_STATE')
-    </div>
-    <div class="akeeba-filter-element akeeba-form-group">
         @searchfilter('city', null, 'COM_AKEEBASUBS_TAXRULES_CITY')
     </div>
     <div class="akeeba-filter-element akeeba-form-group">
@@ -68,10 +65,6 @@ $model = $this->getModel();
     {{-- Country --}}
     <th>
         @sortgrid('country', 'COM_AKEEBASUBS_TAXRULES_COUNTRY')
-    </th>
-    {{-- State --}}
-    <th>
-        @sortgrid('state', 'COM_AKEEBASUBS_TAXRULES_STATE')
     </th>
     {{-- City --}}
     <th>
@@ -115,12 +108,6 @@ $model = $this->getModel();
         <td>
             <a href="@route(BrowseView::parseFieldTags('index.php?option=com_akeebasubs&view=TaxRules&task=edit&id=[ITEM:ID]', $row))">
                 {{{ BrowseView::getOptionName($row->country, \Akeeba\Subscriptions\Admin\Helper\Select::getCountries()) }}}
-            </a>
-        </td>
-        {{-- State --}}
-        <td>
-            <a href="@route(BrowseView::parseFieldTags('index.php?option=com_akeebasubs&view=TaxRules&task=edit&id=[ITEM:ID]', $row))">
-                {{{ BrowseView::getOptionName($row->state, \Akeeba\Subscriptions\Admin\Helper\Select::getStates()) }}}
             </a>
         </td>
         {{-- City --}}

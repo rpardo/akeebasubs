@@ -883,8 +883,7 @@ abstract class AkpaymentBase extends JPlugin
 			if (is_object($user) && ($user instanceof Users) && ($user->user_id))
 			{
 				$taxInfo = $taxHelper->getTaxRule($subscription->akeebasubs_level_id, $user->country,
-					$user->getFieldValue('state'), $user->city,
-					$user->viesregistered);
+					$user->city, $user->viesregistered);
 				$updates['tax_percent'] = $taxInfo->taxrate;
 
 				// Gross amount is what the client paid. This is either the recurring_amount (if it's non zero) or the gross_amount

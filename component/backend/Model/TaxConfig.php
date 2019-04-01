@@ -82,7 +82,6 @@ class TaxConfig extends Model
 			'akeebasubs_level_id'
 					   => $params->akeebasubs_level_id,
 			'country'  => '',
-			'state'    => '',
 			'city'     => '',
 			'vies'     => 0,
 			'taxrate'  => 0,

@@ -217,7 +217,6 @@ class SubscriptionsForStats extends Subscriptions
 				$db->qn('a') . '.' . $db->qn('address1'),
 				$db->qn('a') . '.' . $db->qn('address2'),
 				$db->qn('a') . '.' . $db->qn('city'),
-				$db->qn('a') . '.' . $db->qn('state') . ' AS ' . $db->qn('userstate'),
 				$db->qn('a') . '.' . $db->qn('zip'),
 				$db->qn('a') . '.' . $db->qn('country'),
 				$db->qn('a') . '.' . $db->qn('params') . ' AS ' . $db->qn('userparams'),

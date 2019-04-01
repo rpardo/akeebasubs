@@ -183,7 +183,7 @@ abstract class Price
 		if ($params->showVat)
 		{
 			$vatRule = $params->taxModel->getTaxRule(
-				$level->akeebasubs_level_id, $params->taxParams['country'], $params->taxParams['state'],
+				$level->akeebasubs_level_id, $params->taxParams['country'],
 				$params->taxParams['city'], $params->taxParams['vies']
 			);
 

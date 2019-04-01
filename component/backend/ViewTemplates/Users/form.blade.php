@@ -82,13 +82,6 @@ $vatOptions = [
             </div>
 
             <div class="akeeba-form-group">
-                <label for="state">
-                    @fieldtitle('state')
-                </label>
-                {{ \FOF30\Utils\FEFHelper\BrowseView::genericSelect('state', \Akeeba\Subscriptions\Admin\Helper\Select::getStates(), $item->state, ['fof.autosubmit' => false, 'none' => null, 'translate' => false]) }}
-            </div>
-
-            <div class="akeeba-form-group">
                 <label for="country">
                     @fieldtitle('country')
                 </label>

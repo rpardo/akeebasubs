@@ -178,8 +178,6 @@ class Users extends DataModel
 				' LIKE ' . $db->q($search) . ') OR ' .
 				'(' . $db->qn('city') .
 				' LIKE ' . $db->q($search) . ') OR ' .
-				'(' . $db->qn('state') .
-				' LIKE ' . $db->q($search) . ') OR ' .
 				'(' . $db->qn('zip') .
 				' LIKE ' . $db->q($search) . ')'
 				. ')'
@@ -235,7 +233,6 @@ class Users extends DataModel
 			'address1'       => $params->get('address', ''),
 			'address2'       => $params->get('address2', ''),
 			'city'           => $params->get('city', ''),
-			'state'          => $params->get('state', ''),
 			'zip'            => $params->get('zip', ''),
 			'country'        => $params->get('country', ''),
 			'params'         => array()
@@ -274,7 +271,6 @@ class Users extends DataModel
 			$taxData = array(
 				'isbusiness' => $taxParameters['vies'] ? 1 : 0,
 				'city'       => $taxParameters['city'],
-				'state'      => $taxParameters['state'],
 				'country'    => $taxParameters['country'],
 				'params'     => array()
 			);

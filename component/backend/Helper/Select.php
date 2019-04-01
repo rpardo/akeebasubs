@@ -8,10 +8,8 @@
 namespace Akeeba\Subscriptions\Admin\Helper;
 
 use Akeeba\Subscriptions\Admin\Model\PaymentMethods;
-use Akeeba\Subscriptions\Admin\Model\States;
 use FOF30\Container\Container;
 use FOF30\Model\DataModel;
-use JFolder;
 use JHtml;
 use JLoader;
 use JText;
@@ -283,13 +281,6 @@ abstract class Select
 	);
 
 	/**
-	 * Maps countries to state short codes and names
-	 *
-	 * @var  array
-	 */
-	public static $states = array();
-
-	/**
 	 * Returns a list of all countries except the empty option (no country)
 	 *
 	 * @return  array
@@ -315,28 +306,6 @@ abstract class Select
 	public static function getCountries()
 	{
 		return self::$countries;
-	}
-
-	/**
-	 * Returns a list of all states
-	 *
-	 * @return  array
-	 */
-	public static function getStates()
-	{
-		static $states = array();
-
-		if (empty($states))
-		{
-			$states = array();
-
-			foreach (self::$states as $country => $s)
-			{
-				$states = array_merge($states, $s);
-			}
-		}
-
-		return $states;
 	}
 
 	/**
@@ -402,29 +371,6 @@ abstract class Select
 		if ($name == $cCode)
 		{
 			$name = '&mdash;';
-		}
-
-		return $name;
-	}
-
-	/**
-	 * Translate the short state code into the full, human-readable state name. If the state is unknown three em-dashes
-	 * are returned instead.
-	 *
-	 * @param   string  $state  The state code
-	 *
-	 * @return  string  The human readable state name
-	 */
-	public static function formatState($state)
-	{
-		$name = '&mdash;';
-
-		foreach (self::$states as $country => $states)
-		{
-			if (array_key_exists($state, $states))
-			{
-				$name = $states[ $state ];
-			}
 		}
 
 		return $name;
@@ -635,72 +581,6 @@ abstract class Select
 		}
 
 		return self::genericlist($options, $id, $attribs, $selected, $id);
-	}
-
-	/**
-	 * Returns a drop-down box of states grouped by country
-	 *
-	 * @param   string  $selected  Short code of the already selected state
-	 * @param   string  $id        Field name and ID
-	 * @param   array   $attribs   Attributes
-	 *
-	 * @return  string  The HTML of the drop-down list
-	 */
-	public static function states($selected = null, $id = 'state', $attribs = array())
-	{
-		$data = array();
-		$country = isset($attribs['country']) ? $attribs['country'] : null;
-
-		if (!is_null($country))
-		{
-			if (isset($attribs['country']))
-			{
-				unset($attribs['country']);
-			}
-
-			$countryName = self::decodeCountry($country);
-			$data[]      = JHtml::_('select.option', '', '– ' . JText::_('COM_AKEEBASUBS_LEVEL_FIELD_STATE') . ' –');
-
-			if (isset(self::$states[$countryName]))
-			{
-				foreach (self::$states[$countryName] as $code => $name)
-				{
-					$data[] = JHtml::_('select.option', $code, $name);
-				}
-			}
-			else
-			{
-				$data   = [];
-				$data[] = JHtml::_('select.option', '', 'N/A');
-			}
-
-			return JHtml::_('select.genericlist', $data, $id, [
-				'id' =>$id,
-				'list.attr' => $attribs,
-				'list.select' => $selected
-			]);
-		}
-
-		foreach (self::$states as $country => $states)
-		{
-			$data[$country] = [
-				'id' => \JApplicationHelper::stringURLSafe($country),
-				'text' => $country,
-				'items' => []
-			];
-
-			foreach ($states as $code => $name)
-			{
-				$data[$country]['items'][] = JHtml::_('select.option', $code, $name);
-			}
-		}
-
-		return JHtml::_('select.groupedlist', $data, $id, [
-			'id' =>$id,
-			'group.id' => 'id',
-			'list.attr' => $attribs,
-			'list.select' => $selected
-		]);
 	}
 
 	/**
@@ -1387,56 +1267,4 @@ abstract class Select
 
 		return $container;
 	}
-}
-
-// Load the states from the database
-if(!function_exists('akeebasubsHelperSelect_init'))
-{
-	function akeebasubsHelperSelect_init()
-	{
-		/** @var States $model */
-		$model                = Container::getInstance('com_akeebasubs')->factory->model('States')->tmpInstance();
-		$rawstates            = $model->enabled(1)->orderByLabels(1)->get(true);
-		$states               = array();
-		$current_country      = '';
-		$current_country_name = 'N/A';
-		$current_states       = array('' => 'N/A');
-
-		/** @var States $rawstate */
-		foreach ($rawstates as $rawstate)
-		{
-			// Note: you can't use $rawstate->state, it gets the model state
-			$rawstate_state = $rawstate->getFieldValue('state', null);
-
-			if ($rawstate->country != $current_country)
-			{
-				if (!empty($current_country_name))
-				{
-					$states[ $current_country_name ] = $current_states;
-					$current_states                  = array();
-					$current_country                 = '';
-					$current_country_name            = '';
-				}
-
-				if (empty($rawstate->country) || empty($rawstate_state) || empty($rawstate->label))
-				{
-					continue;
-				}
-
-				$current_country      = $rawstate->country;
-				$current_country_name = Select::$countries[ $current_country ];
-			}
-
-			$current_states[ $rawstate_state ] = $rawstate->label;
-		}
-
-		if (!empty($current_country_name))
-		{
-			$states[ $current_country_name ] = $current_states;
-		}
-
-		Select::$states = $states;
-	}
-
-	akeebasubsHelperSelect_init();
 }

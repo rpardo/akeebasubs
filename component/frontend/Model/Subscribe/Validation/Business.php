@@ -109,10 +109,7 @@ class Business extends Base
 			/** @var TaxRules $rule */
 			foreach ($taxRules as $rule)
 			{
-				// Note: You can't use $rule->state since it returns the model state
-				$rule_state = $rule->getFieldValue('state', null);
-
-				if (empty($rule_state) && empty($rule->city) && $rule->taxrate && ($lastVies != $rule->vies))
+				if (empty($rule->city) && $rule->taxrate && ($lastVies != $rule->vies))
 				{
 					$catchRules++;
 					$lastVies = $rule->vies;
