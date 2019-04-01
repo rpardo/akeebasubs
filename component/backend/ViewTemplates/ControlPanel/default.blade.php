@@ -13,9 +13,6 @@ different order using @yield later on! --}}
 @include('admin:com_akeebasubs/ControlPanel/phpversion')
 @include('admin:com_akeebasubs/ControlPanel/graphs')
 @include('admin:com_akeebasubs/ControlPanel/stats')
-{{-- Note: Passing $this->wizardstep is not necessary, I just use it to demonstrate how you can pass forced parameters
-to Blade sub-templates --}}
-@include('admin:com_akeebasubs/ControlPanel/wizard', ['wizardstep' => $this->wizardstep])
 {{-- Note: I don't pass $this->hasGeoIPPlugin and $this->geoIPPluginNeedsUpdate. This demonstrates how Blade
 subtemplates can view their parent's variables automatically. --}}
 @include('admin:com_akeebasubs/ControlPanel/geoip')
@@ -26,10 +23,6 @@ render it. --}}
 @yield('phpVersionWarning', '')
 
 <div id="updateNotice"></div>
-
-@if ($this->wizardstep < 6)
-    @yield('wizard', '')
-@endif
 
 @yield('geoip', '')
 

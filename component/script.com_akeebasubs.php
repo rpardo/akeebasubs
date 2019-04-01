@@ -133,6 +133,8 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
             // Akeeba Subscriptions 7 - Only support MoR integrations
 			'administrator/components/com_akeebasubs/Model/States.php',
 
+            'administrator/components/com_akeebasubs/ViewTemplates/ControlPanel/wizard.blade.php',
+
 			'components/com_akeebasubs/Model/LevelGroups.php',
 			'components/com_akeebasubs/Model/States.php',
 			'components/com_akeebasubs/Model/Subscribe/Validation/State.php',

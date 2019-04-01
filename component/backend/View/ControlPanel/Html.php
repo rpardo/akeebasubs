@@ -20,7 +20,6 @@ class Html extends \FOF30\View\DataView\Html
 	public $geoIPPluginNeedsUpdate;
 	public $akeebaCommonDatePHP;
 	public $akeebaCommonDateObsolescence;
-	public $wizardstep;
 
 	protected function onBeforeMain($tpl = null)
 	{
@@ -32,7 +31,5 @@ class Html extends \FOF30\View\DataView\Html
 
 		$this->akeebaCommonDatePHP = $this->container->platform->getDate('2015-08-14 00:00:00', 'GMT')->format(JText::_('DATE_FORMAT_LC1'));
 		$this->akeebaCommonDateObsolescence = $this->container->platform->getDate('2016-05-14 00:00:00', 'GMT')->format(JText::_('DATE_FORMAT_LC1'));
-
-		$this->wizardstep = (int)JComponentHelper::getParams('com_akeebasubs')->get('wizardstep', 1);
 	}
 }

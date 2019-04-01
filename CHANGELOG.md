@@ -12,6 +12,7 @@
 * Removed obsolete “Reseller” plugin (gh-337)
 * Removed obsolete “automatic invoicing” plugin (gh-336)
 * Removed obsolete “Akeeba Subscriptions - Country selection for tax display” module (gh-339)
+* Removed post-installation wizard (gh-335)
 
 # 6.2.3
 

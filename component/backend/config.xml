@@ -58,8 +58,6 @@
 			<option value="2">COM_AKEEBASUBS_CONFIG_BACKEND_LOAD_FEF_BACKEND</option>
 			<option value="3">COM_AKEEBASUBS_CONFIG_BACKEND_LOAD_FEF_BOTH</option>
 		</field>
-
-		<field name="wizardstep" type="hidden" default="1"/>
 	</fieldset>
 
 	<fieldset name="frontend" label="COM_AKEEBASUBS_CONFIG_FRONTEND_TITLE">
