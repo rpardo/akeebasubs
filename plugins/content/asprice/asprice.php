@@ -87,8 +87,8 @@ class plgContentAsprice extends JPlugin
 		}
 
 		$accceptableActions = [
-			'ifashasdiscount', 'ifashassignupfee',
-			'asprice', 'asfancyprice', 'asfancydiscount', 'asfancysignup',
+			'ifashasdiscount',
+			'asprice', 'asfancyprice', 'asfancydiscount',
 		    'asforexnotice', 'asdiscountnotice'
 		];
 
@@ -114,10 +114,6 @@ class plgContentAsprice extends JPlugin
 		$regex = "#{ifashasdiscount (.*?)}(.*){/ifashasdiscount}#s";
 		$article->text = preg_replace_callback($regex, array('self', 'processIfHasDiscount'), $article->text);
 
-		// {ifashassignupfee MYLEVEL}something{/ifashassignupfee} ==> Only show something if MYLEVEL's price includes a signup fee
-		$regex = "#{ifashassignupfee(.*?)}(.*){/ifashassignupfee}#s";
-		$article->text = preg_replace_callback($regex, array('self', 'processIfIncludesSignup'), $article->text);
-
 		// {asprice MYLEVEL} ==> 10.00€
 		$regex = "#{asprice (.*?)}#s";
 		$article->text = preg_replace_callback($regex, array('self', 'processPrice'), $article->text);
@@ -129,10 +125,6 @@ class plgContentAsprice extends JPlugin
 		// {asfancydiscount MYLEVEL} ==> HTML block based on the Strappy layout with the discount price
 		$regex = "#{asfancydiscount (.*?)}#s";
 		$article->text = preg_replace_callback($regex, array('self', 'processFancyDiscount'), $article->text);
-
-		// {asfancysignup MYLEVEL} ==> HTML block based on the Strappy layout with the signup price
-		$regex = "#{asfancysignup (.*?)}#s";
-		$article->text = preg_replace_callback($regex, array('self', 'processFancySignup'), $article->text);
 
 		// {asforexnotice} ==> Foreign exchange rate notice
 		$regex = "#{asforexnotice(.*?)}#s";
@@ -288,51 +280,6 @@ class plgContentAsprice extends JPlugin
 		return $ret;
 	}
 
-
-	/**
-	 * Callback to preg_replace_callback in the onContentPrepare event handler of this plugin.
-	 *
-	 * @param   array  $match  A match to the {ifashassignupfee} plugin tag
-	 *
-	 * @return  string  The processed result
-	 */
-	private static function processIfIncludesSignup($match)
-	{
-		$levelId   = self::getId($match[1], false);
-		$container = Container::getInstance('com_akeebasubs');
-		$params    = Price::getPricingParameters();
-		/** @var \Akeeba\Subscriptions\Site\Model\Levels $level */
-		$level = $container->factory->model('Levels')->tmpInstance();
-
-		if ($params->includeSignup !== 2)
-		{
-			return '';
-		}
-
-		if ($levelId <= 0)
-		{
-			return '';
-		}
-
-		try
-		{
-			$level->findOrFail($levelId);
-		}
-		catch (Exception $e)
-		{
-			return '';
-		}
-
-		$priceInfo = Price::getLevelPriceInformation($level);
-		$ret       = '';
-
-		if (abs($priceInfo->signupFee))
-		{
-			$ret = $match[2];
-		}
-
-		return $ret;
-	}
 
 	/**
 	 * Callback to preg_replace_callback in the onContentPrepare event handler of this plugin.
@@ -508,80 +455,6 @@ class plgContentAsprice extends JPlugin
 		{
 			$ret .= '<div class="akeebasubs-asprice-forexrate-discount">';
 			$ret .= JText::sprintf('COM_AKEEBASUBS_LEVELS_FOREXNOTICE_LBL', Price::toLocalCurrency((float)$priceInfo->prediscount));
-			$ret .= '</div>';
-		}
-
-		return $ret;
-	}
-
-	/**
-	 * Callback to preg_replace_callback in the onContentPrepare event handler of this plugin.
-	 *
-	 * @param   array  $match  A match to the {asfancysignup} plugin tag
-	 *
-	 * @return  string  The processed result
-	 */
-	private static function processFancySignup($match)
-	{
-		$levelId   = self::getId($match[1], false);
-		$container = Container::getInstance('com_akeebasubs');
-		$params    = Price::getPricingParameters();
-		/** @var \Akeeba\Subscriptions\Site\Model\Levels $level */
-		$level     = $container->factory->model('Levels')->tmpInstance();
-
-		if ($levelId <= 0)
-		{
-			return '';
-		}
-
-		try
-		{
-			$level->findOrFail($levelId);
-		}
-		catch (Exception $e)
-		{
-			return '';
-		}
-
-		$priceInfo = Price::getLevelPriceInformation($level);
-
-		if (!(abs($priceInfo->signupFee) >= 0.01))
-		{
-			return '';
-		}
-
-		$ret = '';
-
-		// Prefix
-		$ret .= JText::_('COM_AKEEBASUBS_LEVEL_FIELD_SIGNUPFEE_LIST');
-
-		// Do I need to show the currency symbol BEFORE the price?
-		if ($params->currencyPosition == 'before')
-		{
-			$ret .= '<span class="akeebasubs-asprice-price-currency">' . $params->currencySymbol . '</span>';
-		}
-
-		// Show INTEGER PART of price
-		$ret .= '<span class="akeebasubs-asprice-price-integer">' . $priceInfo->signupInteger . '</span>';
-
-		// Show DECIMAL PART of price
-		if ( (int)$priceInfo->prediscountFractional > 0)
-		{
-			$ret .= '<span class="akeebasubs-asprice-price-separator">.</span>';
-			$ret .= '<span class="akeebasubs-asprice-price-decimal">' . $priceInfo->signupInteger . '</span>';
-		}
-
-		// Do I need to show the currency symbol AFTER the price?
-		if ($params->currencyPosition == 'after')
-		{
-			$ret .= '<span class="akeebasubs-asprice-price-currency">' . $params->currencySymbol . '</span>';
-		}
-
-		// Local (currency converted) price notice
-		if ($params->showLocalPrices)
-		{
-			$ret .= '<div class="akeebasubs-asprice-forexrate-signup">';
-			$ret .= JText::sprintf('COM_AKEEBASUBS_LEVELS_FOREXNOTICE_LBL', Price::toLocalCurrency((float)$priceInfo->signupFee));
 			$ret .= '</div>';
 		}
 

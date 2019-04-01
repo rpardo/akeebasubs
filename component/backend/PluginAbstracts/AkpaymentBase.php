@@ -852,7 +852,7 @@ abstract class AkpaymentBase extends JPlugin
 		$db->setQuery($query);
 		$db->execute();
 
-		// On recurring subscriptions recalculate the net, tax and gross price by removing the signup fee
+		// On recurring subscriptions recalculate the net, tax and gross price
 		if ($subscription->recurring_amount >= 0.01)
 		{
 			$updates['tax_percent'] = $subscription->tax_percent;

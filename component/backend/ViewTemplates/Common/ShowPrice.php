@@ -46,27 +46,6 @@ if ($currencyPos == 'after')
 	$html .= $currencySymbol;
 }
 
-// Second line: sign-up fee
-if (property_exists($item, 'signupfee') && ($item->signupfee >= 0.01))
-{
-	$html .= '<br /><span class="small">( ';
-	$html .= JText::_('COM_AKEEBASUBS_LEVEL_FIELD_SIGNUPFEE_LIST');
-
-	if ($currencyPos == 'before')
-	{
-		$html .= ' ' . $currencySymbol;
-	}
-
-	$html .= sprintf('%02.02f', (float) $item->signupfee);
-
-	if ($currencyPos == 'after')
-	{
-		$html .= $currencySymbol;
-	}
-
-	$html .= ' )</span>';
-}
-
 // End the HTML output
 $html .= '</span>';
 

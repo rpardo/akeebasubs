@@ -25,7 +25,6 @@ use JFactory;
  * @property  string    $description
  * @property  int       $duration
  * @property  float     $price
- * @property  float     $signupfee
  * @property  string    $ordertext
  * @property  string    $orderurl
  * @property  string    $canceltext
@@ -53,7 +52,6 @@ use JFactory;
  * @method  $this  description()               description(string $v)
  * @method  $this  duration()                  duration(int $v)
  * @method  $this  price()                     price(float $v)
- * @method  $this  signupfee()                 signupfee(float $v)
  * @method  $this  ordertext()                 ordertext(string $v)
  * @method  $this  orderurl()                  orderurl(string $v)
  * @method  $this  canceltext()                canceltext(string $v)

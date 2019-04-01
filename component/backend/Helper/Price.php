@@ -59,9 +59,7 @@ abstract class Price
 	protected static $pricingParameters = null;
 
 	/**
-	 * Returns the subscription level IDs for which the currently logged in user has an active subscription. Used for
-	 * calculating sign-up fees.
-	 *
+	 * Returns the subscription level IDs for which the currently logged in user has an active subscription. 	 *
 	 * @return  int[]
 	 */
 	public static function getSubIDs()
@@ -138,7 +136,6 @@ abstract class Price
 				'taxModel'         => $taxModel,
 				'showVat'          => $container->params->get('showvat', 0),
 				'taxParams'        => $taxParams,
-				'includeSignup'    => $container->params->get('includesignup', 2),
 				'includeDiscount'  => $user->guest ? false : $container->params->get('includediscount', 0),
 				'renderAsFree'     => $container->params->get('renderasfree', 0),
 				'showLocalPrices'  => $showLocalPrices,
@@ -171,7 +168,6 @@ abstract class Price
 			return self::$pricingInformationCache[$levelKey];
 		}
 
-		$signupFee = 0;
 		$discount = 0;
 		$levelPrice = $level->price;
 		$vatMultiplier = 1.0;
@@ -182,13 +178,7 @@ abstract class Price
 			'id'      => 0, // The ID of the tax rule in effect
 		];
 
-		$subIDs = self::getSubIDs();
 		$params = self::getPricingParameters();
-
-		if (!in_array($level->akeebasubs_level_id, $subIDs) && ($params->includeSignup != 0))
-		{
-			$signupFee = (float)$level->signupfee;
-		}
 
 		if ($params->showVat)
 		{
@@ -213,38 +203,18 @@ abstract class Price
 			$levelPrice = $level->price - $discount;
 		}
 
-		if ($params->includeSignup == 1)
+		if ($levelPrice < 0)
 		{
-			if (($levelPrice + $signupFee) < 0)
-			{
-				$levelPrice = -$signupFee;
-			}
-
-			$priceForFormatting = ($levelPrice + $signupFee) * $vatMultiplier;
-			$formattedPrice     = sprintf('%1.02F', $priceForFormatting);
-			$preDiscount        = max(($preDiscount + $signupFee) * $vatMultiplier, 0);
-			$levelPrice += $signupFee;
+			$levelPrice = 0;
 		}
-		else
-		{
-			if ($levelPrice < 0)
-			{
-				$levelPrice = 0;
-			}
 
-			$priceForFormatting = ($levelPrice) * $vatMultiplier;
-			$formattedPrice = sprintf('%1.02F', $priceForFormatting);
-			$preDiscount = $preDiscount * $vatMultiplier;
-		}
+		$priceForFormatting = ($levelPrice) * $vatMultiplier;
+		$formattedPrice = sprintf('%1.02F', $priceForFormatting);
+		$preDiscount = $preDiscount * $vatMultiplier;
 
 		$dotpos = strpos($formattedPrice, '.');
 		$price_integer = substr($formattedPrice, 0, $dotpos);
 		$price_fractional = substr($formattedPrice, $dotpos + 1);
-
-		$formattedPriceSU = sprintf('%1.02F', $signupFee * $vatMultiplier);
-		$dotposSU = strpos($formattedPriceSU, '.');
-		$price_integerSU = substr($formattedPriceSU, 0, $dotposSU);
-		$price_fractionalSU = substr($formattedPriceSU, $dotposSU + 1);
 
 		$formattedPriceD = sprintf('%1.02F', $discount);
 		$dotposD = strpos($formattedPriceD, '.');
@@ -274,12 +244,7 @@ abstract class Price
 			'formattedPrice'       => $formattedPrice,
 			'priceInteger'         => $price_integer,
 			'priceFractional'      => $price_fractional,
-			'formattedPriceSignup' => $formattedPriceSU,
 			'priceForFormatting'   => $priceForFormatting,
-
-			'signupFee'            => $signupFee,
-			'signupInteger'        => $price_integerSU,
-			'signupFractional'     => $price_fractionalSU,
 		];
 
 		return self::$pricingInformationCache[$levelKey];

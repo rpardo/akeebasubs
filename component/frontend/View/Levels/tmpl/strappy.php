@@ -79,26 +79,6 @@ $discounts = array();
 		</tr>
 		<?php endif; ?>
 
-		<?php if ($this->includeSignup == 2): ?>
-		<tr>
-			<?php foreach($this->items as $level):
-				$priceInfo = $this->getLevelPriceInformation($level);
-			?>
-			<td class="akeebasubs-strappy-signupfee">
-				<?php if(abs($priceInfo->signupFee) >= 0.01): ?>
-				<?php echo JText::_('COM_AKEEBASUBS_LEVEL_FIELD_SIGNUPFEE_LIST'); ?>
-				<?php if($this->container->params->get('currencypos','before') == 'before'): ?><span class="akeebasubs-strappy-price-currency"><?php echo $this->container->params->get('currencysymbol','€')?></span><?php endif; ?><span class="akeebasubs-strappy-price-integer"><?php echo $priceInfo->signupInteger ?></span><?php if((int)$priceInfo->signupFractional > 0): ?><span class="akeebasubs-strappy-price-separator">.</span><span class="akeebasubs-strappy-price-decimal"><?php echo $priceInfo->signupInteger ?></span><?php endif; ?><?php if($this->container->params->get('currencypos','before') == 'after'): ?><span class="akeebasubs-strappy-price-currency"><?php echo $this->container->params->get('currencysymbol','€')?></span><?php endif; ?>
-				<?php if ($this->showLocalPrices): ?>
-					<div class="akeebasubs-strappy-forexrate-signup">
-						<?php echo JText::sprintf('COM_AKEEBASUBS_LEVELS_FOREXNOTICE_LBL', $this->toLocalCurrency((float)$priceInfo->signupFee)); ?>
-					</div>
-				<?php endif; ?>
-				<?php endif; ?>
-			</td>
-			<?php endforeach ?>
-		</tr>
-		<?php endif; ?>
-
 		<tr>
 		<?php foreach($this->items as $level):?>
 			<td class="akeebasubs-strappy-image">

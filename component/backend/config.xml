@@ -69,13 +69,6 @@
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_SECRET"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_SECRET_DESC"
 		/>
-		<field name="includesignup" type="list" default="2"
-			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDESIGNUP"
-			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDESIGNUP_DESC">
-			<option value="0">COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDESIGNUP_NEVER</option>
-			<option value="1">COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDESIGNUP_INPRICE</option>
-			<option value="2">COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDESIGNUP_SEPARATE</option>
-		</field>
 		<field name="includediscount" type="radio" class="switcher btn-group" default="0"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDEDISCOUNT"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDEDISCOUNT_DESC">

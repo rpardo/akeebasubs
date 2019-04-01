@@ -46,13 +46,6 @@ class Html extends \FOF30\View\DataView\Html
 	public $taxParams = [];
 
 	/**
-	 * Should I include sign-up fees in the displayed prices?
-	 *
-	 * @var  int
-	 */
-	public $includeSignup = 0;
-
-	/**
 	 * Should I include discounts in the displayed prices?
 	 *
 	 * @var  bool
@@ -124,7 +117,6 @@ class Html extends \FOF30\View\DataView\Html
 		$this->showVat         = $params->showVat;
 		$this->taxModel        = $params->taxModel;
 		$this->taxParams       = $params->taxParams;
-		$this->includeSignup   = $params->includeSignup;
 		$this->includeDiscount = $params->includeDiscount;
 		$this->renderAsFree    = $params->renderAsFree;
 		$this->showLocalPrices = $params->showLocalPrices;

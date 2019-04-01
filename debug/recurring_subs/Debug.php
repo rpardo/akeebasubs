@@ -301,7 +301,6 @@ class Debug extends Controller
 			'description'              => 'FOR DEBUGGING PURPOSES ONLY',
 			'duration'                 => '30',
 			'price'                    => 10.00,
-			'signupfee'                => 0,
 			'ordertext'                => 'Success!',
 			'canceltext'               => 'Cancelled :(',
 			'cancelurl'                => '',

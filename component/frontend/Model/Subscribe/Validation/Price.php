@@ -94,9 +94,6 @@ class Price extends Base
 		// Calculate the recurring amount, if necessary
 		$recurringAmount = 0;
 
-		// Sign-up fee
-		$signUp = $basePriceStructure['signUp'];
-
 		if ($basePriceStructure['isRecurring'])
 		{
 			$discountFactor = $discount / $netPrice;
@@ -110,7 +107,6 @@ class Price extends Base
 		$result = array(
 			'net'        => sprintf('%1.02F', round($netPrice, 2)),
 			'realnet'    => sprintf('%1.02F', round($basePriceStructure['levelNet'], 2)),
-			'signup'     => sprintf('%1.02F', round($signUp, 2)),
 			'discount'   => sprintf('%1.02F', round($discount, 2)),
 			'taxrate'    => sprintf('%1.02F', (float)$taxRule->taxrate),
 			'tax'        => sprintf('%1.02F', round($taxAmount, 2)),

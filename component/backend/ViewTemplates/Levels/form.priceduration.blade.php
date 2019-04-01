@@ -19,13 +19,6 @@ defined('_JEXEC') or die();
 </div>
 
 <div class="akeeba-form-group">
-    <label for="signupfee">
-        @lang('COM_AKEEBASUBS_LEVEL_FIELD_SIGNUPFEE')
-    </label>
-    @include('admin:com_akeebasubs/Common/EntryPrice', ['field' => 'signupfee', 'item' => $item])
-</div>
-
-<div class="akeeba-form-group">
     <label for="duration">
         @lang('COM_AKEEBASUBS_LEVEL_FIELD_DURATION')
     </label>
