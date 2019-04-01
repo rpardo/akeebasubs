@@ -204,6 +204,8 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'components/com_akeebasubs/PrecompiledTemplates',
 
 			// Akeeba Subscriptions 7 - Only support MoR integrations
+			'administrator/components/com_akeebasubs/Form',
+
 			'administrator/components/com_akeebasubs/ViewTemplates/APICoupons',
 			'administrator/components/com_akeebasubs/ViewTemplates/Import',
 			'administrator/components/com_akeebasubs/ViewTemplates/InvoiceTemplates',
