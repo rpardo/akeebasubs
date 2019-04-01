@@ -219,6 +219,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 				'joomlaprofilesync',
 				'kunena',
 				'recaptcha',
+				'reseller',
 				'slavesubs',
 				'sql',
 				'subscriptionemailsdebug',

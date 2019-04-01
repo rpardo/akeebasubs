@@ -9,6 +9,7 @@
 * Removed “Payment Methods” option in subscription level setup page (gh-330)
 * Removed “Level Groups” feature. Use subscription level relations instead. (gh-331)
 * Removed “States” feature. This feature is no longer used since we removed tax calculations. (gh-333)
+* Removed obsolete “Reseller” plugin (gh-337)
 
 # 6.2.3
 
