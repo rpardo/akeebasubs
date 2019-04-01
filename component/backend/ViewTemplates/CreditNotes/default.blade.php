@@ -12,7 +12,6 @@
 defined('_JEXEC') or die();
 
 use Akeeba\Subscriptions\Admin\Model\CreditNotes;
-use Akeeba\Subscriptions\Admin\Model\CreditNoteTemplates;
 
 $model = $this->getModel();
 $nullDate = $this->container->db->getNullDate();

@@ -136,6 +136,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
             'administrator/components/com_akeebasubs/Form/Field/APICouponLimits.php',
 
 			'administrator/components/com_akeebasubs/Model/APICoupons.php',
+			'administrator/components/com_akeebasubs/Model/CreditNoteTemplates.php',
 			'administrator/components/com_akeebasubs/Model/Import.php',
 			'administrator/components/com_akeebasubs/Model/InvoiceTemplates.php',
 			'administrator/components/com_akeebasubs/Model/States.php',
@@ -207,6 +208,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeebasubs/Form',
 
 			'administrator/components/com_akeebasubs/ViewTemplates/APICoupons',
+			'administrator/components/com_akeebasubs/ViewTemplates/CreditNoteTemplates',
 			'administrator/components/com_akeebasubs/ViewTemplates/Import',
 			'administrator/components/com_akeebasubs/ViewTemplates/InvoiceTemplates',
 			'administrator/components/com_akeebasubs/ViewTemplates/LevelGroups',
