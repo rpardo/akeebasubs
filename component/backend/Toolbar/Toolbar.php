@@ -7,9 +7,8 @@
 
 namespace Akeeba\Subscriptions\Admin\Toolbar;
 
-use FOF30\Inflector\Inflector;
-use JToolbarHelper;
 use JText;
+use JToolbarHelper;
 
 defined('_JEXEC') or die;
 
@@ -22,9 +21,9 @@ class Toolbar extends \FOF30\Toolbar\Toolbar
 	 */
 	public function renderSubmenu()
 	{
-		$views = array(
+		$views = [
 			'ControlPanel',
-			'COM_AKEEBASUBS_MAINMENU_SETUP'    => array(
+			'COM_AKEEBASUBS_MAINMENU_SETUP'    => [
 				'Levels',
 				'Relations',
 				'Upgrades',
@@ -32,24 +31,21 @@ class Toolbar extends \FOF30\Toolbar\Toolbar
 				'TaxRules',
 				'EmailTemplates',
 				'BlockRules',
-			),
+			],
 			'Subscriptions',
-			'COM_AKEEBASUBS_MAINMENU_COUPONS'  => array(
+			'COM_AKEEBASUBS_MAINMENU_COUPONS'  => [
 				'Coupons',
-				'APICoupons'
-			),
-			'COM_AKEEBASUBS_MAINMENU_TOOLS'    => array(
-				'Import',
-				'Users'
-			),
+				'APICoupons',
+			],
+			'Users',
 			'Reports',
-			'COM_AKEEBASUBS_MAINMENU_INVOICES' => array(
+			'COM_AKEEBASUBS_MAINMENU_INVOICES' => [
 				'Invoices',
 				'CreditNotes',
 				'InvoiceTemplates',
 				'CreditNoteTemplates',
-			),
-		);
+			],
+		];
 
 		if (!$this->container->platform->getUser()->authorise('com_akeebasubs.pii', 'com_akeebasubs'))
 		{

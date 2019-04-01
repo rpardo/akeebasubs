@@ -131,6 +131,9 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeebasubs/View/CreditNotes/Form.php',
 
             // Akeeba Subscriptions 7 - Only support MoR integrations
+			'administrator/components/com_akeebasubs/Controller/Import.php',
+
+			'administrator/components/com_akeebasubs/Model/Import.php',
 			'administrator/components/com_akeebasubs/Model/States.php',
 
             'administrator/components/com_akeebasubs/ViewTemplates/ControlPanel/wizard.blade.php',
@@ -193,6 +196,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'components/com_akeebasubs/PrecompiledTemplates',
 
 			// Akeeba Subscriptions 7 - Only support MoR integrations
+			'administrator/components/com_akeebasubs/ViewTemplates/Import',
 			'administrator/components/com_akeebasubs/ViewTemplates/LevelGroups',
 			'administrator/components/com_akeebasubs/ViewTemplates/States',
 		]
