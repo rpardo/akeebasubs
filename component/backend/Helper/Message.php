@@ -140,13 +140,6 @@ abstract class Message
 				'tax_amount',
 				'prediscount_amount',
 				'discount_amount',
-				'affiliate_comission',
-				'net_amount_alt',
-				'gross_amount_alt',
-				'tax_amount_alt',
-				'prediscount_amount_alt',
-				'discount_amount_alt',
-				'affiliate_comission_alt'
 			)))
 			{
 				$v = sprintf('%.2f', $v);

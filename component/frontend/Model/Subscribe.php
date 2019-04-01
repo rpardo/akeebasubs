@@ -909,8 +909,6 @@ class Subscribe extends Model
 			'discount_amount'            => $validation->price->discount,
 			'first_contact'              => '0000-00-00 00:00:00',
 			'second_contact'             => '0000-00-00 00:00:00',
-			'akeebasubs_affiliate_id'    => 0,
-			'affiliate_comission'        => 0,
 			'ua'                         => $ua,
 			'mobile'                     => $mobile ? 1 : 0,
 			// Flags
@@ -925,12 +923,6 @@ class Subscribe extends Model
 			$currency = $this->container->params->get('currency', 'EUR');
 
 			Forex::updateRates(false, $this->container);
-
-			$data['net_amount_alt'] 		= Forex::convertCurrency($currency, $currency_alt, $data['net_amount']);
-			$data['tax_amount_alt'] 		= Forex::convertCurrency($currency, $currency_alt, $data['tax_amount']);
-			$data['gross_amount_alt'] 		= Forex::convertCurrency($currency, $currency_alt, $data['gross_amount']);
-			$data['prediscount_amount_alt'] = Forex::convertCurrency($currency, $currency_alt, $data['prediscount_amount']);
-			$data['discount_amount_alt']	= Forex::convertCurrency($currency, $currency_alt, $data['discount_amount']);
 		}
 
 		/** @var Subscriptions $subscription */

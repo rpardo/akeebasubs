@@ -406,8 +406,6 @@ class Debug extends Controller
 			'ip_country'              => 'LOL!',
 			'akeebasubs_coupon_id'    => 0,
 			'akeebasubs_upgrade_id'   => '',
-			'akeebasubs_affiliate_id' => 0,
-			'affiliate_comission'     => 0,
 			'akeebasubs_invoice_id'   => 0,
 			'prediscount_amount'      => 10,
 			'discount_amount'         => 0,

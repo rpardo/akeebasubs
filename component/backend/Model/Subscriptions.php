@@ -42,8 +42,6 @@ use JLoader;
  * @property  string		$ip_country					Country of the user who created this subscription, based on IP geolocation
  * @property  int			$akeebasubs_coupon_id		Coupon code used. FK to coupon relation.
  * @property  int			$akeebasubs_upgrade_id		Upgrade rule used. FK to upgrade relation
- * @property  int			$akeebasubs_affiliate_id	NO LONGER USED IN CORE. Store an affiliate ID (plugin specific)
- * @property  float			$affiliate_comission		NO LONGER USED IN CORE. Store the commission amount of you affiliate (plugin specific)
  * @property  int			$akeebasubs_invoice_id		Invoice issues. FK to invoice relation.
  * @property  float			$prediscount_amount			Total amount, before taxes and before any discount was applied.
  * @property  float			$discount_amount			Discount amount (before taxes), applied over the prediscount_amount
@@ -66,8 +64,6 @@ use JLoader;
  * @method  $this  created_on()                  created_on(string $v)
  * @method  $this  akeebasubs_coupon_id()        akeebasubs_coupon_id(int $v)
  * @method  $this  akeebasubs_upgrade_id()       akeebasubs_upgrade_id(int $v)
- * @method  $this  akeebasubs_affiliate_id()     akeebasubs_affiliate_id(int $v)
- * @method  $this  affiliate_comission()         affiliate_comission(float $v)
  * @method  $this  akeebasubs_invoice_id()       akeebasubs_invoice_id(int|array $v)
  * @method  $this  prediscount_amount()          prediscount_amount(float $v)
  * @method  $this  discount_amount()             discount_amount(float $v)
@@ -1214,8 +1210,6 @@ class Subscriptions extends DataModel
 			'params',
 			'akeebasubs_coupon_id',
 			'akeebasubs_upgrade_id',
-			'akeebasubs_affiliate_id',
-			'affiliate_comission',
 			'akeebasubs_invoice_id',
 			'prediscount_amount',
 			'discount_amount',
