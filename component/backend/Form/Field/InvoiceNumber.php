@@ -7,7 +7,6 @@
 
 namespace Akeeba\Subscriptions\Admin\Form\Field;
 
-use Akeeba\Subscriptions\Admin\Model\Invoices;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 use FOF30\Form\Field\Text;
 
@@ -17,16 +16,6 @@ class InvoiceNumber extends Text
 {
 	public function getRepeatable()
 	{
-		static $invoicetemplates = null;
-
-		if (is_null($invoicetemplates))
-		{
-			/** @var Invoices $model */
-			$model = $this->form->getModel();
-
-			$invoicetemplates = $model->getInvoiceTemplateNames();
-		}
-
 		$canIssueCreditNote = ($this->item->extension == 'akeebasubs') &&
 			is_object($this->item->subscription) &&
 			($this->item->subscription instanceof Subscriptions) &&
@@ -42,14 +31,6 @@ class InvoiceNumber extends Text
 			is_object($this->item->creditNote);
 
 		$value = '';
-
-		if (
-			($this->item->extension == 'akeebasubs')
-			&& array_key_exists($this->item->akeebasubs_invoicetemplate_id, $invoicetemplates)
-		)
-		{
-			$value .= '<span class="label label-info">' . $invoicetemplates[$this->item->akeebasubs_invoicetemplate_id]->title . '</span> ';
-		}
 
 		if ($canIssueCreditNote)
 		{

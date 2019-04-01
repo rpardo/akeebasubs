@@ -137,6 +137,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 
 			'administrator/components/com_akeebasubs/Model/APICoupons.php',
 			'administrator/components/com_akeebasubs/Model/Import.php',
+			'administrator/components/com_akeebasubs/Model/InvoiceTemplates.php',
 			'administrator/components/com_akeebasubs/Model/States.php',
 
             'administrator/components/com_akeebasubs/ViewTemplates/ControlPanel/wizard.blade.php',
@@ -144,6 +145,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'components/com_akeebasubs/Controller/APICoupons.php',
 
             'components/com_akeebasubs/Model/APICoupons.php',
+            'components/com_akeebasubs/Model/InvoiceTemplates.php',
             'components/com_akeebasubs/Model/LevelGroups.php',
 			'components/com_akeebasubs/Model/States.php',
 			'components/com_akeebasubs/Model/Subscribe/Validation/State.php',
@@ -204,6 +206,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			// Akeeba Subscriptions 7 - Only support MoR integrations
 			'administrator/components/com_akeebasubs/ViewTemplates/APICoupons',
 			'administrator/components/com_akeebasubs/ViewTemplates/Import',
+			'administrator/components/com_akeebasubs/ViewTemplates/InvoiceTemplates',
 			'administrator/components/com_akeebasubs/ViewTemplates/LevelGroups',
 			'administrator/components/com_akeebasubs/ViewTemplates/States',
 

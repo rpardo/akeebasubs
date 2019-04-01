@@ -39,8 +39,6 @@ use FOF30\Model\DataModel;
  * @method  $this  modified_by()                    modified_by(int $v)
  * @method  $this  locked_on()                      locked_on(string $v)
  * @method  $this  locked_by()                      locked_by(int $v)
- *
- * @property-read  InvoiceTemplates   $invoiceTemplate  The invoice template this credit note template is linked to
  */
 class CreditNoteTemplates extends DataModel
 {
@@ -53,8 +51,6 @@ class CreditNoteTemplates extends DataModel
 
 		// Always load the Filters behaviour
 		$this->addBehaviour('Filters');
-
-		$this->hasOne('invoiceTemplate', 'InvoiceTemplates', 'akeebasubs_invoicetemplate_id', 'akeebasubs_invoicetemplate_id');
 	}
 
 	/**

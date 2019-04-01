@@ -39,7 +39,6 @@ class Toolbar extends \FOF30\Toolbar\Toolbar
 			'COM_AKEEBASUBS_MAINMENU_INVOICES' => [
 				'Invoices',
 				'CreditNotes',
-				'InvoiceTemplates',
 				'CreditNoteTemplates',
 			],
 		];
@@ -163,14 +162,6 @@ class Toolbar extends \FOF30\Toolbar\Toolbar
 	}
 
 	public function onLevelsBrowse()
-	{
-		$this->onBrowse();
-
-		JToolBarHelper::divider();
-		JToolBarHelper::custom('copy', 'copy.png', 'copy_f2.png', 'JLIB_HTML_BATCH_COPY', false);
-	}
-
-	public function onInvoiceTemplatesBrowse()
 	{
 		$this->onBrowse();
 

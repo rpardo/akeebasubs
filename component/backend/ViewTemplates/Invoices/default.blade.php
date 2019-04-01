@@ -11,12 +11,11 @@
 
 defined('_JEXEC') or die();
 
-use Akeeba\Subscriptions\Admin\Model\Invoices;use Akeeba\Subscriptions\Admin\Model\InvoiceTemplates;use Akeeba\Subscriptions\Admin\Model\Subscriptions;
+use Akeeba\Subscriptions\Admin\Model\Invoices;
+use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 
 $model = $this->getModel();
 $nullDate = $this->container->db->getNullDate();
-$extensions = $model->getExtensions();
-$invoicetemplates = $model->getInvoiceTemplateNames();
 $extensions = $model->getExtensions();
 $returnUrl = base64_encode('index.php?option=com_akeebasubs&view=Invoices');
 ?>
@@ -111,22 +110,6 @@ $returnUrl = base64_encode('index.php?option=com_akeebasubs&view=Invoices');
     {{-- Table body shown when records are present. --}}
 	<?php $i = 0; ?>
     @foreach($this->items as $row)
-        <?php
-        $canIssueCreditNote = ($row->extension == 'akeebasubs') &&
-	        is_object($row->subscription) &&
-	        ($row->subscription instanceof Subscriptions) &&
-	        ($row->subscription->state == 'X') &&
-	        !is_object($row->creditNote) &&
-	        ($row->template instanceof InvoiceTemplates) &&
-	        is_object($row->template->creditNoteTemplate);
-
-        $hasCreditNote = !$canIssueCreditNote &&
-	        ($row->extension == 'akeebasubs') &&
-	        is_object($row->subscription) &&
-	        ($row->subscription instanceof Subscriptions) &&
-	        ($row->subscription->state == 'X') &&
-	        is_object($row->creditNote);
-        ?>
         <tr>
             <td>
                 {{{ sprintf('%05d', $row->akeebasubs_subscription_id) }}}
@@ -143,19 +126,7 @@ $returnUrl = base64_encode('index.php?option=com_akeebasubs&view=Invoices');
                 {{{ \FOF30\Utils\FEFHelper\BrowseView::getOptionName($row->extension, Akeeba\Subscriptions\Admin\Helper\Select::getInvoiceExtensions()) }}}
             </td>
             <td>
-                @if(($row->extension == 'akeebasubs') && array_key_exists($row->akeebasubs_invoicetemplate_id, $invoicetemplates))
-                    <span class="akeeba-label--teal">
-                        {{{ $invoicetemplates[$row->akeebasubs_invoicetemplate_id]->title }}}
-                    </span>
-                @endif
-
-                @if($canIssueCreditNote)
-                    <span class="akeeba-label--red">
-		        @elseif($hasCreditNote)
-                    <span class="akeeba-label--grey">
-                @else
-                    <span class="akeeba-label">
-                @endif
+                <span class="akeeba-label">
 
                 @unless(empty($row->display_number))
                     {{{ $row->display_number }}}

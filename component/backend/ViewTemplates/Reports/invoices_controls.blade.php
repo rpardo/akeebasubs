@@ -51,12 +51,6 @@ $template_id = isset($params['template_id']) ? $params['template_id'] : null;
     </div>
 
     <div class="akeeba-form-group">
-        <span style="display: inline-block; position: relative; top: 0.82em;">
-        {{ \Akeeba\Subscriptions\Admin\Helper\Select::invoicetemplates('template_id[]', $template_id, ['multiple' => 'true', 'size' => 5, 'class' => 'akeebasubsChosen']) }}
-        </span>
-    </div>
-
-    <div class="akeeba-form-group">
         <button class="akeeba-btn--primary">
             <span class="akion-search"></span>
             @lang('COM_AKEEBASUBS_REPORTS_INVOICES_BTN_LOAD')

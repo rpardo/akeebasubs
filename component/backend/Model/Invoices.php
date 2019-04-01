@@ -28,7 +28,6 @@ use FOF30\Model\DataModel;
  *
  * @property  int		$akeebasubs_subscription_id
  * @property  string	$extension
- * @property  int		$akeebasubs_invoicetemplate_id
  * @property  int		$invoice_no
  * @property  string	$display_number
  * @property  string	$invoice_date
@@ -49,7 +48,6 @@ use FOF30\Model\DataModel;
  *
  * @method  $this  akeebasubs_subscription_id()     akeebasubs_subscription_id(int $v)
  * @method  $this  extension()                      extension(string $v)
- * @method  $this  akeebasubs_invoicetemplate_id()  akeebasubs_invoicetemplate_id(int $v)
  * @method  $this  invoice_no()                     invoice_no(int $v)
  * @method  $this  display_number()                 display_number(string $v)
  * @method  $this  invoice_date()                   invoice_date(string $v)
@@ -68,7 +66,6 @@ use FOF30\Model\DataModel;
  * @method  $this  subids()							subids(array $v)
  *
  * @property-read  Subscriptions  		$subscription	The subscription of this invoice
- * @property-read  InvoiceTemplates		$template		The template for this invoice
  * @property-read  CreditNotes		    $creditNote		The credit note issued against this invoice
  */
 class Invoices extends DataModel
@@ -99,7 +96,6 @@ class Invoices extends DataModel
 
 		// Set up relations
 		$this->hasOne('subscription', 'Subscriptions', 'akeebasubs_subscription_id', 'akeebasubs_subscription_id');
-		$this->hasOne('template', 'InvoiceTemplates', 'akeebasubs_invoicetemplate_id', 'akeebasubs_invoicetemplate_id');
 		$this->hasOne('creditNote', 'CreditNotes', 'akeebasubs_subscription_id', 'akeebasubs_invoice_id');
 
 		// Eager load the relations. This allows us to get rid of ugly JOINs.
@@ -394,290 +390,6 @@ class Invoices extends DataModel
 	}
 
 	/**
-	 * Create or update an invoice from a subscription
-	 *
-	 * @param   Subscriptions  $sub  The subscription record
-	 *
-	 * @return  bool
-	 */
-	public function createInvoice(Subscriptions $sub)
-	{
-		$db = $this->getDbo();
-
-		// Do we already have an invoice record?
-		$invoiceRecord = $this->getClone()->reset(true, true);
-		$invoiceRecord->find($sub->akeebasubs_subscription_id);
-
-		$existingRecord = $invoiceRecord->akeebasubs_subscription_id == $sub->akeebasubs_subscription_id;
-
-		// Flag to know if the template allows me to create an invoice
-		$preventInvoice = false;
-
-		// Get the template
-		$templateRow = $this->findTemplate($sub);
-
-		if (is_object($templateRow))
-		{
-			$template = $templateRow->template;
-			$templateId = $templateRow->akeebasubs_invoicetemplate_id;
-			$globalFormat = $templateRow->globalformat;
-			$globalNumbering = $templateRow->globalnumbering;
-
-			// Do I have a "no invoice" flag?
-			$preventInvoice = (bool)$templateRow->noinvoice;
-		}
-		else
-		{
-			$template = '';
-			$templateId = 0;
-			$globalFormat = true;
-			$globalNumbering = true;
-		}
-
-		// Do I have a "no invoice" flag on template or subscription?
-		$sub_params = $sub->params;
-
-		if (is_string($sub->params))
-		{
-			$sub_params = new \JRegistry($sub->params);
-		}
-		elseif (!($sub->params instanceof \JRegistry))
-		{
-			$sub_params = new \JRegistry(json_encode($sub->params));
-		}
-
-		if ($preventInvoice || $sub_params->get('noinvoice', false))
-		{
-			$sub_params->set('noinvoice', true);
-
-			// I have to manually update the db, using the table object will cause an endless loop
-			$query = $db->getQuery(true)
-				->update('#__akeebasubs_subscriptions')
-				->set($db->qn('params') . ' = ' . $db->quote((string)$sub_params))
-				->where($db->qn('akeebasubs_subscription_id') . ' = ' . $sub->akeebasubs_subscription_id);
-
-			$db->setQuery($query)->execute();
-
-			return false;
-		}
-
-		if ($globalFormat)
-		{
-			$numberFormat = $this->container->params->get('invoice_number_format', '[N:5]');
-		}
-		else
-		{
-			$numberFormat = $templateRow->format;
-		}
-
-		if ($globalNumbering)
-		{
-			$numberOverride = $this->container->params->get('invoice_override', 0);
-		}
-		else
-		{
-			$numberOverride = $templateRow->number_reset;
-		}
-
-		// Get the configuration variables
-		if ( !$existingRecord)
-		{
-			$jInvoiceDate = $this->container->platform->getDate();
-			$invoiceData  = array(
-				'akeebasubs_subscription_id' => $sub->akeebasubs_subscription_id,
-				'extension'                  => 'akeebasubs',
-				'invoice_date'               => $jInvoiceDate->toSql(),
-				'enabled'                    => 1,
-				'created_on'                 => $jInvoiceDate->toSql(),
-				'created_by'                 => $sub->user_id,
-			);
-
-			if ($numberOverride)
-			{
-				// There's an override set. Use it and reset the override to 0.
-
-				$invoice_no = $numberOverride;
-				if ($globalNumbering)
-				{
-					// Global number override reset
-					$this->container->params->set('invoice_override', 0);
-					$this->container->params->save();
-				}
-				else
-				{
-					// Invoice template number override reset
-					/** @var InvoiceTemplates $templateTable */
-					$templateTable = $this->container->factory->model('InvoiceTemplates')->tmpInstance();
-					$templateTable->find($templateRow->akeebasubs_invoicetemplate_id);
-					$templateTable->save(array(
-						'number_reset' => 0
-					));
-				}
-			}
-			else
-			{
-				$gnitIDs = [];
-
-				if ($globalNumbering)
-				{
-					// Find all the invoice template IDs using Global Numbering and filter by them
-					$q = $db->getQuery(true)
-						->select($db->qn('akeebasubs_invoicetemplate_id'))
-						->from($db->qn('#__akeebasubs_invoicetemplates'))
-						->where($db->qn('globalnumbering') . ' = ' . $db->q(1));
-					$db->setQuery($q);
-					$rawIDs  = $db->loadColumn();
-					$gnitIDs = array();
-
-					foreach ($rawIDs as $id)
-					{
-						$gnitIDs[] = $db->q($id);
-					}
-				}
-
-				// Get the new invoice number by adding one to the previous number
-				$query = $db->getQuery(true)
-					->select($db->qn('invoice_no'))
-					->from($db->qn('#__akeebasubs_invoices'))
-					->where($db->qn('extension') . ' = ' . $db->q('akeebasubs'))
-					->order($db->qn('created_on') . ' DESC');
-
-				// When not using global numbering search only invoices using this specific invoice template
-				if ( !$globalNumbering)
-				{
-					$query->where($db->qn('akeebasubs_invoicetemplate_id') . ' = ' . $db->q($templateId));
-				}
-				else
-				{
-					$query->where($db->qn('akeebasubs_invoicetemplate_id') . ' IN(' . implode(',', $gnitIDs) . ')');
-				}
-
-				$db->setQuery($query, 0, 1);
-				$invoice_no = (int)$db->loadResult();
-
-				if (empty($invoice_no))
-				{
-					$invoice_no = 0;
-				}
-
-				$invoice_no++;
-			}
-
-			// Parse the invoice number
-			$formated_invoice_no = $this->formatInvoiceNumber($numberFormat, $invoice_no, $jInvoiceDate->toUnix());
-
-			// Add the invoice number (plain and formatted) to the record
-			$invoiceData['invoice_no']     = $invoice_no;
-			$invoiceData['display_number'] = $formated_invoice_no;
-
-			// Add the invoice template ID to the record
-			$invoiceData['akeebasubs_invoicetemplate_id'] = $templateId;
-		}
-		else
-		{
-			// Existing record, make sure it's extension=akeebasubs or quit
-			if ($invoiceRecord->extension != 'akeebasubs')
-			{
-				$this->akeebasubs_invoicetemplate_id = 0;
-
-				return false;
-			}
-
-			$invoice_no          = $invoiceRecord->invoice_no;
-			$formated_invoice_no = $invoiceRecord->display_number;
-
-			if (empty($formated_invoice_no))
-			{
-				$formated_invoice_no = $invoice_no;
-			}
-
-			$jInvoiceDate = $this->container->platform->getDate($invoiceRecord->invoice_date);
-
-			$invoiceData = $invoiceRecord->toArray();
-		}
-
-		// Get the custom variables
-		$vat_notice     = '';
-		$cyprus_tag     = 'TRIANGULAR TRANSACTION';
-		$cyprus_note    = 'We are obliged by local tax laws to write the words "triangular transaction" on all invoices issued in Euros. This doesn\'t mean anything in particular about your transaction.';
-
-		if (is_object($sub->user))
-		{
-			$asUser = $sub->user;
-		}
-		else
-		{
-			/** @var Users $userModel */
-			$userModel = $this->container->factory->model('Users')->tmpInstance();
-			$asUser = $userModel->find(['user_id' => $this->container->platform->getUser()->id]);
-		}
-
-		$country        = $asUser->country;
-		$isbusiness     = $asUser->isbusiness;
-		$viesregistered = $asUser->viesregistered;
-
-		$inEU = EUVATInfo::isEUVATCountry($country);
-
-		// If the shopCountry is the same as the user's country we don't need to put the reverse charge info
-		$shopCountry = $this->container->params->get('invoice_country');
-		$reverse = ($country == $shopCountry) ? false : true;
-
-		if ($inEU && $isbusiness && $viesregistered && $reverse)
-		{
-			$vat_notice  = $this->container->params->get('invoice_vatnote', 'VAT liability is transferred to the recipient, pursuant EU Directive nr 2006/112/EC and local tax laws implementing this directive.');
-			$cyprus_tag  = 'REVERSE CHARGE';
-			$cyprus_note = 'We are obliged by local and European tax laws to write the words "reverse charge" on all invoices issued to EU business when no VAT is charged. This is supposed to serve as a reminder that the recipient of the invoice (you) have to be registered to your local VAT office so as to apply to YOUR business\' VAT form the VAT owed by this transaction on the reverse charge basis, as described above. The words "reverse charge" DO NOT indicate a problem with your transaction, a cancellation or a refund.';
-		}
-
-		$extras = array(
-			'[INV:ID]'                 => $invoice_no,
-			'[INV:PLAIN_NUMBER]'       => $invoice_no,
-			'[INV:NUMBER]'             => $formated_invoice_no,
-			'[INV:INVOICE_DATE]'       => Format::date($jInvoiceDate->toUnix(), 'Y-m-d', false),
-			'[INV:INVOICE_DATE_EU]'    => $jInvoiceDate->format('d/m/Y', true),
-			'[INV:INVOICE_DATE_USA]'   => $jInvoiceDate->format('m/d/Y', true),
-			'[INV:INVOICE_DATE_JAPAN]' => $jInvoiceDate->format('Y/m/d', true),
-			'[VAT_NOTICE]'             => $vat_notice,
-			'[CYPRUS_TAG]'             => $cyprus_tag,
-			'[CYPRUS_NOTE]'            => $cyprus_note,
-		);
-
-		// Render the template into HTML
-		$invoiceData['html'] = Message::processSubscriptionTags($template, $sub, $extras, true);
-
-		// Save the record
-		$invoiceData['akeebasubs_subscription_id'] = $sub->akeebasubs_subscription_id;
-		$invoiceRecord->save($invoiceData);
-		$this->reset(true, true);
-		$this->find($sub->akeebasubs_subscription_id);
-
-		// Create PDF
-		$this->createPDF();
-
-		// Update subscription record with the invoice number without saving the
-		// record through the Model, as this triggers the integration plugins,
-		// which in turn causes double emails to be sent out.
-		$query = $db->getQuery(true)
-			->update($db->qn('#__akeebasubs_subscriptions'))
-			->set($db->qn('akeebasubs_invoice_id') . ' = ' . $db->q($invoice_no))
-			->where($db->qn('akeebasubs_subscription_id') . ' = ' . $db->q($sub->akeebasubs_subscription_id));
-		$db->setQuery($query);
-		$db->execute();
-
-		$sub->akeebasubs_invoice_id = $invoice_no;
-
-		// If auto-send is enabled, send the invoice by email
-		$autoSend = $this->container->params->get('invoice_autosend', 1);
-
-		if ($autoSend)
-		{
-			$this->emailPDF($sub);
-		}
-
-		return true;
-	}
-
-	/**
 	 * Formats an invoice number
 	 *
 	 * @param   string  $numberFormat The invoice number format
@@ -742,116 +454,6 @@ class Invoices extends DataModel
 					$param = (int)$param;
 					$ret .= sprintf('%0' . $param . 'u', $invoice_no);
 					break;
-			}
-		}
-
-		return $ret;
-	}
-
-	/**
-	 * Find and return an invoice template based on the subscription
-	 *
-	 * @param   Subscriptions $sub The susbcription record
-	 *
-	 * @return  object  The invoice template record
-	 */
-	private function findTemplate(Subscriptions $sub)
-	{
-		$level_id = $sub->akeebasubs_level_id;
-
-		if (is_object($sub->user))
-		{
-			$mergedData = $sub->user->getMergedData($sub->user_id);
-		}
-		else
-		{
-			/** @var Users $userModel */
-			$userModel = $this->container->factory->model('Users')->tmpInstance();
-			$mergedData = $userModel->getMergedData();
-		}
-
-
-		$ret = null;
-
-		// Load all enabled templates and check if they fit
-		$templatesModel = $this->container->factory->model('InvoiceTemplates')->tmpInstance();
-		$templates =
-			$templatesModel
-			->enabled(1)
-			->filter_order('enabled')
-			->filter_order_Dir('ASC')
-			->get(true);
-
-		$lastscore = 0;
-
-		if ( !empty($templates))
-		{
-			foreach ($templates as $template)
-			{
-				$levels = [0];
-
-				if (!empty($levels) && is_string($levels))
-				{
-					$levels = explode(',', $template->levels);
-				}
-
-				if (in_array(-1, $levels))
-				{
-					// "No template" is selected
-					continue;
-				}
-
-				// Assume all "All levels" is selected...
-				$found = true;
-
-				// ...unless it's really not.
-				if (!in_array(0, $levels))
-				{
-					// Check if our level is included
-					$found = in_array($level_id, $levels);
-				}
-
-				if ( !$found)
-				{
-					continue;
-				}
-
-				$score = 0;
-
-				// Calculate a "fitness" score based on:
-				// a. country
-				if (empty($template->country))
-				{
-					$score++;
-				}
-				elseif ($mergedData->country != $template->country)
-				{
-					continue;
-				}
-				else
-				{
-					$score += 3;
-				}
-
-				// b. isbusiness
-				if ($template->isbusiness < 0)
-				{
-					$score++;
-				}
-				elseif ($mergedData->isbusiness != $template->isbusiness)
-				{
-					continue;
-				}
-				else
-				{
-					$score += 3;
-				}
-
-				if (($score > 0) && ($score > $lastscore))
-				{
-					$ret       = $template;
-					$lastscore = $score;
-				}
 			}
 		}
 
@@ -1284,21 +886,6 @@ class Invoices extends DataModel
 		}
 
 		return $mydomain . '/' . ltrim($url, '/');
-	}
-
-	public function getInvoiceTemplateNames()
-	{
-		$db    = $this->getDbo();
-		$query = $db->getQuery(true)
-			->select(array(
-				$db->qn('akeebasubs_invoicetemplate_id'),
-				$db->qn('title'),
-			))
-			->from($db->qn('#__akeebasubs_invoicetemplates'));
-		$db->setQuery($query);
-		$res = $db->loadObjectList('akeebasubs_invoicetemplate_id');
-
-		return $res;
 	}
 
 	public function getInvoicePath()

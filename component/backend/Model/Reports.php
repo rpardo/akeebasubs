@@ -90,13 +90,6 @@ class Reports extends Model
 			$query->order($db->qn('akuser') . '.' . $db->qn('country') . ' ASC');
 		}
 
-		if ($params['template_id'])
-		{
-			$template_ids = (array)$params['template_id'];
-			$template_ids = array_map(array($db, 'quote'), $template_ids);
-			$query->where($db->qn('akeebasubs_invoicetemplate_id').' IN('.implode(',', $template_ids).')');
-		}
-
 		$db->setQuery($query);
 		$records = $db->loadObjectList();
 

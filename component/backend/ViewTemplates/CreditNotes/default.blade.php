@@ -18,7 +18,6 @@ $model = $this->getModel();
 $nullDate = $this->container->db->getNullDate();
 /** @var \Akeeba\Subscriptions\Admin\Model\Invoices $invoiceModel */
 $invoiceModel = $this->getModel()->getContainer()->factory->model('Invoices')->tmpInstance();
-$invoicetemplates = $invoiceModel->getInvoiceTemplateNames();
 ?>
 
 @jhtml('behavior.modal', 'a.akeebaSubsModal')
@@ -87,10 +86,6 @@ $invoicetemplates = $invoiceModel->getInvoiceTemplateNames();
                 @endunless
             </td>
             <td>
-                <span class="akeeba-label--teal">
-                    {{{ $invoicetemplates[$row->invoice->akeebasubs_invoicetemplate_id]->title }}}
-                </span>
-
                 <span class="akeeba-label">
 
                 @unless(empty($row->display_number))
