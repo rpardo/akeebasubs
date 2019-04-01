@@ -194,20 +194,8 @@ $returnUrl = base64_encode('index.php?option=com_akeebasubs&view=Invoices');
                             @lang('COM_AKEEBASUBS_INVOICES_LBL_SENT')
                         </span>
                     @endif
-                    <a href="@route('index.php?option=com_akeebasubs&view=Invoices&task=generate&tmpl=component&id=' . $row->akeebasubs_subscription_id)"
-                       class="akeeba-btn--orange--small"
-                       title="@lang('COM_AKEEBASUBS_INVOICES_ACTION_REGENERATE')">
-                        <span class="akion-refresh"></span>
-                    </a>
 
-                    @if($canIssueCreditNote)
-                        <a href="@route('index.php?option=com_akeebasubs&view=CreditNotes&task=generate&tmpl=component&id=' . $row->akeebasubs_subscription_id . '&returnurl=' . $returnUrl)"
-                           class="akeeba-btn--red--small"
-                           title="@lang('COM_AKEEBASUBS_CREDITNOTES_ACTION_REGENERATE')">
-                            <span class="akion-close"></span>
-                            @lang('COM_AKEEBASUBS_CREDITNOTES_ACTION_REGENERATE')
-                        </a>
-                    @elseif($hasCreditNote)
+                    @if($hasCreditNote)
                         <a href="@route('index.php?option=com_akeebasubs&view=CreditNotes&task=download&tmpl=component&id=' . $row->akeebasubs_subscription_id . '&returnurl=' . $returnUrl)"
                            class="akeeba-btn--info--small"
                            title="@lang('COM_AKEEBASUBS_CREDITNOTES_ACTION_DOWNLOAD')">

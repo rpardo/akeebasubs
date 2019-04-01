@@ -129,11 +129,6 @@ $invoicetemplates = $invoiceModel->getInvoiceTemplateNames();
                             @lang('COM_AKEEBASUBS_INVOICES_LBL_SENT')
                         </span>
                 @endif
-                <a href="@route('index.php?option=com_akeebasubs&view=CreditNotes&task=generate&tmpl=component&id=' . $row->akeebasubs_subscription_id)"
-                   class="akeeba-btn--orange--small"
-                   title="@lang('COM_AKEEBASUBS_INVOICES_ACTION_REGENERATE')">
-                    <span class="akion-refresh"></span>
-                </a>
             </td>
         </tr>
     @endforeach
