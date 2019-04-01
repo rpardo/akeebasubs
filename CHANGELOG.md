@@ -7,6 +7,7 @@
 * Removed “Do Not Track” warning (gh-328)
 * Removed Sign-up Fee feature (gh-329)
 * Removed “Payment Methods” option in subscription level setup page (gh-330)
+* Removed “Level Groups” feature. Use subscription level relations instead. (gh-331)
 
 # 6.2.3
 

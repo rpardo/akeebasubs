@@ -1098,38 +1098,6 @@ abstract class Select
 	}
 
 	/**
-	 * Drop down list of level groups
-	 *
-	 * @param   string  $selected  Pre-selected value
-	 * @param   string  $id        The field's name
-	 * @param   array   $attribs   Field attributes
-	 *
-	 * @return  string  The HTML of the drop-down
-	 */
-	public static function levelgroups($selected = null, $id = 'akeebasubs_levelgroup_id', $attribs = array())
-	{
-		/** @var DataModel $model */
-		$model = Container::getInstance('com_akeebasubs')->factory
-			->model('LevelGroups')->tmpInstance();
-
-		$items = $model->get(true);
-
-		$options = array();
-
-		if (count($items))
-		{
-			foreach ($items as $item)
-			{
-				$options[] = JHtml::_('select.option', $item->akeebasubs_levelgroup_id, $item->title);
-			}
-		}
-
-		array_unshift($options, JHtml::_('select.option', 0, JText::_('COM_AKEEBASUBS_SELECT_LEVELGROUP')));
-
-		return self::genericlist($options, $id, $attribs, $selected, $id);
-	}
-
-	/**
 	 * Drop down list of custom field types
 	 *
 	 * @param   string  $name      The field's name

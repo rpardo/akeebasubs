@@ -149,50 +149,6 @@ abstract class Format
 	}
 
 	/**
-	 * Returns the human readable subscription level group title based on the numeric subscription level group ID given
-	 * in $id.
-	 *
-	 * @param   int  $id  The subscription level ID
-	 *
-	 * @return  string  The subscription level title, or three em-dashes if it's unknown
-	 */
-	public static function formatLevelgroup($id)
-	{
-		static $levelGroupsMap;
-
-		if (empty($levelGroupsMap))
-		{
-			/** @var DataModel $levelsModel */
-			$levelGroupsModel = Container::getInstance('com_akeebasubs')->factory
-				->model('LevelGroups')->tmpInstance();
-
-			$levelGroupsList = $levelGroupsModel
-				->get(true);
-
-			if (!empty($levelGroupsList))
-			{
-				foreach ($levelGroupsList as $levelGroup)
-				{
-					$levelGroupsMap[ $levelGroup->akeebasubs_levelgroup_id ] = $levelGroup->title;
-				}
-			}
-			else
-			{
-				$levelGroupsMap = array();
-			}
-		}
-
-		if (array_key_exists($id, $levelGroupsMap))
-		{
-			return $levelGroupsMap[ $id ];
-		}
-		else
-		{
-			return JText::_('COM_AKEEBASUBS_SELECT_LEVELGROUP');
-		}
-	}
-
-	/**
 	 * Format a list of subscription levels, as used in invoice templates
 	 *
 	 * @param   string|array  $ids  An array or a comma-separated list of IDs

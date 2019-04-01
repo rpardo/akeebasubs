@@ -132,6 +132,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 
             // Akeeba Subscriptions 7 - Only support MoR integrations
             'components/com_akeebasubs/View/Level/tmpl/default_donottrack.blade.php',
+            'components/com_akeebasubs/Model/LevelGroups.php',
 		],
 		'folders' => [
 			'administrator/components/com_akeebasubs/commands',
@@ -182,6 +183,9 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			// I no longer need precompiled tempaltes
 			'administrator/components/com_akeebasubs/PrecompiledTemplates',
 			'components/com_akeebasubs/PrecompiledTemplates',
+
+			// Akeeba Subscriptions 7 - Only support MoR integrations
+			'administrator/components/com_akeebasubs/ViewTemplates/LevelGroups',
 		]
 	];
 

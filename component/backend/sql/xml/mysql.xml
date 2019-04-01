@@ -35,7 +35,6 @@ CREATE TABLE `#__akeebasubs_levels` (
 	`only_once` TINYINT(3) NOT NULL DEFAULT 0,
 	`recurring` TINYINT(3) NOT NULL DEFAULT 0,
 	`forever` TINYINT(3) NOT NULL DEFAULT 0,
-	`akeebasubs_levelgroup_id` BIGINT(20) UNSIGNED NULL,
 	`access` int(11) NOT NULL DEFAULT '1',
 	`fixed_date` DATETIME NULL,
 	`renew_url` VARCHAR(2048) NULL DEFAULT '',
@@ -277,23 +276,10 @@ CREATE TABLE `#__akeebasubs_invoices` (
             ]]></query>
         </action>
 
-        <action table="#__akeebasubs_levelgroups" canfail="0">
-            <condition type="missing" value="" />
+        <action table="#__akeebasubs_levelgroups" canfail="1">
+            <condition type="missing" value="" operator="not" />
             <query><![CDATA[
-CREATE TABLE `#__akeebasubs_levelgroups` (
-	`akeebasubs_levelgroup_id` bigint(20) NOT NULL AUTO_INCREMENT,
-	`title` VARCHAR(255) NOT NULL,
-
-	`enabled` tinyint(1) NOT NULL DEFAULT '1',
-	`created_on` datetime NOT NULL default '0000-00-00 00:00:00',
-	`created_by` int(11) NOT NULL DEFAULT 0,
-	`modified_on` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-	`modified_by` int(11) NOT NULL DEFAULT 0,
-	`locked_on` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-	`locked_by` int(11) NOT NULL DEFAULT 0,
-
-	PRIMARY KEY (`akeebasubs_levelgroup_id`)
-) DEFAULT COLLATE utf8_general_ci;
+DROP TABLE IF EXISTS `#__akeebasubs_levelgroups`;
             ]]></query>
         </action>
 
@@ -770,9 +756,9 @@ VALUES
         </action>
 
         <action table="#__akeebasubs_levels" canfail="1">
-            <condition type="missing" value="akeebasubs_levelgroup_id" />
+            <condition type="missing" value="akeebasubs_levelgroup_id" operator="not" />
             <query><![CDATA[
-ALTER TABLE `#__akeebasubs_levels` ADD COLUMN `akeebasubs_levelgroup_id` BIGINT(20) UNSIGNED NULL AFTER `recurring`;
+ALTER TABLE `#__akeebasubs_levels` DROP COLUMN `akeebasubs_levelgroup_id`;
             ]]></query>
         </action>
 
@@ -793,7 +779,7 @@ ALTER TABLE `#__akeebasubs_upgrades` ADD COLUMN `combine` tinyint(1) NOT NULL DE
         <action table="#__akeebasubs_levels" canfail="1">
             <condition type="missing" value="params" />
             <query><![CDATA[
-ALTER TABLE `#__akeebasubs_levels` ADD COLUMN `params` TEXT AFTER `akeebasubs_levelgroup_id`
+ALTER TABLE `#__akeebasubs_levels` ADD COLUMN `params` TEXT BEFORE `enabled`
             ]]></query>
         </action>
 
@@ -821,7 +807,7 @@ ALTER TABLE `#__akeebasubs_subscriptions` ADD COLUMN `after_contact` datetime NO
         <action table="#__akeebasubs_levels" canfail="1">
             <condition type="missing" value="fixed_date" />
             <query><![CDATA[
-ALTER TABLE `#__akeebasubs_levels` ADD COLUMN `fixed_date` DATETIME NULL AFTER `akeebasubs_levelgroup_id`;
+ALTER TABLE `#__akeebasubs_levels` ADD COLUMN `fixed_date` DATETIME NULL AFTER `forever`;
             ]]></query>
         </action>
 
@@ -923,7 +909,7 @@ ALTER TABLE `#__akeebasubs_invoicetemplates` ADD COLUMN `noinvoice` TINYINT NOT 
         <action table="#__akeebasubs_levels" canfail="1">
             <condition type="missing" value="access" />
             <query><![CDATA[
-ALTER TABLE `#__akeebasubs_levels` ADD COLUMN `access` int(11) NOT NULL DEFAULT '1' AFTER `akeebasubs_levelgroup_id`;
+ALTER TABLE `#__akeebasubs_levels` ADD COLUMN `access` int(11) NOT NULL DEFAULT '1' AFTER `fixed_date`;
             ]]></query>
         </action>
 

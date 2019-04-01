@@ -193,7 +193,6 @@ class MessageTest extends \PHPUnit\Framework\TestCase
 			['[LEVEL:ONLY_ONCE]', true, '0'],
 			['[LEVEL:RECURRING]', true, '0'],
 			['[LEVEL:FOREVER]', true, '0'],
-			['[LEVEL:AKEEBASUBS_LEVELGROUP_ID]', true, '0'],
 			['[LEVEL:ACCESS]', true, '1'],
 			['[LEVEL:FIXED_DATE]', true, '0000-00-00 00:00:00'],
 			['[LEVEL:RENEW_URL]', true, ''],

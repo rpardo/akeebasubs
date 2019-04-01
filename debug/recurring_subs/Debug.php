@@ -307,7 +307,6 @@ class Debug extends Controller
 			'only_once'                => 0,
 			'recurring'                => 1,
 			'forever'                  => 0,
-			'akeebasubs_levelgroup_id' => 0,
 			'access'                   => 1,
 			'fixed_date'               => $db->getNullDate(),
 			'renew_url'                => '',

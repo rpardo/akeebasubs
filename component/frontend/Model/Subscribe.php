@@ -717,65 +717,15 @@ class Subscribe extends Model
 		// Step #5. Check for existing subscription records and calculate the subscription expiration date
 		// ----------------------------------------------------------------------
 		// @todo Refactor the entire step #5 into a validator class
-		// First, the question: is this level part of a group?
-		$haveLevelGroup = false;
+		// Get subscriptions on the same level.
+		/** @var Subscriptions $subscriptionsModel */
+		$subscriptionsModel = $this->container->factory->model('Subscriptions')->tmpInstance();
 
-		if ($level->akeebasubs_levelgroup_id > 0)
-		{
-			// Is the level group published?
-			/** @var LevelGroups $levelGroupModel */
-			$levelGroupModel = $this->container->factory->model('LevelGroups')->tmpInstance();
-			$levelGroup = $levelGroupModel->find($level->akeebasubs_levelgroup_id);
-
-			if ($levelGroup->getId())
-			{
-				$haveLevelGroup = $levelGroup->enabled;
-			}
-		}
-
-		if ($haveLevelGroup)
-		{
-			// We have a level group. Get all subscriptions for all levels in
-			// the group.
-			$subscriptions = array();
-
-			/** @var Levels $levelsModel */
-			$levelsModel = $this->container->factory->model('Levels')->tmpInstance();
-			$levelsInGroup = $levelsModel
-				->levelgroup($level->akeebasubs_levelgroup_id)
-				->get(true);
-
-			if ($levelsInGroup->count())
-			{
-				$groupList = [];
-
-				foreach ($levelsInGroup as $l)
-				{
-					$groupList[] = $l->akeebasubs_level_id;
-				}
-
-				/** @var Subscriptions $subscriptionsModel */
-				$subscriptionsModel = $this->container->factory->model('Subscriptions')->tmpInstance();
-
-				$subscriptions = $subscriptionsModel
-					->user_id($user->id)
-					->level($groupList)
-					->paystate('C')
-					->get(true);
-			}
-		}
-		else
-		{
-			// No level group found. Get subscriptions on the same level.
-			/** @var Subscriptions $subscriptionsModel */
-			$subscriptionsModel = $this->container->factory->model('Subscriptions')->tmpInstance();
-
-			$subscriptions = $subscriptionsModel
-				->user_id($user->id)
-				->level($state->id)
-				->paystate('C')
-				->get(true);
-		}
+		$subscriptions = $subscriptionsModel
+			->user_id($user->id)
+			->level($state->id)
+			->paystate('C')
+			->get(true);
 
 		$now = time();
 		$mNow = $this->container->platform->getDate()->toSql();

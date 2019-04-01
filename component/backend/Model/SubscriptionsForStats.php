@@ -204,7 +204,6 @@ class SubscriptionsForStats extends Subscriptions
 				$db->qn('tbl') . '.*',
 				$db->qn('l') . '.' . $db->qn('title'),
 				$db->qn('l') . '.' . $db->qn('image'),
-				$db->qn('l') . '.' . $db->qn('akeebasubs_levelgroup_id'),
 				$db->qn('u') . '.' . $db->qn('name'),
 				$db->qn('u') . '.' . $db->qn('username'),
 				$db->qn('u') . '.' . $db->qn('email'),
@@ -227,7 +226,6 @@ class SubscriptionsForStats extends Subscriptions
 
 			$this->addKnownField('title', '', 'varchar(255)');
 			$this->addKnownField('image', '', 'varchar(255)');
-			$this->addKnownField('akeebasubs_levelgroup_id', 0, 'integer');
 
 			$this->addKnownField('name', '', 'varchar(255)');
 			$this->addKnownField('username', '', 'varchar(255)');

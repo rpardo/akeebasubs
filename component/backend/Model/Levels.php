@@ -32,7 +32,6 @@ use JFactory;
  * @property  bool      $only_once
  * @property  bool      $recurring
  * @property  bool      $forever
- * @property  int       $akeebasubs_levelgroup_id
  * @property  int       $access
  * @property  string    $fixed_date
  * @property  string    $renew_url
@@ -58,7 +57,6 @@ use JFactory;
  * @method  $this  only_once()                 only_once(bool $v)
  * @method  $this  recurring()                 recurring(bool $v)
  * @method  $this  forever()                   forever(bool $v)
- * @method  $this  akeebasubs_levelgroup_id()  akeebasubs_levelgroup_id(int $v)
  * @method  $this  access()                    access(int $v)
  * @method  $this  fixed_date()                fixed_date(string $v)
  * @method  $this  renew_url()                 renew_url(string $v)
@@ -74,7 +72,6 @@ use JFactory;
  * @method  $this  notify1()                   notify1(int $v)
  * @method  $this  notify2()                   notify2(int $v)
  * @method  $this  notifyafter()               notifyafter(int $v)
- * @method  $this  levelgroup()                levelgroup(int $v)
  * @method  $this  access_user_id()            access_user_id(int $v)
  * @method  $this  id()                        id(mixed $v)
  *
@@ -229,13 +226,6 @@ class Levels extends DataModel
 		if ($ids)
 		{
 			$query->where($db->qn('akeebasubs_level_id') . ' IN (' . $ids . ')');
-		}
-
-		$levelgroup = $this->getState('levelgroup', null, 'int');
-
-		if (is_numeric($levelgroup))
-		{
-			$query->where($db->qn('akeebasubs_levelgroup_id') . ' = ' . (int) $levelgroup);
 		}
 
 		$order = $this->getState('filter_order', 'akeebasubs_level_id', 'cmd');
