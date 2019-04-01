@@ -1,3 +1,11 @@
+# 7.0.0
+
+**IMPORTANT** This changes radically the way Akeeba Subscriptions works. It no longer supports regular payment methods, it no longer includes integrated invoicing or tax calculations. It will only work with Merchant of Record services (only integration with Paddle is planned). If you want the classic Akeeba Subscriptions experience you should use version 6. **DO NOT INSTALL UNLESS YOU UNDERSTAND WHAT THIS MEANS**.
+
+**Remove features**
+
+* Removed “Do Not Track” warning (gh-328)
+
 # 6.2.3
 
 **Miscellaneous changes**
