@@ -74,8 +74,7 @@ class plgAkpaymentPaypal extends AkpaymentBase
 			'firstname' => $firstName,
 			'lastname'  => $lastName,
 			'cmd'       => $level->recurring ? '_xclick-subscriptions' : '_xclick',
-			// If there's a signup fee set 'recurring' to 2
-			'recurring' => $level->recurring ? ($subscription->recurring_amount >= 0.01 ? 2 : 1) : 0
+			'recurring' => $level->recurring ? 1 : 0
 		);
 
 		if ($data->recurring > 0)

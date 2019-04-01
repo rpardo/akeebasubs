@@ -5,6 +5,7 @@
 **Remove features**
 
 * Removed “Do Not Track” warning (gh-328)
+* Removed Sign-up Fee feature (gh-329)
 
 # 6.2.3
 

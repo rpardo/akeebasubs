@@ -54,19 +54,6 @@ use \Akeeba\Subscriptions\Admin\Helper\Message;
 					<?php if(!empty($level->image)):?>
 					<img class="level-image" src="<?php echo Image::getURL($level->image)?>" />
 					<?php endif;?>
-
-					<?php if(abs($priceInfo->signupFee) >= 0.01):?>
-					<b><?php echo JText::_('COM_AKEEBASUBS_LEVEL_FIELD_SIGNUPFEE_LIST'); ?></b>
-					<?php if($this->container->params->get('currencypos','before') == 'before'): ?>
-					<span class="level-price-currency"><?php echo $this->container->params->get('currencysymbol','€')?></span>
-					<?php endif; ?>
-					<span class="level-price-integer"><?php echo $priceInfo->signupInteger ?></span><?php if((int)$priceInfo->signupFractional > 0): ?><span class="level-price-separator">.</span><span class="level-price-decimal"><?php echo $priceInfo->signupFractional ?></span><?php endif; ?>
-					<?php if($this->container->params->get('currencypos','before') == 'after'): ?>
-					<span class="level-price-currency"><?php echo $this->container->params->get('currencysymbol','€')?></span>
-					<?php endif; ?>
-					<br/>
-					<?php endif; ?>
-
 					<?php echo JHTML::_('content.prepare', Message::processLanguage($level->description));?>
 				</div>
 			</div>

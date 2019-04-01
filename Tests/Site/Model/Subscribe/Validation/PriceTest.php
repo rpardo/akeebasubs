@@ -32,7 +32,7 @@ class PriceTest extends ValidatorWithSubsTestCase
 		$jNow = new Date();
 
 		return [
-			[
+			'Guest, no discount, Extra EU (no VAT)' => [
 				'loggedIn' => 'guest',
 				'subs'     => [],
 				'state'    => [
@@ -46,13 +46,12 @@ class PriceTest extends ValidatorWithSubsTestCase
 					'vatnumber'    => '',
 				],
 				'expected' => [
-					'net'        => 110.0,
+					'net'        => 100.0,
 					'realnet'    => 100.0,
-					'signup'     => 10.0,
 					'discount'   => 0.0,
 					'taxrate'    => 0.0,
 					'tax'        => 0.0,
-					'gross'      => 110.0,
+					'gross'      => 100.0,
 					'recurring'  => 0.0,
 					'usecoupon'  => 0,
 					'useauto'    => 0,
@@ -64,7 +63,8 @@ class PriceTest extends ValidatorWithSubsTestCase
 				],
 				'message'  => 'With sign-up, Guest, no discount, Extra EU (no VAT)'
 			],
-			[
+
+			'Guest, no discount, EU, non-business user (VAT)' => [
 				'loggedIn' => 'guest',
 				'subs'     => [],
 				'state'    => [
@@ -78,13 +78,12 @@ class PriceTest extends ValidatorWithSubsTestCase
 					'vatnumber'    => '',
 				],
 				'expected' => [
-					'net'        => 110.0,
+					'net'        => 100.0,
 					'realnet'    => 100.0,
-					'signup'     => 10.0,
 					'discount'   => 0.0,
 					'taxrate'    => 23.0,
-					'tax'        => 25.30,
-					'gross'      => 135.30,
+					'tax'        => 23,
+					'gross'      => 123,
 					'recurring'  => 0.0,
 					'usecoupon'  => 0,
 					'useauto'    => 0,
@@ -96,7 +95,8 @@ class PriceTest extends ValidatorWithSubsTestCase
 				],
 				'message'  => 'With sign-up, Guest, no discount, EU, non-business user (VAT)',
 			],
-			[
+
+			'Guest, no discount, EU, business, VIES registered (no VAT)' => [
 				'loggedIn' => 'guest',
 				'subs'     => [],
 				'state'    => [
@@ -110,13 +110,12 @@ class PriceTest extends ValidatorWithSubsTestCase
 					'vatnumber'    => '070298898',
 				],
 				'expected' => [
-					'net'        => 110.0,
+					'net'        => 100.0,
 					'realnet'    => 100.0,
-					'signup'     => 10.0,
 					'discount'   => 0.0,
 					'taxrate'    => 0.0,
 					'tax'        => 0.0,
-					'gross'      => 110.00,
+					'gross'      => 100.00,
 					'recurring'  => 0.0,
 					'usecoupon'  => 0,
 					'useauto'    => 0,
@@ -128,7 +127,8 @@ class PriceTest extends ValidatorWithSubsTestCase
 				],
 				'message'  => 'With sign-up, Guest, no discount, EU, business, VIES registered (no VAT)',
 			],
-			[
+
+			'Guest, no discount, EU, business, not VIES registered (VAT)' => [
 				'loggedIn' => 'guest',
 				'subs'     => [],
 				'state'    => [
@@ -142,13 +142,12 @@ class PriceTest extends ValidatorWithSubsTestCase
 					'vatnumber'    => '123456789',
 				],
 				'expected' => [
-					'net'        => 110.0,
+					'net'        => 100.0,
 					'realnet'    => 100.0,
-					'signup'     => 10.0,
 					'discount'   => 0.0,
 					'taxrate'    => 23.0,
-					'tax'        => 25.30,
-					'gross'      => 135.30,
+					'tax'        => 23,
+					'gross'      => 123,
 					'recurring'  => 0.0,
 					'usecoupon'  => 0,
 					'useauto'    => 0,
@@ -160,7 +159,8 @@ class PriceTest extends ValidatorWithSubsTestCase
 				],
 				'message'  => 'With sign-up, Guest, no discount, EU, business, not VIES registered (VAT)',
 			],
-			[
+
+			'Guest, no discount, EU, Canary Islands (special rule, no VAT)' => [
 				'loggedIn' => 'guest',
 				'subs'     => [],
 				'state'    => [
@@ -174,13 +174,12 @@ class PriceTest extends ValidatorWithSubsTestCase
 					'vatnumber'    => '',
 				],
 				'expected' => [
-					'net'        => 110.0,
+					'net'        => 100.0,
 					'realnet'    => 100.0,
-					'signup'     => 10.0,
 					'discount'   => 0.0,
 					'taxrate'    => 0.0,
 					'tax'        => 0.0,
-					'gross'      => 110.00,
+					'gross'      => 100.00,
 					'recurring'  => 0.0,
 					'usecoupon'  => 0,
 					'useauto'    => 0,
@@ -192,7 +191,8 @@ class PriceTest extends ValidatorWithSubsTestCase
 				],
 				'message'  => 'With sign-up, Guest, no discount, EU, Canary Islands (special rule, no VAT)',
 			],
-			[
+
+			'Guest, coupon discount, Extra EU (no VAT)' => [
 				'loggedIn' => 'guest',
 				'subs'     => [],
 				'state'    => [
@@ -206,13 +206,12 @@ class PriceTest extends ValidatorWithSubsTestCase
 					'vatnumber'    => '',
 				],
 				'expected' => [
-					'net'        => 110.0, // Prediscount net + signup
-					'realnet'    => 100.0, // Prediscount net, without signup
-					'signup'     => 10.0, // Prediscount signup
-					'discount'   => 55.0, // Discount
+					'net'        => 100.0, // Prediscount net
+					'realnet'    => 100.0, // Prediscount net
+					'discount'   => 50.0, // Discount
 					'taxrate'    => 0.0, // Tax rate in % points
 					'tax'        => 0.0, // Tax amount = taxrate * (net - discount)
-					'gross'      => 55.00, // net - discount
+					'gross'      => 50.00, // net - discount
 					'recurring'  => 0.0, // Recurring amount
 					'usecoupon'  => true,
 					'useauto'    => 0,
@@ -224,7 +223,8 @@ class PriceTest extends ValidatorWithSubsTestCase
 				],
 				'message'  => 'With sign-up, Guest, coupon discount, Extra EU (no VAT)',
 			],
-			[
+
+			'Logged in, no discount, Extra EU (no VAT)' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [],
 				'state'    => [
@@ -238,13 +238,12 @@ class PriceTest extends ValidatorWithSubsTestCase
 					'vatnumber'    => '',
 				],
 				'expected' => [
-					'net'        => 110.0,
+					'net'        => 100.0,
 					'realnet'    => 100.0,
-					'signup'     => 10.0,
 					'discount'   => 0.0,
 					'taxrate'    => 0.0,
 					'tax'        => 0.0,
-					'gross'      => 110.0,
+					'gross'      => 100.0,
 					'recurring'  => 0.0,
 					'usecoupon'  => 0,
 					'useauto'    => 0,
@@ -256,7 +255,8 @@ class PriceTest extends ValidatorWithSubsTestCase
 				],
 				'message'  => 'With sign-up, Logged in, no discount, Extra EU (no VAT)'
 			],
-			[
+
+			'Logged in, no discount, EU, non-business user (VAT)' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [],
 				'state'    => [
@@ -270,13 +270,12 @@ class PriceTest extends ValidatorWithSubsTestCase
 					'vatnumber'    => '',
 				],
 				'expected' => [
-					'net'        => 110.0,
+					'net'        => 100.0,
 					'realnet'    => 100.0,
-					'signup'     => 10.0,
 					'discount'   => 0.0,
 					'taxrate'    => 23.0,
-					'tax'        => 25.30,
-					'gross'      => 135.30,
+					'tax'        => 23,
+					'gross'      => 123,
 					'recurring'  => 0.0,
 					'usecoupon'  => 0,
 					'useauto'    => 0,
@@ -289,7 +288,7 @@ class PriceTest extends ValidatorWithSubsTestCase
 				'message'  => 'With sign-up, Logged in, no discount, EU, non-business user (VAT)',
 			],
 
-			[
+			'Logged in, coupon + best upgrade, coupon wins, Extra EU (no VAT)' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
@@ -310,7 +309,6 @@ class PriceTest extends ValidatorWithSubsTestCase
 				'expected' => [
 					'net'        => 100.0,
 					'realnet'    => 100.0,
-					'signup'     => 0.0,
 					'discount'   => 50.0,
 					'taxrate'    => 0.0,
 					'tax'        => 0.0,
@@ -326,7 +324,8 @@ class PriceTest extends ValidatorWithSubsTestCase
 				],
 				'message'  => 'With sign-up,Logged in, coupon + best upgrade, coupon wins, Extra EU (no VAT)'
 			],
-			[
+
+			'Logged in, coupon + best upgrade, coupon wins, EU, non-business user (VAT)' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
@@ -347,7 +346,6 @@ class PriceTest extends ValidatorWithSubsTestCase
 				'expected' => [
 					'net'        => 100.0,
 					'realnet'    => 100.0,
-					'signup'     => 0.0,
 					'discount'   => 50.0,
 					'taxrate'    => 23.0,
 					'tax'        => 11.50,
@@ -363,7 +361,8 @@ class PriceTest extends ValidatorWithSubsTestCase
 				],
 				'message'  => 'With sign-up,Logged in, coupon + best upgrade, coupon wins, EU, non-business user (VAT)'
 			],
-			[
+
+			'Logged in, coupon + best upgrade, coupon wins, EU, business, VIES registered (no VAT)' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
@@ -384,7 +383,6 @@ class PriceTest extends ValidatorWithSubsTestCase
 				'expected' => [
 					'net'        => 100.0,
 					'realnet'    => 100.0,
-					'signup'     => 0.0,
 					'discount'   => 50.0,
 					'taxrate'    => 0.0,
 					'tax'        => 0.0,
@@ -400,7 +398,8 @@ class PriceTest extends ValidatorWithSubsTestCase
 				],
 				'message'  => 'With sign-up,Logged in, coupon + best upgrade, coupon wins, EU, business, VIES registered (no VAT)'
 			],
-			[
+
+			'Logged in, coupon + best upgrade, coupon wins, EU, business, not VIES registered (VAT)' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
@@ -421,7 +420,6 @@ class PriceTest extends ValidatorWithSubsTestCase
 				'expected' => [
 					'net'        => 100.0,
 					'realnet'    => 100.0,
-					'signup'     => 0.0,
 					'discount'   => 50.0,
 					'taxrate'    => 23.0,
 					'tax'        => 11.50,
@@ -437,7 +435,8 @@ class PriceTest extends ValidatorWithSubsTestCase
 				],
 				'message'  => 'With sign-up,Logged in, coupon + best upgrade, coupon wins, EU, business, not VIES registered (VAT)'
 			],
-			[
+
+			'Logged in, coupon + best upgrade, coupon wins, EU, Canary Islands (special rule, no VAT)' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
@@ -458,7 +457,6 @@ class PriceTest extends ValidatorWithSubsTestCase
 				'expected' => [
 					'net'        => 100.0,
 					'realnet'    => 100.0,
-					'signup'     => 0.0,
 					'discount'   => 50.0,
 					'taxrate'    => 0.0,
 					'tax'        => 0.0,
@@ -474,7 +472,8 @@ class PriceTest extends ValidatorWithSubsTestCase
 				],
 				'message'  => 'With sign-up,Logged in, coupon + best upgrade, coupon wins, EU, Canary Islands (special rule, no VAT)'
 			],
-			[
+
+			'Recurring, Guest, no discount, Extra EU (no VAT)' => [
 				'loggedIn' => 'guest',
 				'subs'     => [],
 				'state'    => [
@@ -488,13 +487,12 @@ class PriceTest extends ValidatorWithSubsTestCase
 					'vatnumber'    => '',
 				],
 				'expected' => [
-					'net'        => 110.0,
+					'net'        => 100.0,
 					'realnet'    => 100.0,
-					'signup'     => 10.0,
 					'discount'   => 0.0,
 					'taxrate'    => 0.0,
 					'tax'        => 0.0,
-					'gross'      => 110.00,
+					'gross'      => 100.00,
 					'recurring'  => 100.00,
 					'usecoupon'  => false,
 					'useauto'    => 0,
@@ -506,7 +504,8 @@ class PriceTest extends ValidatorWithSubsTestCase
 				],
 				'message'  => 'Recurring, Guest, no discount, Extra EU (no VAT)'
 			],
-			[
+
+			'Recurring, Logged in, no discount, Extra EU (no VAT)' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [],
 				'state'    => [
@@ -520,13 +519,12 @@ class PriceTest extends ValidatorWithSubsTestCase
 					'vatnumber'    => '',
 				],
 				'expected' => [
-					'net'        => 110.0,
+					'net'        => 100.0,
 					'realnet'    => 100.0,
-					'signup'     => 10.0,
 					'discount'   => 0.0,
 					'taxrate'    => 0.0,
 					'tax'        => 0.0,
-					'gross'      => 110.00,
+					'gross'      => 100.00,
 					'recurring'  => 100.00,
 					'usecoupon'  => false,
 					'useauto'    => 0,
@@ -538,7 +536,8 @@ class PriceTest extends ValidatorWithSubsTestCase
 				],
 				'message'  => 'Recurring, Logged in, no discount, Extra EU (no VAT)'
 			],
-			[
+
+			'Recurring, Logged in, coupon & SLL discount, coupon wins, Extra EU (no VAT)' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
@@ -557,13 +556,12 @@ class PriceTest extends ValidatorWithSubsTestCase
 					'vatnumber'    => '',
 				],
 				'expected' => [
-					'net'        => 110.0,
+					'net'        => 100.0,
 					'realnet'    => 100.0,
-					'signup'     => 10.0,
-					'discount'   => 55.0,
+					'discount'   => 50.0,
 					'taxrate'    => 0.0,
 					'tax'        => 0.0,
-					'gross'      => 55.00,
+					'gross'      => 50.00,
 					'recurring'  => 50.00,
 					'usecoupon'  => true,
 					'useauto'    => 0,
@@ -575,7 +573,8 @@ class PriceTest extends ValidatorWithSubsTestCase
 				],
 				'message'  => 'Recurring, Logged in, coupon & SLL discount, coupon wins, Extra EU (no VAT)'
 			],
-			[
+
+			'Recurring, Logged in, coupon & SLL discount, coupon wins, EU, non-business user (VAT)' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
@@ -594,13 +593,12 @@ class PriceTest extends ValidatorWithSubsTestCase
 					'vatnumber'    => '',
 				],
 				'expected' => [
-					'net'        => 110.0,
+					'net'        => 100.0,
 					'realnet'    => 100.0,
-					'signup'     => 10.0,
-					'discount'   => 55.0,
+					'discount'   => 50.0,
 					'taxrate'    => 23.0,
-					'tax'        => 12.65,
-					'gross'      => 67.65,
+					'tax'        => 11.50,
+					'gross'      => 61.50,
 					'recurring'  => 61.50,
 					'usecoupon'  => true,
 					'useauto'    => 0,

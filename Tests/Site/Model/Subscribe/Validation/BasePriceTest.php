@@ -42,7 +42,7 @@ class BasePriceTest extends ValidatorTestCase
 	public function getTestData()
 	{
 		return [
-			[
+			'Invalid level ID' => [
 				'loggedIn'        => 'guest',
 				'state'           => [
 					'id' => 99999999
@@ -50,38 +50,35 @@ class BasePriceTest extends ValidatorTestCase
 				'expected'        => [
 					'levelNet'    => 0.0,
 					'basePrice'   => 0.0, // Base price, including sign-up and surcharges
-					'signUp'      => 0.0, // Sign-up fee applied
 					'isRecurring' => false
 				],
 				'message'         => 'Invalid level ID'
 			],
-			[
+			'Guest user' => [
 				'loggedIn'        => 'guest',
 				'state'           => [
 					'id' => 1
 				],
 				'expected'        => [
 					'levelNet'    => 100.0,
-					'basePrice'   => 110.0, // Base price, including sign-up and surcharges
-					'signUp'      => 10.0, // Sign-up fee applied
+					'basePrice'   => 100.0, // Base price, including sign-up and surcharges
 					'isRecurring' => false
 				],
-				'message'         => 'Level with sign-up, guest user'
+				'message'         => 'Guest user'
 			],
-			[
+			'User without subscription' => [
 				'loggedIn'        => 'forcedvat',
 				'state'           => [
 					'id' => 1
 				],
 				'expected'        => [
 					'levelNet'    => 100.0,
-					'basePrice'   => 110.0, // Base price, including sign-up and surcharges
-					'signUp'      => 10.0, // Sign-up fee applied
+					'basePrice'   => 100.0, // Base price, including sign-up and surcharges
 					'isRecurring' => false
 				],
-				'message'         => 'Level with sign-up, user without subscription'
+				'message'         => 'User without subscription'
 			],
-			[
+			'User with expired subscription' => [
 				'loggedIn'        => 'user1',
 				'state'           => [
 					'id' => 1
@@ -89,12 +86,11 @@ class BasePriceTest extends ValidatorTestCase
 				'expected'        => [
 					'levelNet'    => 100.0,
 					'basePrice'   => 100.0, // Base price, including sign-up and surcharges
-					'signUp'      => 0.0, // Sign-up fee applied
 					'isRecurring' => false
 				],
-				'message'         => 'Level with sign-up, user with expired subscription'
+				'message'         => 'User with expired subscription'
 			],
-			[
+			'User with active subscription' => [
 				'loggedIn'        => 'business',
 				'state'           => [
 					'id' => 1
@@ -102,25 +98,11 @@ class BasePriceTest extends ValidatorTestCase
 				'expected'        => [
 					'levelNet'    => 100.0,
 					'basePrice'   => 100.0, // Base price, including sign-up and surcharges
-					'signUp'      => 0.0, // Sign-up fee applied
 					'isRecurring' => false
 				],
-				'message'         => 'Level with sign-up, user with active subscription'
+				'message'         => 'User with active subscription'
 			],
-			[
-				'loggedIn'        => 'guest',
-				'state'           => [
-					'id' => 3
-				],
-				'expected'        => [
-					'levelNet'    => 100.0,
-					'basePrice'   => 110.0, // Base price, including sign-up and surcharges
-					'signUp'      => 10.0, // Sign-up fee applied
-					'isRecurring' => true
-				],
-				'message'         => 'Recurring subscription with signup fee'
-			],
-			[
+			'Free subscription' => [
 				'loggedIn'        => 'guest',
 				'state'           => [
 					'id' => 6
@@ -128,23 +110,9 @@ class BasePriceTest extends ValidatorTestCase
 				'expected'        => [
 					'levelNet'    => 0.0,
 					'basePrice'   => 0.0, // Base price, including sign-up and surcharges
-					'signUp'      => 0.0, // Sign-up fee applied
 					'isRecurring' => false
 				],
-				'message'         => 'Free subscription without signup fee'
-			],
-			[
-				'loggedIn'        => 'guest',
-				'state'           => [
-					'id' => 7
-				],
-				'expected'        => [
-					'levelNet'    => 0.0,
-					'basePrice'   => 10.0, // Base price, including sign-up and surcharges
-					'signUp'      => 10.0, // Sign-up fee applied
-					'isRecurring' => false
-				],
-				'message'         => 'Free subscription with signup fee'
+				'message'         => 'Free subscription'
 			]
 		];
 	}

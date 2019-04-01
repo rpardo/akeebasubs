@@ -73,14 +73,6 @@ use \Akeeba\Subscriptions\Admin\Helper\Message;
 						<?php endif; ?>
 					</div>
 					<?php endif; ?>
-					<?php if ($this->includeSignup == 2): ?>
-					<div class="akeebasubs-awesome-signup">
-						<?php if(abs($priceInfo->signupFee) >= 0.01): ?>
-						<?php echo JText::_('COM_AKEEBASUBS_LEVEL_FIELD_SIGNUPFEE_LIST'); ?>
-						<?php if($this->container->params->get('currencypos','before') == 'before'): ?><span class="akeebasubs-awesome-price-currency"><?php echo $this->container->params->get('currencysymbol','€')?></span><?php endif; ?><span class="akeebasubs-awesome-price-integer"><?php echo $priceInfo->signupInteger ?></span><?php if((int)$priceInfo->signupFractional > 0): ?><span class="akeebasubs-awesome-price-separator">.</span><span class="akeebasubs-awesome-price-decimal"><?php echo $priceInfo->signupFractional ?></span><?php endif; ?><?php if($this->container->params->get('currencypos','before') == 'after'): ?><span class="akeebasubs-awesome-price-currency"><?php echo $this->container->params->get('currencysymbol','€')?></span><?php endif; ?>
-						<?php endif; ?>
-					</div>
-					<?php endif; ?>
 				</div>
 				<div class="akeebasubs-awesome-body">
 					<div class="akeebasubs-awesome-image">
