@@ -22,9 +22,6 @@ $layout = $this->input->getCmd('layout', 'default');
 
 <div id="akeebasubs">
 
-	{{-- "Do Not Track" warning --}}
-	@include('site:com_akeebasubs/Level/default_donottrack')
-
 	{{-- Module position 'akeebasubscriptionsheader' --}}
 	@modules('akeebasubscriptionsheader')
 

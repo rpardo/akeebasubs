@@ -129,6 +129,9 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeebasubs/View/wrongphp.php',
 			'administrator/components/com_akeebasubs/View/Invoices/Form.php',
 			'administrator/components/com_akeebasubs/View/CreditNotes/Form.php',
+
+            // Akeeba Subscriptions 7 - Only support MoR integrations
+            'components/com_akeebasubs/View/Level/tmpl/default_donottrack.blade.php',
 		],
 		'folders' => [
 			'administrator/components/com_akeebasubs/commands',

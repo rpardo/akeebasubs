@@ -43,13 +43,6 @@ class Html extends \FOF30\View\DataView\Html
     public $userparams = null;
 
     /**
-     * Did the user set the Do Not Track preference in his browser?
-     *
-     * @var bool
-     */
-    public $dnt = false;
-
-    /**
      * The result of the validation
      *
      * @var object
@@ -79,8 +72,6 @@ class Html extends \FOF30\View\DataView\Html
 			$this->setLayout('default');
 		}
 
-		$this->dnt = $this->getDoNotTrackStatus();
-
 		// Get component parameters and pass them to the view
 		$componentParams = (object)array(
 			'currencypos'           => $this->container->params->get('currencypos', 'before'),
@@ -88,7 +79,6 @@ class Html extends \FOF30\View\DataView\Html
 			'currencysymbol'        => $this->container->params->get('currencysymbol', '€'),
 			'hidelonepaymentoption' => $this->container->params->get('hidelonepaymentoption', 1),
 			'reqcoupon'             => $this->container->params->get('reqcoupon', 0),
-			'warndnt'               => $this->container->params->get('warndnt', 1),
 		);
 
 		$this->cparams = $componentParams;
@@ -97,35 +87,6 @@ class Html extends \FOF30\View\DataView\Html
 
 		// Makes sure SiteGround's SuperCache doesn't cache the subscription page
 		\JFactory::getApplication()->setHeader('X-Cache-Control', 'False', true);
-	}
-
-	/**
-	 * Gets the status of the Do Not Track preference set in the client's browser and communicated through an HTTP
-	 * header.
-	 *
-	 * @return  bool
-	 */
-	private function getDoNotTrackStatus()
-	{
-		if (isset($_SERVER['HTTP_DNT']))
-		{
-			if ($_SERVER['HTTP_DNT'] == 1)
-			{
-				return true;
-			}
-		}
-		elseif (function_exists('getallheaders'))
-		{
-			foreach (getallheaders() as $k => $v)
-			{
-				if (strtolower($k) === "dnt" && $v == 1)
-				{
-					return true;
-				}
-			}
-		}
-
-		return false;
 	}
 
 	/**
