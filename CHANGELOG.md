@@ -10,6 +10,7 @@
 * Removed “Level Groups” feature. Use subscription level relations instead. (gh-331)
 * Removed “States” feature. This feature is no longer used since we removed tax calculations. (gh-333)
 * Removed obsolete “Reseller” plugin (gh-337)
+* Removed obsolete “automatic invoicing” plugin (gh-336)
 
 # 6.2.3
 

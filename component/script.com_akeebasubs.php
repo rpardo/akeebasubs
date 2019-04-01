@@ -215,6 +215,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 				'autocity',
 				'canalyticscommerce',
 				'customfields',
+				'invoices',
 				'iproperty',
 				'joomlaprofilesync',
 				'kunena',
