@@ -9,9 +9,7 @@ namespace Akeeba\Subscriptions\Site\Controller;
 
 defined('_JEXEC') or die;
 
-use Akeeba\Subscriptions\Admin\Controller\Mixin;
 use Akeeba\Subscriptions\Site\Model\Subscribe as SubscribeModel;
-use Akeeba\Subscriptions\Site\Model\TaxHelper;
 use Akeeba\Subscriptions\Site\Model\Users;
 use FOF30\Container\Container;
 use FOF30\Controller\DataController;
@@ -77,14 +75,8 @@ class Levels extends DataController
 			$appInput->set('_x_userid', $this->container->platform->getUser()->id);
 		}
 
-		/** @var TaxHelper $taxHelper */
-		$taxHelper = $this->getModel('TaxHelper');
-		$taxParameters = $taxHelper->getTaxDefiningParameters();
-		$appInput->set('_akeebasubs_taxParameters', $taxParameters);
-
 		$this->registerUrlParams(array(
 			'ids'                       => 'ARRAY',
-			'_akeebasubs_taxParameters' => 'ARRAY',
 			'no_clear'                  => 'BOOL',
 			'_x_userid'                 => 'INT',
 			'coupon'                    => 'STRING'

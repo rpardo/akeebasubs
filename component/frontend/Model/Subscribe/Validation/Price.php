@@ -9,15 +9,8 @@ namespace Akeeba\Subscriptions\Site\Model\Subscribe\Validation;
 
 defined('_JEXEC') or die;
 
-use Akeeba\Subscriptions\Admin\Helper\EUVATInfo;
-use Akeeba\Subscriptions\Site\Model\Subscribe\Validation\ValidationTrait\VATCheckOverride;
-use Akeeba\Subscriptions\Site\Model\TaxRules;
-use Akeeba\Subscriptions\Site\Model\TaxHelper;
-
 class Price extends Base
 {
-	use VATCheckOverride;
-
 	/**
 	 * Return the pricing information.
 	 *
@@ -74,9 +67,6 @@ class Price extends Base
 		// Note: do not reset the oldsup and expiration fields. Subscription level relations must not be bound
 		// to the discount.
 
-		// Get the applicable tax rule
-		$taxRule = $this->getTaxRule();
-
 		// Calculate the base price minimising rounding errors
 		$basePrice = 0.01 * (100 * $netPrice - 100 * $discount);
 
@@ -85,11 +75,8 @@ class Price extends Base
 			$basePrice = 0;
 		}
 
-		// Calculate the tax amount minimising rounding errors
-		$taxAmount = 0.01 * ($taxRule->taxrate * $basePrice);
-
 		// Calculate the gross amount minimising rounding errors
-		$grossAmount = 0.01 * (100 * $basePrice + 100 * $taxAmount);
+		$grossAmount = $basePrice;
 
 		// Calculate the recurring amount, if necessary
 		$recurringAmount = 0;
@@ -98,18 +85,14 @@ class Price extends Base
 		{
 			$discountFactor = $discount / $netPrice;
 			$recurringAmount = $basePriceStructure['levelNet'] * (1.0 - $discountFactor);
-
-			// Now we need to add the tax rate
-			$taxAmountRec = 0.01 * ($taxRule->taxrate * $recurringAmount);
-			$recurringAmount = 0.01 * (100 * $recurringAmount + 100 * $taxAmountRec);
 		}
 
 		$result = array(
 			'net'        => sprintf('%1.02F', round($netPrice, 2)),
 			'realnet'    => sprintf('%1.02F', round($basePriceStructure['levelNet'], 2)),
 			'discount'   => sprintf('%1.02F', round($discount, 2)),
-			'taxrate'    => sprintf('%1.02F', (float)$taxRule->taxrate),
-			'tax'        => sprintf('%1.02F', round($taxAmount, 2)),
+			'taxrate'    => sprintf('%1.02F', 0.00),
+			'tax'        => sprintf('%1.02F', 0.00),
 			'gross'      => sprintf('%1.02F', round($grossAmount, 2)),
 			'recurring'  => sprintf('%1.02F', round($recurringAmount, 2)),
 			'usecoupon'  => $useCoupon ? 1 : 0,
@@ -119,38 +102,11 @@ class Price extends Base
 			'oldsub'     => $discountStructure['oldsub'],
 			'allsubs'    => $discountStructure['allsubs'],
 			'expiration' => $discountStructure['expiration'],
-			'taxrule_id' => $taxRule->id,
-			'tax_match'  => $taxRule->match,
-			'tax_fuzzy'  => $taxRule->fuzzy,
+			'taxrule_id' => 0,
+			'tax_match'  => false,
+			'tax_fuzzy'  => false,
 		);
 
 		return $result;
-	}
-
-	/**
-	 * Gets the applicable tax rule based on the state variables
-	 *
-	 * @return  TaxRules  The applicable tax rule
-	 */
-	private function getTaxRule()
-	{
-		// Do we have a VIES registered VAT number?
-		$validation = $this->factory->getValidator('PersonalInformation')->execute();
-		$isVIES = $validation['vatnumber'] && EUVATInfo::isEUVATCountry($this->state->country);
-
-		// If we have a non-empty VAT number in an EU country make sure that this VAT number is really
-		// VIES registered. This works around some session issues which may end up reporting a VAT
-		// field consisting of spaces as a valid VAT number.
-		if ($isVIES)
-		{
-			$isVIES = $this->isVIESRegisteredRespectingOverrides($this->state->country, $this->state->vatnumber);
-		}
-
-		/** @var TaxHelper $taxModel */
-		$taxModel = $this->container->factory->model('TaxHelper')->tmpInstance();
-
-		return $taxModel->getTaxRule(
-			$this->state->id, $this->state->country, $this->state->state, $this->state->city, $isVIES
-		);
 	}
 }

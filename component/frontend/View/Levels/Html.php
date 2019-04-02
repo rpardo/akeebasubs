@@ -9,11 +9,8 @@ namespace Akeeba\Subscriptions\Site\View\Levels;
 
 defined('_JEXEC') or die;
 
-use Akeeba\Subscriptions\Admin\Helper\Forex;
 use Akeeba\Subscriptions\Admin\Helper\Price;
 use Akeeba\Subscriptions\Site\Model\Levels;
-use Akeeba\Subscriptions\Site\Model\Subscriptions;
-use Akeeba\Subscriptions\Site\Model\TaxHelper;
 
 class Html extends \FOF30\View\DataView\Html
 {
@@ -30,20 +27,6 @@ class Html extends \FOF30\View\DataView\Html
 	 * @var  bool
 	 */
 	public $showVat = false;
-
-	/**
-	 * The tax helper model
-	 *
-	 * @var  TaxHelper
-	 */
-	public $taxModel;
-
-	/**
-	 * Tax defining parameters, fetched from the tax helper model
-	 *
-	 * @var  array
-	 */
-	public $taxParams = [];
 
 	/**
 	 * Should I include discounts in the displayed prices?
@@ -115,8 +98,6 @@ class Html extends \FOF30\View\DataView\Html
 
 		$this->subIDs          = Price::getSubIDs();
 		$this->showVat         = $params->showVat;
-		$this->taxModel        = $params->taxModel;
-		$this->taxParams       = $params->taxParams;
 		$this->includeDiscount = $params->includeDiscount;
 		$this->renderAsFree    = $params->renderAsFree;
 		$this->showLocalPrices = $params->showLocalPrices;

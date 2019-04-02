@@ -9,7 +9,6 @@ namespace Akeeba\Subscriptions\Admin\PluginAbstracts;
 
 use Akeeba\Subscriptions\Admin\Model\Levels;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
-use Akeeba\Subscriptions\Site\Model\TaxHelper;
 use Akeeba\Subscriptions\Site\Model\Users;
 use FOF30\Container\Container;
 use FOF30\Date\Date;
@@ -859,8 +858,6 @@ abstract class AkpaymentBase extends JPlugin
 
 			// Recalculate the tax rate in case it has changed since the last recurring payment (e.g. Brexit)
 			$container = Container::getInstance('com_akeebasubs');
-			/** @var TaxHelper $taxHelper */
-			$taxHelper = $container->factory->model('TaxHelper')->tmpInstance();
 
 			$user = $subscription->user;
 
@@ -882,10 +879,6 @@ abstract class AkpaymentBase extends JPlugin
 
 			if (is_object($user) && ($user instanceof Users) && ($user->user_id))
 			{
-				$taxInfo = $taxHelper->getTaxRule($subscription->akeebasubs_level_id, $user->country,
-					$user->city, $user->viesregistered);
-				$updates['tax_percent'] = $taxInfo->taxrate;
-
 				// Gross amount is what the client paid. This is either the recurring_amount (if it's non zero) or the gross_amount
 				$updates['gross_amount']       = ($subscription->recurring_amount > 0.01) ? $subscription->recurring_amount : $subscription->gross_amount;
 				// We reverse engineer the tax amount from the gross amount since the tax_percent may have changed since the last payment (e.g. a country has increased the tax rate; UK left the EU and so on)

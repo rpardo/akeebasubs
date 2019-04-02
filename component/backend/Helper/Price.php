@@ -106,36 +106,15 @@ abstract class Price
 		if (is_null(self::$pricingParameters))
 		{
 			$container = self::getContainer();
-			/** @var \Akeeba\Subscriptions\Site\Model\TaxHelper $taxModel */
-			$taxModel  = self::getContainer()->factory->model('TaxHelper')->tmpInstance();
 			$user = $container->platform->getUser();
-			$showLocalPrices = $container->params->get('showlocalprices', 1);
-			$taxParams  = $taxModel->getTaxDefiningParameters();
+			$showLocalPrices = false;
 			$exchangeRate = 1.00;
 			$country = '';
 			$localCurrency = '';
 			$localSymbol = '';
 
-			if ($showLocalPrices)
-			{
-				$country = $taxParams['country'];
-				Forex::updateRates(false, $container);
-				$temp                = Forex::convertToLocal($taxParams['country'], 1.00, $container);
-				$exchangeRate  = $temp['rate'];
-				$localCurrency = $temp['currency'];
-				$localSymbol   = $temp['symbol'];
-
-				// Do not show foreign exchange conversions unless the exchange rate is different than unity
-				if (abs($exchangeRate - 1.00) <= 0.000001)
-				{
-					$showLocalPrices = false;
-				}
-			}
-
 			self::$pricingParameters = (object) [
-				'taxModel'         => $taxModel,
 				'showVat'          => $container->params->get('showvat', 0),
-				'taxParams'        => $taxParams,
 				'includeDiscount'  => $user->guest ? false : $container->params->get('includediscount', 0),
 				'renderAsFree'     => $container->params->get('renderasfree', 0),
 				'showLocalPrices'  => $showLocalPrices,
@@ -179,16 +158,6 @@ abstract class Price
 		];
 
 		$params = self::getPricingParameters();
-
-		if ($params->showVat)
-		{
-			$vatRule = $params->taxModel->getTaxRule(
-				$level->akeebasubs_level_id, $params->taxParams['country'],
-				$params->taxParams['city'], $params->taxParams['vies']
-			);
-
-			$vatMultiplier = (100 + (float)$vatRule->taxrate) / 100;
-		}
 
 		$preDiscount = max($levelPrice, 0.0);
 

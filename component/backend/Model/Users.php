@@ -266,12 +266,10 @@ class Users extends DataModel
 		}
 		else
 		{
-			$taxParameters = $this->container->factory->model('TaxHelper')->tmpInstance()->getTaxDefiningParameters($myData);
-
 			$taxData = array(
-				'isbusiness' => $taxParameters['vies'] ? 1 : 0,
-				'city'       => $taxParameters['city'],
-				'country'    => $taxParameters['country'],
+				'isbusiness' => 0,
+				'city'       => '',
+				'country'    => '',
 				'params'     => array()
 			);
 
