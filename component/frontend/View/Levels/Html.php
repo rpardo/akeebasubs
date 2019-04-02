@@ -36,20 +36,6 @@ class Html extends \FOF30\View\DataView\Html
 	public $renderAsFree = false;
 
 	/**
-	 * Exchange rate in use
-	 *
-	 * @var float
-	 */
-	public $exchangeRate = 1.00;
-
-	/**
-	 * Local currency symbol, e.g. €
-	 *
-	 * @var string
-	 */
-	public $localSymbol = '';
-
-	/**
 	 * Country used for foreign currency display
 	 *
 	 * @var string
@@ -79,8 +65,6 @@ class Html extends \FOF30\View\DataView\Html
 		$this->includeDiscount = $params->includeDiscount;
 		$this->renderAsFree    = $params->renderAsFree;
 		$this->country         = $params->country;
-		$this->exchangeRate    = $params->exchangeRate;
-		$this->localSymbol     = $params->localSymbol;
 	}
 
 	/**
