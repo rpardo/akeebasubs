@@ -24,3 +24,4 @@
 * Removed all tax-related features (gh-334)
 * Removed all currency exchange rate features (gh-356)
 * Removed all VAT number validation login (gh-357)
+* Removed all former payment plugins except the local test "none" plugin (gh-341)
