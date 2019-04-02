@@ -100,8 +100,11 @@ $returnURI->setVar('reset', 1);
 		<label for="password">
 			@lang('COM_AKEEBASUBS_LEVEL_FIELD_PASSWORD')
 		</label>
+		<label for="password2" aria-hidden="false" style="display: none;">
+			@lang('COM_AKEEBASUBS_LEVEL_FIELD_PASSWORD2')
+		</label>
 
-		<div class="akeeba-container--50-50">
+		<div class="akeeba-form-group--radio">
 			<input type="password" name="password" id="password"
 				   placeholder="@lang('COM_AKEEBASUBS_LEVEL_FIELD_PASSWORD')"
 				   value="{{{$this->cache['password']}}}"/>
@@ -125,8 +128,11 @@ $returnURI->setVar('reset', 1);
 		<label for="email">
 			@lang('COM_AKEEBASUBS_LEVEL_FIELD_EMAIL')
 		</label>
+		<label for="email2" aria-hidden="false" style="display: none;">
+			@lang('COM_AKEEBASUBS_LEVEL_FIELD_EMAIL2')
+		</label>
 
-		<div class="akeeba-container--50-50">
+		<div class="akeeba-form-group--radio">
 			<input type="text" name="email" id="email"
 				   placeholder="@lang('COM_AKEEBASUBS_LEVEL_FIELD_EMAIL')"
 				   value="{{{$field_data['email']}}}"/>
