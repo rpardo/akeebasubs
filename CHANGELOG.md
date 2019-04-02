@@ -26,3 +26,4 @@
 * Removed all VAT number validation login (gh-357)
 * Removed all former payment plugins except the local test "none" plugin (gh-341)
 * Removed now obsolete as2cocollation and aspaypalcollation plugins (gh-338)
+* Removed the Hide Lone Payment Option setting

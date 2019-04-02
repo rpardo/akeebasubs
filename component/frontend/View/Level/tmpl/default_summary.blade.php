@@ -20,7 +20,7 @@ $paymentMethodsCount = count(Select::paymentmethods('paymentmethod', '', ['id'  
 																		  'level_id'        => $this->item->akeebasubs_level_id,
 																		  'return_raw_list' => 1]));
 $hidePaymentMethod   =
-		(($paymentMethodsCount <= 1) && $this->cparams->hidelonepaymentoption) || ($this->validation->price->gross < 0.01);
+	($paymentMethodsCount <= 1) || ($this->validation->price->gross < 0.01);
 
 ?>
 {{-- SUBSCRIPTION LEVEL NAME --}}

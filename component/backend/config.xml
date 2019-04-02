@@ -80,18 +80,6 @@
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
-		<field name="noneuvat" type="radio" class="switcher btn-group" default="0"
-			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_NONEUVAT_LABEL"
-			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_NONEUVAT_DESC">
-			<option value="0">JNo</option>
-			<option value="1">JYes</option>
-		</field>
-		<field name="hidelonepaymentoption" type="radio" class="switcher btn-group" default="1"
-			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_HIDELONEPAYMENTOPTION_LABEL"
-			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_HIDELONEPAYMENTOPTION_DESC">
-			<option value="0">JNo</option>
-			<option value="1">JYes</option>
-		</field>
 		<field name="useppimages" type="list" default="1"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_USEPPIMAGES_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_USEPPIMAGES_DESC">

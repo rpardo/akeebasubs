@@ -301,12 +301,10 @@ $returnURI->setVar('reset', 1);
 
 <?php
 $aks_validate_url  = JUri::base() . 'index.php';
-$aks_noneuvat      = $this->container->params->get('noneuvat', 0) ? 'true' : 'false';
 $script            = <<< JS
 
 var akeebasubs_validate_url = "$aks_validate_url";
 var akeebasubs_valid_form = false;
-var akeebasubs_noneuvat = $aks_noneuvat;
 
 JS;
 $this->addJavascriptInline($script);
