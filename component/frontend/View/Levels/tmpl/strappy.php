@@ -41,11 +41,6 @@ $discounts = array();
 				<?php else: ?>
 				<?php if($this->container->params->get('currencypos','before') == 'before'): ?><span class="akeebasubs-strappy-price-currency"><?php echo $this->container->params->get('currencysymbol','€')?></span><?php endif; ?><span class="akeebasubs-strappy-price-integer"><?php echo $priceInfo->priceInteger ?></span><?php if((int)$priceInfo->priceFractional > 0): ?><span class="akeebasubs-strappy-price-separator">.</span><span class="akeebasubs-strappy-price-decimal"><?php echo $priceInfo->priceFractional ?></span><?php endif; ?><?php if($this->container->params->get('currencypos','before') == 'after'): ?><span class="akeebasubs-strappy-price-currency"><?php echo $this->container->params->get('currencysymbol','€')?></span><?php endif; ?>
 				<?php endif; ?>
-				<?php if (((float)$priceInfo->vatRule->taxrate > 0.01) && ($priceInfo->levelPrice > 0.01)): ?>
-					<div class="akeebasubs-strappy-taxnotice">
-						<?php echo JText::sprintf('COM_AKEEBASUBS_LEVELS_INCLUDESVAT', (float)$priceInfo->vatRule->taxrate); ?>
-					</div>
-				<?php endif; ?>
 			</td>
 		<?php endforeach ?>
 		</tr>

@@ -41,13 +41,6 @@ use \Akeeba\Subscriptions\Admin\Helper\Message;
 						<?php if($this->container->params->get('currencypos','before') == 'before'): ?><span class="akeebasubs-awesome-price-currency"><?php echo $this->container->params->get('currencysymbol','€')?></span><?php endif; ?><span class="akeebasubs-awesome-price-integer"><?php echo $priceInfo->priceInteger ?><?php if((int)$priceInfo->priceFractional > 0): ?></span><span class="akeebasubs-awesome-price-separator">.</span><span class="akeebasubs-awesome-price-decimal"><?php echo $priceInfo->priceFractional ?></span><?php endif; ?><?php if($this->container->params->get('currencypos','before') == 'after'): ?><span class="akeebasubs-awesome-price-currency"><?php echo $this->container->params->get('currencysymbol','€')?></span><?php endif; ?>
 						<?php endif; ?>
 					</div>
-					<?php if ((float)$priceInfo->vatRule->taxrate > 0.01): ?>
-					<div class="akeebasubs-awesome-taxnotice">
-						<?php if ($priceInfo->levelPrice > 0.01): ?>
-						<?php echo JText::sprintf('COM_AKEEBASUBS_LEVELS_INCLUDESVAT', (float)$priceInfo->vatRule->taxrate); ?>
-						<?php endif; ?>
-					</div>
-					<?php endif; ?>
 					<?php if ($this->includeDiscount): ?>
 					<div class="akeebasubs-awesome-prediscount">
 						<?php if((abs($priceInfo->discount) >= 0.01) && (abs($priceInfo->prediscount) >= 0.01)): ?>

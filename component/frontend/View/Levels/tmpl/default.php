@@ -36,11 +36,6 @@ use \Akeeba\Subscriptions\Admin\Helper\Message;
 				<span class="level-price-currency"><?php echo $this->container->params->get('currencysymbol','€')?></span>
 				<?php endif; ?>
 				<?php endif; ?>
-				<?php if (((float)$priceInfo->vatRule->taxrate > 0.01) && ($priceInfo->levelPrice > 0.01)): ?>
-					<span class="level-price-taxnotice">
-						<?php echo JText::sprintf('COM_AKEEBASUBS_LEVELS_INCLUDESVAT', (float)$priceInfo->vatRule->taxrate); ?>
-					</span>
-				<?php endif; ?>
 			</span>
 			<span class="level-title-text">
 				<a href="<?php echo JRoute::_('index.php?option=com_akeebasubs&view=level&slug='.$level->slug.'&format=html&layout=default')?>">
