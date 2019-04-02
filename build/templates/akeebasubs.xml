@@ -61,7 +61,6 @@
             <folder>PluginAbstracts</folder>
             <folder>sql</folder>
             <folder>Toolbar</folder>
-            <folder>vendor</folder>
             <folder>View</folder>
             <folder>ViewTemplates</folder>
         </files>

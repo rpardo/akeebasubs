@@ -4,60 +4,12 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "52b9129ea773220d0aac6ee3aee066f3",
-    "packages": [
-        {
-            "name": "akeeba/s3",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/akeeba/s3.git",
-                "reference": "19e8d4170f63fcb93d4b10c304c1adc96710578d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/akeeba/s3/zipball/19e8d4170f63fcb93d4b10c304c1adc96710578d",
-                "reference": "19e8d4170f63fcb93d4b10c304c1adc96710578d",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.4"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Akeeba\\Engine\\Postproc\\Connector\\S3v4\\": "src"
-                }
-            },
-            "license": [
-                "GPL-3.0+"
-            ],
-            "authors": [
-                {
-                    "name": "Nicholas K. Dionysopoulos",
-                    "email": "nicholas_NO_SPAM_PLEASE@akeebabackup.com",
-                    "homepage": "http://www.dionysopoulos.me",
-                    "role": "Lead Developer"
-                }
-            ],
-            "description": "Akeeba Engine connector for Amazon S3",
-            "homepage": "https://github.com/akeeba/s3",
-            "keywords": [
-                "s3"
-            ],
-            "support": {
-                "source": "https://github.com/akeeba/s3/tree/master",
-                "issues": "https://github.com/akeeba/s3/issues"
-            },
-            "time": "2019-01-01T12:06:40+00:00"
-        }
-    ],
+    "content-hash": "06cc77f0fb67b3c3bda879826da09236",
+    "packages": [],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "akeeba/s3": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

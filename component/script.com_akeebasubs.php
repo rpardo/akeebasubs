@@ -230,6 +230,9 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
             'components/com_akeebasubs/View/APICoupons',
 
 			'components/com_akeebasubs/Model/Subscribe/Validation/ValidationTrait',
+
+            // Akeeba Subscriptions 7 - We no longer need any Composer dependencies
+            'administrator/components/com_akeebasubs/vendor',
 		]
 	];
 
