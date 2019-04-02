@@ -199,8 +199,6 @@ class Subscribe extends Model
 		$validation = $this->getValidation();
 		$state = $this->getStateVariables();
 
-		$requireCoupon = $this->container->params->get('reqcoupon', 0) ? true : false;
-
 		// Iterate the core validation rules
 		$isValid = true;
 
@@ -213,7 +211,7 @@ class Subscribe extends Model
 			}
 
 			// A wrong coupon code is not a fatal error, unless we require a coupon code
-			if (!$requireCoupon && ($key == 'coupon'))
+			if ($key == 'coupon')
 			{
 				continue;
 			}

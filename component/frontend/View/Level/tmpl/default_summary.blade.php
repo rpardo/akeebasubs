@@ -14,8 +14,6 @@ use Akeeba\Subscriptions\Admin\Helper\Message;
 
 use Akeeba\Subscriptions\Admin\Helper\Select;
 
-$requireCoupon       = $this->cparams->reqcoupon;
-
 $paymentMethodsCount = count(Select::paymentmethods('paymentmethod', '', ['id'              => 'paymentmethod',
 																		  'level_id'        => $this->item->akeebasubs_level_id,
 																		  'return_raw_list' => 1]));
@@ -112,7 +110,7 @@ $hidePaymentMethod   =
 @endunless
 
 {{-- COUPON CODE--}}
-@if ($requireCoupon || ($this->validation->price->net > 0))
+@if (($this->validation->price->net > 0))
 	<h3>
 		@lang('COM_AKEEBASUBS_LEVEL_FIELD_COUPON')
 	</h3>

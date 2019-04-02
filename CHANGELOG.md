@@ -28,3 +28,4 @@
 * Removed now obsolete as2cocollation and aspaypalcollation plugins (gh-338)
 * Removed the Hide Lone Payment Option setting
 * Removed the setting to show payment options as text
+* Removed the Required Valid Coupon feature

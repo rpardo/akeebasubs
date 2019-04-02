@@ -77,7 +77,6 @@ class Html extends \FOF30\View\DataView\Html
 			'currencypos'           => $this->container->params->get('currencypos', 'before'),
 			'stepsbar'              => $this->container->params->get('stepsbar', 1),
 			'currencysymbol'        => $this->container->params->get('currencysymbol', '€'),
-			'reqcoupon'             => $this->container->params->get('reqcoupon', 0),
 		);
 
 		$this->cparams = $componentParams;

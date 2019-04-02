@@ -28,8 +28,6 @@ class PersonalInformation extends Base
 	{
 		$state = $this->state;
 
-		$requireCoupon = $this->container->params->get('reqcoupon', 0) ? true : false;
-
 		// 1. Basic checks
 		$ret = array(
 			'name'          => !empty($state->name),
@@ -63,16 +61,6 @@ class PersonalInformation extends Base
 		// 4. Coupon validation
 		$couponValidation = $this->factory->getValidator('Coupon')->execute();
 		$ret['coupon']    = $couponValidation['valid'];
-
-		// If the coupon is invalid because the coupon is not found and we are NOT required to have a valid coupon to
-		// subscribe to this level we need to report the coupon as valid, preventing validation errors. The idea is that
-		// –unless you're required to present a valid coupon to subscribe– leaving the coupon field blank or typing
-		// garbage / a not applicable coupon should not prevent you from subscribing. In fact, that would be the
-		// typical case for most sites.
-		if (!$ret['coupon'] && !$requireCoupon && !$couponValidation['couponFound'])
-		{
-			$ret['coupon'] = true;
-		}
 
 		return $ret;
 	}
