@@ -22,13 +22,6 @@ $model = $this->getModel();
 
 @extends('admin:com_akeebasubs/Common/browse')
 
-@section('browse-page-top')
-    <a href="index.php?option=com_akeebasubs&view=TaxConfigs" class="akeeba-btn--primary">
-        <span class="akion-wand"></span>
-		@lang('COM_AKEEBASUBS_TITLE_TAXCONFIGS')
-    </a>
-@stop
-
 @section('browse-filters')
     <div class="akeeba-filter-element akeeba-form-group">
         {{ BrowseView::modelFilter('akeebasubs_level_id', 'title', 'Levels', 'COM_AKEEBASUBS_TAXRULES_LEVEL')  }}

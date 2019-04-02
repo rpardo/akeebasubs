@@ -145,12 +145,14 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
             'administrator/components/com_akeebasubs/ViewTemplates/ControlPanel/wizard.blade.php',
 
 			'components/com_akeebasubs/Controller/APICoupons.php',
+			'components/com_akeebasubs/Controller/TaxConfig.php',
 
             'components/com_akeebasubs/Model/APICoupons.php',
             'components/com_akeebasubs/Model/InvoiceTemplates.php',
             'components/com_akeebasubs/Model/LevelGroups.php',
 			'components/com_akeebasubs/Model/States.php',
 			'components/com_akeebasubs/Model/Subscribe/Validation/State.php',
+			'components/com_akeebasubs/Model/TaxConfig.php',
 			'components/com_akeebasubs/Model/TaxHelper.php',
 
 			'components/com_akeebasubs/View/Level/tmpl/default_donottrack.blade.php',
@@ -215,6 +217,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeebasubs/ViewTemplates/InvoiceTemplates',
 			'administrator/components/com_akeebasubs/ViewTemplates/LevelGroups',
 			'administrator/components/com_akeebasubs/ViewTemplates/States',
+			'administrator/components/com_akeebasubs/ViewTemplates/TaxConfig',
 
             'components/com_akeebasubs/View/APICoupons',
 
