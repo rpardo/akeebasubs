@@ -17,13 +17,7 @@ $field_data = [
         'name'         => $this->getFieldValue('name'),
         'email'        => $this->getFieldValue('email'),
         'email2'       => $this->getFieldValue('email2'),
-        'address1'     => $this->getFieldValue('address1'),
-        'address2'     => $this->getFieldValue('address2'),
-        'city'         => $this->getFieldValue('city'),
-        'zip'          => $this->getFieldValue('zip'),
         'country'      => $this->getFieldValue('country', ['XX']),
-        'businessname' => $this->getFieldValue('businessname'),
-        'occupation'   => $this->getFieldValue('occupation'),
 ];
 
 $group_classes                 = [
@@ -33,12 +27,7 @@ $group_classes                 = [
 	'name'         => $this->validation->validation->name ? '' : '--error',
 	'email'        => $this->validation->validation->email ? '' : '--error',
 	'email2'       => $this->validation->validation->email2 ? '' : '--error',
-	'address1'     => $this->validation->validation->address1 ? '' : '--error',
-	'city'         => $this->validation->validation->city ? '' : '--error',
-	'zip'          => $this->validation->validation->zip ? '' : '--error',
 	'country'      => $this->validation->validation->country ? '' : '--error',
-	'businessname' => $this->validation->validation->businessname ? '' : '--error',
-	'occupation'   => !empty($field_data['occupation']) ? '' : '--error',
 ];
 
 if ($this->container->platform->getUser()->guest)
@@ -195,99 +184,6 @@ $returnURI->setVar('reset', 1);
 		   <?php if (strpos($group_classes['name'], 'error') === false): ?>style="display:none"<?php endif ?>>
 			@lang('COM_AKEEBASUBS_LEVEL_ERR_NAME_INVALID')
 		</p>
-	</div>
-
-	{{-- Purchasing as a company --}}
-	<div class="akeeba-form-group">
-		<label for="isbusiness">
-			@lang('COM_AKEEBASUBS_LEVEL_FIELD_ISBUSINESS')
-		</label>
-	<?php echo JHtml::_('select.genericlist', [
-			JHtml::_('select.option', '0', JText::_('JNO')),
-			JHtml::_('select.option', '1', JText::_('JYES'))
-	], 'isbusiness', [], 'value', 'text', $isBusiness, 'isbusiness'); ?>
-	</div>
-
-	<div id="businessfields">
-		{{-- Business name --}}
-		<div class="akeeba-form-group{{$group_classes['businessname']}}">
-			<label for="businessname">
-				@lang('COM_AKEEBASUBS_LEVEL_FIELD_BUSINESSNAME')
-			</label>
-
-            <input type="text" name="businessname" id="businessname"
-                   value="{{{$field_data['businessname']}}}"/>
-            <p id="businessname_empty" class="akeeba-help-text"
-			   <?php if (strpos($group_classes['businessname'], 'error') === false): ?>style="display:none"<?php endif ?>>
-                @lang('COM_AKEEBASUBS_LEVEL_ERR_REQUIRED')
-            </p>
-		</div>
-
-		{{-- Business activity --}}
-		<div class="akeeba-form-group{{$group_classes['occupation']}}">
-			<label for="occupation">
-				@lang('COM_AKEEBASUBS_LEVEL_FIELD_OCCUPATION')
-			</label>
-
-            <input type="text" name="occupation" id="occupation"
-                   value="{{{$field_data['occupation']}}}"/>
-            <p id="occupation_empty" class="akeeba-help-text"
-			   <?php if (strpos($group_classes['occupation'], 'error') === false): ?>style="display:none"<?php endif ?>>
-                @lang('COM_AKEEBASUBS_LEVEL_ERR_REQUIRED')
-            </p>
-		</div>
-	</div>
-
-	{{-- Address --}}
-	<div class="akeeba-form-group{{$group_classes['address1']}}">
-		<label for="address1">
-			@lang('COM_AKEEBASUBS_LEVEL_FIELD_ADDRESS1')
-		</label>
-
-        <input type="text" name="address1" id="address1"
-               value="{{{$field_data['address1']}}}"/>
-        <p id="address1_empty" class="akeeba-help-text"
-		   <?php if (strpos($group_classes['address1'], 'error') === false): ?>style="display:none"<?php endif ?>>
-            @lang('COM_AKEEBASUBS_LEVEL_ERR_REQUIRED')
-        </p>
-	</div>
-
-	{{-- Address (cont) --}}
-	<div class="akeeba-form-group">
-		<label for="address2">
-			@lang('COM_AKEEBASUBS_LEVEL_FIELD_ADDRESS2')
-		</label>
-
-        <input type="text" name="address2" id="address2"
-               value="{{{$field_data['address2']}}}"/>
-	</div>
-
-	{{-- City --}}
-	<div class="akeeba-form-group{{$group_classes['city']}}">
-		<label for="city">
-			@lang('COM_AKEEBASUBS_LEVEL_FIELD_CITY')
-		</label>
-
-        <input type="text" name="city" id="city"
-               value="{{{$field_data['city']}}}"/>
-        <p id="city_empty" class="akeeba-help-text"
-		   <?php if (strpos($group_classes['city'], 'error') === false): ?>style="display:none"<?php endif ?>>
-            @lang('COM_AKEEBASUBS_LEVEL_ERR_REQUIRED')
-        </p>
-	</div>
-
-	{{-- Zip --}}
-	<div class="akeeba-form-group{{$group_classes['zip']}}">
-		<label for="zip">
-			@lang('COM_AKEEBASUBS_LEVEL_FIELD_ZIP')
-		</label>
-
-        <input type="text" name="zip" id="zip"
-               value="{{{$field_data['zip']}}}"/>
-        <p id="zip_empty" class="akeeba-help-text"
-		   <?php if (strpos($group_classes['zip'], 'error') === false): ?>style="display:none"<?php endif ?>>
-            @lang('COM_AKEEBASUBS_LEVEL_ERR_REQUIRED')
-        </p>
 	</div>
 
 	{{-- Per-subscription custom fields --}}

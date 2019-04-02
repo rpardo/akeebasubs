@@ -30,9 +30,6 @@ $model = $this->getModel();
     <div class="akeeba-filter-element akeeba-form-group">
         @searchfilter('email')
     </div>
-    <div class="akeeba-filter-element akeeba-form-group">
-        @searchfilter('businessname')
-    </div>
 @stop
 
 @section('browse-table-header')
@@ -49,9 +46,6 @@ $model = $this->getModel();
         </th>
         <th>
             @fieldtitle('email')
-        </th>
-        <th>
-            @sortgrid('businessname')
         </th>
     </tr>
 @stop
@@ -77,15 +71,6 @@ $model = $this->getModel();
                 <a href="{{ $editUrl }}">
                     {{{ $row->user->email or '&mdash;&mdash;&mdash;'  }}}
                 </a>
-            </td>
-            <td>
-                @unless(empty($row->businessname))
-                    <a href="{{ $editUrl }}">
-                        {{{ $row->businessname }}}
-                    </a>
-                @else
-                    &mdash;&mdash;&mdash;
-                @endunless
             </td>
         </tr>
     @endforeach

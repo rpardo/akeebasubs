@@ -29,3 +29,4 @@
 * Removed the Hide Lone Payment Option setting
 * Removed the setting to show payment options as text
 * Removed the Required Valid Coupon feature
+* Removed invoicing fields from the Subscription page (gh-332)

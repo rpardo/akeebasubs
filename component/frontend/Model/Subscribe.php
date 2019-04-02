@@ -34,16 +34,8 @@ defined('_JEXEC') or die;
  * @method $this name() name(string $v)
  * @method $this email() email(string $v)
  * @method $this email2() email2(string $v)
- * @method $this address1() address1(string $v)
- * @method $this address2() address2(string $v)
  * @method $this country() country(string $v)
- * @method $this state() state(string $v)
- * @method $this city() city(string $v)
- * @method $this zip() zip(string $v)
- * @method $this isbusiness() isbusiness(int $v)
- * @method $this businessname() businessname(string $v)
  * @method $this coupon() coupon(string $v)
- * @method $this occupation() occupation(string $v)
  * @method $this custom() custom(array $v)
  * @method $this subcustom() subcustom(array $v)
  */
@@ -212,12 +204,6 @@ class Subscribe extends Model
 
 			// A wrong coupon code is not a fatal error, unless we require a coupon code
 			if ($key == 'coupon')
-			{
-				continue;
-			}
-
-			// A missing business occupation is not a fatal error either
-			if ($key == 'occupation')
 			{
 				continue;
 			}
@@ -490,7 +476,6 @@ class Subscribe extends Model
 	public function saveCustomFields()
 	{
 		$state = $this->getStateVariables();
-		$validation = $this->getValidation();
 
 		$user = $this->container->platform->getUser();
 		$user = $this->getState('user', $user);
@@ -507,13 +492,6 @@ class Subscribe extends Model
 		$data = array(
 			'akeebasubs_user_id' => $id,
 			'user_id'            => $user->id,
-			'isbusiness'         => $state->isbusiness ? 1 : 0,
-			'businessname'       => $state->businessname,
-			'occupation'         => $state->occupation,
-			'address1'           => $state->address1,
-			'address2'           => $state->address2,
-			'city'               => $state->city,
-			'zip'                => $state->zip,
 			'country'            => $state->country,
 			'params'             => $state->custom
 		);
@@ -683,10 +661,6 @@ class Subscribe extends Model
 
 		// Store the user's ID in the session
 		$this->container->platform->setSessionVar('subscribes.user_id', $user->id, 'com_akeebasubs');
-
-		// Remove new subscriptions which are not yet paid for this user
-		// !! Removed because it was causing problems with users retrying to pay for the same subscription
-		// $this->removeNotYetPaidSubscriptions($user);
 
 		// Step #4. Create or add user extra fields
 		// ----------------------------------------------------------------------
@@ -1372,36 +1346,6 @@ class Subscribe extends Model
 		}
 
 		return $return;
-	}
-
-	/**
-	 * Remove new (unpaid) subscriptions for this user
-	 *
-	 * @param   JUser  $user  The user we are removing subscriptions for
-	 *
-	 * @return  void
-	 */
-	private function removeNotYetPaidSubscriptions(JUser $user)
-	{
-		// Remove unpaid subscriptions on the same level for this user
-		/** @var Subscriptions $subscriptionsModel */
-		$subscriptionsModel = $this->container->factory->model('Subscriptions')->tmpInstance();
-
-		$unpaidSubs = $subscriptionsModel
-			->user_id($user->id)
-			->paystate('N')
-			->get(true);
-
-		if (!count($unpaidSubs))
-		{
-			return;
-		}
-
-		/** @var Subscriptions $unpaidSub */
-		foreach ($unpaidSubs as $unpaidSub)
-		{
-			$unpaidSub->delete($unpaidSub->akeebasubs_subscription_id);
-		}
 	}
 
 	/**

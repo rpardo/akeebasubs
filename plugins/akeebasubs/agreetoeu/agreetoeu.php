@@ -55,35 +55,6 @@ HTML;
 			$fields[] = $field;
 		}
 
-		// ----- CONFIRM POSTAL ADDRESS FIELD -----
-		$hasPostal = 0;
-
-		if (!$this->isExcluded('postal', $level_id))
-		{
-			$hasPostal = 1;
-
-			// Setup the combobox parameters
-			$labelText = JText::_('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_POSTAL_LABEL');
-			$extraText = JText::_('PLG_AKEEBASUBS_AGREETOEU_CONFIRM_POSTAL_DESC');
-			$html = <<<HTML
-<label class="checkbox">
-	<input type="checkbox" name="custom[confirm_postal]" id="confirm_postal" />
-	<span class="akion-information-circled hasPopover" title="$labelText" data-content="$extraText"></span>
-	$labelText
-</label>
-HTML;
-
-			// Setup the field
-			$field = array(
-				'id'           => 'confirm_postal',
-				'label'        => '* ',
-				'elementHTML'  => $html,
-				'isValid'      => false
-			);
-			// Add the field to the return output
-			$fields[] = $field;
-		}
-
 		// ----- CONFIRM RIGHT TO WITHDRAWAL FIELD -----
 		$hasWithdrawal = 0;
 
@@ -172,17 +143,6 @@ HTML;
 				});
 			}
 
-			if ($hasPostal)
-			{
-				$('#confirm_postal').change(function(e){
-					if($('#confirm_postal').is(':checked')) {
-						$('#confirm_postal').parents('div.form-group').removeClass('has-error');
-					} else {
-						$('#confirm_postal').parents('div.form-group').addClass('has-error');
-					}
-				});				
-			}
-
 			if ($hasWithdrawal)
 			{
 				$('#confirm_withdrawal').change(function(e){
@@ -214,7 +174,6 @@ function plg_akeebasubs_agreetoeu_fetch()
 
 	(function($) {
 		result.confirm_informed = $('#confirm_informed').is(':checked') ? 1 : 0;
-		result.confirm_postal = $('#confirm_postal').is(':checked') ? 1 : 0;
 		result.confirm_withdrawal = $('#confirm_withdrawal').is(':checked') ? 1 : 0;
 		
 		if ($hasEUDataInteger)
@@ -232,7 +191,6 @@ function plg_akeebasubs_agreetoeu_validate(response)
 
 	(function($) {
 		$('#confirm_informed').parents('div.form-group').removeClass('has-error');
-		$('#confirm_postal').parents('div.form-group').removeClass('has-error');
 		$('#confirm_withdrawal').parents('div.form-group').removeClass('has-error');
 		
 		if ($hasEUDataInteger) {
@@ -247,11 +205,6 @@ function plg_akeebasubs_agreetoeu_validate(response)
 		
 		if (!response.custom_validation.confirm_informed) {
 			$('#confirm_informed').parents('div.form-group').addClass('has-error');
-			thisIsValid = false;
-		}
-
-		if (!response.custom_validation.confirm_postal) {
-			$('#confirm_postal').parents('div.form-group').addClass('has-error');
 			thisIsValid = false;
 		}
 
@@ -306,7 +259,7 @@ JS;
 //			$custom['confirm_eudata'] = 2;
 //		}
 
-		foreach (['informed', 'postal', 'withdrawal', 'eudata'] as $fieldName)
+		foreach (['informed', 'withdrawal', 'eudata'] as $fieldName)
 		{
 			if ($this->isExcluded($fieldName, $level_id))
 			{

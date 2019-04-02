@@ -54,11 +54,10 @@ abstract class Message
 	 *
 	 * @param   string         $text               The message to process
 	 * @param   Subscriptions  $sub                A subscription object
-	 * @param   bool           $businessInfoAware  If true and the user is not a business the business info will be left blank
 	 *
 	 * @return  string  The processed string
 	 */
-	public static function processSubscriptionTags($text, $sub, $extras = array(), $businessInfoAware = false)
+	public static function processSubscriptionTags($text, $sub, $extras = array())
 	{
 		// Get the user object for this subscription
 		$joomlaUser = self::getContainer()->platform->getUser($sub->user_id);
@@ -225,15 +224,6 @@ abstract class Message
 			}
 		}
 
-		// If this is not a business and the $businessInfoAware flag is set blank out the business name, occupation,
-		// VAT number and tax authority fields when processing the message.
-		$businessOnlyFields = [];
-
-		if ($businessInfoAware && !$userData['isbusiness'])
-		{
-			$businessOnlyFields = ['businessname', 'occupation', 'vatnumber', 'viesregistered', 'taxauthority'];
-		}
-
 		// Create and replace merge tags for user data. Format [USER:KEYNAME]
 		foreach ($userData as $k => $v)
 		{
@@ -250,11 +240,6 @@ abstract class Message
 			if ($k == 'akeebasubs_subscription_id')
 			{
 				$k = 'id';
-			}
-
-			if (in_array($k, $businessOnlyFields))
-			{
-				$v = '';
 			}
 
 			$tag  = '[USER:' . strtoupper($k) . ']';

@@ -64,10 +64,6 @@ $returnUrl = base64_encode('index.php?option=com_akeebasubs&view=Invoices');
     </div>
 
     <div class="akeeba-filter-element akeeba-form-group">
-        @searchfilter('business', 'business', 'COM_AKEEBASUBS_USERS_FIELD_BUSINESSNAME')
-    </div>
-
-    <div class="akeeba-filter-element akeeba-form-group">
         @selectfilter('extension', Akeeba\Subscriptions\Admin\Helper\Select::getInvoiceExtensions())
     </div>
 

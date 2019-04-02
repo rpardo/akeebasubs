@@ -48,34 +48,6 @@ $model = $this->getModel();
             </div>
 
             <div class="akeeba-form-group">
-                <label for="address1">
-                    @fieldtitle('address1')
-                </label>
-                <input type="text" name="address1" id="address1" value="{{{ $item->address1 }}}" />
-            </div>
-
-            <div class="akeeba-form-group">
-                <label for="address2">
-                    @fieldtitle('address2')
-                </label>
-                <input type="text" name="address2" id="address2" value="{{{ $item->address2 }}}" />
-            </div>
-
-            <div class="akeeba-form-group">
-                <label for="city">
-                    @fieldtitle('city')
-                </label>
-                <input type="text" name="city" id="city" value="{{{ $item->city }}}" />
-            </div>
-
-            <div class="akeeba-form-group">
-                <label for="zip">
-                    @fieldtitle('zip')
-                </label>
-                <input type="text" name="zip" id="zip" value="{{{ $item->zip }}}" />
-            </div>
-
-            <div class="akeeba-form-group">
                 <label for="country">
                     @fieldtitle('country')
                 </label>
@@ -88,27 +60,6 @@ $model = $this->getModel();
             <header class="akeeba-block-header">
                 <h3>@lang('COM_AKEEBASUBS_USER_BASIC_BUSINESS')</h3>
             </header>
-
-            <div class="akeeba-form-group">
-                <label for="isbusiness">
-                    @fieldtitle('isbusiness')
-                </label>
-                @jhtml('FEFHelper.select.booleanswitch', 'isbusiness', $item->isbusiness, ['id' => 'is_business'])
-            </div>
-
-            <div class="akeeba-form-group">
-                <label for="businessname">
-                    @fieldtitle('businessname')
-                </label>
-                <input type="text" name="businessname" id="businessname" value="{{{ $item->businessname }}}" />
-            </div>
-
-            <div class="akeeba-form-group">
-                <label for="occupation">
-                    @fieldtitle('occupation')
-                </label>
-                <input type="text" name="occupation" id="occupation" value="{{{ $item->occupation }}}" />
-            </div>
 
             <div class="akeeba-form-group">
                 <label for="notes">

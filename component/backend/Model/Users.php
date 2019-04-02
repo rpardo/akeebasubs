@@ -18,15 +18,6 @@ use JLoader;
  *
  * @property  int		$akeebasubs_user_id
  * @property  int		$user_id
- * @property  int		$isbusiness
- * @property  string	$businessname
- * @property  string	$occupation
- * @property  string	$taxauthority
- * @property  string	$address1
- * @property  string	$address2
- * @property  string	$city
- * @property  string	$state
- * @property  string	$zip
  * @property  string	$country
  * @property  array		$params
  * @property  string	$notes
@@ -34,15 +25,6 @@ use JLoader;
  *
  * @method  $this  akeebasubs_user_id()  akeebasubs_user_id(int $v)
  * @method  $this  user_id()             user_id(int $v)
- * @method  $this  isbusiness()          isbusiness(bool $v)
- * @method  $this  businessname()        businessname(string $v)
- * @method  $this  occupation()          occupation(string $v)
- * @method  $this  taxauthority()        taxauthority(string $v)
- * @method  $this  address1()            address1(string $v)
- * @method  $this  address2()            address2(string $v)
- * @method  $this  city()                city(string $v)
- * @method  $this  state()               state(string $v)
- * @method  $this  zip()                 zip(string $v)
  * @method  $this  country()             country(string $v)
  * @method  $this  notes()               notes(string $v)
  * @method  $this  needs_logout()        needs_logout(bool $v)
@@ -154,29 +136,6 @@ class Users extends DataModel
 				$subQuery->where($db->qn('block') . ' = ' . $db->q($block));
 			});
 		}
-
-		$search = $this->getState('search', null, 'string');
-
-		if ($search)
-		{
-			$search = '%' . $search . '%';
-			$query->where(
-				'(' .
-				'(' . $db->qn('businessname') .
-				' LIKE ' . $db->q($search) . ') OR ' .
-				'(' . $db->qn('occupation') .
-				' LIKE ' . $db->q($search) . ') OR ' .
-				'(' . $db->qn('address1') .
-				' LIKE ' . $db->q($search) . ') OR ' .
-				'(' . $db->qn('address2') .
-				' LIKE ' . $db->q($search) . ') OR ' .
-				'(' . $db->qn('city') .
-				' LIKE ' . $db->q($search) . ') OR ' .
-				'(' . $db->qn('zip') .
-				' LIKE ' . $db->q($search) . ')'
-				. ')'
-			);
-		}
 	}
 
 	/**
@@ -215,19 +174,7 @@ class Users extends DataModel
 			$params = new \JRegistry($userRow->params);
 		}
 
-		$businessname = $params->get('business_name', '');
-
 		$nativeData = array(
-			'isbusiness'     => empty($businessname) ? 0 : 1,
-			'businessname'   => $params->get('business_name', ''),
-			'occupation'     => $params->get('occupation', ''),
-			'vatnumber'      => '',
-			'viesregistered' => 0,
-			'taxauthority'   => '',
-			'address1'       => $params->get('address', ''),
-			'address2'       => $params->get('address2', ''),
-			'city'           => $params->get('city', ''),
-			'zip'            => $params->get('zip', ''),
 			'country'        => $params->get('country', ''),
 			'params'         => array()
 		);
@@ -257,17 +204,6 @@ class Users extends DataModel
 					$myData['params'] = array();
 				}
 			}
-		}
-		else
-		{
-			$taxData = array(
-				'isbusiness' => 0,
-				'city'       => '',
-				'country'    => '',
-				'params'     => array()
-			);
-
-			$myData = array_merge($myData, $taxData);
 		}
 
 		// Finally, merge data coming from the plugins. Note that the

@@ -33,10 +33,6 @@ $invoiceModel = $this->getModel()->getContainer()->factory->model('Invoices')->t
     </div>
 
     <div class="akeeba-filter-element akeeba-form-group">
-        @searchfilter('business', 'business', 'COM_AKEEBASUBS_USERS_FIELD_BUSINESSNAME')
-    </div>
-
-    <div class="akeeba-filter-element akeeba-form-group">
         @searchfilter('creditnote_no')
     </div>
 

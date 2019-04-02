@@ -155,6 +155,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
             'components/com_akeebasubs/Model/InvoiceTemplates.php',
             'components/com_akeebasubs/Model/LevelGroups.php',
 			'components/com_akeebasubs/Model/States.php',
+			'components/com_akeebasubs/Model/Subscribe/Validation/Business.php',
 			'components/com_akeebasubs/Model/Subscribe/Validation/State.php',
 			'components/com_akeebasubs/Model/TaxConfig.php',
 			'components/com_akeebasubs/Model/TaxHelper.php',

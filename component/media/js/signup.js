@@ -17,7 +17,6 @@ if (typeof(akeeba.jQuery) === "undefined")
 	akeeba.jQuery = window.jQuery.noConflict();
 }
 
-var akeebasubs_business_state               = "";
 var akeebasubs_isbusiness                   = false;
 var akeebasubs_blocked_gui                  = false;
 var akeebasubs_run_validation_after_unblock = false;
@@ -240,14 +239,7 @@ function validateForm (callback_function)
 			"name"         : $("#name").val(),
 			"email"        : $("#email").val(),
 			"email2"       : $("#email2").val(),
-			"address1"     : $("#address1").val(),
-			"address2"     : $("#address2").val(),
 			"country"      : $("#" + akeebasubs_form_specifier + " select[name$=\"country\"]").val(),
-			"city"         : $("#city").val(),
-			"zip"          : $("#zip").val(),
-			"isbusiness"   : $("#isbusiness").val(),
-			"businessname" : $("#businessname").val(),
-			"occupation"   : $("#occupation").val(),
 			"coupon"       : couponValue,
 			"paymentmethod": paymentMethod,
 			"custom"       : {},
@@ -570,46 +562,20 @@ function validateAddress ()
 {
 	(function ($)
 	{
-		var elAddress1       = $("#address1");
-		var elCity           = $("#city");
-		var elZip            = $("#zip");
 		var elCountry        = $("#country");
-		var elAdddress1Empty = $("#address1_empty");
 		var elCountryEmpty   = $("#country_empty");
-		var elCityEmpty      = $("#city_empty");
-		var elZipEmpty       = $("#zip_empty");
 
-		var address = elAddress1.val();
 		var country = elCountry.val();
-		var city    = elCity.val();
-		var zip     = elZip.val();
 
 		var hasErrors = false;
 
 		if (!akeebasubs_apply_validation)
 		{
-			elAddress1.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
 			elCountry.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-			elCity.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-			elZip.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
 
-			elAdddress1Empty.hide();
 			elCountryEmpty.hide();
-			elCityEmpty.hide();
-			elZipEmpty.hide();
 
 			return;
-		}
-
-
-		elAddress1.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-		elAdddress1Empty.hide();
-
-		if (address === "")
-		{
-			elAddress1.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
-			elAdddress1Empty.show();
-			hasErrors = true;
 		}
 
 		elCountry.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
@@ -623,26 +589,6 @@ function validateAddress ()
 		else
 		{
 			elCountryEmpty.hide();
-		}
-
-		elCity.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-		elCityEmpty.hide();
-
-		if (city === "")
-		{
-			elCity.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
-			elCityEmpty.show();
-			hasErrors = true;
-		}
-
-		elZip.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-		elZipEmpty.hide();
-
-		if (zip === "")
-		{
-			elZip.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
-			elZipEmpty.show();
-			hasErrors = true;
 		}
 
 		if (hasErrors)
@@ -663,63 +609,15 @@ function validateBusiness ()
 {
 	(function ($)
 	{
-		// Do I have to show the business fields?
-		var elIsBusiness = $("#isbusiness");
-
-		if (elIsBusiness.val() === "1")
+// Chain an address validation
+		if (akeebasubs_blocked_gui)
 		{
-			$("#businessfields").show();
-		}
-		else
-		{
-			$("#businessfields").hide();
-			// If it's not a business validation, chain an address validation
-			if (akeebasubs_blocked_gui)
-			{
-				akeebasubs_run_validation_after_unblock = true;
+			akeebasubs_run_validation_after_unblock = true;
 
-				return;
-			}
-
-			akeebasubs_valid_form = true;
-			validateForm();
 			return;
 		}
 
-		var elCountry   = $("#" + akeebasubs_form_specifier + " select[name$=\"country\"]");
-
-		// Make sure we don't do business validation / price check unless something's changed
-		var elCoupon = $("#coupon");
-
-		var data = {
-			country     : elCountry.val(),
-			city        : $("#city").val(),
-			zip         : $("#zip").val(),
-			isbusiness  : elIsBusiness.val(),
-			businessname: $("#businessname").val(),
-			occupation  : $("#occupation").val(),
-			coupon      : (elCoupon.length > 0) ? elCoupon.val() : ""
-		};
-
-		var hash = "";
-		for (key in data)
-		{
-			hash += "|" + key + "|" + data[key];
-		}
-		hash += "|";
-
-		if (akeebasubs_business_state === hash)
-		{
-			if (akeebasubs_isbusiness)
-			{
-				return;
-			}
-
-			akeebasubs_isbusiness = true;
-		}
-
-		akeebasubs_business_state = hash;
-
+		akeebasubs_valid_form = true;
 		validateForm();
 	})(akeeba.jQuery);
 }
@@ -728,29 +626,10 @@ function validateIsNotBusiness (e)
 {
 	(function ($)
 	{
-		$("#businessfields").hide();
-
 		akeebasubs_cached_response.businessname = true;
 
 		applyValidation(akeebasubs_cached_response);
 		akeebasubs_isbusiness = false;
-	})(akeeba.jQuery);
-}
-
-function onIsBusinessClick (e)
-{
-	(function ($)
-	{
-		var isBusiness = $("#isbusiness").val() == 1;
-
-		if (isBusiness)
-		{
-			validateBusiness();
-
-			return;
-		}
-
-		validateIsNotBusiness();
 	})(akeeba.jQuery);
 }
 
@@ -761,8 +640,7 @@ function applyValidation (response, callback)
 	(function ($)
 	{
 		akeebasubs_valid_form = true;
-		var elBusinessName    = $("#businessname");
-		var elOccupation      = $("#occupation");
+
 		if (akeebasubs_apply_validation)
 		{
 			var elUsername        = $("#username");
@@ -832,19 +710,6 @@ function applyValidation (response, callback)
 				$("#email2_invalid").show();
 			}
 
-			var elAddress1 = $("#address1");
-			elAddress1.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-			if (response.address1)
-			{
-				$("#address1_empty").hide();
-			}
-			else
-			{
-				elAddress1.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
-				akeebasubs_valid_form = false;
-				$("#address1_empty").show();
-			}
-
 			var elCountry = $("#country");
 			elCountry.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
 
@@ -858,75 +723,6 @@ function applyValidation (response, callback)
 				elCountry.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
 				$("#country_empty").show();
 			}
-
-			var elCity = $("#city");
-			elCity.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-
-			if (response.city)
-			{
-				$("#city_empty").hide();
-			}
-			else
-			{
-				elCity.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
-				akeebasubs_valid_form = false;
-				$("#city_empty").show();
-			}
-
-			var elZip = $("#zip");
-			elZip.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-
-			if (response.zip)
-			{
-				$("#zip_empty").hide();
-			}
-			else
-			{
-				elZip.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
-				akeebasubs_valid_form = false;
-				$("#zip_empty").show();
-			}
-
-			elBusinessName.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-			var elIsBusiness = $("#isbusiness");
-			if (response.businessname)
-			{
-				$("#businessname_empty").hide();
-			}
-			else
-			{
-				elBusinessName.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
-				if (elIsBusiness.val() == 1)
-				{
-					akeebasubs_valid_form = false;
-				}
-				$("#businessname_empty").show();
-			}
-
-			elOccupation.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-			if (elOccupation.val())
-			{
-				$("#occupation_empty").hide();
-			}
-			else
-			{
-				elOccupation.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
-
-				if (elIsBusiness.val() == 1)
-				{
-					akeebasubs_valid_form = false;
-				}
-
-				$("#occupation_empty").show();
-			}
-		}
-		else
-		{
-			// Apply validation is false
-			elBusinessName.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-			elOccupation.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-			$("#businessname_empty").hide();
-			$("#occupation_empty").hide();
 		}
 
 		// Finally, apply the custom validation
@@ -1107,14 +903,8 @@ function addToSubValidationQueue (myfunction)
 						  $("#name").blur(validateName);
 						  $("#email").blur(validateEmail);
 						  $("#email2").blur(validateEmail);
-						  $("#address1").blur(validateAddress);
-						  $("#city").blur(validateBusiness);
-						  $("#zip").blur(validateBusiness);
-						  $("#businessname").blur(validateBusiness);
 
 						  $("#" + akeebasubs_form_specifier + " select[name$=\"country\"]").change(validateBusiness);
-						  $("#" + akeebasubs_form_specifier + " select[name$=\"isbusiness\"]").change(
-							  onIsBusinessClick);
 
 						  if ($("#coupon").length > 0)
 						  {
@@ -1163,8 +953,6 @@ function addToSubValidationQueue (myfunction)
 									  return false;
 								  }).change(validateForm);
 
-						  setTimeout("onIsBusinessClick();", 1500);
-
 						  // Disable form submit when ENTER is hit in the coupon field
 						  $("input#coupon")
 						  .keypress(function (e)
@@ -1185,17 +973,3 @@ function addToSubValidationQueue (myfunction)
  (function($) {
 })(akeeba.jQuery);
  /**/
-
-function rtrim (str, charlist)
-{
-	charlist = !charlist ? " \\s\u00A0" : (charlist + "").replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, "\\$1");
-	var re   = new RegExp("[" + charlist + "]+$", "g");
-	return (str + "").replace(re, "");
-}
-
-function ltrim (str, charlist)
-{
-	charlist = !charlist ? " \\s\u00A0" : (charlist + "").replace(/([\[\]\(\)\.\?\/\*\{\}\+\$\^\:])/g, "$1");
-	var re   = new RegExp("^[" + charlist + "]+", "g");
-	return (str + "").replace(re, "");
-}

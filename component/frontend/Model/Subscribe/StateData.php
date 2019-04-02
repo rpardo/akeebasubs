@@ -54,32 +54,8 @@ class StateData
 	/** @var   string   The repeat of the requested email address */
 	public $email2 = '';
 
-	/** @var   string   Requested postal address, first part */
-	public $address1 = '';
-
-	/** @var   string   Requested postal address, second part */
-	public $address2 = '';
-
 	/** @var   string   Country code (2 letters) */
 	public $country = '';
-
-	/** @var   string   State/prefecture/territory code (usually 2 to 10 letters) */
-	public $state = '';
-
-	/** @var   string   City */
-	public $city = '';
-
-	/** @var   string   ZIP / Postal Code */
-	public $zip = '';
-
-	/** @var   integer  Is this a business registration (1) or not (0) */
-	public $isbusiness = 0;
-
-	/** @var   string  The business name */
-	public $businessname = '';
-
-	/** @var   string  The business activity */
-	public $occupation = '';
 
 	/** @var   string  Coupon code */
 	public $coupon = '';
@@ -151,14 +127,7 @@ class StateData
 			'name'          => $model->getState('name', '', 'string'),
 			'email'         => $model->getState('email', '', 'string'),
 			'email2'        => $model->getState('email2', '', 'string'),
-			'address1'      => $model->getState('address1', '', 'string'),
-			'address2'      => $model->getState('address2', '', 'string'),
 			'country'       => $model->getState('country', '', 'cmd'),
-			'city'          => $model->getState('city', '', 'string'),
-			'zip'           => $model->getState('zip', '', 'string'),
-			'isbusiness'    => $model->getState('isbusiness', '', 'int'),
-			'businessname'  => $model->getState('businessname', '', 'string'),
-			'occupation'    => $model->getState('occupation', '', 'string'),
 			'coupon'        => $model->getState('coupon', '', 'string'),
 			'custom'        => $model->getState('custom', array(), 'raw'),
 			'subcustom'     => $model->getState('subcustom', array(), 'raw'),
