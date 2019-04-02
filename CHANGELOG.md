@@ -21,6 +21,7 @@
 * Removed the API Coupons feature (gh-352)
 * Removed the Invoice Templates feature (gh-345)
 * Removed the Credit Notes Templates feature (gh-347)
+* Removed all tax-related features (gh-334)
 
 # 6.2.3
 
