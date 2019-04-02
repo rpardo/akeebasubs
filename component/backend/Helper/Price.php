@@ -107,17 +107,14 @@ abstract class Price
 		{
 			$container = self::getContainer();
 			$user = $container->platform->getUser();
-			$showLocalPrices = false;
 			$exchangeRate = 1.00;
 			$country = '';
 			$localCurrency = '';
 			$localSymbol = '';
 
 			self::$pricingParameters = (object) [
-				'showVat'          => $container->params->get('showvat', 0),
 				'includeDiscount'  => $user->guest ? false : $container->params->get('includediscount', 0),
 				'renderAsFree'     => $container->params->get('renderasfree', 0),
-				'showLocalPrices'  => $showLocalPrices,
 				'country'          => $country,
 				'exchangeRate'     => $exchangeRate,
 				'localCurrency'    => $localCurrency,

@@ -40,11 +40,6 @@ $discounts = array();
 				<?php echo JText::_('COM_AKEEBASUBS_LEVEL_LBL_FREE') ?>
 				<?php else: ?>
 				<?php if($this->container->params->get('currencypos','before') == 'before'): ?><span class="akeebasubs-strappy-price-currency"><?php echo $this->container->params->get('currencysymbol','€')?></span><?php endif; ?><span class="akeebasubs-strappy-price-integer"><?php echo $priceInfo->priceInteger ?></span><?php if((int)$priceInfo->priceFractional > 0): ?><span class="akeebasubs-strappy-price-separator">.</span><span class="akeebasubs-strappy-price-decimal"><?php echo $priceInfo->priceFractional ?></span><?php endif; ?><?php if($this->container->params->get('currencypos','before') == 'after'): ?><span class="akeebasubs-strappy-price-currency"><?php echo $this->container->params->get('currencysymbol','€')?></span><?php endif; ?>
-					<?php if ($this->showLocalPrices): ?>
-						<div class="akeebasubs-strappy-forexrate">
-							<?php echo JText::sprintf('COM_AKEEBASUBS_LEVELS_FOREXNOTICE_LBL', $this->toLocalCurrency((float)$priceInfo->priceForFormatting)); ?>
-						</div>
-					<?php endif; ?>
 				<?php endif; ?>
 				<?php if (((float)$priceInfo->vatRule->taxrate > 0.01) && ($priceInfo->levelPrice > 0.01)): ?>
 					<div class="akeebasubs-strappy-taxnotice">
@@ -68,11 +63,6 @@ $discounts = array();
 						<s>
 						<?php if($this->container->params->get('currencypos','before') == 'before'): ?><span class="akeebasubs-strappy-price-currency"><?php echo $this->container->params->get('currencysymbol','€')?></span><?php endif; ?><span class="akeebasubs-strappy-price-integer"><?php echo $priceInfo->prediscountInteger ?></span><?php if((int)$priceInfo->prediscountFractional > 0): ?><span class="akeebasubs-strappy-price-separator">.</span><span class="akeebasubs-strappy-price-decimal"><?php echo $priceInfo->prediscountFractional ?></span><?php endif; ?><?php if($this->container->params->get('currencypos','before') == 'after'): ?><span class="akeebasubs-strappy-price-currency"><?php echo $this->container->params->get('currencysymbol','€')?></span><?php endif; ?>
 						</s>
-						<?php if ($this->showLocalPrices): ?>
-							<div class="akeebasubs-strappy-forexrate-discount">
-								<?php echo JText::sprintf('COM_AKEEBASUBS_LEVELS_FOREXNOTICE_LBL', $this->toLocalCurrency((float)$priceInfo->prediscount)); ?>
-							</div>
-						<?php endif; ?>
 					<?php endif; ?>
 				</td>
 			<?php endforeach ?>
@@ -106,20 +96,9 @@ $discounts = array();
 		</tr>
 	</table>
 
-	<?php if($this->showNotices && ($this->showLocalPrices || $this->includeDiscount)): ?>
+	<?php if($this->showNotices && $this->includeDiscount): ?>
 <div class="akeebasubs-notices">
 <h4><?php echo JText::_('COM_AKEEBASUBS_LEVELS_NOTICES') ?></h4>
-<?php if ($this->showLocalPrices) : ?>
-	<div class="akeebasubs-forex-notice">
-		<p>
-			<?php echo JText::sprintf('COM_AKEEBASUBS_LEVELS_FOREXNOTICE',
-				$this->localCurrency, $this->localSymbol,
-				$this->container->params->get('currency','EUR'),
-				$this->exchangeRate); ?>
-		</p>
-	</div>
-<?php endif; ?>
-
 <?php if ($this->includeDiscount) : ?>
 	<div class="akeebasubs-include-discount-notice">
 		<p>

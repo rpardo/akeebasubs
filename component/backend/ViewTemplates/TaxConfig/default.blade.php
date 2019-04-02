@@ -69,16 +69,6 @@ use Akeeba\Subscriptions\Admin\Helper\Select;
         </p>
     </div>
 
-    <div class="akeeba-form-group">
-        <label for="showvat">
-			@lang('COM_AKEEBASUBS_TAXCONFIGS_LBL_SHOWVAT')
-        </label>
-        @jhtml('FEFHelper.select.booleanswitch', 'showvat', 0)
-        <p class="akeeba-help-text">
-		    @lang('COM_AKEEBASUBS_TAXCONFIGS_LBL_SHOWVAT_INFO')
-        </p>
-    </div>
-
     <div class="akeeba-form-group--pull-right">
         <div class="akeeba-form-group--actions">
             <button class="akeeba-btn--green">

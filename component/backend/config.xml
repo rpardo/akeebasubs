@@ -105,20 +105,6 @@
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_DATEFORMAT_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_DATEFORMAT_DESC"
 		/>
-		<field name="showvat" type="radio" class="switcher btn-group"
-			   default="0"
-			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWVAT_LABEL"
-			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWVAT_DESC">
-			<option value="0">JNo</option>
-			<option value="1">JYes</option>
-		</field>
-		<field name="showlocalprices" type="radio" class="switcher btn-group"
-			   default="1"
-			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWLOCALPRICES_LABEL"
-			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWLOCALPRICES_DESC">
-			<option value="0">JNo</option>
-			<option value="1">JYes</option>
-		</field>
 		<field name="reqcoupon" type="radio" class="switcher btn-group" default="0"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_REQCOUPON_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_REQCOUPON_DESC">

@@ -22,13 +22,6 @@ class Html extends \FOF30\View\DataView\Html
 	public $subIDs = [];
 
 	/**
-	 * Should I include VAT in the front-end display?
-	 *
-	 * @var  bool
-	 */
-	public $showVat = false;
-
-	/**
 	 * Should I include discounts in the displayed prices?
 	 *
 	 * @var  bool
@@ -41,13 +34,6 @@ class Html extends \FOF30\View\DataView\Html
 	 * @var  bool
 	 */
 	public $renderAsFree = false;
-
-	/**
-	 * Should I display price conversions when the user's selected country's currency is other than the shop's currency?
-	 *
-	 * @var bool
-	 */
-	public $showLocalPrices = false;
 
 	/**
 	 * Exchange rate in use
@@ -97,10 +83,8 @@ class Html extends \FOF30\View\DataView\Html
 		$params = Price::getPricingParameters();
 
 		$this->subIDs          = Price::getSubIDs();
-		$this->showVat         = $params->showVat;
 		$this->includeDiscount = $params->includeDiscount;
 		$this->renderAsFree    = $params->renderAsFree;
-		$this->showLocalPrices = $params->showLocalPrices;
 		$this->country         = $params->country;
 		$this->exchangeRate    = $params->exchangeRate;
 		$this->localCurrency   = $params->localCurrency;
