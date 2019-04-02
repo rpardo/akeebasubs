@@ -33,7 +33,6 @@ class PersonalInformation extends Base
 			'name'          => !empty($state->name),
 			'email'         => !empty($state->email),
 			'email2'        => !empty($state->email2) && ($state->email == $state->email2),
-			'country'       => !empty($state->country),
 		);
 
 		$ret['rawDataForDebug'] = (array)$state;
@@ -44,10 +43,7 @@ class PersonalInformation extends Base
 		// Email validation
 		$ret['email'] = $this->factory->getValidator('Email')->execute();
 
-		// 2. Country validation
-		$ret['country'] = $this->factory->getValidator('Country')->execute();
-
-		// 3. Coupon validation
+		// Coupon validation
 		$couponValidation = $this->factory->getValidator('Coupon')->execute();
 		$ret['coupon']    = $couponValidation['valid'];
 

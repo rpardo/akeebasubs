@@ -88,7 +88,6 @@ akeeba.jQuery(document).ready(function(){
 	validatePassword();
 	validateName();
 	validateEmail();
-	validateAddress();
 	validateBusiness();
 	validateForm();
 });

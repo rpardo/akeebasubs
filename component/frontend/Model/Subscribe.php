@@ -445,7 +445,6 @@ class Subscribe extends Model
 		$data = array(
 			'akeebasubs_user_id' => $id,
 			'user_id'            => $user->id,
-			'country'            => $state->country
 		);
 
 		// Allow plugins to post-process the fields

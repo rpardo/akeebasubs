@@ -36,13 +36,6 @@ class Html extends \FOF30\View\DataView\Html
 	public $renderAsFree = false;
 
 	/**
-	 * Country used for foreign currency display
-	 *
-	 * @var string
-	 */
-	public $country = '';
-
-	/**
 	 * Should I display notices about
 	 *
 	 * @var bool
@@ -64,7 +57,6 @@ class Html extends \FOF30\View\DataView\Html
 		$this->subIDs          = Price::getSubIDs();
 		$this->includeDiscount = $params->includeDiscount;
 		$this->renderAsFree    = $params->renderAsFree;
-		$this->country         = $params->country;
 	}
 
 	/**

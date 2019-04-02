@@ -157,6 +157,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
             'components/com_akeebasubs/Model/LevelGroups.php',
 			'components/com_akeebasubs/Model/States.php',
 			'components/com_akeebasubs/Model/Subscribe/Validation/Business.php',
+			'components/com_akeebasubs/Model/Subscribe/Validation/Country.php',
 			'components/com_akeebasubs/Model/Subscribe/Validation/CustomFields.php',
 			'components/com_akeebasubs/Model/Subscribe/Validation/State.php',
 			'components/com_akeebasubs/Model/Subscribe/Validation/SubscriptionCustomFields.php',
@@ -222,6 +223,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			// Akeeba Subscriptions 7 - Only support MoR integrations
 			'media/com_akeebasubs/tcpdf',
 
+            'administrator/components/com_akeebasubs/assets/elements',
             'administrator/components/com_akeebasubs/assets/tcpdf',
 			'administrator/components/com_akeebasubs/creditnotes',
 			'administrator/components/com_akeebasubs/invoices',

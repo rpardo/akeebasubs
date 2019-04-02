@@ -55,9 +55,6 @@ class StateData
 	/** @var   string   The repeat of the requested email address */
 	public $email2 = '';
 
-	/** @var   string   Country code (2 letters) */
-	public $country = '';
-
 	/** @var   string  Coupon code */
 	public $coupon = '';
 
@@ -124,7 +121,6 @@ class StateData
 			'name'          => $model->getState('name', '', 'string'),
 			'email'         => $model->getState('email', '', 'string'),
 			'email2'        => $model->getState('email2', '', 'string'),
-			'country'       => $model->getState('country', '', 'cmd'),
 			'coupon'        => $model->getState('coupon', '', 'string'),
 			'opt'           => $model->getState('opt', '', 'cmd')
 		);

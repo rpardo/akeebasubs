@@ -31,15 +31,13 @@ $hidePaymentMethod   =
 
 		<div id="paymentlist-container">
 			<?php
-            $country = $this->getFieldValue('country', ['XX']);
-
 			/** @var \Akeeba\Subscriptions\Site\Model\PaymentMethods $paymentMethods */
 			$paymentMethods = $this->getContainer()->factory->model('PaymentMethods')->tmpInstance();
 			$defaultPayment = $this->validation->validation->rawDataForDebug['paymentmethod'];
 
 			if (empty($defaultPayment))
 			{
-				$defaultPayment = $paymentMethods->getLastPaymentPlugin($this->container->platform->getUser()->id, $country);
+				$defaultPayment = $paymentMethods->getLastPaymentPlugin($this->container->platform->getUser()->id);
 			}
 
 			echo Select::paymentmethods(
@@ -48,7 +46,6 @@ $hidePaymentMethod   =
 					array(
 							'id'       => 'paymentmethod',
 							'level_id' => $this->item->akeebasubs_level_id,
-							'country'  => $country
 					)
 			) ?>
 		</div>

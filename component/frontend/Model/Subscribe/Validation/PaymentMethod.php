@@ -27,8 +27,7 @@ class PaymentMethod extends Base
 		$pluginsModel = $this->container->factory->model('PaymentMethods')->tmpInstance();
 
 		//First of all, let's get the whole list of plugins
-		$country       = $this->state->country;
-		$plugins       = $pluginsModel->getPaymentPlugins($country);
+		$plugins       = $pluginsModel->getPaymentPlugins();
 		$defaultMethod = null;
 
 		foreach ($plugins as $plugin)

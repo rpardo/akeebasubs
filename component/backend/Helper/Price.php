@@ -107,12 +107,10 @@ abstract class Price
 		{
 			$container = self::getContainer();
 			$user = $container->platform->getUser();
-			$country = '';
 
 			self::$pricingParameters = (object) [
 				'includeDiscount'  => $user->guest ? false : $container->params->get('includediscount', 0),
 				'renderAsFree'     => $container->params->get('renderasfree', 0),
-				'country'          => $country,
 				'currencyPosition' => $container->params->get('currencypos', 'before'),
 				'currency'         => $container->params->get('currency', 'EUR'),
 				'currencySymbol'   => $container->params->get('currencysymbol', '€'),

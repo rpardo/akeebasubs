@@ -21,8 +21,8 @@ $container = FOF30\Container\Container::getInstance('com_akeebasubs');
 
 // Load the language files
 $lang = JFactory::getLanguage();
-$lang->load('mod_aktaxcountry', JPATH_SITE, 'en-GB', true);
-$lang->load('mod_aktaxcountry', JPATH_SITE, null, true);
+$lang->load('mod_aksexpires', JPATH_SITE, 'en-GB', true);
+$lang->load('mod_aksexpires', JPATH_SITE, null, true);
 $lang->load('com_akeebasubs', JPATH_SITE, 'en-GB', true);
 $lang->load('com_akeebasubs', JPATH_SITE, null, true);
 

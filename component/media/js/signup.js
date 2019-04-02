@@ -285,7 +285,6 @@ function validateForm (callback_function)
 			"name"         : $("#name").val(),
 			"email"        : $("#email").val(),
 			"email2"       : $("#email2").val(),
-			"country"      : $("#" + akeebasubs_form_specifier + " select[name$=\"country\"]").val(),
 			"coupon"       : couponValue,
 			"paymentmethod": paymentMethod,
 			"custom"       : {},
@@ -604,49 +603,6 @@ function validateEmail ()
 	})(akeeba.jQuery);
 }
 
-function validateAddress ()
-{
-	(function ($)
-	{
-		var elCountry        = $("#country");
-		var elCountryEmpty   = $("#country_empty");
-
-		var country = elCountry.val();
-
-		var hasErrors = false;
-
-		if (!akeebasubs_apply_validation)
-		{
-			elCountry.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-
-			elCountryEmpty.hide();
-
-			return;
-		}
-
-		elCountry.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-
-		if (country === "")
-		{
-			elCountry.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
-			elCountryEmpty.show();
-			hasErrors = true;
-		}
-		else
-		{
-			elCountryEmpty.hide();
-		}
-
-		if (hasErrors)
-		{
-			akeebasubs_valid_form = false;
-
-			return;
-		}
-
-	})(akeeba.jQuery);
-}
-
 /**
  * Validates the business registration information and runs a price fetch
  * @return
@@ -754,20 +710,6 @@ function applyValidation (response, callback)
 				elEmail2.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
 				akeebasubs_valid_form = false;
 				$("#email2_invalid").show();
-			}
-
-			var elCountry = $("#country");
-			elCountry.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-
-			if (response.country)
-			{
-				$("#country_empty").hide();
-			}
-			else
-			{
-				akeebasubs_valid_form = false;
-				elCountry.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
-				$("#country_empty").show();
 			}
 		}
 
@@ -949,8 +891,6 @@ function addToSubValidationQueue (myfunction)
 						  $("#name").blur(validateName);
 						  $("#email").blur(validateEmail);
 						  $("#email2").blur(validateEmail);
-
-						  $("#" + akeebasubs_form_specifier + " select[name$=\"country\"]").change(validateBusiness);
 
 						  if ($("#coupon").length > 0)
 						  {

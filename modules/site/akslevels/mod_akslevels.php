@@ -15,8 +15,8 @@ if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/inclu
 
 // Load the language files
 $lang = JFactory::getLanguage();
-$lang->load('mod_aktaxcountry', JPATH_SITE, 'en-GB', true);
-$lang->load('mod_aktaxcountry', JPATH_SITE, null, true);
+$lang->load('mod_akslevels', JPATH_SITE, 'en-GB', true);
+$lang->load('mod_akslevels', JPATH_SITE, null, true);
 $lang->load('com_akeebasubs', JPATH_SITE, 'en-GB', true);
 $lang->load('com_akeebasubs', JPATH_SITE, null, true);
 

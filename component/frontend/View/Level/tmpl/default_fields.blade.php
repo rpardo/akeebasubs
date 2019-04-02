@@ -17,7 +17,6 @@ $field_data = [
         'name'         => $this->getFieldValue('name'),
         'email'        => $this->getFieldValue('email'),
         'email2'       => $this->getFieldValue('email2'),
-        'country'      => $this->getFieldValue('country', ['XX']),
 ];
 
 $group_classes                 = [
@@ -27,7 +26,6 @@ $group_classes                 = [
 	'name'         => $this->validation->validation->name ? '' : '--error',
 	'email'        => $this->validation->validation->email ? '' : '--error',
 	'email2'       => $this->validation->validation->email2 ? '' : '--error',
-	'country'      => $this->validation->validation->country ? '' : '--error',
 ];
 
 if ($this->container->platform->getUser()->guest)
@@ -47,9 +45,9 @@ $returnURI->setVar('reset', 1);
 @js('media://com_akeebasubs/js/signup.js')
 @js('media://com_akeebasubs/js/autosubmit.js')
 
+@if ($this->container->platform->getUser()->guest)
 <div class="akeeba-form--horizontal akeebasubs-signup-fields">
 
-	@if ($this->container->platform->getUser()->guest)
 	<h3>@lang('COM_AKEEBASUBS_LEVEL_USERACCOUNT')</h3>
 
 	{{-- Login button --}}
@@ -152,28 +150,9 @@ $returnURI->setVar('reset', 1);
 			@lang('COM_AKEEBASUBS_LEVEL_ERR_EMAIL2')
 		</p>
 	</div>
-
-	@endif
-
-	<h3><?php echo JText::_('COM_AKEEBASUBS_LEVEL_COUNTRYINFO') ?></h3>
-
-	<div class="akeeba-block--info">
-		@lang('COM_AKEEBASUBS_LEVEL_COUNTRYINFO_HELP')
-	</div>
-
-	{{-- Country --}}
-	<div class="akeeba-form-group{{$group_classes['country']}}">
-		<label for="country">
-			@lang('COM_AKEEBASUBS_LEVEL_FIELD_COUNTRY')
-		</label>
-
-		{{Select::countries($field_data['country'], 'country', array())}}
-		<p id="country_empty" class="akeeba-help-text"
-		   <?php if (strpos($group_classes['country'], 'error') === false): ?>style="display:none"<?php endif ?>>
-			@lang('COM_AKEEBASUBS_LEVEL_ERR_REQUIRED')
-		</p>
-	</div>
 </div>
+@endif
+
 
 <?php
 $aks_validate_url  = JUri::base() . 'index.php';

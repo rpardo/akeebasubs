@@ -407,15 +407,6 @@ abstract class Message
 			$dlid = Filter::myDownloadID($sub->user_id);
 		}
 
-		// User's country, human readable
-		$formatted_country = '';
-		$country           = $subsUser->country;
-
-		if (!empty($country))
-		{
-			$formatted_country = Select::formatCountry($country);
-		}
-
 		// -- The actual replacement
 		$extras = array_merge(array(
 			"\\n"                      => "\n",
@@ -447,7 +438,6 @@ abstract class Message
 			'[$]'                      => $symbol,
 			'[DLID]'                   => $dlid,
 			'[COUPONCODE]'             => $couponCode,
-			'[USER:COUNTRY_FORMATTED]' => $formatted_country,
 			// Legacy keys
 			'[NAME]'                   => $firstname,
 			'[STATE]'                  => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_STATE_' . $sub->getFieldValue('state', 'N')),
