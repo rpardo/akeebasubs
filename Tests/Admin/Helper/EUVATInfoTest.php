@@ -36,8 +36,6 @@ class EUVATInfoTest extends \PHPUnit\Framework\TestCase
 	 * the EU service not returning data for specific countries over periods of time that I need a way to test *their
 	 * SOAP service*. The only reasonable way to do that is with this complicated test.
 	 *
-	 * @covers Akeeba\Subscriptions\Admin\Helper\Forex::reloadCurrencyData
-	 *
 	 * @dataProvider Akeeba\Subscriptions\Tests\Admin\Helper\EUVATInfoTest::getTestLiveVIESValidationDataSHORT
 	 */
 	public function testLiveVIESValidation(string $country, string $vat, bool $expected, int $repetitions = 1, bool $clearCache = true)

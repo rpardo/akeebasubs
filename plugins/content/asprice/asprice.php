@@ -89,7 +89,7 @@ class plgContentAsprice extends JPlugin
 		$accceptableActions = [
 			'ifashasdiscount',
 			'asprice', 'asfancyprice', 'asfancydiscount',
-		    'asforexnotice', 'asdiscountnotice'
+		    'asdiscountnotice'
 		];
 
 		$mustProcess = false;
@@ -125,10 +125,6 @@ class plgContentAsprice extends JPlugin
 		// {asfancydiscount MYLEVEL} ==> HTML block based on the Strappy layout with the discount price
 		$regex = "#{asfancydiscount (.*?)}#s";
 		$article->text = preg_replace_callback($regex, array('self', 'processFancyDiscount'), $article->text);
-
-		// {asforexnotice} ==> Foreign exchange rate notice
-		$regex = "#{asforexnotice(.*?)}#s";
-		$article->text = preg_replace_callback($regex, array('self', 'processForexNotice'), $article->text);
 
 		// {asdiscountnotice} ==> Discount is included notice
 		$regex = "#{asdiscountnotice(.*?)}#s";
@@ -364,22 +360,6 @@ class plgContentAsprice extends JPlugin
 			$ret .= '<span class="akeebasubs-asprice-price-currency">' . $params->currencySymbol . '</span>';
 		}
 
-		// Local (currency converted) price notice
-		if ($params->showLocalPrices)
-		{
-			$ret .= '<div class="akeebasubs-asprice-forexrate">';
-			$ret .= JText::sprintf('COM_AKEEBASUBS_LEVELS_FOREXNOTICE_LBL', Price::toLocalCurrency((float)$priceInfo->priceForFormatting));
-			$ret .= '</div>';
-		}
-
-		// VAT notice
-		if (((float)$priceInfo->vatRule->taxrate > 0.01) && ($priceInfo->levelPrice > 0.01))
-		{
-			$ret .= '<div class="akeebasubs-asprice-taxnotice">';
-			$ret .= JText::sprintf('COM_AKEEBASUBS_LEVELS_INCLUDESVAT', (float)$priceInfo->vatRule->taxrate);
-			$ret .= '</div>';
-		}
-
 		return $ret;
 	}
 
@@ -449,35 +429,6 @@ class plgContentAsprice extends JPlugin
 		}
 
 		$ret .= '</s>';
-
-		// Local (currency converted) price notice
-		if ($params->showLocalPrices)
-		{
-			$ret .= '<div class="akeebasubs-asprice-forexrate-discount">';
-			$ret .= JText::sprintf('COM_AKEEBASUBS_LEVELS_FOREXNOTICE_LBL', Price::toLocalCurrency((float)$priceInfo->prediscount));
-			$ret .= '</div>';
-		}
-
-		return $ret;
-	}
-
-	/**
-	 * Callback to preg_replace_callback in the onContentPrepare event handler of this plugin.
-	 *
-	 * @param   array  $match  A match to the {asforexnotice} plugin tag
-	 *
-	 * @return  string  The processed result
-	 */
-	private static function processForexNotice($match)
-	{
-		$ret = '';
-		$params = Price::getPricingParameters();
-
-		if ($params->showLocalPrices)
-		{
-			$ret = JText::sprintf('COM_AKEEBASUBS_LEVELS_FOREXNOTICE',
-				$params->localCurrency, $params->localSymbol, $params->currency, $params->exchangeRate);
-		}
 
 		return $ret;
 	}

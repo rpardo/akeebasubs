@@ -105,16 +105,6 @@ abstract class Message
 			$subData = (array)$sub;
 		}
 
-		$currency_name = self::getContainer()->params->get('currency', 'EUR');
-		$currency_alt  = self::getContainer()->params->get('invoice_altcurrency', '');
-		$exchange_rate = 0;
-
-		// Let's get the exchange rate (rates are automatically updated)
-		if ($currency_alt)
-		{
-			$exchange_rate = Forex::exhangeRate($currency_name, $currency_alt, self::getContainer());
-		}
-
 		foreach ($subData as $k => $v)
 		{
 			if (is_array($v) || is_object($v))
@@ -424,13 +414,6 @@ abstract class Message
 		// Currency
 		$currency     = self::getContainer()->params->get('currency', 'EUR');
 		$symbol       = self::getContainer()->params->get('currencysymbol', 'EUR');
-		$alt_symbol   = '';
-		$currency_alt = self::getContainer()->params->get('invoice_altcurrency', '');
-
-		if ($currency_alt)
-		{
-			$alt_symbol = Forex::getCurrencySymbol($currency_alt);
-		}
 
 		// Dates
 		JLoader::import('joomla.utilities.date');
@@ -488,10 +471,7 @@ abstract class Message
 			'[MYSUBSURL]'              => $mysubsurl,
 			'[URL]'                    => $mysubsurl,
 			'[CURRENCY]'               => $currency,
-			'[CURRENCY_ALT]'           => $currency_alt,
 			'[$]'                      => $symbol,
-			'[$_ALT]'                  => $alt_symbol,
-			'[EXCHANGE_RATE]'          => $exchange_rate,
 			'[DLID]'                   => $dlid,
 			'[COUPONCODE]'             => $couponCode,
 			'[USER:COUNTRY_FORMATTED]' => $formatted_country,

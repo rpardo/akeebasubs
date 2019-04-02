@@ -109,16 +109,12 @@ abstract class Price
 			$user = $container->platform->getUser();
 			$exchangeRate = 1.00;
 			$country = '';
-			$localCurrency = '';
-			$localSymbol = '';
 
 			self::$pricingParameters = (object) [
 				'includeDiscount'  => $user->guest ? false : $container->params->get('includediscount', 0),
 				'renderAsFree'     => $container->params->get('renderasfree', 0),
 				'country'          => $country,
 				'exchangeRate'     => $exchangeRate,
-				'localCurrency'    => $localCurrency,
-				'localSymbol'      => $localSymbol,
 				'currencyPosition' => $container->params->get('currencypos', 'before'),
 				'currency'         => $container->params->get('currency', 'EUR'),
 				'currencySymbol'   => $container->params->get('currencysymbol', '€'),
@@ -215,30 +211,4 @@ abstract class Price
 
 		return self::$pricingInformationCache[$levelKey];
 	}
-
-	/**
-	 * Convert the price to the local currency, using the currency exchange rate, and return it formatted with the
-	 * local currency symbol.
-	 *
-	 * @param   float  $rawPrice  The raw price
-	 *
-	 * @return  string
-	 */
-	public static function toLocalCurrency($rawPrice)
-	{
-		$params = self::getPricingParameters();
-		$currencyPosition = $params->currencyPosition;
-
-		$convertedPriceInfo = Forex::convertToLocal($params->country, $rawPrice);
-
-		$result = sprintf('%0.2f', $convertedPriceInfo['value']);
-
-		if ($currencyPosition == 'before')
-		{
-			return $convertedPriceInfo['symbol'] . $result;
-		}
-
-		return $result . $convertedPriceInfo['symbol'];
-	}
-
 }

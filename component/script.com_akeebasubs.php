@@ -135,6 +135,8 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 
             'administrator/components/com_akeebasubs/Form/Field/APICouponLimits.php',
 
+            'administrator/components/com_akeebasubs/Helper/Forex.php',
+
 			'administrator/components/com_akeebasubs/Model/APICoupons.php',
 			'administrator/components/com_akeebasubs/Model/CreditNoteTemplates.php',
 			'administrator/components/com_akeebasubs/Model/Import.php',

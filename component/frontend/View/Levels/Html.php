@@ -43,13 +43,6 @@ class Html extends \FOF30\View\DataView\Html
 	public $exchangeRate = 1.00;
 
 	/**
-	 * Local currency code, e.g. EUR
-	 *
-	 * @var string
-	 */
-	public $localCurrency = '';
-
-	/**
 	 * Local currency symbol, e.g. €
 	 *
 	 * @var string
@@ -87,7 +80,6 @@ class Html extends \FOF30\View\DataView\Html
 		$this->renderAsFree    = $params->renderAsFree;
 		$this->country         = $params->country;
 		$this->exchangeRate    = $params->exchangeRate;
-		$this->localCurrency   = $params->localCurrency;
 		$this->localSymbol     = $params->localSymbol;
 	}
 
@@ -111,17 +103,5 @@ class Html extends \FOF30\View\DataView\Html
 	public function getLevelPriceInformation(Levels $level)
 	{
 		return Price::getLevelPriceInformation($level);
-	}
-
-	/**
-	 * Format the price with the currency symbol
-	 *
-	 * @param   float  $rawPrice  The raw price
-	 *
-	 * @return  string
-	 */
-	public function toLocalCurrency($rawPrice)
-	{
-		return Price::toLocalCurrency($rawPrice);
 	}
 }

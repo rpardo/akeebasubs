@@ -7,7 +7,6 @@
 
 namespace Akeeba\Subscriptions\Tests\Admin\Helper;
 
-use Akeeba\Subscriptions\Admin\Helper\Forex;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 use FOF30\Container\Container;
 use Akeeba\Subscriptions\Admin\Helper\Message;
@@ -56,27 +55,6 @@ class MessageTest extends \PHPUnit\Framework\TestCase
 			'prediscount_amount' => '100',
 			'discount_amount' => '10',
 		]);
-
-		// Force load test ForEx update rates
-		$db = self::$container->db;
-		$query = $db->getQuery(true)
-					->delete('#__akeeba_common')
-					->where($db->qn('key') . ' = ' . $db->q('akeebasubs_forex_update_timestamp'));
-		$db->setQuery($query)->execute();
-		$db->truncateTable('#__akeebasubs_forexrates');
-
-		$reflectionClass = new \ReflectionClass('Akeeba\Subscriptions\Admin\Helper\Forex');
-
-		$refRates = $reflectionClass->getProperty('rates');
-		$refRates->setAccessible(true);
-		$refRates->setValue([]);
-
-		$refSourceUrl = $reflectionClass->getProperty('rateSourceUrl');
-		$refSourceUrl->setAccessible(true);
-		$refSourceUrl->setValue('file://' . realpath(__DIR__ . '/eurofxref-daily.xml'));
-
-		Forex::updateRates(false, self::$container);
-		Forex::reloadCurrencyData(false, self::$container);
 	}
 
 	/**

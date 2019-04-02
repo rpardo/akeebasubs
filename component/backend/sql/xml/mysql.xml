@@ -213,17 +213,6 @@ VALUES
             ]]></query>
         </action>
 
-        <action table="#__akeebasubs_forexrates" canfail="0">
-            <condition type="missing" value="" />
-            <query><![CDATA[
-CREATE TABLE `#__akeebasubs_forexrates` (
-  `akeebasubs_forexrate_id` char(3) NOT NULL DEFAULT '',
-  `rate` double NOT NULL DEFAULT '1',
-  PRIMARY KEY (`akeebasubs_forexrate_id`)
-) DEFAULT COLLATE utf8_general_ci;
-					]]></query>
-        </action>
-
         <action table="#__akeebasubs_invoices" canfail="0">
             <condition type="missing" value="" />
             <query><![CDATA[
@@ -568,6 +557,13 @@ DROP TABLE IF EXISTS `#__akeebasubs_creditnotetemplates`
             <query><![CDATA[
 DROP TABLE IF EXISTS `#__akeebasubs_customfields`;
             ]]></query>
+        </action>
+
+        <action table="#__akeebasubs_forexrates" canfail="0">
+            <condition type="missing" value="" operator="not" />
+            <query><![CDATA[
+DROP TABLE IF EXISTS `#__akeebasubs_forexrates`
+					]]></query>
         </action>
 
         <action table="#__akeebasubs_invoicetemplates" canfail="1">
