@@ -80,13 +80,6 @@
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
-		<field name="useppimages" type="list" default="1"
-			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_USEPPIMAGES_LABEL"
-			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_USEPPIMAGES_DESC">
-			<option value="0">COM_AKEEBASUBS_CONFIG_FRONTEND_USEPPIMAGES_OPT_DROPDOWN</option>
-			<option value="1">COM_AKEEBASUBS_CONFIG_FRONTEND_USEPPIMAGES_OPT_IMAGEONLY</option>
-			<option value="2">COM_AKEEBASUBS_CONFIG_FRONTEND_USEPPIMAGES_OPT_IMAGEANDTEXT</option>
-		</field>
 		<field name="dateformat" type="text"
 			   default="Y-m-d H:i"
 			   size="30"

@@ -833,7 +833,7 @@ abstract class Select
 		}
 
 		// Determine how to render the payment method (drop-down or radio box)
-		if ((self::getContainer()->params->get('useppimages', 1) > 0) && !$always_dropdown)
+		if (!$always_dropdown)
 		{
 			// Show images instead of a drop-down
 			$options = array();
@@ -855,11 +855,6 @@ abstract class Select
 				}
 
 				$innerHTML = '<img border="0" src="' . $plugin->image . '" alt="' . $plugin->title . '" /><span></span> ';
-
-				if (self::getContainer()->params->get('useppimages', 1) == 2)
-				{
-					$innerHTML .= $plugin->title;
-				}
 
 				$options[] = array(
 					'value' => $plugin->name,
