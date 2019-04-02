@@ -264,14 +264,18 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 				'sql',
 				'subscriptionemailsdebug',
 			],
-            'akpayment' => [
-                    '2conew',
-                    'offline',
-                    'paymilldss3',
-                    'paypal',
-                    'viva',
-            ],
-		]
+			'akpayment'  => [
+				'2conew',
+				'offline',
+				'paymilldss3',
+				'paypal',
+				'viva',
+			],
+			'system'     => [
+				'as2cocollation',
+				'aspaypalcollation',
+			],
+		],
 	];
 
 
