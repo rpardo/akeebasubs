@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 use Akeeba\Subscriptions\Site\Model\Levels;
 use FOF30\Container\Container;
 use FOF30\Model\Model;
+use Joomla\CMS\Factory;
 
 /**
  * A handy class to manage all the data sent to us when submitting the subscription form or when a validation request
@@ -59,12 +60,6 @@ class StateData
 
 	/** @var   string  Coupon code */
 	public $coupon = '';
-
-	/** @var   array  Per user custom field data */
-	public $custom = [];
-
-	/** @var   array  Per subscription custom field data */
-	public $subcustom = [];
 
 	/** @var   string  Used in validation requests to define what kind of validation to execute */
 	public $opt = '';
@@ -114,6 +109,8 @@ class StateData
 			$this->propagateToModelState($model);
 		}
 
+		$user = Factory::getUser();
+
 		// Apply the state variables from the model
 		$stateVars = array(
 			'firstrun'      => $firstRun,
@@ -129,10 +126,20 @@ class StateData
 			'email2'        => $model->getState('email2', '', 'string'),
 			'country'       => $model->getState('country', '', 'cmd'),
 			'coupon'        => $model->getState('coupon', '', 'string'),
-			'custom'        => $model->getState('custom', array(), 'raw'),
-			'subcustom'     => $model->getState('subcustom', array(), 'raw'),
 			'opt'           => $model->getState('opt', '', 'cmd')
 		);
+
+		/**
+		 * If we are already logged in I am overriding the user information fields not present in the subscription
+		 * page with the fields from the Joomla user account
+		 */
+		if (!$user->guest)
+		{
+			$stateVars['username'] = $user->username;
+			$stateVars['name'] = $user->name;
+			$stateVars['email'] = $user->email;
+			$stateVars['email2'] = $user->email;
+		}
 
 		foreach ($stateVars as $k => $v)
 		{
@@ -140,18 +147,6 @@ class StateData
 		}
 
 		unset ($stateVars);
-
-		// Make sure we have a $custom array
-		if (!is_array($this->custom))
-		{
-			$this->custom = [];
-		}
-
-		// Make sure we have a $subcustom array
-		if (!is_array($this->subcustom))
-		{
-			$this->subcustom = [];
-		}
 
 		// If there is no level ID but there is a slug, use it
 		if (empty($this->id) && !empty($this->slug))
@@ -197,8 +192,6 @@ class StateData
 		$this->firstrun = true;
 		$this->id = 0;
 		$this->isbusiness = 0;
-		$this->custom = [];
-		$this->subcustom = [];
 	}
 
 	/**

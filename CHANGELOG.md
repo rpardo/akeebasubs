@@ -5,6 +5,7 @@
 **Miscellaneous changes**
 
 * Invoices and Credit Notes are now read-only (gh-351)
+* Redesigned the subscription page (gh-332)
 
 **Remove features**
 

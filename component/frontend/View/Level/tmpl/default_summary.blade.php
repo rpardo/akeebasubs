@@ -131,13 +131,6 @@ $hidePaymentMethod   =
 
 @endif
 
-{{-- CUSTOM FIELDS --}}
-<div>
-	<h3>@lang('COM_AKEEBASUBS_LEVEL_SUBSCRIBE')</h3>
-
-	@include('site:com_akeebasubs/Level/default_prepayment')
-</div>
-
 {{-- PAYMENT METHODS --}}
 <div id="paymentmethod-container" style="display: {{$hidePaymentMethod ? 'none' : 'inherit'}}">
 	<div class="akeeba-form-group">

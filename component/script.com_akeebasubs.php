@@ -147,6 +147,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeebasubs/Model/TaxRules.php',
 
             'administrator/components/com_akeebasubs/ViewTemplates/ControlPanel/wizard.blade.php',
+            'administrator/components/com_akeebasubs/ViewTemplates/Subscriptions/form_customparams.blade.php',
 
 			'components/com_akeebasubs/Controller/APICoupons.php',
 			'components/com_akeebasubs/Controller/TaxConfig.php',
@@ -156,13 +157,17 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
             'components/com_akeebasubs/Model/LevelGroups.php',
 			'components/com_akeebasubs/Model/States.php',
 			'components/com_akeebasubs/Model/Subscribe/Validation/Business.php',
+			'components/com_akeebasubs/Model/Subscribe/Validation/CustomFields.php',
 			'components/com_akeebasubs/Model/Subscribe/Validation/State.php',
+			'components/com_akeebasubs/Model/Subscribe/Validation/SubscriptionCustomFields.php',
 			'components/com_akeebasubs/Model/TaxConfig.php',
 			'components/com_akeebasubs/Model/TaxHelper.php',
 			'components/com_akeebasubs/Model/TaxRules.php',
 
 			'components/com_akeebasubs/View/Level/tmpl/default_donottrack.blade.php',
 			'components/com_akeebasubs/View/Validate/tmpl/statelist.php',
+			'components/com_akeebasubs/View/Level/tmpl/default_persubscription.blade.php',
+			'components/com_akeebasubs/View/Level/tmpl/default_prepayment.blade.php',
 		],
 		'folders' => [
 			'administrator/components/com_akeebasubs/commands',
@@ -260,6 +265,8 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 		'plugins' => [
 			'akeebasubs' => [
 				'acymailing',
+				'agreetoeu',
+				'agreetotos',
 				'atscreditslegacy',
 				'autocity',
 				'canalyticscommerce',

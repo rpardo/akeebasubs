@@ -49,9 +49,8 @@ $returnURI->setVar('reset', 1);
 
 <div class="akeeba-form--horizontal akeebasubs-signup-fields">
 
-	<h3>@lang('COM_AKEEBASUBS_LEVEL_USERACCOUNT')</h3>
-
 	@if ($this->container->platform->getUser()->guest)
+	<h3>@lang('COM_AKEEBASUBS_LEVEL_USERACCOUNT')</h3>
 
 	{{-- Login button --}}
 	<div id="akeebasubs-level-login" class="akeeba-form-group--pull-right">
@@ -62,6 +61,20 @@ $returnURI->setVar('reset', 1);
 				@lang('COM_AKEEBASUBS_LEVEL_BTN_LOGINIFALERADY')
 			</a>
 		</div>
+	</div>
+
+	{{-- Full name --}}
+	<div class="akeeba-form-group{{{$group_classes['name']}}}">
+		<label for="name">
+			@lang('COM_AKEEBASUBS_LEVEL_FIELD_NAME')
+		</label>
+
+		<input type="text" name="name" id="name"
+			   value="{{{$field_data['name']}}}"/>
+		<p id="name_empty" class="akeeba-help-text"
+		   <?php if (strpos($group_classes['name'], 'error') === false): ?>style="display:none"<?php endif ?>>
+			@lang('COM_AKEEBASUBS_LEVEL_ERR_NAME_INVALID')
+		</p>
 	</div>
 
 	{{-- Username --}}
@@ -105,19 +118,6 @@ $returnURI->setVar('reset', 1);
 			@lang('COM_AKEEBASUBS_LEVEL_ERR_PASSWORD2')
 		</p>
 	</div>
-	@endif
-
-	@unless($this->container->platform->getUser()->guest)
-	{{-- Username (STATIC DISPLAY) --}}
-	<div class="akeeba-form-group">
-		<label for="username">
-			@lang('COM_AKEEBASUBS_LEVEL_FIELD_USERNAME')
-		</label>
-
-		<input type="text" name="username" id="username" disabled="disabled"
-			   value="{{{$this->userparams->username}}}"/>
-	</div>
-	@endunless
 
 	{{-- Email --}}
 	<div class="akeeba-form-group{{$group_classes['email']}}">
@@ -146,6 +146,7 @@ $returnURI->setVar('reset', 1);
 			@lang('COM_AKEEBASUBS_LEVEL_ERR_EMAIL2')
 		</p>
 	</div>
+	@endif
 
 	<h3><?php echo JText::_('COM_AKEEBASUBS_LEVEL_COUNTRYINFO') ?></h3>
 
@@ -165,34 +166,6 @@ $returnURI->setVar('reset', 1);
 			@lang('COM_AKEEBASUBS_LEVEL_ERR_REQUIRED')
 		</p>
 	</div>
-
-	<h3><?php echo JText::_('COM_AKEEBASUBS_LEVEL_INVOICINGPREFS') ?></h3>
-
-	<div class="akeeba-block--info">
-		@lang('COM_AKEEBASUBS_LEVEL_INVOICINGPREFS_HELP')
-	</div>
-
-	{{-- Full name --}}
-	<div class="akeeba-form-group{{{$group_classes['name']}}}">
-		<label for="name">
-			@lang('COM_AKEEBASUBS_LEVEL_FIELD_NAME')
-		</label>
-
-		<input type="text" name="name" id="name"
-			   value="{{{$field_data['name']}}}"/>
-		<p id="name_empty" class="akeeba-help-text"
-		   <?php if (strpos($group_classes['name'], 'error') === false): ?>style="display:none"<?php endif ?>>
-			@lang('COM_AKEEBASUBS_LEVEL_ERR_NAME_INVALID')
-		</p>
-	</div>
-
-	{{-- Per-subscription custom fields --}}
-	@unless(is_null($akeebasubs_subscription_level))
-	@include('site:com_akeebasubs/Level/default_persubscription', [
-		'akeebasubs_subscription_level' => $akeebasubs_subscription_level,
-		'apply_validation'              => $apply_validation
-	])
-	@endunless
 </div>
 
 <?php

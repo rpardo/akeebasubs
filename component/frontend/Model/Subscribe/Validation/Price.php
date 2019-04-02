@@ -102,9 +102,6 @@ class Price extends Base
 			'oldsub'     => $discountStructure['oldsub'],
 			'allsubs'    => $discountStructure['allsubs'],
 			'expiration' => $discountStructure['expiration'],
-			'taxrule_id' => 0,
-			'tax_match'  => false,
-			'tax_fuzzy'  => false,
 		);
 
 		return $result;

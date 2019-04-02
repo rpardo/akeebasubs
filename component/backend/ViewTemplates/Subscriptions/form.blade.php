@@ -174,15 +174,6 @@ $user = is_object($item->user) ? $item->user : JFactory::getUser(0);
 
 <div class="akeeba-container--50-50">
 
-	<div class="akeeba-panel--info" id="akeebasubs-customparams">
-		<header class="akeeba-block-header">
-			<h3>@lang('COM_AKEEBASUBS_SUBSCRIPTION_CUSTOMPARAMS_TITLE')</h3>
-		</header>
-
-		@include('admin:com_akeebasubs/Subscriptions/form_customparams', ['model' => $item])
-
-	</div>
-
 	<div class="akeeba-panel--orange akeebasubs-panel-force-top-margin" id="akeebasubs-invoices">
 		<header class="akeeba-block-header">
 			<h3>@lang('COM_AKEEBASUBS_MAINMENU_INVOICES')</h3>

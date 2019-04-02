@@ -36,8 +36,6 @@ defined('_JEXEC') or die;
  * @method $this email2() email2(string $v)
  * @method $this country() country(string $v)
  * @method $this coupon() coupon(string $v)
- * @method $this custom() custom(array $v)
- * @method $this subcustom() subcustom(array $v)
  */
 class Subscribe extends Model
 {
@@ -124,11 +122,6 @@ class Subscribe extends Model
 				];
 				break;
 
-			// Perform validations on plugins only
-			case 'plugins':
-				$response = $this->pluginValidation();
-				break;
-
 			default:
 				$response->validation = (object)$this->getValidator('PersonalInformation')->execute();
 				$response->validation->username = $this->getValidator('username')->execute();
@@ -136,47 +129,10 @@ class Subscribe extends Model
 				$response->validation->paymentmethod = $this->getValidator('PaymentMethod')->execute();
 				$response->price = (object)$this->getValidator('Price')->execute();
 
-				$pluginResponse = $this->pluginValidation();
-				$response->custom_validation = $pluginResponse->custom_validation;
-				$response->custom_valid = $pluginResponse->custom_valid;
-				$response->subscription_custom_validation = $pluginResponse->subscription_custom_validation;
-				$response->subscription_custom_valid = $pluginResponse->subscription_custom_valid;
-
 				break;
 		}
 
 		return $response;
-	}
-
-	/**
-	 * Executes per user and per subscription custom field validation using the plugins.
-	 *
-	 * The return object contains the following keys:
-	 * custom_validation				array
-	 * custom_valid						bool
-	 * subscription_custom_validation	array
-	 * subscription_custom_valid		bool
-	 *
-	 * @return   object  See above
-	 */
-	private function pluginValidation()
-	{
-		$ret = [
-			'custom_validation' => [],
-			'custom_valid' => false,
-			'subscription_custom_validation' => [],
-			'subscription_custom_valid' => false
-		];
-
-		$customResponse = $this->getValidator('CustomFields')->execute();
-		$ret['custom_validation'] = $customResponse->custom_validation;
-		$ret['custom_valid'] = $customResponse->custom_valid;
-
-		$subcustomResponse = $this->getValidator('SubscriptionCustomFields')->execute();
-		$ret['subscription_custom_validation'] = $subcustomResponse->subscription_custom_validation;
-		$ret['subscription_custom_valid'] = $subcustomResponse->subscription_custom_valid;
-
-		return (object)$ret;
 	}
 
 	/**
@@ -242,9 +198,6 @@ class Subscribe extends Model
 				break;
 			}
 		}
-
-		// Make sure custom fields also validate
-		$isValid = $isValid && $validation->custom_valid && $validation->subscription_custom_valid;
 
 		return $isValid;
 	}
@@ -492,8 +445,7 @@ class Subscribe extends Model
 		$data = array(
 			'akeebasubs_user_id' => $id,
 			'user_id'            => $user->id,
-			'country'            => $state->country,
-			'params'             => $state->custom
+			'country'            => $state->country
 		);
 
 		// Allow plugins to post-process the fields
@@ -791,7 +743,7 @@ class Subscribe extends Model
 
 		// Store the price validation's "oldsub" and "expiration" keys in
 		// the subscriptions subcustom array
-		$subcustom = $state->subcustom;
+		$subcustom = [];
 
 		if (empty($subcustom))
 		{

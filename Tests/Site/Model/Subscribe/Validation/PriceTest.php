@@ -625,10 +625,6 @@ class PriceTest extends ValidatorWithSubsTestCase
 		$expected['oldsub']  = self::translateSubToId($expected['oldsub']);
 		$expected['allsubs'] = self::translateSubToId($expected['allsubs']);
 
-		unset($actual['taxrule_id']);
-		unset($actual['tax_match']);
-		unset($actual['tax_fuzzy']);
-
 		parent::performAssertion($expected, $actual, $message);
 	}
 }

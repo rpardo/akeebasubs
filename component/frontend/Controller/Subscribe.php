@@ -56,7 +56,7 @@ class Subscribe extends Controller
 		$levelsModel = $this->getModel('Levels');
 
 		// Load the id and slug. Either one defines which level we shall load
-		$id = $model->getState('id', 0, 'int');
+		$id   = $model->getState('id', 0, 'int');
 		$slug = $model->getState('slug', null, 'string');
 
 		// If the ID is not set but slug is let's try to find the level by slug
@@ -68,7 +68,7 @@ class Subscribe extends Controller
 				->id(0)
 				->slug([
 					'method' => 'exact',
-					'value' => $slug
+					'value'  => $slug
 				])
 				->firstOrNew();
 
@@ -113,7 +113,14 @@ class Subscribe extends Controller
 		// Try to create a new subscription record
 		$model->setState('id', $id);
 
-		$result = $model->createNewSubscription();
+		try
+		{
+			$result = $model->createNewSubscription();
+		}
+		catch (\Exception $e)
+		{
+			$result = false;
+		}
 
 		// Did we fail to create a new subscription?
 		if (!$result)
