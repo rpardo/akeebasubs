@@ -36,7 +36,6 @@
         <folder>images</folder>
         <folder>invoices</folder>
         <folder>js</folder>
-        <folder>tcpdf</folder>
     </media>
 
     <!-- Administrator back-end section -->

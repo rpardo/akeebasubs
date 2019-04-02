@@ -30,10 +30,3 @@ $returnURL = 'index.php?option=com_akeebasubs&view=Subscriptions&task=edit&id=' 
     <span class="akion-document-text"></span>
     @lang('COM_AKEEBASUBS_INVOICES_ACTION_PREVIEW')
 </a>
-
-<a class="akeeba-btn--teal"
-   href="@route('index.php?option=com_akeebasubs&view=Invoices&task=download&id=' . (int) $model->akeebasubs_subscription_id)">
-    <span class="akion-android-download"></span>
-    @lang('COM_AKEEBASUBS_INVOICES_ACTION_DOWNLOAD')
-</a>
-

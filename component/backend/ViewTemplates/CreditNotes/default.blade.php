@@ -104,16 +104,6 @@ $invoiceModel = $this->getModel()->getContainer()->factory->model('Invoices')->t
                    title="@lang('COM_AKEEBASUBS_INVOICES_ACTION_PREVIEW')">
                     <span class="akion-document-text"></span>
                 </a>
-                <a href="@route('index.php?option=com_akeebasubs&view=CreditNotes&task=download&tmpl=component&id=' . $row->akeebasubs_invoice_id)"
-                   class="akeeba-btn--grey--small"
-                   title="@lang('COM_AKEEBASUBS_INVOICES_ACTION_DOWNLOAD')">
-                    <span class="akion-android-download"></span>
-                </a>
-                <a href="@route('index.php?option=com_akeebasubs&view=CreditNotes&task=send&tmpl=component&id=' . $row->akeebasubs_invoice_id)"
-                   class="akeeba-btn--green--small"
-                   title="@lang('COM_AKEEBASUBS_INVOICES_ACTION_RESEND')">
-                    <span class="akion-android-mail"></span>
-                </a>
                 @if (empty($row->sent_on) || ($row->sent_on == $nullDate))
                     <span class="akeeba-label--warning">
                             @lang('COM_AKEEBASUBS_INVOICES_LBL_NOTSENT')

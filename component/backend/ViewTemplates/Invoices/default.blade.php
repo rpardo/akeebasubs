@@ -146,16 +146,6 @@ $returnUrl = base64_encode('index.php?option=com_akeebasubs&view=Invoices');
                         title="@lang('COM_AKEEBASUBS_INVOICES_ACTION_PREVIEW')">
                         <span class="akion-document-text"></span>
                     </a>
-                    <a href="@route('index.php?option=com_akeebasubs&view=Invoices&task=download&tmpl=component&id=' . $row->akeebasubs_subscription_id)"
-                        class="akeeba-btn--grey--small"
-                        title="@lang('COM_AKEEBASUBS_INVOICES_ACTION_DOWNLOAD')">
-                        <span class="akion-android-download"></span>
-                    </a>
-                    <a href="@route('index.php?option=com_akeebasubs&view=Invoices&task=send&tmpl=component&id=' . $row->akeebasubs_subscription_id)"
-                        class="akeeba-btn--green--small"
-                        title="@lang('COM_AKEEBASUBS_INVOICES_ACTION_RESEND')">
-                        <span class="akion-android-mail"></span>
-                    </a>
                     @if (empty($row->sent_on) || ($row->sent_on == $nullDate))
                         <span class="akeeba-label--warning">
                             @lang('COM_AKEEBASUBS_INVOICES_LBL_NOTSENT')
@@ -164,15 +154,6 @@ $returnUrl = base64_encode('index.php?option=com_akeebasubs&view=Invoices');
                         <span class="akeeba-label--success">
                             @lang('COM_AKEEBASUBS_INVOICES_LBL_SENT')
                         </span>
-                    @endif
-
-                    @if($hasCreditNote)
-                        <a href="@route('index.php?option=com_akeebasubs&view=CreditNotes&task=download&tmpl=component&id=' . $row->akeebasubs_subscription_id . '&returnurl=' . $returnUrl)"
-                           class="akeeba-btn--info--small"
-                           title="@lang('COM_AKEEBASUBS_CREDITNOTES_ACTION_DOWNLOAD')">
-                            <span class="akion-ios-download"></span>
-                            @lang('COM_AKEEBASUBS_CREDITNOTES_ACTION_DOWNLOAD')
-                        </a>
                     @endif
                 @elseif(array_key_exists($row->extension, $extensions))
                     <a class="akeeba-btn--ghost" href="{{{ sprintf($extensions[$row->extension]['backendurl'], $row->invoice_no) }}}">

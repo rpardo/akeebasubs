@@ -193,7 +193,6 @@ if (!empty($this->returnURL))
 
 					if($invoice->extension == 'akeebasubs')
 					{
-						$url2 = JRoute::_('index.php?option=com_akeebasubs&view=Invoices&task=download&id='.$invoice->akeebasubs_subscription_id);
 						$url = JRoute::_('index.php?option=com_akeebasubs&view=Invoice&task=read&id=' . $invoice->akeebasubs_subscription_id.'&tmpl=component');
 						$target = 'target="_blank"';
 					}
@@ -212,13 +211,7 @@ if (!empty($this->returnURL))
 	            		<?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_ACTION_INVOICE')?>
 	            	</a>
 					<?php endif; ?>
-					<?php if(!empty($url2)):
-					?>
-					<a class="akeeba-btn--small--dark" href="<?php echo $url2; ?>">
-						<span class="akion-android-download"></span>
-	            		<?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_ACTION_INVOICE')?>
-	            	</a>
-					<?php endif; ?>
+
 					<?php endif; ?>
 
 					<?php if(in_array($area, array('active','expired'))

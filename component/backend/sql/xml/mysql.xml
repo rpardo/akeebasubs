@@ -587,10 +587,10 @@ DROP TABLE IF EXISTS `#__akeebasubs_states`;
             ]]></query>
         </action>
 
-        <action table="#__akeebasubs_taxrules" canfail="0">
+        <action table="#__akeebasubs_taxrules" canfail="1">
             <condition type="missing" value="" operator="not" />
             <query><![CDATA[
-DROP TABLE IF EXSITS `#__akeebasubs_taxrules`
+DROP TABLE IF EXISTS`#__akeebasubs_taxrules`
             ]]></query>
         </action>
     </sql>
