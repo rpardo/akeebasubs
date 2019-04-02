@@ -994,6 +994,9 @@ function applyPrice (response)
 
 				if ((response.discount > 0) && $discountField.length)
 				{
+					response.discount = response.discount * 1.00;
+					response.net = response.net * 1.00;
+
 					$discountFieldContainer.show();
 
 					if ($originalFieldContainer.length)
