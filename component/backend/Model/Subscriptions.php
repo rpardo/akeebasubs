@@ -306,13 +306,7 @@ class Subscriptions extends DataModel
 
 			// Otherwise we have to do a relation filter against the user relation, filtering by business name or VAT number
 			$this->whereHas('user', function (\JDatabaseQuery $q) use($search) {
-				$q->where(
-					'(' .
-					'(' . $q->qn('businessname') . ' LIKE ' . $q->q("%$search%") . ')' .
-					' OR ' .
-					'(' . $q->qn('vatnumber') . ' LIKE ' . $q->q("%$search%") . ')' .
-					')'
-				);
+				$q->where($q->qn('businessname') . ' LIKE ' . $q->q("%$search%"));
 			});
 		}
 	}

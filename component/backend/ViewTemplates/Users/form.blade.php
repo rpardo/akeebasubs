@@ -14,12 +14,6 @@ defined('_JEXEC') or die();
 
 $item  = $this->getItem();
 $model = $this->getModel();
-
-$vatOptions = [
-	'0' => JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_USER_VIESREGISTERED_NO'),
-	'1' => JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_USER_VIESREGISTERED_YES'),
-	'2' => JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_USER_VIESREGISTERED_FORCEYES'),
-]
 ?>
 
 @jhtml('behavior.tooltip')
@@ -114,20 +108,6 @@ $vatOptions = [
                     @fieldtitle('occupation')
                 </label>
                 <input type="text" name="occupation" id="occupation" value="{{{ $item->occupation }}}" />
-            </div>
-
-            <div class="akeeba-form-group">
-                <label for="vatnumber">
-                    @fieldtitle('vatnumber')
-                </label>
-                <input type="text" name="vatnumber" id="vatnumber" value="{{{ $item->vatnumber }}}" />
-            </div>
-
-            <div class="akeeba-form-group">
-                <label for="viesregistered">
-                    @fieldtitle('viesregistered')
-                </label>
-                {{ \FOF30\Utils\FEFHelper\BrowseView::genericSelect('viesregistered', $vatOptions, $item->viesregistered, ['fof.autosubmit' => false, 'none' => null, 'translate' => false]) }}
             </div>
 
             <div class="akeeba-form-group">

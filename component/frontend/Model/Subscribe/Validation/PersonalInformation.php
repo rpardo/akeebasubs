@@ -41,8 +41,6 @@ class PersonalInformation extends Base
 			'zip'           => !empty($state->zip),
 			'businessname'  => !empty($state->businessname),
 			'occupation'    => !empty($state->occupation),
-			'vatnumber'     => !empty($state->vatnumber),
-			'novatrequired' => true,
 			'coupon'        => !empty($state->coupon),
 		);
 
@@ -61,11 +59,6 @@ class PersonalInformation extends Base
 		$businessValidation   = $this->factory->getValidator('Business')->execute();
 		$ret['businessname']  = $businessValidation['businessname'];
 		$ret['occupation']    = $businessValidation['occupation'];
-		$ret['vatnumber']     = $businessValidation['vatnumber'];
-		$ret['novatrequired'] = $businessValidation['novatrequired'];
-
-		// After the business validation $this->state->vatnumber contains the reformatted VAT number
-		$this->container->factory->model('Subscribe')->setState('vatnumber', $state->vatnumber);
 
 		// 4. Coupon validation
 		$couponValidation = $this->factory->getValidator('Coupon')->execute();

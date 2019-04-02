@@ -140,13 +140,6 @@ abstract class Price
 
 		$discount = 0;
 		$levelPrice = $level->price;
-		$vatMultiplier = 1.0;
-		$vatRule = (object)[
-			'match'   => 0,    // How many parameters matched exactly
-			'fuzzy'   => 0,    // How many parameters matched fuzzily
-			'taxrate' => 0, // Tax rate in percentage points (e.g. 12.3 means 12.3% tax)
-			'id'      => 0, // The ID of the tax rule in effect
-		];
 
 		$params = self::getPricingParameters();
 
@@ -168,9 +161,8 @@ abstract class Price
 			$levelPrice = 0;
 		}
 
-		$priceForFormatting = ($levelPrice) * $vatMultiplier;
+		$priceForFormatting = ($levelPrice);
 		$formattedPrice = sprintf('%1.02F', $priceForFormatting);
-		$preDiscount = $preDiscount * $vatMultiplier;
 
 		$dotpos = strpos($formattedPrice, '.');
 		$price_integer = substr($formattedPrice, 0, $dotpos);
@@ -187,8 +179,6 @@ abstract class Price
 		$price_fractionalPD = substr($formattedPreDiscount, $dotposPD + 1);
 
 		self::$pricingInformationCache[$levelKey] = (object)[
-			'vatRule'              => $vatRule,
-			'vatMultiplier'        => $vatMultiplier,
 			'levelPrice'           => $levelPrice,
 
 			'discount'             => $discount,

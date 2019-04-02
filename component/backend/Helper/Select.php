@@ -1123,25 +1123,6 @@ abstract class Select
 	}
 
 	/**
-	 * Drop down list of VIES registration flag
-	 *
-	 * @param   string  $name      The field's name
-	 * @param   int     $selected  Pre-selected value
-	 * @param   array   $attribs   Field attributes
-	 *
-	 * @return  string  The HTML of the drop-down
-	 */
-	public static function viesregistered($name = 'viesregistered', $selected = 0, $attribs = array())
-	{
-		$options   = array();
-		$options[] = JHtml::_('select.option', '0', JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_USER_VIESREGISTERED_NO'));
-		$options[] = JHtml::_('select.option', '1', JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_USER_VIESREGISTERED_YES'));
-		$options[] = JHtml::_('select.option', '2', JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_USER_VIESREGISTERED_FORCEYES'));
-
-		return self::genericlist($options, $name, $attribs, $selected, $name);
-	}
-
-	/**
 	 * Drop down list of CSV delimiter preference
 	 *
 	 * @param   string  $name      The field's name

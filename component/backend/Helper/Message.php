@@ -7,6 +7,7 @@
 
 namespace Akeeba\Subscriptions\Admin\Helper;
 
+use Akeeba\ReleaseSystem\Site\Helper\Filter as Filter;
 use Akeeba\Subscriptions\Admin\Model\Levels;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 use Akeeba\Subscriptions\Admin\Model\Users;
@@ -15,9 +16,8 @@ use FOF30\Date\Date;
 use FOF30\Model\DataModel;
 use JFactory;
 use JLoader;
-use JText;
 use Joomla\Registry\Registry as JRegistry;
-use Akeeba\ReleaseSystem\Site\Helper\Filter as Filter;
+use JText;
 
 defined('_JEXEC') or die;
 
@@ -231,12 +231,10 @@ abstract class Message
 
 		if ($businessInfoAware && !$userData['isbusiness'])
 		{
-			$businessOnlyFields = ['businessname', 'occupation', 'vatnumber', 'taxauthority'];
+			$businessOnlyFields = ['businessname', 'occupation', 'taxauthority'];
 		}
 
 		// Create and replace merge tags for user data. Format [USER:KEYNAME]
-		$EUCountryInfo = EUVATInfo::$EuropeanUnionVATInformation;
-
 		foreach ($userData as $k => $v)
 		{
 			if (is_object($v) || is_array($v))
@@ -252,16 +250,6 @@ abstract class Message
 			if ($k == 'akeebasubs_subscription_id')
 			{
 				$k = 'id';
-			}
-
-			if ($k == 'vatnumber')
-			{
-				$country = $userData['country'];
-
-				if (array_key_exists($country, $EUCountryInfo))
-				{
-					$v = $EUCountryInfo[$country][1] . $v;
-				}
 			}
 
 			if (in_array($k, $businessOnlyFields))

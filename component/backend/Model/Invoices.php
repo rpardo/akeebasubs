@@ -15,9 +15,6 @@ use Akeeba\Engine\Postproc\Connector\S3v4\Connector;
 use Akeeba\Engine\Postproc\Connector\S3v4\Exception\CannotPutFile;
 use Akeeba\Engine\Postproc\Connector\S3v4\Input;
 use Akeeba\Subscriptions\Admin\Helper\Email;
-use Akeeba\Subscriptions\Admin\Helper\EUVATInfo;
-use Akeeba\Subscriptions\Admin\Helper\Format;
-use Akeeba\Subscriptions\Admin\Helper\Message;
 use FOF30\Autoloader\Autoloader;
 use FOF30\Container\Container;
 use FOF30\Date\Date;
@@ -254,8 +251,7 @@ class Invoices extends DataModel
 			$subs = $this->container->factory->model('Subscriptions')->tmpInstance();
 			$subs->whereHas('user', function(\JDatabaseQuery $q) use($search) {
 				$q->where(
-					'((' . $q->qn('businessname') . ' LIKE ' . $q->q($search) . ') OR (' .
-					$q->qn('vatnumber') . ' LIKE ' . $q->q($search) . '))'
+					$q->qn('businessname') . ' LIKE ' . $q->q($search)
 				);
 			});
 

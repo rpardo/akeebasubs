@@ -10,9 +10,6 @@ namespace Akeeba\Subscriptions\Admin\Model;
 defined('_JEXEC') or die;
 
 use Akeeba\Subscriptions\Admin\Helper\Email;
-use Akeeba\Subscriptions\Admin\Helper\EUVATInfo;
-use Akeeba\Subscriptions\Admin\Helper\Format;
-use Akeeba\Subscriptions\Admin\Helper\Message;
 use FOF30\Container\Container;
 use FOF30\Date\Date;
 use FOF30\Model\DataModel;
@@ -240,8 +237,7 @@ class CreditNotes extends DataModel
 			$subs->whereHas('user', function (\JDatabaseQuery $q) use ($search)
 			{
 				$q->where(
-					'((' . $q->qn('businessname') . ' LIKE ' . $q->q($search) . ') OR (' .
-					$q->qn('vatnumber') . ' LIKE ' . $q->q($search) . '))'
+					$q->qn('businessname') . ' LIKE ' . $q->q($search)
 				);
 			});
 

@@ -17,39 +17,6 @@ if (typeof(akeeba.jQuery) === "undefined")
 	akeeba.jQuery = window.jQuery.noConflict();
 }
 
-var akeebasubs_eu_configuration = {
-	"BE": ["Belgium", "BE", 21],
-	"BG": ["Bulgaria", "BG", 20],
-	"CZ": ["Czech Rebulic", "CZ", 21],
-	"DK": ["Denmark", "DK", 25],
-	"DE": ["Germany", "DE", 19],
-	"EE": ["Estonia", "EE", 20],
-	"GR": ["Greece", "EL", 24],
-	"ES": ["Spain", "ES", 21],
-	"FR": ["France", "FR", 20],
-	"HR": ["Croatia", "HR", 25],
-	"IE": ["Ireland", "IE", 23],
-	"IT": ["Italy", "IT", 22],
-	"CY": ["Cyprus", "CY", 19],
-	"LV": ["Latvia", "LV", 21],
-	"LT": ["Lithuania", "LT", 21],
-	"LU": ["Luxembourg", "LU", 17],
-	"HU": ["Hungary", "HU", 27],
-	"MT": ["Malta", "MT", 18],
-	"NL": ["Netherlands", "NL", 21],
-	"AT": ["Austria", "AT", 20],
-	"PL": ["Poland", "PL", 23],
-	"PT": ["Portugal", "PT", 23],
-	"RO": ["Romania", "RO", 19],
-	"SI": ["Slovenia", "SI", 22],
-	"SK": ["Slovakia", "SK", 20],
-	"FI": ["Finland", "FI", 24],
-	"SE": ["Sweden", "SE", 25],
-	"GB": ["United Kingdom", "GB", 20],
-	"MC": ["Monaco", "FR", 20],
-	"IM": ["Isle of Man", "GB", 20]
-};
-
 var akeebasubs_business_state               = "";
 var akeebasubs_isbusiness                   = false;
 var akeebasubs_blocked_gui                  = false;
@@ -62,7 +29,6 @@ var akeebasubs_sub_validation_fetch_queue   = [];
 var akeebasubs_sub_validation_queue         = [];
 var akeebasubs_level_id                     = 0;
 var akeebasubs_submit_after_validation      = false;
-var akeebasubs_noneuvat                     = false;
 var akeebasubs_apply_validation             = false;
 var akeebasubs_form_specifier               = "signupForm";
 
@@ -282,7 +248,6 @@ function validateForm (callback_function)
 			"isbusiness"   : $("#isbusiness").val(),
 			"businessname" : $("#businessname").val(),
 			"occupation"   : $("#occupation").val(),
-			"vatnumber"    : $("#vatnumber").val(),
 			"coupon"       : couponValue,
 			"paymentmethod": paymentMethod,
 			"custom"       : {},
@@ -658,34 +623,6 @@ function validateAddress ()
 		else
 		{
 			elCountryEmpty.hide();
-
-			// If that's an EU country, show and update the VAT field
-			var elVatFields  = $("#vatfields");
-			var elVatCountry = $("#vatcountry");
-
-			if (elVatFields)
-			{
-				elVatFields.hide();
-
-				if (akeebasubs_noneuvat)
-				{
-					elVatFields.show();
-					elVatCountry.text("");
-				}
-
-				Object.keys(akeebasubs_eu_configuration)
-					  .forEach(function (key)
-							   {
-								   if (key === country)
-								   {
-									   $("#vatfields").show();
-
-									   var ccode = akeebasubs_eu_configuration[key][1];
-									   $("#vatcountry").text(ccode);
-
-								   }
-							   });
-			}
 		}
 
 		elCity.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
@@ -749,41 +686,9 @@ function validateBusiness ()
 			return;
 		}
 
-		// Do I have to show VAT fields?
 		var elCountry   = $("#" + akeebasubs_form_specifier + " select[name$=\"country\"]");
-		var elVatFields = $("#vatfields");
-		var country     = elCountry.val();
-
-		elVatFields.hide();
-
-		if (akeebasubs_noneuvat)
-		{
-			elVatFields.css("display", "grid");
-			$("#vatcountry").text("");
-		}
-
-		Object.keys(akeebasubs_eu_configuration)
-			  .forEach(function (key)
-					   {
-						   if (key === country)
-						   {
-							   $("#vatfields").css("display", "grid");
-
-							   var ccode = akeebasubs_eu_configuration[key][1];
-							   $("#vatcountry").text(ccode);
-
-						   }
-					   });
 
 		// Make sure we don't do business validation / price check unless something's changed
-		var elVatNumber = $("#vatnumber");
-		var vatnumber   = "";
-
-		if (elVatNumber)
-		{
-			vatnumber = elVatNumber.val();
-		}
-
 		var elCoupon = $("#coupon");
 
 		var data = {
@@ -793,7 +698,6 @@ function validateBusiness ()
 			isbusiness  : elIsBusiness.val(),
 			businessname: $("#businessname").val(),
 			occupation  : $("#occupation").val(),
-			vatnumber   : vatnumber,
 			coupon      : (elCoupon.length > 0) ? elCoupon.val() : ""
 		};
 
@@ -827,7 +731,6 @@ function validateIsNotBusiness (e)
 		$("#businessfields").hide();
 
 		akeebasubs_cached_response.businessname = true;
-		akeebasubs_cached_response.novatrequired = true;
 
 		applyValidation(akeebasubs_cached_response);
 		akeebasubs_isbusiness = false;
@@ -1026,24 +929,6 @@ function applyValidation (response, callback)
 			$("#occupation_empty").hide();
 		}
 
-		var elVatNumber = $("#vatnumber");
-		elVatNumber.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "warning");
-		if (response.vatnumber)
-		{
-			$("#vat-status-invalid").hide();
-		}
-		else
-		{
-			elVatNumber.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "warning");
-			$("#vat-status-invalid").show();
-		}
-
-		if (response.novatrequired)
-		{
-			elVatNumber.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "warning");
-			$("#vat-status-invalid").hide();
-		}
-
 		// Finally, apply the custom validation
 		$.each(akeebasubs_validation_queue, function (index, function_name)
 		{
@@ -1090,16 +975,7 @@ function applyPrice (response)
 
 		if ($sumTotalField.length > 0)
 		{
-			var vatContainer = $("#akeebasubs-vat-container");
-			vatContainer.hide();
-
 			$sumTotalField.text(response.gross);
-			$("#akeebasubs-sum-vat-percent").html(response.taxrate);
-
-			if (response.taxrate > 0)
-			{
-				vatContainer.show();
-			}
 
 			var $discountFieldContainer = $("#akeebasubs-sum-discount-container");
 			var $originalFieldContainer = $("#akeebasubs-sum-original-container");
@@ -1125,13 +1001,11 @@ function applyPrice (response)
 						$originalFieldContainer.show();
 					}
 
-					var discountWithVAT = response.discount * (1.00 + (response.taxrate / 100.00));
-					$discountField.html(discountWithVAT.toFixed(2));
+					$discountField.html(response.discount.toFixed(2));
 
 					if ($originalField.length)
 					{
-						var originalWithVAT = response.net * (1.00 + (response.taxrate / 100.00));
-						$originalField.html(originalWithVAT.toFixed(2));
+						$originalField.html(response.net.toFixed(2));
 					}
 				}
 			}
@@ -1234,7 +1108,6 @@ function addToSubValidationQueue (myfunction)
 						  $("#city").blur(validateBusiness);
 						  $("#zip").blur(validateBusiness);
 						  $("#businessname").blur(validateBusiness);
-						  $("#vatnumber").blur(validateBusiness);
 
 						  $("#" + akeebasubs_form_specifier + " select[name$=\"country\"]").change(validateBusiness);
 						  $("#" + akeebasubs_form_specifier + " select[name$=\"isbusiness\"]").change(

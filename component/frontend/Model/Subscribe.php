@@ -42,7 +42,6 @@ defined('_JEXEC') or die;
  * @method $this zip() zip(string $v)
  * @method $this isbusiness() isbusiness(int $v)
  * @method $this businessname() businessname(string $v)
- * @method $this vatnumber() vatnumber(string $v)
  * @method $this coupon() coupon(string $v)
  * @method $this occupation() occupation(string $v)
  * @method $this custom() custom(array $v)
@@ -213,12 +212,6 @@ class Subscribe extends Model
 				continue;
 			}
 
-			// An invalid (not VIES registered) VAT number is not a fatal error
-			if ($key == 'vatnumber')
-			{
-				continue;
-			}
-
 			// A wrong coupon code is not a fatal error, unless we require a coupon code
 			if (!$requireCoupon && ($key == 'coupon'))
 			{
@@ -227,12 +220,6 @@ class Subscribe extends Model
 
 			// A missing business occupation is not a fatal error either
 			if ($key == 'occupation')
-			{
-				continue;
-			}
-
-			// This is a dummy key which must be ignored
-			if ($key == 'novatrequired')
 			{
 				continue;
 			}
@@ -525,10 +512,6 @@ class Subscribe extends Model
 			'isbusiness'         => $state->isbusiness ? 1 : 0,
 			'businessname'       => $state->businessname,
 			'occupation'         => $state->occupation,
-			'vatnumber'          => $state->vatnumber,
-			'viesregistered'     => $validation->validation->vatnumber,
-			// The tax authority doesn't make sense, it's a Greek thing only... Left here just in case.
-			'taxauthority'       => '',
 			'address1'           => $state->address1,
 			'address2'           => $state->address2,
 			'city'               => $state->city,

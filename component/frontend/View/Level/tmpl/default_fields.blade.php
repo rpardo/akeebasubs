@@ -24,7 +24,6 @@ $field_data = [
         'country'      => $this->getFieldValue('country', ['XX']),
         'businessname' => $this->getFieldValue('businessname'),
         'occupation'   => $this->getFieldValue('occupation'),
-        'vatnumber'    => $this->getFieldValue('vatnumber'),
 ];
 
 $group_classes                 = [
@@ -40,7 +39,6 @@ $group_classes                 = [
 	'country'      => $this->validation->validation->country ? '' : '--error',
 	'businessname' => $this->validation->validation->businessname ? '' : '--error',
 	'occupation'   => !empty($field_data['occupation']) ? '' : '--error',
-	'vatnumber'    => $this->validation->validation->vatnumber ? '' : '--warning',
 ];
 
 if ($this->container->platform->getUser()->guest)
@@ -236,24 +234,6 @@ $returnURI->setVar('reset', 1);
             <p id="occupation_empty" class="akeeba-help-text"
 			   <?php if (strpos($group_classes['occupation'], 'error') === false): ?>style="display:none"<?php endif ?>>
                 @lang('COM_AKEEBASUBS_LEVEL_ERR_REQUIRED')
-            </p>
-		</div>
-
-		{{-- VAT Number --}}
-		<div class="akeeba-form-group{{$group_classes['vatnumber']}}" id="vatfields">
-			<label for="vatnumber" id="vatlabel">
-				@lang('COM_AKEEBASUBS_LEVEL_FIELD_VATNUMBER_ALTLABEL')
-			</label>
-
-            <div class="akeeba-input-group">
-                <span id="vatcountry">EU</span>
-                <input type="text" name="vatnumber" id="vatnumber"
-                       value="<?php echo $this->escape($field_data['vatnumber']); ?>"/>
-            </div>
-
-            <p id="vat-status-invalid" class="akeeba-help-text"
-			   <?php if (strpos($group_classes['vatnumber'], '--warning') === false): ?>style="display:none"<?php endif ?>>
-                @lang('COM_AKEEBASUBS_LEVEL_VAT_INVALID')
             </p>
 		</div>
 	</div>

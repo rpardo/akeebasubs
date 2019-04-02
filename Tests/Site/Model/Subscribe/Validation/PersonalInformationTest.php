@@ -25,20 +25,6 @@ class PersonalInformationTest extends ValidatorTestCase
 		parent::setUpBeforeClass();
 
 		\Akeeba\Subscriptions\Admin\Helper\akeebasubsHelperSelect_init();
-
-		// Fake the EU VAT checks
-		$reflector     = new \ReflectionClass('Akeeba\Subscriptions\Admin\Helper\EUVATInfo');
-		$propReflector = $reflector->getProperty('cache');
-		$propReflector->setAccessible(true);
-		$propReflector->setValue([
-			'vat' => [
-				'EL123456789' => false,
-				'EL070298898' => true,
-				'EL666666666' => false,
-				'CY123456789' => false,
-				'CY999999999' => true,
-			]
-		]);
 	}
 
 	public function getTestData()

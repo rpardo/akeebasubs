@@ -81,9 +81,6 @@ class StateData
 	/** @var   string  The business activity */
 	public $occupation = '';
 
-	/** @var   string  VAT number, without the country prefix */
-	public $vatnumber = '';
-
 	/** @var   string  Coupon code */
 	public $coupon = '';
 
@@ -162,7 +159,6 @@ class StateData
 			'isbusiness'    => $model->getState('isbusiness', '', 'int'),
 			'businessname'  => $model->getState('businessname', '', 'string'),
 			'occupation'    => $model->getState('occupation', '', 'string'),
-			'vatnumber'     => $model->getState('vatnumber', '', 'cmd'),
 			'coupon'        => $model->getState('coupon', '', 'string'),
 			'custom'        => $model->getState('custom', array(), 'raw'),
 			'subcustom'     => $model->getState('subcustom', array(), 'raw'),

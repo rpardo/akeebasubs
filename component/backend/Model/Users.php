@@ -21,8 +21,6 @@ use JLoader;
  * @property  int		$isbusiness
  * @property  string	$businessname
  * @property  string	$occupation
- * @property  string	$vatnumber
- * @property  int		$viesregistered
  * @property  string	$taxauthority
  * @property  string	$address1
  * @property  string	$address2
@@ -39,8 +37,6 @@ use JLoader;
  * @method  $this  isbusiness()          isbusiness(bool $v)
  * @method  $this  businessname()        businessname(string $v)
  * @method  $this  occupation()          occupation(string $v)
- * @method  $this  vatnumber()           vatnumber(string $v)
- * @method  $this  viesregistered()      viesregistered(bool $v)
  * @method  $this  taxauthority()        taxauthority(string $v)
  * @method  $this  address1()            address1(string $v)
  * @method  $this  address2()            address2(string $v)
@@ -76,7 +72,7 @@ class Users extends DataModel
 		$this->with(['user']);
 
 		// Not NULL fields which do accept 0 values should not be part of auto-checks
-		$this->fieldsSkipChecks = ['isbusiness', 'viesregistered', 'needs_logout'];
+		$this->fieldsSkipChecks = ['isbusiness', 'viesregistered', 'vatnumber', 'needs_logout'];
 	}
 
 	/**
@@ -170,8 +166,6 @@ class Users extends DataModel
 				' LIKE ' . $db->q($search) . ') OR ' .
 				'(' . $db->qn('occupation') .
 				' LIKE ' . $db->q($search) . ') OR ' .
-				'(' . $db->qn('vatnumber') .
-				' LIKE ' . $db->q($search) . ') OR ' .
 				'(' . $db->qn('address1') .
 				' LIKE ' . $db->q($search) . ') OR ' .
 				'(' . $db->qn('address2') .
@@ -227,7 +221,7 @@ class Users extends DataModel
 			'isbusiness'     => empty($businessname) ? 0 : 1,
 			'businessname'   => $params->get('business_name', ''),
 			'occupation'     => $params->get('occupation', ''),
-			'vatnumber'      => $params->get('vat_number', ''),
+			'vatnumber'      => '',
 			'viesregistered' => 0,
 			'taxauthority'   => '',
 			'address1'       => $params->get('address', ''),

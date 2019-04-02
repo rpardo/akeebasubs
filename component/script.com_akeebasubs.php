@@ -135,6 +135,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 
             'administrator/components/com_akeebasubs/Form/Field/APICouponLimits.php',
 
+            'administrator/components/com_akeebasubs/Helper/EUVATInfo.php',
             'administrator/components/com_akeebasubs/Helper/Forex.php',
 
 			'administrator/components/com_akeebasubs/Model/APICoupons.php',
@@ -214,6 +215,8 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 
 			// Akeeba Subscriptions 7 - Only support MoR integrations
 			'administrator/components/com_akeebasubs/Form',
+
+			'administrator/components/com_akeebasubs/View/Subscriptions',
 
 			'administrator/components/com_akeebasubs/ViewTemplates/APICoupons',
 			'administrator/components/com_akeebasubs/ViewTemplates/CreditNoteTemplates',

@@ -33,9 +33,6 @@ $model = $this->getModel();
     <div class="akeeba-filter-element akeeba-form-group">
         @searchfilter('businessname')
     </div>
-    <div class="akeeba-filter-element akeeba-form-group">
-        @searchfilter('vatnumber')
-    </div>
 @stop
 
 @section('browse-table-header')
@@ -55,9 +52,6 @@ $model = $this->getModel();
         </th>
         <th>
             @sortgrid('businessname')
-        </th>
-        <th>
-            @sortgrid('vatnumber')
         </th>
     </tr>
 @stop
@@ -88,15 +82,6 @@ $model = $this->getModel();
                 @unless(empty($row->businessname))
                     <a href="{{ $editUrl }}">
                         {{{ $row->businessname }}}
-                    </a>
-                @else
-                    &mdash;&mdash;&mdash;
-                @endunless
-            </td>
-            <td>
-                @unless(empty($row->vatnumber))
-                    <a href="{{ $editUrl }}">
-                        {{{ $row->country }}} {{{ $row->vatnumber }}}
                     </a>
                 @else
                     &mdash;&mdash;&mdash;

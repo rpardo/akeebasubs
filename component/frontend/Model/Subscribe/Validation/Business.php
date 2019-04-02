@@ -21,8 +21,6 @@ class Business extends Base
 		$ret = [
 			'businessname'  => false,
 			'occupation'    => false,
-			'vatnumber'     => true,
-			'novatrequired' => true,
 		];
 
 		// Get some state data
