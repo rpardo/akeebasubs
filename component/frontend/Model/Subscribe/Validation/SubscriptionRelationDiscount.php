@@ -67,7 +67,7 @@ class SubscriptionRelationDiscount extends Base
 
 		// Get the current subscription level's price
 		$basePriceStructure = $this->factory->getValidator('BasePrice')->execute();
-		$basePrice = $basePriceStructure['basePrice'];
+		$basePrice = $basePriceStructure['levelNet'];
 
 		// Get the discount from upgrade rules
 		$upgradeRule = $this->factory->getValidator('BestUpgradeDiscount')->execute();

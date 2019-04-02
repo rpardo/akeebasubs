@@ -25,7 +25,7 @@ class Price extends Base
 	protected function getValidationResult()
 	{
 		$basePriceStructure = $this->factory->getValidator('BasePrice')->execute();
-		$netPrice = $basePriceStructure['basePrice'];
+		$netPrice = $basePriceStructure['levelNet'];
 
 		$couponStructure = $this->factory->getValidator('CouponDiscount')->execute();
 		$couponDiscount = $couponStructure['value'];

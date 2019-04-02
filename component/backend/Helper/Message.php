@@ -231,7 +231,7 @@ abstract class Message
 
 		if ($businessInfoAware && !$userData['isbusiness'])
 		{
-			$businessOnlyFields = ['businessname', 'occupation', 'taxauthority'];
+			$businessOnlyFields = ['businessname', 'occupation', 'vatnumber', 'viesregistered', 'taxauthority'];
 		}
 
 		// Create and replace merge tags for user data. Format [USER:KEYNAME]

@@ -156,41 +156,6 @@ abstract class AkpaymentBase extends JPlugin
 	}
 
 	/**
-	 * Plugin event to modify the subscription's net price. This is used in
-	 * payment plugins to implement an optional surcharge per payment
-	 * method.
-	 *
-	 * @param   object $data The input data
-	 *
-	 * @return  float  The surcharge for this subscription level
-	 */
-	public function onValidateSubscriptionPrice($data)
-	{
-		$surcharge = 0;
-
-		if ($data->paymentmethod == $this->ppName)
-		{
-			$percent   = false;
-			$surcharge = $this->params->get('surcharge', '0');
-
-			if (substr($surcharge, - 1) == '%')
-			{
-				$percent   = true;
-				$surcharge = substr($surcharge, 0, - 1);
-			}
-
-			$surcharge = floatval($surcharge);
-
-			if ($percent)
-			{
-				$surcharge = $data->netprice * ($surcharge / 100);
-			}
-		}
-
-		return $surcharge;
-	}
-
-	/**
 	 * Returns the payment form to be submitted by the user's browser. The form must have an ID of
 	 * "paymentForm" and a visible submit button.
 	 *

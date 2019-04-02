@@ -32,8 +32,6 @@
                 <field name="ppimage" type="text" size="50" default="" label="PLG_AKPAYMENT_OFFLINE_PPIMAGE_LABEL"
                        description="PLG_AKPAYMENT_OFFLINE_PPIMAGE_DESC"/>
                 <field type="spacer"/>
-                <field name="surcharge" type="text" size="50" default="" label="PLG_AKPAYMENT_COMMON_SURCHARGE_LABEL"
-                       description="PLG_AKPAYMENT_COMMON_SURCHARGE_DESC"/>
                 <field name="typeCountryList" type="list" default="2"
                        label="PLG_AKPAYMENT_COMMON_COUNTRYLIST_TYPE_LABEL"
                        description="PLG_AKPAYMENT_COMMON_COUNTRYLIST_TYPE_DESC"
