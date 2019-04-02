@@ -153,6 +153,52 @@ var akeebasubs_form_specifier               = "signupForm";
 
 })(akeeba.jQuery);
 
+function akeebasubsLevelToggleDetails()
+{
+	(function ($)
+	{
+		var elDetails = $('#akeebasubs-column-product-description');
+
+		if (!elDetails)
+		{
+			return;
+		}
+
+		if (elDetails.css('display') == 'none')
+		{
+			elDetails.show('slow');
+
+			return;
+		}
+
+		elDetails.hide('slow');
+	})(akeeba.jQuery);
+}
+
+function akeebasubsLevelToggleCoupon(e)
+{
+	(function ($)
+	{
+		var elContainer = $('#akeebasubs-coupon-code-container');
+
+		if (!elContainer)
+		{
+			return;
+		}
+
+		if (elContainer.css('display') == 'none')
+		{
+			e = e || window.event;
+			var target = e.target || e.srcElement;
+			elContainer.show('fast');
+			$(target).hide('fast');
+
+			return;
+		}
+
+		elContainer.hide('fast');
+	})(akeeba.jQuery);
+}
 
 function cacheSubmitAction (e)
 {

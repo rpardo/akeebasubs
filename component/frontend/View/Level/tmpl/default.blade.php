@@ -36,7 +36,7 @@ $layout = $this->input->getCmd('layout', 'default');
 			</h4>
 			<p>@lang('COM_AKEEBASUBS_LEVEL_ERR_NOJS_BODY')</p>
 			<p>
-				<a href="http://enable-javascript.com" class="akeeba-btn--primary" target="_blank">
+				<a href="https://www.enable-javascript.com" class="akeeba-btn--primary" target="_blank">
 					<span class="akion-information-circled"></span>
 					@lang('COM_AKEEBASUBS_LEVEL_ERR_NOJS_MOREINFO')
 				</a>
@@ -50,26 +50,27 @@ $layout = $this->input->getCmd('layout', 'default');
 		id="signupForm" class="akeeba-form--horizontal">
 		<input type="hidden" name="@token()" value="1"/>
 
-		<div class="akeeba-container--50-50">
-			{{-- ACCOUNT COLUMN --}}
-			<div id="akeebasubs-panel-account" class="akeeba-panel--info">
-				<header class="akeeba-block-header">
-					<h3>
-						@lang('COM_AKEEBASUBS_LEVEL_LBL_ACCOUNTHEADER')
-					</h3>
-				</header>
-				@include('site:com_akeebasubs/Level/default_fields')
-			</div>
+		{{-- PRODUCT SUMMARY --}}
+		@include('site:com_akeebasubs/Level/default_product')
 
-			{{-- ORDER COLUMN --}}
-			<div id="akeebasubs-panel-order" class="akeeba-panel--primary">
-				<header class="akeeba-block-header">
-					<h3>
-						@lang('COM_AKEEBASUBS_LEVEL_LBL_YOURORDER')
-					</h3>
-				</header>
-				@include('site:com_akeebasubs/Level/default_summary')
-			</div>
+		{{-- ACCOUNT COLUMN --}}
+		<div id="akeebasubs-panel-account" class="akeeba-panel--info">
+			<header class="akeeba-block-header">
+				<h3>
+					@lang('COM_AKEEBASUBS_LEVEL_LBL_ACCOUNTHEADER')
+				</h3>
+			</header>
+			@include('site:com_akeebasubs/Level/default_fields')
+		</div>
+
+		{{-- ORDER COLUMN --}}
+		<div id="akeebasubs-panel-order" class="akeeba-panel--primary">
+			<header class="akeeba-block-header">
+				<h3>
+					@lang('COM_AKEEBASUBS_LEVEL_LBL_YOURORDER')
+				</h3>
+			</header>
+			@include('site:com_akeebasubs/Level/default_summary')
 		</div>
 	</form>
 

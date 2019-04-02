@@ -70,7 +70,9 @@ $returnURI->setVar('reset', 1);
 		</label>
 
 		<input type="text" name="name" id="name"
+			   placeholder="@lang('COM_AKEEBASUBS_LEVEL_FIELD_NAME')"
 			   value="{{{$field_data['name']}}}"/>
+
 		<p id="name_empty" class="akeeba-help-text"
 		   <?php if (strpos($group_classes['name'], 'error') === false): ?>style="display:none"<?php endif ?>>
 			@lang('COM_AKEEBASUBS_LEVEL_ERR_NAME_INVALID')
@@ -84,7 +86,9 @@ $returnURI->setVar('reset', 1);
 		</label>
 
 		<input type="text" name="username" id="username"
+			   placeholder="@lang('COM_AKEEBASUBS_LEVEL_FIELD_USERNAME')"
 			   value="{{{$this->cache['username']}}}"/>
+
 		<p id="username_invalid" class="akeeba-help-text"
 		   <?php if (strpos($group_classes['username'], 'error') === false): ?>style="display:none"<?php endif ?>>
 			@lang('COM_AKEEBASUBS_LEVEL_FIELD_USERNAME_INVALID')
@@ -97,22 +101,19 @@ $returnURI->setVar('reset', 1);
 			@lang('COM_AKEEBASUBS_LEVEL_FIELD_PASSWORD')
 		</label>
 
-		<input type="password" name="password" id="password"
-			   value="{{{$this->cache['password']}}}"/>
+		<div class="akeeba-container--50-50">
+			<input type="password" name="password" id="password"
+				   placeholder="@lang('COM_AKEEBASUBS_LEVEL_FIELD_PASSWORD')"
+				   value="{{{$this->cache['password']}}}"/>
+			<input type="password" name="password2" id="password2"
+				   placeholder="@lang('COM_AKEEBASUBS_LEVEL_FIELD_PASSWORD2')"
+				   value="{{{$this->cache['password2']}}}"/>
+		</div>
+
 		<p id="password_invalid" class="akeeba-help-text"
 		   style="<?php if (strpos($group_classes['password'], 'error') === false): ?>display:none<?php endif; ?>">
 			@lang('COM_AKEEBASUBS_LEVEL_ERR_PASSWORD_EMPTY')
 		</p>
-	</div>
-
-	{{-- Password (repeat) --}}
-	<div class="akeeba-form-group{{$group_classes['password2']}}">
-		<label for="password2">
-			@lang('COM_AKEEBASUBS_LEVEL_FIELD_PASSWORD2')
-		</label>
-
-		<input type="password" name="password2" id="password2"
-			   value="{{{$this->cache['password2']}}}"/>
 		<p id="password2_invalid" class="help-block"
 		   style="<?php if (strpos($group_classes['password2'], 'error') === false): ?>display:none<?php endif; ?>">
 			@lang('COM_AKEEBASUBS_LEVEL_ERR_PASSWORD2')
@@ -125,27 +126,27 @@ $returnURI->setVar('reset', 1);
 			@lang('COM_AKEEBASUBS_LEVEL_FIELD_EMAIL')
 		</label>
 
-		<input type="text" name="email" id="email"
-			   value="{{{$field_data['email']}}}"/>
+		<div class="akeeba-container--50-50">
+			<input type="text" name="email" id="email"
+				   placeholder="@lang('COM_AKEEBASUBS_LEVEL_FIELD_EMAIL')"
+				   value="{{{$field_data['email']}}}"/>
+
+			<input type="text" name="email2" id="email2"
+				   placeholder="@lang('COM_AKEEBASUBS_LEVEL_FIELD_EMAIL2')"
+				   value="{{{$field_data['email2']}}}"/>
+		</div>
+
 		<p id="email_invalid" class="akeeba-help-text"
 		   <?php if (strpos($group_classes['email'], 'error') === false): ?>style="display:none"<?php endif ?>>
 			@lang('COM_AKEEBASUBS_LEVEL_ERR_EMAIL')
 		</p>
-	</div>
 
-	{{-- Email (repeat) --}}
-	<div class="akeeba-form-group{{$group_classes['email2']}}">
-		<label for="email2">
-			@lang('COM_AKEEBASUBS_LEVEL_FIELD_EMAIL2')
-		</label>
-
-		<input type="text" name="email2" id="email2"
-			   value="{{{$field_data['email2']}}}"/>
 		<p id="email2_invalid" class="akeeba-help-text"
 		   <?php if (strpos($group_classes['email2'], 'error') === false): ?>style="display:none"<?php endif ?>>
 			@lang('COM_AKEEBASUBS_LEVEL_ERR_EMAIL2')
 		</p>
 	</div>
+
 	@endif
 
 	<h3><?php echo JText::_('COM_AKEEBASUBS_LEVEL_COUNTRYINFO') ?></h3>
