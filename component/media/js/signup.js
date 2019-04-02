@@ -7,17 +7,16 @@
 /**
  * Setup (required for Joomla! 3)
  */
-if (typeof(akeeba) === "undefined")
+if (typeof (akeeba) === "undefined")
 {
-	var akeeba = {};
+    var akeeba = {};
 }
 
-if (typeof(akeeba.jQuery) === "undefined")
+if (typeof (akeeba.jQuery) === "undefined")
 {
-	akeeba.jQuery = window.jQuery.noConflict();
+    akeeba.jQuery = window.jQuery.noConflict();
 }
 
-var akeebasubs_isbusiness                   = false;
 var akeebasubs_blocked_gui                  = false;
 var akeebasubs_run_validation_after_unblock = false;
 var akeebasubs_cached_response              = false;
@@ -31,11 +30,9 @@ var akeebasubs_submit_after_validation      = false;
 var akeebasubs_apply_validation             = false;
 var akeebasubs_form_specifier               = "signupForm";
 
-(function ($)
-{
-	$.fn.removePartial = function (baseClass, removeThis)
-	{
-		var myElement = this;
+(function ($) {
+    $.fn.removePartial = function (baseClass, removeThis) {
+        var myElement = this;
 
         if (this.length !== undefined)
         {
@@ -47,57 +44,55 @@ var akeebasubs_form_specifier               = "signupForm";
             myElement = $(this[0]);
         }
 
-		var myClass   = myElement.attr('class');
+        var myClass   = myElement.attr("class");
         var classList = [];
 
-		if (typeof myClass !== "undefined")
-		{
-			classList = myClass.split(/\s+/);
-		}
+        if (typeof myClass !== "undefined")
+        {
+            classList = myClass.split(/\s+/);
+        }
 
-		$.each(classList, function (index, wholeClass)
-		{
-			// Wrong base class or already bare?
-			if (!wholeClass.startsWith(baseClass + "--"))
-			{
-				return;
-			}
+        $.each(classList, function (index, wholeClass) {
+            // Wrong base class or already bare?
+            if (!wholeClass.startsWith(baseClass + "--"))
+            {
+                return;
+            }
 
-			// Degenerate case "baseClass--removeThis", we just need to return baseClass
-			if (wholeClass === (baseClass + "--" + removeThis))
-			{
-				myElement.removeClass(wholeClass).addClass(baseClass);
+            // Degenerate case "baseClass--removeThis", we just need to return baseClass
+            if (wholeClass === (baseClass + "--" + removeThis))
+            {
+                myElement.removeClass(wholeClass).addClass(baseClass);
 
-				return;
-			}
+                return;
+            }
 
-			var partials = wholeClass.split("--");
-			partials.splice(0, 1);
+            var partials = wholeClass.split("--");
+            partials.splice(0, 1);
 
-			var newClass = baseClass;
-			myElement.removeClass(wholeClass);
+            var newClass = baseClass;
+            myElement.removeClass(wholeClass);
 
-			for (var i = 0; i < partials.length; i++)
-			{
-				if (partials[i] === removeThis)
-				{
-					continue;
-				}
+            for (var i = 0; i < partials.length; i++)
+            {
+                if (partials[i] === removeThis)
+                {
+                    continue;
+                }
 
-				newClass += "--" + partials[i];
-			}
+                newClass += "--" + partials[i];
+            }
 
-			myElement.addClass(newClass);
-		});
+            myElement.addClass(newClass);
+        });
 
-		return this;
-	};
+        return this;
+    };
 
-	$.fn.addPartial = function (baseClass, addThis)
-	{
-		var myElement = this;
+    $.fn.addPartial = function (baseClass, addThis) {
+        var myElement = this;
 
-		if (this.length !== undefined)
+        if (this.length !== undefined)
         {
             if (this.length === 0)
             {
@@ -107,146 +102,140 @@ var akeebasubs_form_specifier               = "signupForm";
             myElement = $(this[0]);
         }
 
-		var classList = myElement.attr("class").split(/\s+/);
+        var classList = myElement.attr("class").split(/\s+/);
 
-        $.each(classList, function (index, wholeClass)
-		{
-			// Wrong base class?
-			if (!wholeClass.startsWith(baseClass))
-			{
-				return;
-			}
+        $.each(classList, function (index, wholeClass) {
+            // Wrong base class?
+            if (!wholeClass.startsWith(baseClass))
+            {
+                return;
+            }
 
-			// Class already "baseClass--addThis"?
-			if (wholeClass === (baseClass + "--" + addThis))
-			{
-				return;
-			}
+            // Class already "baseClass--addThis"?
+            if (wholeClass === (baseClass + "--" + addThis))
+            {
+                return;
+            }
 
-			// Class already bare? Just add the partial.
-			if (wholeClass === baseClass)
-			{
-				myElement.removeClass(wholeClass);
-				myElement.addClass(baseClass + "--" + addThis);
-				return;
-			}
+            // Class already bare? Just add the partial.
+            if (wholeClass === baseClass)
+            {
+                myElement.removeClass(wholeClass);
+                myElement.addClass(baseClass + "--" + addThis);
+                return;
+            }
 
-			// Double check we are not matching the wrong class, e.g. whileClass = 'foobar' and baseClass='foo'
-			if (!wholeClass.startsWith(baseClass + "--"))
-			{
-				return;
-			}
+            // Double check we are not matching the wrong class, e.g. whileClass = 'foobar' and baseClass='foo'
+            if (!wholeClass.startsWith(baseClass + "--"))
+            {
+                return;
+            }
 
-			// Already includes '--' + addThis? Return.
-			if (wholeClass.indexOf("--" + addThis) !== -1)
-			{
-				return;
-			}
+            // Already includes '--' + addThis? Return.
+            if (wholeClass.indexOf("--" + addThis) !== -1)
+            {
+                return;
+            }
 
-			// Add the partial
-			myElement.removeClass(wholeClass);
-			myElement.addClass(wholeClass + "--" + addThis);
-		});
+            // Add the partial
+            myElement.removeClass(wholeClass);
+            myElement.addClass(wholeClass + "--" + addThis);
+        });
 
-		return this;
-	};
+        return this;
+    };
 
 })(akeeba.jQuery);
 
 function akeebasubsLevelToggleDetails()
 {
-	(function ($)
-	{
-		var elDetails = $('#akeebasubs-column-product-description');
+    (function ($) {
+        var elDetails = $("#akeebasubs-column-product-description");
 
-		if (!elDetails)
-		{
-			return;
-		}
+        if (!elDetails)
+        {
+            return;
+        }
 
-		if (elDetails.css('display') == 'none')
-		{
-			elDetails.show('slow');
+        if (elDetails.css("display") == "none")
+        {
+            elDetails.show("slow");
 
-			return;
-		}
+            return;
+        }
 
-		elDetails.hide('slow');
-	})(akeeba.jQuery);
+        elDetails.hide("slow");
+    })(akeeba.jQuery);
 }
 
 function akeebasubsLevelToggleCoupon(e)
 {
-	(function ($)
-	{
-		var elContainer = $('#akeebasubs-coupon-code-container');
+    (function ($) {
+        var elContainer = $("#akeebasubs-coupon-code-container");
 
-		if (!elContainer)
-		{
-			return;
-		}
+        if (!elContainer)
+        {
+            return;
+        }
 
-		if (elContainer.css('display') == 'none')
-		{
-			e = e || window.event;
-			var target = e.target || e.srcElement;
-			elContainer.show('fast');
-			$(target).hide('fast');
+        if (elContainer.css("display") == "none")
+        {
+            e          = e || window.event;
+            var target = e.target || e.srcElement;
+            elContainer.show("fast");
+            $(target).hide("fast");
 
-			return;
-		}
+            return;
+        }
 
-		elContainer.hide('fast');
-	})(akeeba.jQuery);
+        elContainer.hide("fast");
+    })(akeeba.jQuery);
 }
 
-function cacheSubmitAction (e)
+function cacheSubmitAction(e)
 {
-	(function ($)
-	{
-		e.preventDefault();
-		akeebasubs_submit_after_validation = true;
-		$("#subscribenow").attr("disabled", "disabled");
-	})(akeeba.jQuery);
+    (function ($) {
+        e.preventDefault();
+        akeebasubs_submit_after_validation = true;
+        $("#subscribenow").attr("disabled", "disabled");
+    })(akeeba.jQuery);
 }
 
-function blockInterface ()
+function blockInterface()
 {
-	(function ($)
-	{
-		var btnSubscribeNow = $("#subscribenow");
-		btnSubscribeNow.click(cacheSubmitAction);
-		btnSubscribeNow.attr("disabled", "disabled");
-		akeebasubs_blocked_gui = true;
-	})(akeeba.jQuery);
+    (function ($) {
+        var btnSubscribeNow = $("#subscribenow");
+        btnSubscribeNow.click(cacheSubmitAction);
+        btnSubscribeNow.attr("disabled", "disabled");
+        akeebasubs_blocked_gui = true;
+    })(akeeba.jQuery);
 }
 
-function enableInterface ()
+function enableInterface()
 {
-	(function ($)
-	{
-		var btnSubscribeNow = $("#subscribenow");
+    (function ($) {
+        var btnSubscribeNow = $("#subscribenow");
 
-		btnSubscribeNow.unbind("click");
-		btnSubscribeNow.removeAttr("disabled");
+        btnSubscribeNow.unbind("click");
+        btnSubscribeNow.removeAttr("disabled");
 
-		akeebasubs_blocked_gui = false;
+        akeebasubs_blocked_gui = false;
 
-		if (akeebasubs_run_validation_after_unblock)
-		{
-			akeebasubs_run_validation_after_unblock = false;
+        if (akeebasubs_run_validation_after_unblock)
+        {
+            akeebasubs_run_validation_after_unblock = false;
 
-			validateBusiness();
+            validateForm();
 
-			return;
-		}
+            return;
+        }
 
-		if (akeebasubs_submit_after_validation)
-		{
-			akeebasubs_submit_after_validation = false;
-			setTimeout("(function($) {$('#subscribenow').click()})(akeeba.jQuery);", 100);
-		}
-	})(akeeba.jQuery);
+        if (akeebasubs_submit_after_validation)
+        {
+            akeebasubs_submit_after_validation = false;
+            setTimeout("(function($) {$('#subscribenow').click()})(akeeba.jQuery);", 100);
+        }
+    })(akeeba.jQuery);
 }
 
 /**
@@ -256,706 +245,522 @@ function enableInterface ()
  * @param callback_function
  * @return
  */
-function validateForm (callback_function)
+function validateForm(callback_function)
 {
-	if (akeebasubs_blocked_gui)
-	{
-		akeebasubs_run_validation_after_unblock = true;
-		return;
-	}
+    if (akeebasubs_blocked_gui)
+    {
+        akeebasubs_run_validation_after_unblock = true;
+        return;
+    }
 
-	(function ($)
-	{
-		var paymentMethod = null;
+    (function ($) {
+        var paymentMethod = $("input[name=paymentmethod]:checked").val();
 
-		paymentMethod = $("input[name=paymentmethod]:checked").val();
+        if (paymentMethod == null)
+        {
+            paymentMethod = $("select[name=paymentmethod]").val();
+        }
 
-		if (paymentMethod == null)
-		{
-			paymentMethod = $("select[name=paymentmethod]").val();
-		}
+        var $couponField = $("#coupon");
+        var couponValue  = ($couponField.length > 0) ? $couponField.val() : "";
 
-		var $couponField = $("#coupon");
-		var couponValue  = ($couponField.length > 0) ? $couponField.val() : "";
+        var data = {
+            "action":        "read",
+            "id":            akeebasubs_level_id,
+            "username":      $("#username").val(),
+            "name":          $("#name").val(),
+            "email":         $("#email").val(),
+            "email2":        $("#email2").val(),
+            "coupon":        couponValue,
+            "paymentmethod": paymentMethod,
+            "custom":        {},
+            "subcustom":     {}
+        };
 
-		var data = {
-			"action"       : "read",
-			"id"           : akeebasubs_level_id,
-			"username"     : $("#username").val(),
-			"name"         : $("#name").val(),
-			"email"        : $("#email").val(),
-			"email2"       : $("#email2").val(),
-			"coupon"       : couponValue,
-			"paymentmethod": paymentMethod,
-			"custom"       : {},
-			"subcustom"    : {}
-		};
+        var elPassword = $("#password");
 
-		var elPassword = $("#password");
+        if (elPassword)
+        {
+            data.password  = elPassword.val();
+            data.password2 = $("#password2").val();
+        }
 
-		if (elPassword)
-		{
-			data.password  = elPassword.val();
-			data.password2 = $("#password2").val();
-		}
+        // Fetch the custom fields
+        $.each(akeebasubs_validation_fetch_queue, function (index, function_name) {
+            var result = function_name();
 
-		// Fetch the custom fields
-		$.each(akeebasubs_validation_fetch_queue, function (index, function_name)
-		{
-			var result = function_name();
+            if ((result !== null) && (typeof result === "object"))
+            {
+                // Merge the result with the data object
+                $.extend(data.custom, result);
+            }
+        });
 
-			if ((result !== null) && (typeof result === "object"))
-			{
-				// Merge the result with the data object
-				$.extend(data.custom, result);
-			}
-		});
+        // Fetch the per-subscription custom fields
+        $.each(akeebasubs_sub_validation_fetch_queue, function (index, function_name) {
+            var result = function_name();
+            if ((result !== null) && (typeof result === "object"))
+            {
+                // Merge the result with the data object
+                $.extend(data.subcustom, result);
+            }
+        });
 
-		// Fetch the per-subscription custom fields
-		$.each(akeebasubs_sub_validation_fetch_queue, function (index, function_name)
-		{
-			var result = function_name();
-			if ((result !== null) && (typeof result === "object"))
-			{
-				// Merge the result with the data object
-				$.extend(data.subcustom, result);
-			}
-		});
+        blockInterface();
 
-		blockInterface();
+        $.ajax({
+            type:     "POST",
+            url:      akeebasubs_validate_url + "?option=com_akeebasubs&view=Validate&format=json",
+            data:     data,
+            dataType: "json",
+            success:  function (msg, textStatus, xhr) {
+                if (msg.validation)
+                {
+                    msg.validation.custom_validation    = msg.custom_validation;
+                    msg.validation.custom_valid         = msg.custom_valid;
+                    msg.validation.subcustom_validation = msg.subscription_custom_validation;
+                    msg.validation.subcustom_valid      = msg.subscription_custom_valid;
+                    applyValidation(msg.validation, callback_function);
+                }
+                if (msg.price)
+                {
+                    applyPrice(msg.price);
+                }
+                enableInterface();
+            },
+            error:    function (jqXHR, textStatus, errorThrown) {
+                enableInterface();
+            }
+        });
 
-		$.ajax({
-				   type    : "POST",
-				   url     : akeebasubs_validate_url + "?option=com_akeebasubs&view=Validate&format=json",
-				   data    : data,
-				   dataType: "json",
-				   success : function (msg, textStatus, xhr)
-				   {
-					   if (msg.validation)
-					   {
-						   msg.validation.custom_validation    = msg.custom_validation;
-						   msg.validation.custom_valid         = msg.custom_valid;
-						   msg.validation.subcustom_validation = msg.subscription_custom_validation;
-						   msg.validation.subcustom_valid      = msg.subscription_custom_valid;
-						   applyValidation(msg.validation, callback_function);
-					   }
-					   if (msg.price)
-					   {
-						   applyPrice(msg.price);
-					   }
-					   enableInterface();
-				   },
-				   error   : function (jqXHR, textStatus, errorThrown)
-				   {
-					   enableInterface();
-				   }
-			   });
-
-		// Fetch list of payment methods
-		if (akeebasubs_form_specifier == "signupForm")
-		{
-			$.ajax({
-					   type    : "POST",
-					   url     : akeebasubs_validate_url + "?option=com_akeebasubs&view=Validate&task=getpayment&format=json",
-					   data    : data,
-					   dataType: "text",
-					   success : function (result)
-					   {
-						   var html = /###(\{.*?\})###/.exec(result);
-
-						   if (html && html[1] !== "undefined" && html[1].html !== "undefined")
-						   {
-							   // Before building the new payment list, let's save the select method, so I can select
-							   // it again
-							   var cur_method = $("input[name=\"paymentmethod\"]:checked").val();
-							   $("#paymentlist-container").html(JSON.parse(html[1]).html);
-							   $("input[name=\"paymentmethod\"][value=\"" + cur_method + "\"]").prop("checked", true);
-						   }
-
-						   enableInterface();
-					   },
-					   error   : function ()
-					   {
-						   enableInterface();
-					   }
-				   });
-		}
-
-	})(akeeba.jQuery);
+    })(akeeba.jQuery);
 }
 
 /**
  * Validates the password fields
  * @return
  */
-function validatePassword ()
+function validatePassword()
 {
-	(function ($)
-	{
-		var elPassword  = $("#password");
-		var elPassword2 = $("#password2");
+    (function ($) {
+        var elPassword  = $("#password");
+        var elPassword2 = $("#password2");
 
-		if (!elPassword)
-		{
-			return;
-		}
-		var password  = elPassword.val();
-		var password2 = elPassword2.val();
+        if (!elPassword)
+        {
+            return;
+        }
+        var password  = elPassword.val();
+        var password2 = elPassword2.val();
 
-		var elPasswordInvalid = $("#password_invalid");
-		var elPasswordValid   = $("#password2_invalid");
+        var elPasswordInvalid = $("#password_invalid");
+        var elPasswordValid   = $("#password2_invalid");
 
-		elPasswordInvalid.hide();
-		elPasswordValid.hide();
+        elPasswordInvalid.hide();
+        elPasswordValid.hide();
 
-		if (!akeebasubs_apply_validation)
-		{
-			if ((password === "") && (password2 === ""))
-			{
-				$("#password").parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-				$("#password2").parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+        if (!akeebasubs_apply_validation)
+        {
+            if ((password === "") && (password2 === ""))
+            {
+                $("#password").parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+                $("#password2").parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
 
-				return;
-			}
-		}
+                return;
+            }
+        }
 
-		if (password === "")
-		{
-			$("#password").parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
-			$("#password2").parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-			elPasswordInvalid.show();
-			akeebasubs_valid_form = false;
-		}
-		else
-		{
-			$("#password").parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+        if (password === "")
+        {
+            $("#password").parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
+            $("#password2").parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+            elPasswordInvalid.show();
+            akeebasubs_valid_form = false;
+        }
+        else
+        {
+            $("#password").parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
 
-			if (password2 !== password)
-			{
-				$("#password2").parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
-				elPasswordValid.show();
-				akeebasubs_valid_form = false;
-			}
-			else
-			{
-				$("#password2").parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-			}
-		}
-	})(akeeba.jQuery);
+            if (password2 !== password)
+            {
+                $("#password2").parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
+                elPasswordValid.show();
+                akeebasubs_valid_form = false;
+            }
+            else
+            {
+                $("#password2").parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+            }
+        }
+    })(akeeba.jQuery);
 }
 
 /**
  * Validates the (real) name
  * @return
  */
-function validateName ()
+function validateName()
 {
-	(function ($)
-	{
-		var elNameEmpty = $("#name_empty");
-		var elName      = $("#name");
-		var name        = elName.val();
+    (function ($) {
+        var elNameEmpty = $("#name_empty");
+        var elName      = $("#name");
+        var name        = elName.val();
 
-		elNameEmpty.hide();
-		elName.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+        elNameEmpty.hide();
+        elName.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
 
-		if (!akeebasubs_apply_validation)
-		{
-			return;
-		}
+        if (!akeebasubs_apply_validation)
+        {
+            return;
+        }
 
-		var invalidName = false;
+        var invalidName = false;
 
-		if (name === "")
-		{
-			invalidName = true;
-		}
-		/**
-		 else {
+        if (name === "")
+        {
+            invalidName = true;
+        }
+        /**
+         else {
 			name = ltrim(rtrim(name, " "), " ");
 			var nameParts = name.split(' ');
 			if(nameParts.length < 2) invalidName = true;
 		}
-		 **/
+         **/
 
-		if (invalidName)
-		{
-			elName.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
-			elNameEmpty.show();
-			akeebasubs_valid_form = false;
+        if (invalidName)
+        {
+            elName.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
+            elNameEmpty.show();
+            akeebasubs_valid_form = false;
 
-			return;
-		}
+            return;
+        }
 
-		elName.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-	})(akeeba.jQuery);
+        elName.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+    })(akeeba.jQuery);
 }
 
 /**
  * DHTML email validation script. Courtesy of SmartWebby.com (http://www.smartwebby.com/dhtml/)
  */
 
-function echeck (str)
+function echeck(str)
 {
-	var at   = "@";
-	var dot  = ".";
-	var lat  = str.indexOf(at);
-	var lstr = str.length;
-	var ldot = str.indexOf(dot);
-	if (str.indexOf(at) == -1)
-	{
-		return false;
-	}
+    var at   = "@";
+    var dot  = ".";
+    var lat  = str.indexOf(at);
+    var lstr = str.length;
+    var ldot = str.indexOf(dot);
+    if (str.indexOf(at) == -1)
+    {
+        return false;
+    }
 
-	if (str.indexOf(at) == -1 || str.indexOf(at) == 0 || str.indexOf(at) == lstr)
-	{
-		return false;
-	}
+    if (str.indexOf(at) == -1 || str.indexOf(at) == 0 || str.indexOf(at) == lstr)
+    {
+        return false;
+    }
 
-	if (str.indexOf(dot) == -1 || str.indexOf(dot) == 0 || str.indexOf(dot) == lstr)
-	{
-		return false;
-	}
+    if (str.indexOf(dot) == -1 || str.indexOf(dot) == 0 || str.indexOf(dot) == lstr)
+    {
+        return false;
+    }
 
-	if (str.indexOf(at, (lat + 1)) != -1)
-	{
-		return false;
-	}
+    if (str.indexOf(at, (lat + 1)) != -1)
+    {
+        return false;
+    }
 
-	if (str.substring(lat - 1, lat) == dot || str.substring(lat + 1, lat + 2) == dot)
-	{
-		return false;
-	}
+    if (str.substring(lat - 1, lat) == dot || str.substring(lat + 1, lat + 2) == dot)
+    {
+        return false;
+    }
 
-	if (str.indexOf(dot, (lat + 2)) == -1)
-	{
-		return false;
-	}
+    if (str.indexOf(dot, (lat + 2)) == -1)
+    {
+        return false;
+    }
 
-	if (str.indexOf(" ") != -1)
-	{
-		return false;
-	}
+    if (str.indexOf(" ") != -1)
+    {
+        return false;
+    }
 
-	return true;
+    return true;
 }
 
 /**
  * Validates the email address
  * @return
  */
-function validateEmail ()
+function validateEmail()
 {
-	(function ($)
-	{
-		var elEmailEmpty    = $("#email_empty");
-		var elEmailInvalid  = $("#email_invalid");
-		var elEmail2Invalid = $("#email2_invalid");
-		var elEmail         = $("#email");
-		var elEmail2        = $("#email2");
+    (function ($) {
+        var elEmailEmpty    = $("#email_empty");
+        var elEmailInvalid  = $("#email_invalid");
+        var elEmail2Invalid = $("#email2_invalid");
+        var elEmail         = $("#email");
+        var elEmail2        = $("#email2");
 
-		elEmailEmpty.hide();
-		elEmailInvalid.hide();
-		elEmail2Invalid.hide();
+        elEmailEmpty.hide();
+        elEmailInvalid.hide();
+        elEmail2Invalid.hide();
 
-		elEmail.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-		elEmail2.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+        elEmail.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+        elEmail2.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
 
-		var email  = elEmail.val();
-		var email2 = elEmail2.val();
+        var email  = elEmail.val();
+        var email2 = elEmail2.val();
 
-		if (!akeebasubs_apply_validation)
-		{
-			return;
-		}
+        if (!akeebasubs_apply_validation)
+        {
+            return;
+        }
 
-		if ((email === "") && (email2 === ""))
-		{
-			elEmail.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-			elEmail2.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+        if ((email === "") && (email2 === ""))
+        {
+            elEmail.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+            elEmail2.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
 
-			elEmailEmpty.hide();
-			elEmailInvalid.hide();
-			elEmail2Invalid.hide();
+            elEmailEmpty.hide();
+            elEmailInvalid.hide();
+            elEmail2Invalid.hide();
 
-			return;
-		}
+            return;
+        }
 
-		if (email === "")
-		{
-			elEmail.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
-			elEmailEmpty.show();
-			akeebasubs_valid_form = false;
+        if (email === "")
+        {
+            elEmail.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
+            elEmailEmpty.show();
+            akeebasubs_valid_form = false;
 
-			return;
-		}
+            return;
+        }
 
-		if (!echeck(email))
-		{
-			elEmail.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
-			elEmailInvalid.show();
-			akeebasubs_valid_form = false;
+        if (!echeck(email))
+        {
+            elEmail.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
+            elEmailInvalid.show();
+            akeebasubs_valid_form = false;
 
-			return;
-		}
+            return;
+        }
 
-		validateForm();
-	})(akeeba.jQuery);
+        validateForm();
+    })(akeeba.jQuery);
 }
 
-/**
- * Validates the business registration information and runs a price fetch
- * @return
- */
-function validateBusiness ()
+function applyValidation(response, callback)
 {
-	(function ($)
-	{
-// Chain an address validation
-		if (akeebasubs_blocked_gui)
-		{
-			akeebasubs_run_validation_after_unblock = true;
+    akeebasubs_cached_response = response;
 
-			return;
-		}
+    (function ($) {
+        akeebasubs_valid_form = true;
 
-		akeebasubs_valid_form = true;
-		validateForm();
-	})(akeeba.jQuery);
+        if (akeebasubs_apply_validation)
+        {
+            var elUsername        = $("#username");
+            var elUsernameInvalid = $("#username_invalid");
+
+            elUsername.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+
+            if (elUsernameInvalid)
+            {
+                if (response.username)
+                {
+                    elUsernameInvalid.hide();
+                }
+                else
+                {
+                    if (!elUsername.attr("disabled") || (elUsername.attr("disabled") !== "disabled"))
+                    {
+                        akeebasubs_valid_form = false;
+                    }
+
+                    elUsernameInvalid.hide();
+
+                    if (true || (elUsername.val() !== ""))
+                    {
+                        elUsername.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
+                        elUsernameInvalid.show();
+                    }
+                }
+            }
+
+            var elName = $("#name");
+            elName.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+            if (response.name)
+            {
+                $("#name_empty").hide();
+            }
+            else
+            {
+                elName.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
+                akeebasubs_valid_form = false;
+                $("#name_empty").show();
+            }
+
+            var elEmail = $("#email");
+            elEmail.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+            if (response.email)
+            {
+                $("#email_invalid").hide();
+            }
+            else
+            {
+                elEmail.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
+                akeebasubs_valid_form = false;
+                $("#email_invalid").show();
+            }
+
+            var elEmail2 = $("#email2");
+            elEmail2.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+            if (response.email2)
+            {
+                $("#email2_invalid").hide();
+            }
+            else
+            {
+                elEmail2.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
+                akeebasubs_valid_form = false;
+                $("#email2_invalid").show();
+            }
+        }
+
+        // Finally, apply the custom validation
+        $.each(akeebasubs_validation_queue, function (index, function_name) {
+            var isValid           = function_name(response);
+            akeebasubs_valid_form = akeebasubs_valid_form & isValid;
+        });
+        $.each(akeebasubs_sub_validation_queue, function (index, function_name) {
+            var isValid           = function_name(response);
+            akeebasubs_valid_form = akeebasubs_valid_form & isValid;
+        });
+
+        if (!akeebasubs_apply_validation)
+        {
+            akeebasubs_valid_form = true;
+        }
+
+        if (akeebasubs_apply_validation)
+        {
+            if (akeebasubs_valid_form)
+            {
+                $("#subscribenow")
+                    .addPartial("akeeba-btn", "success")
+                    .removePartial("akeeba-btn", "warning")
+                    .removePartial("akeeba-btn", "teal");
+            }
+            else
+            {
+                $("#subscribenow")
+                    .addPartial("akeeba-btn", "warning")
+                    .removePartial("akeeba-btn", "success")
+                    .removePartial("akeeba-btn", "teal");
+            }
+        }
+
+    })(akeeba.jQuery);
 }
 
-function validateIsNotBusiness (e)
+function applyPrice(response)
 {
-	(function ($)
-	{
-		akeebasubs_cached_response.businessname = true;
+    (function ($) {
+        var $sumTotalField = $("#akeebasubs-sum-total");
 
-		applyValidation(akeebasubs_cached_response);
-		akeebasubs_isbusiness = false;
-	})(akeeba.jQuery);
+        if ($sumTotalField.length > 0)
+        {
+            $sumTotalField.text(response.gross);
+
+            var $discountFieldContainer = $("#akeebasubs-sum-discount-container");
+            var $originalFieldContainer = $("#akeebasubs-sum-original-container");
+
+            if ($discountFieldContainer.length)
+            {
+                $discountFieldContainer.hide();
+
+                if ($originalFieldContainer.length)
+                {
+                    $originalFieldContainer.hide();
+                }
+
+                var $discountField = $("#akeebasubs-sum-discount");
+                var $originalField = $("#akeebasubs-sum-original");
+
+                if ((response.discount > 0) && $discountField.length)
+                {
+                    response.discount = response.discount * 1.00;
+                    response.net      = response.net * 1.00;
+
+                    $discountFieldContainer.show();
+
+                    if ($originalFieldContainer.length)
+                    {
+                        $originalFieldContainer.show();
+                    }
+
+                    $discountField.html(response.discount.toFixed(2));
+
+                    if ($originalField.length)
+                    {
+                        $originalField.html(response.net.toFixed(2));
+                    }
+                }
+            }
+        }
+
+        var $couponField = $("#coupon");
+
+        if ($couponField.length)
+        {
+            var couponValue = ($couponField.length > 0) ? $couponField.val() : "";
+            $couponField.removeClass("coupon-valid coupon-invalid");
+
+            if (couponValue)
+            {
+                var couponClass = (response.couponid > 0) ? "coupon-valid" : "coupon-invalid";
+                $couponField.addClass(couponClass);
+            }
+        }
+
+    })(akeeba.jQuery);
 }
 
-function applyValidation (response, callback)
-{
-	akeebasubs_cached_response = response;
+(function ($) {
+    $(document).ready(function () {
+        if (jQuery("#userinfoForm").length)
+        {
+            akeebasubs_form_specifier = "userinfoForm";
+        }
 
-	(function ($)
-	{
-		akeebasubs_valid_form = true;
+        $("#username").blur(validateForm);
+        if ($("#password"))
+        {
+            $("#password").blur(validatePassword);
+            $("#password2").blur(validatePassword);
+        }
+        $("#name").blur(validateName);
+        $("#email").blur(validateEmail);
+        $("#email2").blur(validateEmail);
 
-		if (akeebasubs_apply_validation)
-		{
-			var elUsername        = $("#username");
-			var elUsernameInvalid = $("#username_invalid");
+        if ($("#coupon").length > 0)
+        {
+            $("#coupon").blur(validateForm);
+        }
 
-			elUsername.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
+        // Disable form submit when ENTER is hit in the coupon field
+        $("input#coupon")
+            .keypress(function (e) {
+                if (e.which == 13)
+                {
+                    validateForm();
+                    return false;
+                }
+            });
 
-			if (elUsernameInvalid)
-			{
-				if (response.username)
-				{
-					elUsernameInvalid.hide();
-				}
-				else
-				{
-					if (!elUsername.attr("disabled") || (elUsername.attr("disabled") !== "disabled"))
-					{
-						akeebasubs_valid_form = false;
-					}
-
-					elUsernameInvalid.hide();
-
-					if (true || (elUsername.val() !== ""))
-					{
-						elUsername.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
-						elUsernameInvalid.show();
-					}
-				}
-			}
-
-			var elName = $("#name");
-			elName.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-			if (response.name)
-			{
-				$("#name_empty").hide();
-			}
-			else
-			{
-				elName.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
-				akeebasubs_valid_form = false;
-				$("#name_empty").show();
-			}
-
-			var elEmail = $("#email");
-			elEmail.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-			if (response.email)
-			{
-				$("#email_invalid").hide();
-			}
-			else
-			{
-				elEmail.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
-				akeebasubs_valid_form = false;
-				$("#email_invalid").show();
-			}
-
-			var elEmail2 = $("#email2");
-			elEmail2.parents("div[class*=akeeba-form-group]").removePartial("akeeba-form-group", "error");
-			if (response.email2)
-			{
-				$("#email2_invalid").hide();
-			}
-			else
-			{
-				elEmail2.parents("div[class*=akeeba-form-group]").addPartial("akeeba-form-group", "error");
-				akeebasubs_valid_form = false;
-				$("#email2_invalid").show();
-			}
-		}
-
-		// Finally, apply the custom validation
-		$.each(akeebasubs_validation_queue, function (index, function_name)
-		{
-			var isValid           = function_name(response);
-			akeebasubs_valid_form = akeebasubs_valid_form & isValid;
-		});
-		$.each(akeebasubs_sub_validation_queue, function (index, function_name)
-		{
-			var isValid           = function_name(response);
-			akeebasubs_valid_form = akeebasubs_valid_form & isValid;
-		});
-
-		if (!akeebasubs_apply_validation)
-		{
-			akeebasubs_valid_form = true;
-		}
-
-		if (akeebasubs_apply_validation)
-		{
-			if (akeebasubs_valid_form)
-			{
-				$("#subscribenow")
-				.addPartial("akeeba-btn", "success")
-				.removePartial("akeeba-btn", "warning")
-				.removePartial("akeeba-btn", "teal");
-			}
-			else
-			{
-				$("#subscribenow")
-				.addPartial("akeeba-btn", "warning")
-				.removePartial("akeeba-btn", "success")
-				.removePartial("akeeba-btn", "teal");
-			}
-		}
-
-	})(akeeba.jQuery);
-}
-
-function applyPrice (response)
-{
-	(function ($)
-	{
-		var $sumTotalField = $("#akeebasubs-sum-total");
-
-		if ($sumTotalField.length > 0)
-		{
-			$sumTotalField.text(response.gross);
-
-			var $discountFieldContainer = $("#akeebasubs-sum-discount-container");
-			var $originalFieldContainer = $("#akeebasubs-sum-original-container");
-
-			if ($discountFieldContainer.length)
-			{
-				$discountFieldContainer.hide();
-
-				if ($originalFieldContainer.length)
-				{
-					$originalFieldContainer.hide();
-				}
-
-				var $discountField = $("#akeebasubs-sum-discount");
-				var $originalField = $("#akeebasubs-sum-original");
-
-				if ((response.discount > 0) && $discountField.length)
-				{
-					response.discount = response.discount * 1.00;
-					response.net = response.net * 1.00;
-
-					$discountFieldContainer.show();
-
-					if ($originalFieldContainer.length)
-					{
-						$originalFieldContainer.show();
-					}
-
-					$discountField.html(response.discount.toFixed(2));
-
-					if ($originalField.length)
-					{
-						$originalField.html(response.net.toFixed(2));
-					}
-				}
-			}
-
-			if (response.gross * 1 <= 0)
-			{
-				$("#paymentmethod-container").css("display", "none");
-			}
-			else
-			{
-				$("#paymentmethod-container").css("display", "inherit");
-			}
-		}
-
-		var $couponField = $("#coupon");
-
-		if ($couponField.length)
-		{
-			var couponValue = ($couponField.length > 0) ? $couponField.val() : "";
-			$couponField.removeClass("coupon-valid coupon-invalid");
-
-			if (couponValue)
-			{
-				var couponClass = (response.couponid > 0) ? "coupon-valid" : "coupon-invalid";
-				$couponField.addClass(couponClass);
-			}
-		}
-
-	})(akeeba.jQuery);
-}
-
-/**
- * Adds a function to the validation fetch queue
- */
-function addToValidationFetchQueue (myfunction)
-{
-	if (typeof myfunction != "function")
-	{
-		return false;
-	}
-	akeebasubs_validation_fetch_queue.push(myfunction);
-}
-
-/**
- * Adds a function to the validation queue
- */
-function addToValidationQueue (myfunction)
-{
-	if (typeof myfunction != "function")
-	{
-		return false;
-	}
-	akeebasubs_validation_queue.push(myfunction);
-}
-
-/**
- * Adds a function to the per-subscription validation fetch queue
- */
-function addToSubValidationFetchQueue (myfunction)
-{
-	if (typeof myfunction != "function")
-	{
-		return false;
-	}
-	akeebasubs_sub_validation_fetch_queue.push(myfunction);
-}
-
-/**
- * Adds a function to the per-subscription validation queue
- */
-function addToSubValidationQueue (myfunction)
-{
-	if (typeof myfunction != "function")
-	{
-		return false;
-	}
-	akeebasubs_sub_validation_queue.push(myfunction);
-}
-
-
-(function ($)
-{
-	$(document).ready(function ()
-					  {
-						  if (jQuery("#userinfoForm").length)
-						  {
-							  akeebasubs_form_specifier = "userinfoForm";
-						  }
-
-						  $("#username").blur(validateForm);
-						  if ($("#password"))
-						  {
-							  $("#password").blur(validatePassword);
-							  $("#password2").blur(validatePassword);
-						  }
-						  $("#name").blur(validateName);
-						  $("#email").blur(validateEmail);
-						  $("#email2").blur(validateEmail);
-
-						  if ($("#coupon").length > 0)
-						  {
-							  $("#coupon").blur(validateBusiness);
-						  }
-						  // Attach onBlur events to custom fields
-						  var elFormElements = $("#" + akeebasubs_form_specifier + " *[name]");
-						  elFormElements
-						  .filter(function (index)
-								  {
-									  if ($(this).is("input"))
-									  {
-										  return $(this)
-										  .attr("name")
-										  .substr(0, 7) === "custom[";
-									  }
-									  return false;
-								  }).blur(validateForm);
-						  elFormElements
-						  .filter(function (index)
-								  {
-									  if ($(this).is("input"))
-									  {
-										  return $(this)
-										  .attr("name")
-										  .substr(0, 10) === "subcustom[";
-									  }
-									  return false;
-								  }).blur(validateForm);
-						  // Attach onChange events to custom checkboxes
-						  elFormElements
-						  .filter(function (index)
-								  {
-									  if ($(this).attr("type") === "checkbox")
-									  {
-										  return true;
-									  }
-									  if ($(this).attr("type") === "radio")
-									  {
-										  return true;
-									  }
-									  if ($(this).is("select"))
-									  {
-										  return true;
-									  }
-									  return false;
-								  }).change(validateForm);
-
-						  // Disable form submit when ENTER is hit in the coupon field
-						  $("input#coupon")
-						  .keypress(function (e)
-									{
-										if (e.which == 13)
-										{
-											validateForm();
-											return false;
-										}
-									});
-
-						  validateEmail();
-						  validateForm();
-					  });
+        validateEmail();
+        validateForm();
+    });
 })(akeeba.jQuery);
-
-/**
- (function($) {
-})(akeeba.jQuery);
- /**/

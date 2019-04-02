@@ -167,8 +167,11 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 
 			'components/com_akeebasubs/View/Level/tmpl/default_donottrack.blade.php',
 			'components/com_akeebasubs/View/Validate/tmpl/statelist.php',
+			'components/com_akeebasubs/View/Level/tmpl/default_fields.blade.php',
+			'components/com_akeebasubs/View/Level/tmpl/default_level.blade.php',
 			'components/com_akeebasubs/View/Level/tmpl/default_persubscription.blade.php',
 			'components/com_akeebasubs/View/Level/tmpl/default_prepayment.blade.php',
+			'components/com_akeebasubs/View/Level/tmpl/default_summary.blade.php',
 		],
 		'folders' => [
 			'administrator/components/com_akeebasubs/commands',
@@ -242,6 +245,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeebasubs/ViewTemplates/TaxRules',
 
             'components/com_akeebasubs/View/APICoupons',
+            'components/com_akeebasubs/View/Validate',
 
 			'components/com_akeebasubs/Model/Subscribe/Validation/ValidationTrait',
 

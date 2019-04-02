@@ -53,29 +53,19 @@ $layout = $this->input->getCmd('layout', 'default');
 		{{-- PRODUCT SUMMARY --}}
 		@include('site:com_akeebasubs/Level/default_product')
 
-		{{-- ACCOUNT COLUMN --}}
-		<div id="akeebasubs-panel-account" class="akeeba-panel--info">
-			<header class="akeeba-block-header">
-				<h3>
-					@lang('COM_AKEEBASUBS_LEVEL_LBL_ACCOUNTHEADER')
-				</h3>
-			</header>
-			@include('site:com_akeebasubs/Level/default_fields')
-		</div>
+		{{-- USER ACCOUNT--}}
+		@include('site:com_akeebasubs/Level/default_account')
 
-		{{-- ORDER COLUMN --}}
-		<div id="akeebasubs-panel-order" class="akeeba-panel--primary">
-			<header class="akeeba-block-header">
-				<h3>
-					@lang('COM_AKEEBASUBS_LEVEL_LBL_YOURORDER')
-				</h3>
-			</header>
-			@include('site:com_akeebasubs/Level/default_summary')
-		</div>
+		{{-- SUBSCRIBE BUTTON --}}
+		@include('site:com_akeebasubs/Level/default_subscribe')
 	</form>
+
+	<div class="clearfix"></div>
 
 	{{-- Module position 'akeebasubscriptionsfooter' --}}
 	@modules('akeebasubscriptionsfooter')
+
+	<div class="clearfix"></div>
 </div>
 
 <?php
@@ -88,7 +78,6 @@ akeeba.jQuery(document).ready(function(){
 	validatePassword();
 	validateName();
 	validateEmail();
-	validateBusiness();
 	validateForm();
 });
 

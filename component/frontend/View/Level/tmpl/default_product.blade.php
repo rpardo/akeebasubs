@@ -107,7 +107,7 @@ defined('_JEXEC') or die();
 								   placeholder="@lang('COM_AKEEBASUBS_LEVEL_FIELD_COUPON')"
 								   value="{{{$this->cache['coupon']}}}" />
 							<span class="akeeba-input-group-btn">
-								<button class="akeeba-btn--dark" type="button" onclick="validateBusiness()">
+								<button class="akeeba-btn--dark" type="button" onclick="validateForm()">
 									@lang('COM_AKEEBASUBS_LEVEL_FIELD_COUPON_VALIDATE')
 								</button>
 							</span>
