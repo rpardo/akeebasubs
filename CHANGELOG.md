@@ -2,6 +2,10 @@
 
 **IMPORTANT** This changes radically the way Akeeba Subscriptions works. It no longer supports regular payment methods, it no longer includes integrated invoicing or tax calculations. It will only work with Merchant of Record services (only integration with Paddle is planned). If you want the classic Akeeba Subscriptions experience you should use version 6. **DO NOT INSTALL UNLESS YOU UNDERSTAND WHAT THIS MEANS**.
 
+**New features**
+
+* Social Login buttons in the subscription page (gh-358)
+
 **Miscellaneous changes**
 
 * Invoices and Credit Notes are now read-only (gh-351)

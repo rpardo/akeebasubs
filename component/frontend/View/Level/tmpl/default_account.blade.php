@@ -9,7 +9,7 @@
 
 defined('_JEXEC') or die();
 
-use Akeeba\Subscriptions\Admin\Helper\Select;
+use Joomla\CMS\User\UserHelper;
 
 $akeebasubs_subscription_level = isset($this->item) ? $this->item->akeebasubs_level_id : null;
 $apply_validation              = isset($this->apply_validation) ? ($this->apply_validation == 'true') : true;
@@ -56,12 +56,40 @@ $returnURI->setVar('reset', 1);
 <div id="akeebasubs-panel-account" class="akeeba-panel--info">
 	<header class="akeeba-block-header">
 		<h3>
-			@lang('COM_AKEEBASUBS_LEVEL_LBL_ACCOUNTHEADER')
+			Log in or register
 		</h3>
 	</header>
 
-
-	<div class="akeeba-form--horizontal akeebasubs-signup-fields">
+	<div>
+		{{-- SOCIAL LOGIN --}}
+		@if (class_exists('Akeeba\SocialLogin\Library\Helper\Integrations'))
+			<div id="akeebasubs-level-login" class="akeeba-form-group--pull-right">
+				<div class="akeeba-form-group--actions">
+					<?php
+					$this->getContainer()->platform->importPlugin('sociallogin');
+					$buttonDefinitions = $this->getContainer()->platform->runPlugins('onSocialLoginGetLoginButton', [null, null]);
+					?>
+					@foreach ($buttonDefinitions as $button)
+						<a class="akeeba-btn--grey akeeba-sociallogin-button akeeba-sociallogin-button-{{{ $button['slug'] }}} hasTooltip"
+						id="{{{ 'akeeba-sociallogin-' . UserHelper::genRandomPassword(12) . '-' . UserHelper::genRandomPassword(8) }}}"
+						href="{{ $button['link'] }}"
+					    title="{{ $button['tooltip'] }}">
+							@unless(empty($button['icon_class']))
+							<span class="{{ $button['icon_class'] }}"></span>
+							@else
+							{{ $button['img'] }}
+							@endunless
+							{{ $button['label'] }}
+						</a>
+					@endforeach
+				</div>
+			</div>
+			<div id="akeebasubs-level-login" class="akeeba-form-group--pull-right">
+					<span class="akeeba-help-text">
+						Tip: You don't have an account already? Click on the social media buttons and one will be created for you.
+					</span>
+			</div>
+		@endif
 
 		{{-- Login button --}}
 		<div id="akeebasubs-level-login" class="akeeba-form-group--pull-right">
@@ -69,10 +97,25 @@ $returnURI->setVar('reset', 1);
 				<a href="@route('index.php?option=com_users&view=login&return=' . base64_encode($returnURI->toString())))"
 				   class="akeeba-btn--primary" rel="nofollow,noindex">
 					<span class="glyphicon glyphicon-log-in"></span>
-					@lang('COM_AKEEBASUBS_LEVEL_BTN_LOGINIFALERADY')
+{{--					@lang('COM_AKEEBASUBS_LEVEL_BTN_LOGINIFALERADY')--}}
+					Login with username
 				</a>
+				<span class="akeeba-help-text">
+						Or create a new account below.
+					</span>
 			</div>
 		</div>
+	</div>
+</div>
+<div id="akeebasubs-panel-account" class="akeeba-panel--info">
+	<header class="akeeba-block-header">
+		<h3>
+			@lang('COM_AKEEBASUBS_LEVEL_LBL_ACCOUNTHEADER')
+		</h3>
+	</header>
+
+
+	<div class="akeeba-form--horizontal akeebasubs-signup-fields">
 
 		{{-- Full name --}}
 		<div class="akeeba-form-group{{{$hasErrors['name'] ? '--error' : ''}}}">

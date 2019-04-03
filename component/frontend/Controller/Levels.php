@@ -269,6 +269,15 @@ class Levels extends DataController
 		$view->cache = (array)$cache;
 		$view->validation = $vModel->getValidation();
 
+		/**
+		 * If this was a POST request (because someone pressed the APPLY button next to the Coupon field) do NOT apply
+		 * the validation results.
+		 */
+		if ($this->input->getMethod() == 'POST')
+		{
+			$this->container->platform->setSessionVar('apply_validation.' . $id, 0, 'com_akeebasubs');
+		}
+
 		return true;
 	}
 

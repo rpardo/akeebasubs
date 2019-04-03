@@ -66,7 +66,7 @@ function validateForm()
 {
     (function ($) {
         var signupForm    = $("#signupForm");
-        signupForm.action = window.location;
+        signupForm.attr('action', window.location);
         signupForm.submit();
     })(akeeba.jQuery);
 }
