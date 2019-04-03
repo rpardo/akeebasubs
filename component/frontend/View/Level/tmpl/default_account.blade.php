@@ -56,19 +56,20 @@ $returnURI->setVar('reset', 1);
 <div id="akeebasubs-panel-account" class="akeeba-panel--info">
 	<header class="akeeba-block-header">
 		<h3>
-			Log in or register
+			@lang('COM_AKEEBASUBS_LEVEL_LBL_LOGINHEADER')
 		</h3>
 	</header>
 
 	<div>
 		{{-- SOCIAL LOGIN --}}
 		@if (class_exists('Akeeba\SocialLogin\Library\Helper\Integrations'))
+			<?php
+			$this->getContainer()->platform->importPlugin('sociallogin');
+			$buttonDefinitions = $this->getContainer()->platform->runPlugins('onSocialLoginGetLoginButton', [null, null]);
+			?>
+			@unless(!count($buttonDefinitions))
 			<div id="akeebasubs-level-login" class="akeeba-form-group--pull-right">
 				<div class="akeeba-form-group--actions">
-					<?php
-					$this->getContainer()->platform->importPlugin('sociallogin');
-					$buttonDefinitions = $this->getContainer()->platform->runPlugins('onSocialLoginGetLoginButton', [null, null]);
-					?>
 					@foreach ($buttonDefinitions as $button)
 						<a class="akeeba-btn--grey akeeba-sociallogin-button akeeba-sociallogin-button-{{{ $button['slug'] }}} hasTooltip"
 						id="{{{ 'akeeba-sociallogin-' . UserHelper::genRandomPassword(12) . '-' . UserHelper::genRandomPassword(8) }}}"
@@ -86,9 +87,10 @@ $returnURI->setVar('reset', 1);
 			</div>
 			<div id="akeebasubs-level-login" class="akeeba-form-group--pull-right">
 					<span class="akeeba-help-text">
-						Tip: You don't have an account already? Click on the social media buttons and one will be created for you.
+						@lang('COM_AKEEBASUBS_LEVEL_LBL_SOCIALHINT')
 					</span>
 			</div>
+			@endunless
 		@endif
 
 		{{-- Login button --}}
@@ -97,12 +99,11 @@ $returnURI->setVar('reset', 1);
 				<a href="@route('index.php?option=com_users&view=login&return=' . base64_encode($returnURI->toString())))"
 				   class="akeeba-btn--primary" rel="nofollow,noindex">
 					<span class="glyphicon glyphicon-log-in"></span>
-{{--					@lang('COM_AKEEBASUBS_LEVEL_BTN_LOGINIFALERADY')--}}
-					Login with username
+					@lang('COM_AKEEBASUBS_LEVEL_BTN_LOGINIFALERADY')
 				</a>
 				<span class="akeeba-help-text">
-						Or create a new account below.
-					</span>
+					@lang('COM_AKEEBASUBS_LEVEL_LBL_CREATEACCOUNTHINT')
+				</span>
 			</div>
 		</div>
 	</div>
