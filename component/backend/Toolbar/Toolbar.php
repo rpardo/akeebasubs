@@ -32,9 +32,8 @@ class Toolbar extends \FOF30\Toolbar\Toolbar
 			],
 			'Subscriptions',
 			'Coupons',
-			'Users',
-			'Reports',
-			'COM_AKEEBASUBS_MAINMENU_INVOICES' => [
+			'COM_AKEEBASUBS_MAINMENU_LEGACY' => [
+				'Reports',
 				'Invoices',
 				'CreditNotes',
 			],

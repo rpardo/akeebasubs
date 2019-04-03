@@ -97,7 +97,6 @@ use JLoader;
  *
  * Relations:
  *
- * @property-read  Users	 	$user		The Akeeba Subscriptions user record for the subscription user
  * @property-read  JoomlaUsers	$juser		The Joomla! user record for the subscription user
  * @property-read  Levels	 	$level		The subscription level. Note: the method is a filter, the property is a relation!
  * @property-read  Coupons		$coupon		The coupon used (if akeebasubs_coupon_id is not empty)
@@ -130,7 +129,6 @@ class Subscriptions extends DataModel
 		]);
 
 		// Set up relations
-		$this->hasOne('user', 'Users', 'user_id', 'user_id');
 		$this->hasOne('juser', 'JoomlaUsers', 'user_id', 'id');
 		$this->hasOne('level', 'Levels', 'akeebasubs_level_id', 'akeebasubs_level_id');
 		$this->hasOne('coupon', 'Coupons', 'akeebasubs_coupon_id', 'akeebasubs_coupon_id');

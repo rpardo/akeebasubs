@@ -62,19 +62,6 @@ abstract class Message
 		// Get the user object for this subscription
 		$joomlaUser = self::getContainer()->platform->getUser($sub->user_id);
 
-		// Get the extra user parameters object for the subscription
-		/** @var Users $subsUser */
-		$subsUser = $sub->user;
-
-		if (
-			!is_object($subsUser)
-			||
-			(($sub->user instanceof Users) && ($sub->user->user_id != $sub->user_id))
-		)
-		{
-			$subsUser = Container::getInstance('com_akeebasubs')->factory->model('Users')->tmpInstance();
-		}
-
 		// Get the subscription level
 		/** @var Levels $level */
 		$level = $sub->level;
@@ -91,7 +78,7 @@ abstract class Message
 		}
 
 		// Merge the user objects
-		$userData = array_merge((array)$joomlaUser, (array)($subsUser->getData()));
+		$userData = (array)$joomlaUser;
 
 		// Create and replace merge tags for subscriptions. Format [SUB:KEYNAME]
 		if ($sub instanceof DataModel)

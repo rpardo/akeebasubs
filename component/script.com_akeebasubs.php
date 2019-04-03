@@ -132,6 +132,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 
             // Akeeba Subscriptions 7 - Only support MoR integrations
 			'administrator/components/com_akeebasubs/Controller/Import.php',
+			'administrator/components/com_akeebasubs/Controller/User.php',
 
             'administrator/components/com_akeebasubs/Form/Field/APICouponLimits.php',
 
@@ -145,12 +146,14 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeebasubs/Model/States.php',
 			'administrator/components/com_akeebasubs/Model/TaxHelper.php',
 			'administrator/components/com_akeebasubs/Model/TaxRules.php',
+			'administrator/components/com_akeebasubs/Model/Users.php',
 
             'administrator/components/com_akeebasubs/ViewTemplates/ControlPanel/wizard.blade.php',
             'administrator/components/com_akeebasubs/ViewTemplates/Subscriptions/form_customparams.blade.php',
 
 			'components/com_akeebasubs/Controller/APICoupons.php',
 			'components/com_akeebasubs/Controller/TaxConfig.php',
+			'components/com_akeebasubs/Controller/UserInfo.php',
 
             'components/com_akeebasubs/Model/APICoupons.php',
             'components/com_akeebasubs/Model/InvoiceTemplates.php',
@@ -164,6 +167,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'components/com_akeebasubs/Model/TaxConfig.php',
 			'components/com_akeebasubs/Model/TaxHelper.php',
 			'components/com_akeebasubs/Model/TaxRules.php',
+			'components/com_akeebasubs/Model/Users.php',
 
 			'components/com_akeebasubs/View/Level/tmpl/default_donottrack.blade.php',
 			'components/com_akeebasubs/View/Validate/tmpl/statelist.php',
@@ -243,13 +247,16 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeebasubs/ViewTemplates/States',
 			'administrator/components/com_akeebasubs/ViewTemplates/TaxConfig',
 			'administrator/components/com_akeebasubs/ViewTemplates/TaxRules',
+			'administrator/components/com_akeebasubs/ViewTemplates/Users',
 
             'components/com_akeebasubs/View/APICoupons',
             'components/com_akeebasubs/View/Validate',
 
 			'components/com_akeebasubs/Model/Subscribe/Validation/ValidationTrait',
 
-            // Akeeba Subscriptions 7 - We no longer need any Composer dependencies
+			'components/com_akeebasubs/views/UserInfo',
+
+			// Akeeba Subscriptions 7 - We no longer need any Composer dependencies
             'administrator/components/com_akeebasubs/vendor',
 		]
 	];
@@ -281,6 +288,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 				'iproperty',
 				'joomlaprofilesync',
 				'kunena',
+				'needslogout',
 				'recaptcha',
 				'reseller',
 				'slavesubs',
@@ -296,7 +304,12 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			],
 			'system'     => [
 				'as2cocollation',
+				'aslogoutuser',
 				'aspaypalcollation',
+			],
+			'user'       => [
+				'aslogoutuser',
+				'asresetform',
 			],
 		],
 	];

@@ -422,79 +422,6 @@ class Subscribe extends Model
 	}
 
 	/**
-	 * Saves the custom fields of a user record
-	 *
-	 * @return bool
-	 */
-	public function saveCustomFields()
-	{
-		$state = $this->getStateVariables();
-
-		$user = $this->container->platform->getUser();
-		$user = $this->getState('user', $user);
-
-		// Find an existing record
-		/** @var Users $subsUsersModel */
-		$subsUsersModel = $this->container->factory->model('Users')->tmpInstance();
-
-		$thisUser = $subsUsersModel
-			->user_id($user->id)
-			->firstOrNew();
-		$id = $thisUser->akeebasubs_user_id;
-
-		$data = array(
-			'akeebasubs_user_id' => $id,
-			'user_id'            => $user->id,
-		);
-
-		// Allow plugins to post-process the fields
-		$this->container->platform->importPlugin('akeebasubs');
-		$jResponse = $this->container->platform->runPlugins('onAKSignupUserSave', array((object)$data));
-
-		if (is_array($jResponse) && !empty($jResponse))
-		{
-			foreach ($jResponse as $pResponse)
-			{
-				if (!is_array($pResponse))
-				{
-					continue;
-				}
-
-				if (empty($pResponse))
-				{
-					continue;
-				}
-
-				if (array_key_exists('params', $pResponse))
-				{
-					if (!empty($pResponse['params']))
-					{
-						foreach ($pResponse['params'] as $k => $v)
-						{
-							$data['params'][$k] = $v;
-						}
-					}
-
-					unset($pResponse['params']);
-				}
-
-				$data = array_merge($data, $pResponse);
-			}
-		}
-
-		try
-		{
-			$thisUser->save($data);
-
-			return true;
-		}
-		catch (\Exception $e)
-		{
-			return false;
-		}
-	}
-
-	/**
 	 * Processes the form data and creates a new subscription
 	 */
 	public function createNewSubscription()
@@ -613,14 +540,9 @@ class Subscribe extends Model
 		// Store the user's ID in the session
 		$this->container->platform->setSessionVar('subscribes.user_id', $user->id, 'com_akeebasubs');
 
-		// Step #4. Create or add user extra fields
+		// Step #4. Check for existing subscription records and calculate the subscription expiration date
 		// ----------------------------------------------------------------------
-		// Find an existing record
-		$this->saveCustomFields();
-
-		// Step #5. Check for existing subscription records and calculate the subscription expiration date
-		// ----------------------------------------------------------------------
-		// @todo Refactor the entire step #5 into a validator class
+		// @todo Refactor the entire step #4 into a validator class
 		// Get subscriptions on the same level.
 		/** @var Subscriptions $subscriptionsModel */
 		$subscriptionsModel = $this->container->factory->model('Subscriptions')->tmpInstance();
@@ -736,9 +658,9 @@ class Subscribe extends Model
 		$mStartDate = $jStartDate->toSql();
 		$mEndDate = $this->container->platform->getDate($endDate)->toSql();
 
-		// Step #6. Create a new subscription record
+		// Step #5. Create a new subscription record
 		// ----------------------------------------------------------------------
-		// @todo Get the start ($mStartDate) and end ($mEndDate) dates and the $noContact array from the validator plugin which replaces step 5
+		// @todo Get the start ($mStartDate) and end ($mEndDate) dates and the $noContact array from the validator plugin which replaces step 4
 
 		// Store the price validation's "oldsub" and "expiration" keys in
 		// the subscriptions subcustom array

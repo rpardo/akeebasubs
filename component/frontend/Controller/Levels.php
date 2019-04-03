@@ -227,14 +227,6 @@ class Levels extends DataController
         /** @var \Akeeba\Subscriptions\Site\View\Level\Html $view */
 		$view = $this->getView();
 
-		// Get the user model and load the user data
-		/** @var Users $usersModel */
-		$usersModel = $this->getModel('Users');
-		$userparams = $usersModel
-			->getMergedData($this->container->platform->getUser()->id);
-
-		$view->userparams = $userparams;
-
 		// Load any cached user supplied information
 		/** @var SubscribeModel $vModel */
 		$vModel = $this->getModel('Subscribe');

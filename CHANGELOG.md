@@ -35,3 +35,6 @@
 * Removed the setting to show payment options as text
 * Removed the Required Valid Coupon feature
 * Removed invoicing fields from the Subscription page (gh-332)
+* Removed backend user information management page (gh-359)
+* Removed frontend user information management page (gh-359)
+* Removed the plugins managing automatic user log out upon subscription purchase (gh-359)

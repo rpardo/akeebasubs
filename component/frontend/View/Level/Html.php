@@ -21,24 +21,21 @@ class Html extends \FOF30\View\DataView\Html
 	 * @var  string  "true" or "false". This is NOT a boolean, it's a string.
 	 */
 	public $apply_validation = '';
+
 	/**
 	 * Some component parameters used in this view
 	 *
 	 * @var  object
 	 */
 	public $cparams = null;
-	/**
-	 * Current user params
-	 *
-	 * @var object
-	 */
-	public $userparams = null;
+
 	/**
 	 * The result of the validation
 	 *
 	 * @var object
 	 */
 	public $validation = null;
+
 	/**
 	 * The record loaded (read, edit, add views)
 	 *
@@ -62,11 +59,6 @@ class Html extends \FOF30\View\DataView\Html
 		if (isset($this->cache[$fieldName]))
 		{
 			$cacheValue = $this->cache[$fieldName];
-		}
-
-		if (isset($this->userparams->{$fieldName}))
-		{
-			$userparamsValue = $this->userparams->{$fieldName};
 		}
 
 		if (is_null($cacheValue))

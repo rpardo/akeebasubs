@@ -32,7 +32,6 @@
         <file type="plugin" group="akeebasubs" id="contentpublish">plg_akeebasubs_contentpublish.zip</file>
         <file type="plugin" group="akeebasubs" id="gacommerce">plg_akeebasubs_gacommerce.zip</file>
         <file type="plugin" group="akeebasubs" id="joomla">plg_akeebasubs_joomla.zip</file>
-        <file type="plugin" group="akeebasubs" id="needslogout">plg_akeebasubs_needslogout.zip</file>
         <file type="plugin" group="akeebasubs" id="subscriptionemails">plg_akeebasubs_subscriptionemails.zip</file>
 
         <!-- Plugins: akpayment -->
@@ -48,12 +47,7 @@
         <file type="plugin" group="system" id="asexpirationcontrol">plg_system_asexpirationcontrol.zip</file>
         <file type="plugin" group="system" id="asexpirationnotify">plg_system_asexpirationnotify.zip</file>
         <file type="plugin" group="system" id="asfixrenewalsflag">plg_system_asfixrenewalsflag.zip</file>
-        <file type="plugin" group="system" id="aslogoutuser">plg_system_aslogoutuser.zip</file>
         <file type="plugin" group="system" id="asuserregredir">plg_system_asuserregredir.zip</file>
-
-        <!-- Plugins: user -->
-        <file type="plugin" group="user" id="aslogoutuser">plg_user_aslogoutuser.zip</file>
-        <file type="plugin" group="user" id="asresetform">plg_user_asresetform.zip</file>
     </files>
 
     <!-- Installation script -->

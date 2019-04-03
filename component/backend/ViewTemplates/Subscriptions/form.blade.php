@@ -27,7 +27,7 @@ $discountOptions = [
 
 /** @var \Akeeba\Subscriptions\Admin\Model\Subscriptions $item */
 $item = $this->getItem();
-$user = is_object($item->user) ? $item->user : JFactory::getUser(0);
+$user = JFactory::getUser($item->user_id ?? 0);
 ?>
 @extends('admin:com_akeebasubs/Common/edit')
 

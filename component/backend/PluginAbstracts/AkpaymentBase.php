@@ -555,27 +555,9 @@ abstract class AkpaymentBase extends JPlugin
 			$updates['tax_percent'] = $subscription->tax_percent;
 
 			// Recalculate the tax rate in case it has changed since the last recurring payment (e.g. Brexit)
-			$container = Container::getInstance('com_akeebasubs');
+			$user = $this->container->platform->getUser($subscription->user_id);
 
-			$user = $subscription->user;
-
-			if (!is_object($user) || !($user instanceof Users))
-			{
-				/** @var Users $user */
-				$user = $container->factory->model('Users')->tmpInstance();
-				try
-				{
-					$user->findOrFail([
-						'user_id' => $subscription->user_id
-					]);
-				}
-				catch (\Exception $e)
-				{
-					$user = null;
-				}
-			}
-
-			if (is_object($user) && ($user instanceof Users) && ($user->user_id))
+			if (is_object($user) && ($user->id == $subscription->user_id))
 			{
 				// Gross amount is what the client paid. This is either the recurring_amount (if it's non zero) or the gross_amount
 				$updates['gross_amount']       = ($subscription->recurring_amount > 0.01) ? $subscription->recurring_amount : $subscription->gross_amount;
