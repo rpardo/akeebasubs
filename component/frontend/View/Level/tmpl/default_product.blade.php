@@ -42,7 +42,10 @@ defined('_JEXEC') or die();
 		<div id="akeebasubs-column-price">
 			{{-- PRICE INFORMATION SUMMARY AREA --}}
 			@unless($this->validation->price->net < 0.01)
-				<div id="akeebasubs-sum-original-container" class="akeeba-container--50-50" style="display: none">
+
+				{{-- DISCOUNT BREAK DOWN --}}
+				@if (($this->validation->price->discount > 0.009))
+				<div id="akeebasubs-sum-original-container" class="akeeba-container--50-50">
 					<div id="akeebasubs-original-label">
 						@lang('COM_AKEEBASUBS_LEVEL_SUM_ORIGINALLY')
 					</div>
@@ -52,7 +55,7 @@ defined('_JEXEC') or die();
 							@if ($this->cparams->currencypos == 'before')
 								<span class="akeebasubs-level-price-currency">{{{ $this->cparams->currencysymbol }}}</span>
 							@endif
-							<span class="akeebasubs-level-price" id="akeebasubs-sum-original">0.00</span>
+							<span class="akeebasubs-level-price" id="akeebasubs-sum-original">{{ $this->validation->price->net }}</span>
 							@if ($this->cparams->currencypos == 'after')
 								<span class="akeebasubs-level-price-currency">{{{ $this->cparams->currencysymbol }}}</span>
 							@endif
@@ -60,7 +63,7 @@ defined('_JEXEC') or die();
 					</div>
 				</div>
 
-				<div id="akeebasubs-sum-discount-container" class="akeeba-container--50-50" style="display: none">
+				<div id="akeebasubs-sum-discount-container" class="akeeba-container--50-50">
 					<div id="akeebasubs-discount-label">
 						@lang('COM_AKEEBASUBS_LEVEL_SUM_DISCOUNT')
 					</div>
@@ -69,12 +72,13 @@ defined('_JEXEC') or die();
 						@if ($this->cparams->currencypos == 'before')
 							<span class="akeebasubs-level-price-currency">{{{ $this->cparams->currencysymbol }}}</span>
 						@endif
-						– <span class="akeebasubs-level-price" id="akeebasubs-sum-discount">0</span>
+						- <span class="akeebasubs-level-price" id="akeebasubs-sum-discount">{{ $this->validation->price->discount }}</span>
 						@if ($this->cparams->currencypos == 'after')
 							<span class="akeebasubs-level-price-currency">{{{ $this->cparams->currencysymbol }}}</span>
 						@endif
 					</div>
 				</div>
+				@endif
 
 				<div id="akeebasubs-sum-container" class="akeeba-container--50-50">
 					<div id="akeebasubs-sum-label">

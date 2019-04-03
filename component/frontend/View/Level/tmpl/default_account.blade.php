@@ -19,31 +19,38 @@ $field_data = [
         'email2'       => $this->getFieldValue('email2'),
 ];
 
-$group_classes                 = [
-	'username'     => '',
-	'password'     => '',
-	'password2'    => '',
-	'name'         => $this->validation->validation->name ? '' : '--error',
-	'email'        => $this->validation->validation->email ? '' : '--error',
-	'email2'       => $this->validation->validation->email2 ? '' : '--error',
+$hasErrors                 = [
+	'username'     => false,
+	'password'     => false,
+	'password2'    => false,
+	'name'         => !$this->validation->validation->name,
+	'email'        => !$this->validation->validation->email,
+	'email2'       => !$this->validation->validation->email2,
 ];
 
 if ($this->container->platform->getUser()->guest)
 {
-	$group_classes['username']  = (!$apply_validation || $this->validation->validation->username) ? '--success' : '--error';
-	$group_classes['password']  = !$this->cache['password'] ? '--error' : '';
-	$group_classes['password2'] =
-		(!$this->cache['password2'] || ($this->cache['password2'] != $this->cache['password'])) ? '--error' :
-			'';
+	$hasErrors['username']  = ! (!$apply_validation || $this->validation->validation->username);
+	$hasErrors['password']  = empty($this->cache['password']);
+	$hasErrors['password2'] = empty($this->cache['password2']) || ($this->cache['password'] != $this->cache['password2']);
 }
 
-$isBusiness = $this->getFieldValue('isbusiness');
+// If the email is wrong don't show an additional error for the "repeat email" field
+if ($hasErrors['email'] && $hasErrors['email2'])
+{
+	$hasErrors['email2'] = false;
+}
+
+// If the password is wrong don't show an additional error for the "repeat password" field
+if ($hasErrors['password'] && $hasErrors['password2'])
+{
+	$hasErrors['password2'] = false;
+}
 
 $returnURI = JUri::getInstance();
 $returnURI->setVar('reset', 1);
 ?>
 @js('media://com_akeebasubs/js/signup.js')
-@js('media://com_akeebasubs/js/autosubmit.js')
 
 @if ($this->container->platform->getUser()->guest)
 <div id="akeebasubs-panel-account" class="akeeba-panel--info">
@@ -68,7 +75,7 @@ $returnURI->setVar('reset', 1);
 		</div>
 
 		{{-- Full name --}}
-		<div class="akeeba-form-group{{{$group_classes['name']}}}">
+		<div class="akeeba-form-group{{{$hasErrors['name'] ? '--error' : ''}}}">
 			<label for="name">
 				@lang('COM_AKEEBASUBS_LEVEL_FIELD_NAME')
 			</label>
@@ -78,13 +85,13 @@ $returnURI->setVar('reset', 1);
 				   value="{{{$field_data['name']}}}"/>
 
 			<p id="name_empty" class="akeeba-help-text"
-			   <?php if (strpos($group_classes['name'], 'error') === false): ?>style="display:none"<?php endif ?>>
+			   {{ $hasErrors['name'] ? '' : 'style="display:none"' }}>
 				@lang('COM_AKEEBASUBS_LEVEL_ERR_NAME_INVALID')
 			</p>
 		</div>
 
 		{{-- Username --}}
-		<div class="akeeba-form-group{{$group_classes['username']}}">
+		<div class="akeeba-form-group{{{$hasErrors['username'] ? '--error' : ''}}}">
 			<label for="username">
 				@lang('COM_AKEEBASUBS_LEVEL_FIELD_USERNAME')
 			</label>
@@ -94,13 +101,13 @@ $returnURI->setVar('reset', 1);
 				   value="{{{$this->cache['username']}}}"/>
 
 			<p id="username_invalid" class="akeeba-help-text"
-			   <?php if (strpos($group_classes['username'], 'error') === false): ?>style="display:none"<?php endif ?>>
+					{{ $hasErrors['username'] ? '' : 'style="display:none"' }}>
 				@lang('COM_AKEEBASUBS_LEVEL_FIELD_USERNAME_INVALID')
 			</p>
 		</div>
 
 		{{-- Password --}}
-		<div class="akeeba-form-group{{$group_classes['password']}}">
+		<div class="akeeba-form-group{{{($hasErrors['password'] || $hasErrors['password2']) ? '--error' : ''}}}">
 			<label for="password">
 				@lang('COM_AKEEBASUBS_LEVEL_FIELD_PASSWORD')
 			</label>
@@ -118,17 +125,17 @@ $returnURI->setVar('reset', 1);
 			</div>
 
 			<p id="password_invalid" class="akeeba-help-text"
-			   style="<?php if (strpos($group_classes['password'], 'error') === false): ?>display:none<?php endif; ?>">
+				{{ $hasErrors['password'] ? '' : 'style="display:none"' }}>
 				@lang('COM_AKEEBASUBS_LEVEL_ERR_PASSWORD_EMPTY')
 			</p>
-			<p id="password2_invalid" class="help-block"
-			   style="<?php if (strpos($group_classes['password2'], 'error') === false): ?>display:none<?php endif; ?>">
+			<p id="password2_invalid" class="akeeba-help-text"
+				{{ $hasErrors['password2'] ? '' : 'style="display:none"' }}>
 				@lang('COM_AKEEBASUBS_LEVEL_ERR_PASSWORD2')
 			</p>
 		</div>
 
 		{{-- Email --}}
-		<div class="akeeba-form-group{{$group_classes['email']}}">
+		<div class="akeeba-form-group{{{($hasErrors['email'] || $hasErrors['email2']) ? '--error' : ''}}}">
 			<label for="email">
 				@lang('COM_AKEEBASUBS_LEVEL_FIELD_EMAIL')
 			</label>
@@ -147,26 +154,15 @@ $returnURI->setVar('reset', 1);
 			</div>
 
 			<p id="email_invalid" class="akeeba-help-text"
-			   <?php if (strpos($group_classes['email'], 'error') === false): ?>style="display:none"<?php endif ?>>
+				{{ $hasErrors['email'] ? '' : 'style="display:none"' }}>
 				@lang('COM_AKEEBASUBS_LEVEL_ERR_EMAIL')
 			</p>
 
 			<p id="email2_invalid" class="akeeba-help-text"
-			   <?php if (strpos($group_classes['email2'], 'error') === false): ?>style="display:none"<?php endif ?>>
+				{{ $hasErrors['email2'] ? '' : 'style="display:none"' }}>
 				@lang('COM_AKEEBASUBS_LEVEL_ERR_EMAIL2')
 			</p>
 		</div>
 	</div>
 </div>
 @endif
-
-
-<?php
-$aks_validate_url  = JUri::base() . 'index.php';
-$script            = <<< JS
-
-var akeebasubs_validate_url = "$aks_validate_url";
-var akeebasubs_valid_form = false;
-
-JS;
-$this->addJavascriptInline($script);

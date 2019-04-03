@@ -11,12 +11,6 @@ use Akeeba\Subscriptions\Admin\Helper\Select;
 
 /** @var \Akeeba\Subscriptions\Site\View\Level\Html $this */
 
-$script = <<<JS
-
-akeebasubs_level_id = {$this->item->akeebasubs_level_id};
-
-JS;
-$this->addJavascriptInline($script);
 $layout = $this->input->getCmd('layout', 'default');
 ?>
 
@@ -67,28 +61,3 @@ $layout = $this->input->getCmd('layout', 'default');
 
 	<div class="clearfix"></div>
 </div>
-
-<?php
-$aks_msg_error_overall = JText::_('COM_AKEEBASUBS_LEVEL_ERR_JSVALIDATIONOVERALL', true);
-$script                = <<<JS
-
-akeebasubs_apply_validation = {$this->apply_validation};
-
-akeeba.jQuery(document).ready(function(){
-	validatePassword();
-	validateName();
-	validateEmail();
-	validateForm();
-});
-
-function onSignupFormSubmit()
-{
-	if (akeebasubs_valid_form == false) {
-		alert('$aks_msg_error_overall');
-	}
-
-	return akeebasubs_valid_form;
-}
-
-JS;
-$this->addJavascriptInline($script);
