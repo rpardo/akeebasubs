@@ -244,20 +244,6 @@ class Levels extends DataController
 
 		$cache = (array)($vModel->getData());
 
-		if ($cache['firstrun'])
-		{
-			foreach ($cache as $k => $v)
-			{
-				if (empty($v))
-				{
-					if (property_exists($userparams, $k))
-					{
-						$cache[$k] = $userparams->$k;
-					}
-				}
-			}
-		}
-
 		$view->cache = (array)$cache;
 		$view->validation = $vModel->getValidation();
 
