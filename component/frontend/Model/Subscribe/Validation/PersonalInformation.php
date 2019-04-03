@@ -29,13 +29,13 @@ class PersonalInformation extends Base
 		$state = $this->state;
 
 		// 1. Basic checks
-		$ret = array(
-			'name'          => !empty($state->name),
-			'email'         => !empty($state->email),
-			'email2'        => !empty($state->email2) && ($state->email == $state->email2),
-		);
+		$ret = [
+			'name'   => !empty($state->name),
+			'email'  => !empty($state->email),
+			'email2' => !empty($state->email2) && ($state->email == $state->email2),
+		];
 
-		$ret['rawDataForDebug'] = (array)$state;
+		$ret['rawDataForDebug'] = (array) $state;
 
 		// Name validation
 		$ret['name'] = $this->factory->getValidator('Name')->execute();
@@ -46,6 +46,10 @@ class PersonalInformation extends Base
 		// Coupon validation
 		$couponValidation = $this->factory->getValidator('Coupon')->execute();
 		$ret['coupon']    = $couponValidation['valid'];
+
+		// ToS validation
+		$tosValidation = $this->factory->getValidator('ToS')->execute();
+		$ret['tos']    = $tosValidation;
 
 		return $ret;
 	}

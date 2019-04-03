@@ -7,8 +7,6 @@
 
 defined('_JEXEC') or die();
 
-use Akeeba\Subscriptions\Admin\Helper\Select;
-
 /** @var \Akeeba\Subscriptions\Site\View\Level\Html $this */
 
 $layout = $this->input->getCmd('layout', 'default');
@@ -49,6 +47,9 @@ $layout = $this->input->getCmd('layout', 'default');
 
 		{{-- USER ACCOUNT--}}
 		@include('site:com_akeebasubs/Level/default_account')
+
+		{{-- TOS ACCEPTANCE--}}
+		@include('site:com_akeebasubs/Level/default_tos')
 
 		{{-- SUBSCRIBE BUTTON --}}
 		@include('site:com_akeebasubs/Level/default_subscribe')

@@ -58,6 +58,9 @@ class StateData
 	/** @var   string  Coupon code */
 	public $coupon = '';
 
+	/** @var   bool  Have they accepted the Terms of Service and Privacy Policy */
+	public $accept_terms = false;
+
 	/** @var   string  Used in validation requests to define what kind of validation to execute */
 	public $opt = '';
 
@@ -122,6 +125,7 @@ class StateData
 			'email'         => $model->getState('email', '', 'string'),
 			'email2'        => $model->getState('email2', '', 'string'),
 			'coupon'        => $model->getState('coupon', '', 'string'),
+			'accept_terms'  => $model->getState('accept_terms', false, 'bool') == true,
 			'opt'           => $model->getState('opt', '', 'cmd')
 		);
 
