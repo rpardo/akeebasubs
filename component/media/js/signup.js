@@ -76,7 +76,7 @@ function akeebaSubscriptionsStartPayment()
     (function ($) {
         var formData = {
             coupon: $('#coupon').val(),
-            accept_terms: $('#accept_terms').is('checked')
+            accept_terms: $('#accept_terms').is(':checked') ? 1 : 0
         };
 
         if ($('#name'))
@@ -101,7 +101,7 @@ function akeebaSubscriptionsStartPayment()
             {
                 if (ret.url === null)
                 {
-                    window.location = window.location;
+                    window.location.reload();
 
                     return;
                 }
@@ -111,9 +111,11 @@ function akeebaSubscriptionsStartPayment()
                 return;
             }
 
-            // TODO Use ret.url to open an overlay
+            Paddle.Checkout.open({
+                override: ret.url
+            });
         }).fail(function(jqXHR, textStatus, errorThrown){
-            window.location = window.location;
+            window.location.reload();
         });
     })(akeeba.jQuery);
 

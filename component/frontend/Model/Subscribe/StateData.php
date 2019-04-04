@@ -121,7 +121,7 @@ class StateData
 			'email'         => $model->getState('email', '', 'string'),
 			'email2'        => $model->getState('email2', '', 'string'),
 			'coupon'        => $model->getState('coupon', '', 'string'),
-			'accept_terms'  => $model->getState('accept_terms', false, 'bool') == true,
+			'accept_terms'  => $model->getContainer()->input->getBool('accept_terms', false) == true,
 			'opt'           => $model->getState('opt', '', 'cmd')
 		);
 

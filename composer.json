@@ -17,6 +17,7 @@
   "require": {
     "php": "^7.2",
     "ext-soap": "*",
-    "ext-json": "*"
+    "ext-json": "*",
+    "ext-curl": "*"
   }
 }

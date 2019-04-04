@@ -17,6 +17,7 @@ use FOF30\Controller\Controller;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
+use Akeeba\Subscriptions\Site\Model\Subscribe\Paddle\CustomCheckout;
 
 class Subscribe extends Controller
 {
@@ -199,9 +200,27 @@ class Subscribe extends Controller
 		}
 		else
 		{
-			$ret['method'] = 'overlay';
-			$ret['info']   = 'Regular payment';
-			// TODO Go through the Paddle API to get the custom checkout URL.
+			try
+			{
+				$customCheckout = new CustomCheckout($this->container);
+				$ret            = [
+					'method' => 'overlay',
+					'url'    => $customCheckout->getCheckoutUrl($newSubscription),
+					'info'   => 'Regular payment',
+				];
+			}
+			catch (\Throwable $e)
+			{
+				$this->enqueueMessage($e->getMessage(), 'error');
+
+				echo json_encode([
+					'method' => 'redirect',
+					'url'    => null,
+					'info'   => 'Server-side error',
+				]);
+
+				$this->container->platform->closeApplication();
+			}
 		}
 
 		// Finally, return the information back to the caller
