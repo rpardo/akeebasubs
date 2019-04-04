@@ -67,6 +67,7 @@
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_SECRET"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_SECRET_DESC"
 		/>
+
 		<field name="includediscount" type="radio" class="switcher btn-group" default="0"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDEDISCOUNT"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDEDISCOUNT_DESC">
@@ -80,18 +81,21 @@
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
+
 		<field name="dateformat" type="text"
 			   default="Y-m-d H:i"
 			   size="30"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_DATEFORMAT_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_DATEFORMAT_DESC"
 		/>
+
 		<field name="confirmfree" type="radio" class="switcher btn-group" default="0"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_CONFIRMFREE_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_CONFIRMFREE_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
+
 		<field name="renderasfree" type="radio" class="switcher btn-group" default="0"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_RENDERASFREE_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_RENDERASFREE_DESC">

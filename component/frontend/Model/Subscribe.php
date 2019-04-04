@@ -1009,21 +1009,21 @@ class Subscribe extends Model
 	 */
 	private function sendActivationEmail($user, array $indata = [])
 	{
-		$app = JFactory::getApplication();
+		$app    = JFactory::getApplication();
 		$config = $this->container->platform->getConfig();
-		$db = $this->container->db;
+		$db     = $this->container->db;
 		$params = \JComponentHelper::getParams('com_users');
 
-		$data = array_merge((array)$user->getProperties(), $indata);
+		$data = array_merge((array) $user->getProperties(), $indata);
 
 		$useractivation = $params->get('useractivation');
-		$sendpassword = $params->get('sendpassword', 1);
+		$sendpassword   = $params->get('sendpassword', 1);
 
 		// Check if the user needs to activate their account.
 		if (($useractivation == 1) || ($useractivation == 2))
 		{
-			$user->activation = \JApplicationHelper::getHash(\JUserHelper::genRandomPassword());
-			$user->block = 1;
+			$user->activation    = \JApplicationHelper::getHash(\JUserHelper::genRandomPassword());
+			$user->block         = 1;
 			$user->lastvisitDate = JFactory::getDbo()->getNullDate();
 		}
 		else
@@ -1041,12 +1041,12 @@ class Subscribe extends Model
 		}
 
 		// Compile the notification mail values.
-		$data = $user->getProperties();
+		$data                   = $user->getProperties();
 		$data['password_clear'] = $indata['password2'];
-		$data['fromname'] = $config->get('fromname');
-		$data['mailfrom'] = $config->get('mailfrom');
-		$data['sitename'] = $config->get('sitename');
-		$data['siteurl'] = \JUri::root();
+		$data['fromname']       = $config->get('fromname');
+		$data['mailfrom']       = $config->get('mailfrom');
+		$data['sitename']       = $config->get('sitename');
+		$data['siteurl']        = $this->getContainer()->params->get('siteurl') ?? \JUri::root();
 
 		// Load com_users translation files
 		$jlang = JFactory::getLanguage();
@@ -1057,8 +1057,8 @@ class Subscribe extends Model
 		// Handle account activation/confirmation emails.
 		if ($useractivation == 2)
 		{
-			$uri = \JURI::getInstance();
-			$base = $uri->toString(array('scheme', 'user', 'pass', 'host', 'port'));
+			$uri              = \JURI::getInstance();
+			$base             = $uri->toString(['scheme', 'user', 'pass', 'host', 'port']);
 			$data['activate'] = $base . \JRoute::_('index.php?option=com_users&task=registration.activate&token=' . $data['activation'], false);
 
 			$emailSubject = \JText::sprintf(
@@ -1094,8 +1094,8 @@ class Subscribe extends Model
 		elseif ($useractivation == 1)
 		{
 			// Set the link to activate the user account.
-			$uri = \JUri::getInstance();
-			$base = $uri->toString(array('scheme', 'user', 'pass', 'host', 'port'));
+			$uri              = \JUri::getInstance();
+			$base             = $uri->toString(['scheme', 'user', 'pass', 'host', 'port']);
 			$data['activate'] = $base . \JRoute::_('index.php?option=com_users&task=registration.activate&token=' . $data['activation'], false);
 
 			$emailSubject = \JText::sprintf(
@@ -1188,7 +1188,7 @@ class Subscribe extends Model
 
 			// get all admin users
 			$query = $db->getQuery(true);
-			$query->select($db->quoteName(array('name', 'email', 'sendEmail', 'id')))
+			$query->select($db->quoteName(['name', 'email', 'sendEmail', 'id']))
 				->from($db->quoteName('#__users'))
 				->where($db->quoteName('sendEmail') . ' = ' . 1);
 

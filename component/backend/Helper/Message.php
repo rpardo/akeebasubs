@@ -287,7 +287,7 @@ abstract class Message
 		{
 			try
 			{
-				$couponData = Container::getInstance('com_akeebasubs')
+				$couponData = self::getContainer()
 					->factory->model('Coupons')->tmpInstance()
 					->findOrFail($sub->akeebasubs_coupon_id);
 
@@ -317,7 +317,7 @@ abstract class Message
 		if ($isCli)
 		{
 			JLoader::import('joomla.application.component.helper');
-			$baseURL    = \JComponentHelper::getParams('com_akeebasubs')->get('siteurl', 'http://www.example.com');
+			$baseURL    = self::getContainer()->params->get('siteurl', 'http://www.example.com');
 			$temp       = str_replace('http://', '', $baseURL);
 			$temp       = str_replace('https://', '', $temp);
 			$parts      = explode($temp, '/', 2);
