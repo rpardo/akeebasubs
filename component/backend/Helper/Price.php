@@ -176,23 +176,25 @@ abstract class Price
 		$price_integerPD = substr($formattedPreDiscount, 0, $dotposPD);
 		$price_fractionalPD = substr($formattedPreDiscount, $dotposPD + 1);
 
-		self::$pricingInformationCache[$levelKey] = (object)[
-			'levelPrice'           => $levelPrice,
+		self::$pricingInformationCache[$levelKey] = (object) [
+			'levelPrice' => $levelPrice,
 
-			'discount'             => $discount,
-			'discountFormatted'    => $formattedPriceD,
-			'discountInteger'      => $price_integerD,
-			'discountFractional'   => $price_fractionalD,
+			'discount'           => $discount,
+			'discountFormatted'  => $formattedPriceD,
+			'discountInteger'    => $price_integerD,
+			'discountFractional' => $price_fractionalD,
 
-			'prediscount'             => $preDiscount,
-			'prediscountFormatted'    => $formattedPreDiscount,
-			'prediscountInteger'      => $price_integerPD,
-			'prediscountFractional'   => $price_fractionalPD,
+			'prediscount'           => $preDiscount,
+			'prediscountFormatted'  => $formattedPreDiscount,
+			'prediscountInteger'    => $price_integerPD,
+			'prediscountFractional' => $price_fractionalPD,
 
-			'formattedPrice'       => $formattedPrice,
-			'priceInteger'         => $price_integer,
-			'priceFractional'      => $price_fractional,
-			'priceForFormatting'   => $priceForFormatting,
+			'formattedPrice'     => $formattedPrice,
+			'priceInteger'       => $price_integer,
+			'priceFractional'    => $price_fractional,
+			'priceForFormatting' => $priceForFormatting,
+
+			'includeDiscount' => $params->includeDiscount ? true : false,
 		];
 
 		return self::$pricingInformationCache[$levelKey];

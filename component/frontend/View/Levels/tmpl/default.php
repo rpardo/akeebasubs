@@ -9,9 +9,12 @@ defined('_JEXEC') or die();
 
 use \Akeeba\Subscriptions\Admin\Helper\Image;
 use \Akeeba\Subscriptions\Admin\Helper\Message;
+use Akeeba\Subscriptions\Site\Model\Levels;
 
 /** @var \Akeeba\Subscriptions\Site\View\Levels\Html $this */
 
+// Load and initialise Paddle's JavaScript
+echo $this->loadAnyTemplate('site:com_akeebasubs/Level/paddlejs')
 ?>
 
 <div id="akeebasubs" class="levels">
@@ -20,11 +23,21 @@ use \Akeeba\Subscriptions\Admin\Helper\Message;
 
 <?php if(!empty($this->items)) foreach($this->items as $level):?>
 <?php
-	$priceInfo = $this->getLevelPriceInformation($level);
+	/** @var Levels $level */
+	$priceInfo   = $this->getLevelPriceInformation($level);
+	$paddleClass = '';
+	$paddleExtra = '';
+
+	if (!$priceInfo->includeDiscount && $level->paddle_product_id && ($priceInfo->levelPrice >= 0.01))
+	{
+		$paddleClass = 'paddle-net';
+		$paddleExtra = 'data-product="' . $level->paddle_product_id;
+	}
+
 ?>
 	<div class="level akeebasubs-level-<?php echo $level->akeebasubs_level_id ?>">
 		<p class="level-title">
-			<span class="level-price">
+			<span class="level-price <?= $paddleClass ?>" <?= $paddleExtra ?>>
 				<?php if($this->renderAsFree && ($priceInfo->levelPrice < 0.01)):?>
 				<?php echo JText::_('COM_AKEEBASUBS_LEVEL_LBL_FREE') ?>
 				<?php else: ?>

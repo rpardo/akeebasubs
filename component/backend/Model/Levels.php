@@ -25,6 +25,11 @@ use JFactory;
  * @property  string    $description
  * @property  int       $duration
  * @property  float     $price
+ * @property  string    $paddle_product_id
+ * @property  string    $paddle_secret
+ * @property  string    $upsell
+ * @property  string    $paddle_plan_id
+ * @property  string    $paddle_plan_secret
  * @property  string    $ordertext
  * @property  string    $orderurl
  * @property  string    $canceltext
@@ -50,6 +55,11 @@ use JFactory;
  * @method  $this  description()               description(string $v)
  * @method  $this  duration()                  duration(int $v)
  * @method  $this  price()                     price(float $v)
+ * @method  $this  paddle_product_id()         paddle_product_id(string $v)
+ * @method  $this  paddle_secret()             paddle_secret(string $v)
+ * @method  $this  upsell()                    upsell(string $v)
+ * @method  $this  paddle_plan_id()            paddle_plan_id(string $v)
+ * @method  $this  paddle_plan_secret()        paddle_plan_secret(string $v)
  * @method  $this  ordertext()                 ordertext(string $v)
  * @method  $this  orderurl()                  orderurl(string $v)
  * @method  $this  canceltext()                canceltext(string $v)

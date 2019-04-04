@@ -11,6 +11,10 @@ defined('_JEXEC') or die();
 
 $layout = $this->input->getCmd('layout', 'default');
 ?>
+{{-- Include Paddle JavaScript --}}
+@include('site:com_akeebasubs/Level/paddlejs')
+
+{{--<span class="paddle-gross" data-product="12345">--}}
 
 <div id="akeebasubs">
 

@@ -13,6 +13,9 @@ use \Akeeba\Subscriptions\Admin\Helper\Message;
 /** @var \Akeeba\Subscriptions\Site\View\Levels\Html $this */
 
 $discounts = array();
+
+// Load and initialise Paddle's JavaScript
+echo $this->loadAnyTemplate('site:com_akeebasubs/Level/paddlejs')
 ?>
 
 <div id="akeebasubs" class="levels">
@@ -34,8 +37,17 @@ $discounts = array();
 		<tr>
 		<?php foreach($this->items as $level):
 			$priceInfo = $this->getLevelPriceInformation($level);
+			$paddleClass = '';
+			$paddleExtra = '';
+
+			if (!$priceInfo->includeDiscount && $level->paddle_product_id && ($priceInfo->levelPrice >= 0.01))
+			{
+				$paddleClass = 'paddle-net';
+				$paddleExtra = 'data-product="' . $level->paddle_product_id;
+			}
+
 			?>
-			<td class="akeebasubs-strappy-price">
+			<td class="akeebasubs-strappy-price <?= $paddleClass ?>" <?= $paddleExtra ?>>
 				<?php if($this->renderAsFree && ($priceInfo->levelPrice < 0.01)):?>
 				<?php echo JText::_('COM_AKEEBASUBS_LEVEL_LBL_FREE') ?>
 				<?php else: ?>

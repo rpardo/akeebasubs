@@ -12,6 +12,8 @@ use \Akeeba\Subscriptions\Admin\Helper\Message;
 
 /** @var \Akeeba\Subscriptions\Site\View\Levels\Html $this */
 
+// Load and initialise Paddle's JavaScript
+echo $this->loadAnyTemplate('site:com_akeebasubs/Level/paddlejs')
 ?>
 
 <div id="akeebasubs" class="levels awesome">
@@ -24,8 +26,16 @@ use \Akeeba\Subscriptions\Admin\Helper\Message;
 	<div class="columns columns-<?php echo $max?>">
 		<?php $i = 0; foreach($this->items as $level): $i++?>
 		<?php
-			$priceInfo = $this->getLevelPriceInformation($level);
-		?>
+			$priceInfo   = $this->getLevelPriceInformation($level);
+			$paddleClass = '';
+			$paddleExtra = '';
+
+			if (!$priceInfo->includeDiscount && $level->paddle_product_id && ($priceInfo->levelPrice >= 0.01))
+			{
+				$paddleClass = 'paddle-net';
+				$paddleExtra = 'data-product="' . $level->paddle_product_id;
+			}
+			?>
 		<div class="akeebasubs-awesome-column akeebasubs-level-<?php echo $level->akeebasubs_level_id ?>">
 			<div class="column-<?php echo $i == 1 ? 'first' : ($i == $max ? 'last' : 'middle')?>">
 				<div class="akeebasubs-awesome-header">
@@ -34,7 +44,7 @@ use \Akeeba\Subscriptions\Admin\Helper\Message;
 							<?php echo $this->escape($level->title)?>
 						</a>
 					</div>
-					<div class="akeebasubs-awesome-price">
+					<div class="akeebasubs-awesome-price <?= $paddleClass ?>" <?= $paddleExtra ?>>
 						<?php if($this->renderAsFree && ($priceInfo->levelPrice < 0.01)):?>
 						<?php echo JText::_('COM_AKEEBASUBS_LEVEL_LBL_FREE') ?>
 						<?php else: ?>
