@@ -180,6 +180,11 @@ CREATE TABLE `#__akeebasubs_levels` (
 	`description` text,
 	`duration` INT(10) UNSIGNED NOT NULL DEFAULT 365,
 	`price` FLOAT NOT NULL DEFAULT '0',
+    `paddle_product_id` varchar(100) NULL,
+	`paddle_secret` varchar(100) NULL,
+	`upsell` ENUM('never', 'always', 'renewal') DEFAULT 'never',
+	`paddle_plan_id` varchar(100) NULL,
+	`paddle_plan_secret` varchar(100) NULL,
 	`ordertext` text,
     `orderurl` VARCHAR( 255 ) NULL,
 	`canceltext` text,
@@ -377,6 +382,35 @@ ALTER TABLE `#__akeebasubs_levels` DROP COLUMN `payment_plugins`;
             <condition type="missing" value="signupfee" operator="not"  />
             <query><![CDATA[
 ALTER TABLE `#__akeebasubs_levels` DROP COLUMN `signupfee`;
+            ]]></query>
+        </action>
+
+        <action table="#__akeebasubs_subscriptions" canfail="1">
+            <condition type="missing" value="paddle_product_id"   />
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_levels` ADD COLUMN
+`paddle_product_id` varchar(100) NULL
+AFTER `price`
+            ]]></query>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_levels` ADD COLUMN
+`paddle_secret` varchar(100) NULL
+AFTER `paddle_product_id`
+            ]]></query>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_levels` ADD COLUMN
+`upsell` ENUM('never', 'always', 'renewal') DEFAULT 'never'
+AFTER `paddle_secret`
+            ]]></query>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_levels` ADD COLUMN
+`paddle_plan_id` varchar(100) NULL
+AFTER `upsell`
+            ]]></query>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_levels` ADD COLUMN
+`paddle_plan_secret` varchar(100) NULL
+AFTER `paddle_plan_id`
             ]]></query>
         </action>
 
