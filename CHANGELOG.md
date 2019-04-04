@@ -10,6 +10,7 @@
 
 * Invoices and Credit Notes are now read-only (gh-351)
 * Redesigned the subscription page (gh-332)
+* Migrate country data from `#__akeebasubs_users` on extension upgrade (gh-360)
 
 **Remove features**
 

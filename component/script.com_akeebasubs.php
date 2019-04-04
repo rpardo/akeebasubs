@@ -329,20 +329,25 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 
 	public function postflight($type, $parent)
 	{
+		/**
+		 * Migrate country information out of #__akeebasubs_users into Joomla's user profile information
+         *
+		 * Why put it above the parent::postflight call? Because parent::postflight will run database schema updates
+		 * which will eventually involve killing off the #__akeebasubs_users table. We need to run the migration before
+         * that.
+		 */
+		$this->migrateCountryData();
+
 		// Call the parent method
 		parent::postflight($type, $parent);
 
 		// Add ourselves to the list of extensions depending on Akeeba FEF
 		$this->addDependency('file_fef', $this->componentName);
-	}
 
-	public function uninstall($parent)
-	{
 		// Remove the update sites for this component on installation. The update sites are now handled at the package
 		// level.
 		$this->removeObsoleteUpdateSites($parent);
 
-		parent::uninstall($parent);
 	}
 
 	/**
@@ -358,7 +363,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 		<img src="../media/com_akeebasubs/images/akeebasubs-48.png" width="48" height="48" alt="Akeeba Subscriptions"
 			 align="left"/>
 		<h2 style="font-size: 14pt; font-weight: bold; padding: 0; margin: 0 0 0.5em;">Welcome to Akeeba Subscriptions!</h2>
-		<span>The easiest way to sell subscriptions on your Joomla! site</span>
+		<span>The easiest Paddle integration for Joomla!.</span>
 
 		<?php
 	}
@@ -433,7 +438,7 @@ HTML;
 	 *
 	 * @param   JInstallerAdapterComponent  $parent  The parent installer
 	 */
-	protected function removeObsoleteUpdateSites($parent)
+	private function removeObsoleteUpdateSites($parent)
 	{
 		$db = $parent->getParent()->getDBO();
 
@@ -480,4 +485,57 @@ HTML;
 			}
 		}
 	}
+
+	/**
+	 * Migrate country information from the #__akeebasubs_users table into Joomla's profile fields.
+     *
+     * @return  void
+     *
+     * @since   7.0.0
+	 */
+	private function migrateCountryData()
+    {
+	    /**
+	     * In case you're wondering why use a hardcoded query instead of going through JDatabaseQuery: I am doing an
+	     * INSERT from SELECT query which is superbly efficient and does not use any PHP memory. The alternative
+	     * involves loading N records to PHP memory and executing N to 2N queries to see if the data already exists and
+	     * decide whether to do an INSERT. Try that with 70,000 records and tell me how that worked for you ;)
+	     */
+        $db = JFactory::getDbo();
+        $sql = <<< SQL
+INSERT INTO
+    `#__user_profiles`
+SELECT
+       `user_id`,
+       "akeebasubs.country" AS `profile_key`,
+       `country` AS `profile_value`,
+       0 as `ordering`
+FROM
+     `#__akeebasubs_users`
+WHERE
+      `user_id` NOT IN (
+              SELECT
+                     `user_id`
+              FROM
+                     `#__user_profiles`
+              WHERE
+                    `profile_key` = 'akeebasubs.country'
+              AND NOT
+                  (profile_value = "" OR profile_value = "XX")
+       )
+SQL;
+	    /**
+	     * Why the try-catch with no action? Well, country information is nice to have, not necessary to have. Moreover,
+	     * in the not-so-distant future we're going to kill the #__akeebasubs_users table which means this query will
+	     * fail.
+	     */
+        try
+        {
+	        $db->setQuery($sql)->execute();
+        }
+        catch (Exception $e)
+        {
+            // No sweat.
+        }
+    }
 }
