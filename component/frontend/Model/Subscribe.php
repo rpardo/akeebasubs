@@ -8,17 +8,22 @@
 namespace Akeeba\Subscriptions\Site\Model;
 
 use Akeeba\Subscriptions\Admin\PluginAbstracts\AkpaymentBase;
+use Akeeba\Subscriptions\Site\Model\Subscribe\CallbackInterface;
+use Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits\FixSubscriptionDateTrait;
 use Akeeba\Subscriptions\Site\Model\Subscribe\StateData;
 use Akeeba\Subscriptions\Site\Model\Subscribe\Validation;
 use Akeeba\Subscriptions\Site\Model\Subscribe\ValidatorFactory;
 use FOF30\Container\Container;
 use FOF30\Model\Model;
 use FOF30\Utils\Ip;
-use JBrowser;
-use JFactory;
+use RuntimeException;
 use JLoader;
-use JLog;
-use JUser;
+use Joomla\CMS\Environment\Browser as JBrowser;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Filesystem\Folder;
+use Joomla\CMS\Log\Log as JLog;
+use Joomla\CMS\User\User as JUser;
 
 defined('_JEXEC') or die;
 
@@ -27,7 +32,6 @@ defined('_JEXEC') or die;
  *
  * @method $this slug() slug(string $v)
  * @method $this id() id(int $v)
- * @method $this paymentmethod() paymentmethod(string $v)
  * @method $this username() username(string $v)
  * @method $this password() password(string $v)
  * @method $this password2() password2(string $v)
@@ -39,6 +43,8 @@ defined('_JEXEC') or die;
  */
 class Subscribe extends Model
 {
+	use FixSubscriptionDateTrait;
+
 	/**
 	 * Raw HTML source of the payment form, as returned by the payment plugin
 	 *
@@ -126,7 +132,6 @@ class Subscribe extends Model
 				$response->validation = (object)$this->getValidator('PersonalInformation')->execute();
 				$response->validation->username = $this->getValidator('username')->execute();
 				$response->validation->password = $this->getValidator('password')->execute();
-				$response->validation->paymentmethod = $this->getValidator('PaymentMethod')->execute();
 				$response->price = (object)$this->getValidator('Price')->execute();
 
 				break;
@@ -327,7 +332,7 @@ class Subscribe extends Model
 				'password2' => $state->password2
 			);
 
-			// We have to use JUser directly instead of JFactory getUser
+			// We have to use JUser directly instead of Factory getUser
 			$user = new JUser(0);
 
 			JLoader::import('joomla.application.component.helper');
@@ -423,8 +428,12 @@ class Subscribe extends Model
 
 	/**
 	 * Processes the form data and creates a new subscription
+	 *
+	 * @return  ?Subscriptions
+	 *
+	 * @throws \Exception
 	 */
-	public function createNewSubscription()
+	public function createNewSubscription(): ?Subscriptions
 	{
 		// Fetch state and validation variables
 		$this->setState('opt', '');
@@ -442,7 +451,7 @@ class Subscribe extends Model
 		{
 			$this->logSubscriptionCreationFailure('Validation failure');
 
-			return false;
+			throw new RuntimeException('Validation failure');
 		}
 
 		// Step #1.b. Check that the subscription level is allowed
@@ -476,43 +485,16 @@ class Subscribe extends Model
 		{
 			$this->logSubscriptionCreationFailure('Subscription level has the Only Once flag but the user has already a subscription in it.');
 
-			return false;
+			throw new RuntimeException('Subscription level has the Only Once flag but the user has already a subscription in it.');
 		}
 
 		// Fetch the level's object, used later on
 		$level = $levelsModel->getClone()->find($state->id);
 
-		// Step #2. Check that the payment plugin exists or return false
-		// ----------------------------------------------------------------------
-		/** @var PaymentMethods $paymentMethodsModel */
-		$paymentMethodsModel = $this->container->factory->model('PaymentMethods')->tmpInstance();
-		$plugins = $paymentMethodsModel->getPaymentPlugins();
-
-		$found = false;
-
-		if (!empty($plugins))
-		{
-			foreach ($plugins as $plugin)
-			{
-				if ($plugin->name == $state->paymentmethod)
-				{
-					$found = true;
-					break;
-				}
-			}
-		}
-
-		if (!$found)
-		{
-			$this->logSubscriptionCreationFailure(sprintf('Cannot find payment method ‘%s’', htmlentities($state->paymentmethod)));
-
-			return false;
-		}
-
 		// Reset the session flag, so that future registrations will not merge data stored in the database
 		$this->container->platform->setSessionVar('firstrun', false, 'com_akeebasubs');
 
-		// Step #2.b. Apply block rules
+		// Step #2. Apply block rules
 		// ----------------------------------------------------------------------
 		/** @var BlockRules $blockRulesModel */
 		$blockRulesModel = $this->container->factory->model('BlockRules')->tmpInstance();
@@ -532,7 +514,7 @@ class Subscribe extends Model
 		{
 			$this->logSubscriptionCreationFailure(sprintf('Cannot update user information for user ID %d', $user->id));
 
-			return false;
+			throw new RuntimeException(sprintf('Cannot update user information for user ID %d', $user->id));
 		}
 
 		$user = $this->getState('user', $user);
@@ -716,7 +698,7 @@ class Subscribe extends Model
 			'publish_down'               => $mEndDate,
 			'notes'                      => '',
 			'enabled'                    => ($validation->price->gross < 0.01) ? 1 : 0,
-			'processor'                  => ($validation->price->gross < 0.01) ? 'none' : $state->paymentmethod,
+			'processor'                  => ($validation->price->gross < 0.01) ? 'none' : 'paddle',
 			'processor_key'              => ($validation->price->gross < 0.01) ? $this->_uuid(true) : '',
 			'state'                      => ($validation->price->gross < 0.01) ? 'C' : 'N',
 			'net_amount'                 => $validation->price->net - $validation->price->discount,
@@ -760,61 +742,25 @@ class Subscribe extends Model
 		// ----------------------------------------------------------------------
 		$this->container->platform->setSessionVar('apply_validation.' . $state->id, null, 'com_akeebasubs');
 
-		// Step #9. Call the specific plugin's onAKPaymentNew() method and get the redirection URL,
-		//          or redirect immediately on auto-activated subscriptions
+		// Step #9. Immediately activate free subscriptions
 		// ----------------------------------------------------------------------
-		if ($subscription->gross_amount != 0)
+		if ($subscription->gross_amount < 0.01)
 		{
-			// Non-zero charges; use the plugins
-			$jResponse = $this->container->platform->runPlugins('onAKPaymentNew', array(
-				$state->paymentmethod,
-				$user,
-				$level,
-				$subscription
-			));
-
-			if (empty($jResponse))
-			{
-				$this->logSubscriptionCreationFailure(sprintf('Calling onAKPaymentNew for ‘%s’ resulted in an empty response', htmlentities($state->paymentmethod)));
-
-				return false;
-			}
-
-			foreach ($jResponse as $response)
-			{
-				if ($response === false)
-				{
-					continue;
-				}
-
-				$this->paymentForm = $response;
-			}
-		}
-		else
-		{
-			// Zero charges. First apply subscription replacement
-			$updates = array();
-			AkpaymentBase::fixSubscriptionDates($subscription, $updates);
+			// Zero charges. Apply subscription replacement.
+			$updates = $this->fixSubscriptionDates($subscription, []);
 
 			if (!empty($updates))
 			{
 				$subscription->save($updates);
 				$this->_item = $subscription;
 			}
-
-			// and then just redirect
-			$this->container->platform->redirect(str_replace('&amp;', '&', \JRoute::_('index.php?option=com_akeebasubs&layout=default&view=message&slug=' . $level->slug . '&layout=order&subid=' . $subscription->akeebasubs_subscription_id)));
-
-			$this->removeSubscriptionCreationFailureLog($level);
-
-			return false;
 		}
 
 		// Return true
 		// ----------------------------------------------------------------------
 		$this->removeSubscriptionCreationFailureLog($level);
 
-		return true;
+		return $subscription;
 	}
 
 	public function runCancelRecurring()
@@ -823,95 +769,66 @@ class Subscribe extends Model
 
 		$data = $this->input->getData();
 
-		// Some plugins result in an empty Itemid being added to the request
-		// data, screwing up the payment callback validation in some cases (e.g.
-		// PayPal).
-		if (array_key_exists('Itemid', $data))
-		{
-			if (empty($data['Itemid']))
-			{
-				unset($data['Itemid']);
-			}
-		}
-
-		/** @var PaymentMethods $paymentMethodsModel */
-		$paymentMethodsModel = $this->container->factory->model('PaymentMethods')->tmpInstance();
-		$paymentMethodsModel->getPaymentPlugins();
-
-		$app = JFactory::getApplication();
-		$jResponse = $app->triggerEvent('onAKPaymentCancelRecurring', array(
-			$state->paymentmethod,
-			$data
-		));
-
-		if (empty($jResponse))
-		{
-			return false;
-		}
-
-		$status = false;
-
-		foreach ($jResponse as $response)
-		{
-			$status = $status || $response;
-		}
-
-		return $status;
+		// TODO
 	}
 
 	/**
 	 * Runs a payment callback
+	 *
+	 * @return  int  The HTTP status, default 200 (OK)
 	 */
-	public function runCallback()
+	public function runCallback(): int
 	{
 		// Debug log
 		JLog::addLogger(['text_file' => "akeebasubs_payment.php"], JLog::ALL, ['akeebasubs.payment']);
 
 		$data = $this->input->getData();
 
-		// Some plugins result in an empty Itemid being added to the request
-		// data, screwing up the payment callback validation in some cases (e.g.
-		// PayPal).
-		if (array_key_exists('Itemid', $data))
+		// Scrub option, view, task and Itemid from the request data to prevent accidental validation failures
+		foreach (['option', 'view', 'task', 'Itemid'] as $k)
 		{
-			if (empty($data['Itemid']))
+			if (isset($data[$k]))
 			{
-				unset($data['Itemid']);
+				unset($data[$k]);
 			}
 		}
 
-		/** @var PaymentMethods $paymentMethodsModel */
-		$paymentMethodsModel = $this->container->factory->model('PaymentMethods')->tmpInstance();
-		$paymentMethodsModel->getPaymentPlugins();
+		// Let's find out which callback handler we should be using
+		$demoPayment = $this->container->params->get('demo_payment', 0);
+		$method      = $this->input->getMethod();
+		$alertName   = $this->input->getCmd('alert_name', null);
+		$handler     = 'Paddle';
 
-		$paymentMethod = $this->input->getCmd('paymentmethod', 'none');
-
-		JLog::add("Got payment callback for “{$paymentMethod}”.", JLog::INFO, 'akeebasubs.payment');
-
-		$jResponse     = $this->container->platform->runPlugins('onAKPaymentCallback', [
-			$paymentMethod,
-			$data,
-		]);
-
-		if (empty($jResponse))
+		if ($demoPayment && ($method == 'GET') && ($alertName == 'akeebasubs_none'))
 		{
-			JLog::add("No response from plugins: FAILED.", JLog::ERROR, 'akeebasubs.payment');
-
-			return false;
+			$handler = 'None';
 		}
 
-		JLog::add(sprintf("Raw response array: %s", json_encode($jResponse)), JLog::DEBUG, 'akeebasubs.payment');
+		/** @var  CallbackInterface $callbackHandler */
+		$className       = 'Akeeba\Subscriptions\Site\Model\Subscribe\\' . $handler . '\\CallbackHandler';
+		$callbackHandler = new $className($this->container);
 
-		$status = false;
-
-		foreach ($jResponse as $response)
+		try
 		{
-			$status = $status || $response;
+			$response = $callbackHandler->handleCallback($method, $data);
+		}
+		catch (\RuntimeException $e)
+		{
+			JLog::add("Callback response: FAILED [{$e->getCode()} :: {$e->getMessage()}].", JLog::ERROR, 'akeebasubs.payment');
+
+			echo $e->getMessage();
+
+			return $e->getCode();
 		}
 
-		JLog::add(sprintf("Final decision: %s", $status ? 'OK' : 'FAILED'), JLog::DEBUG, 'akeebasubs.payment');
+		JLog::add("Callback response: SUCCESS.", JLog::INFO, 'akeebasubs.payment');
 
-		return $status;
+		if (!empty($response))
+		{
+			echo $response;
+		}
+
+		return 200;
 	}
 
 	/**
@@ -1009,7 +926,7 @@ class Subscribe extends Model
 	 */
 	private function sendActivationEmail($user, array $indata = [])
 	{
-		$app    = JFactory::getApplication();
+		$app    = Factory::getApplication();
 		$config = $this->container->platform->getConfig();
 		$db     = $this->container->db;
 		$params = \JComponentHelper::getParams('com_users');
@@ -1024,7 +941,7 @@ class Subscribe extends Model
 		{
 			$user->activation    = \JApplicationHelper::getHash(\JUserHelper::genRandomPassword());
 			$user->block         = 1;
-			$user->lastvisitDate = JFactory::getDbo()->getNullDate();
+			$user->lastvisitDate = Factory::getDbo()->getNullDate();
 		}
 		else
 		{
@@ -1049,7 +966,7 @@ class Subscribe extends Model
 		$data['siteurl']        = $this->getContainer()->params->get('siteurl') ?? \JUri::root();
 
 		// Load com_users translation files
-		$jlang = JFactory::getLanguage();
+		$jlang = Factory::getLanguage();
 		$jlang->load('com_users', JPATH_SITE, 'en-GB', true); // Load English (British)
 		$jlang->load('com_users', JPATH_SITE, $jlang->getDefault(), true); // Load the site's default language
 		$jlang->load('com_users', JPATH_SITE, null, true); // Load the currently selected language
@@ -1162,7 +1079,7 @@ class Subscribe extends Model
 		// Send the registration email.
 		try
 		{
-			$return = JFactory::getMailer()->sendMail($data['mailfrom'], $data['fromname'], $data['email'], $emailSubject, $emailBody);
+			$return = Factory::getMailer()->sendMail($data['mailfrom'], $data['fromname'], $data['email'], $emailSubject, $emailBody);
 		}
 		catch (\Exception $e)
 		{
@@ -1208,7 +1125,7 @@ class Subscribe extends Model
 			{
 				try
 				{
-					$return = JFactory::getMailer()->sendMail($data['mailfrom'], $data['fromname'], $row->email, $emailSubject, $emailBodyAdmin);
+					$return = Factory::getMailer()->sendMail($data['mailfrom'], $data['fromname'], $row->email, $emailSubject, $emailBodyAdmin);
 				}
 				catch (\Exception $e)
 				{
@@ -1242,11 +1159,11 @@ class Subscribe extends Model
 		$state             = $this->getStateVariables();
 		$level             = $levelsModel->getClone()->find($state->id);
 		$logFilepath       = $this->getLogFilename($level);
-		$application       = JFactory::getApplication();
+		$application       = Factory::getApplication();
 		$sessionName       = $application->getSession()->getName();
 		$sessionId         = $application->getSession()->getId();
 		$subscriptionLevel = $level->getId();
-		$user              = JFactory::getUser();
+		$user              = Factory::getUser();
 		$txtValidation     = print_r($validation, true);
 		$txtState          = print_r($state, true);
 		$txtGET            = print_r($application->input->get->getArray(), true);
@@ -1315,7 +1232,7 @@ Important note:
 
 TEXT;
 
-		\JFile::write($logFilepath, $text);
+		File::write($logFilepath, $text);
 	}
 
 	/**
@@ -1350,8 +1267,6 @@ TEXT;
 	 * @since   5.2.6
 	 *
 	 * @see     logSubscriptionCreationFailure()
-	 *
-	 * @throws \Exception
 	 */
 	public function getLogFilename(Levels $level = null)
 	{
@@ -1363,16 +1278,31 @@ TEXT;
 			$level       = $levelsModel->getClone()->find($state->id);
 		}
 
-		$application       = JFactory::getApplication();
+		try
+		{
+			$application       = Factory::getApplication();
+		}
+		catch (\Exception $e)
+		{
+			return JPATH_ADMINISTRATOR . '/logs';
+		}
+
 		$sessionId         = $application->getSession()->getId();
-		$userId            = JFactory::getUser()->id ?: 'guest';
+		$userId            = Factory::getUser()->id ?: 'guest';
 		$subscriptionLevel = $level->getId();
 		$logPath           = $application->get('log_path') . '/akeebasubs_failed';
 		$logFilepath       = $logPath . '/' . $sessionId . '_' . $userId . '_' . $subscriptionLevel . '.php';
 
-		if (!\JFolder::exists($logPath))
+		if (!Folder::exists($logPath))
 		{
-			\JFolder::create($logPath);
+			try
+			{
+				Folder::create($logPath);
+			}
+			catch (\Exception $e)
+			{
+				// Oh, well, no log will be created.
+			}
 		}
 
 		return $logFilepath;

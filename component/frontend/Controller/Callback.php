@@ -47,15 +47,11 @@ class Callback extends Controller
 		\JFactory::getApplication()->setHeader('X-Cache-Control', 'False', true);
 
 		/** @var Subscribe $model */
-		$model = $this->getModel();
+		$model = $this->getModel()->tmpInstance();
 
-		$result = $model
-			->paymentmethod($this->input->getCmd('paymentmethod', 'none'))
-			->runCallback();
+		$result = $model->runCallback();
 
-		echo $result ? 'OK' : 'FAILED';
-
-		$this->container->platform->closeApplication();
+		$this->container->platform->closeApplication($result);
 	}
 
 	/**
@@ -93,7 +89,6 @@ class Callback extends Controller
 			$url = \JRoute::_('index.php?option=com_akeebasubs&view=message&slug=' . $level->slug . '&layout=cancel&subid=' . $subid);
 
 			$result = $model
-				->paymentmethod($this->input->getCmd('paymentmethod', 'none'))
 				->runCancelRecurring();
 
 			if (!$result)

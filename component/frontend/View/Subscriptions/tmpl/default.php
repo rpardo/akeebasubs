@@ -235,7 +235,7 @@ if (!empty($this->returnURL))
 
 		            <?php
 		                if ($level->recurring):
-			                $cancelURL = JRoute::_('index.php?option=com_akeebasubs&view=callback&task=cancel&paymentmethod='.$subscription->processor.'&sid='.$subscription->akeebasubs_subscription_id);
+			                $cancelURL = JRoute::_('index.php?option=com_akeebasubs&view=callback&task=cancel&sid='.$subscription->akeebasubs_subscription_id);
 			        ?>
 		            <a class="akeeba-btn--small--red" href="<?php echo $cancelURL?>">
 			            <?php echo JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_ACTION_CANCEL_RECURRING')?>

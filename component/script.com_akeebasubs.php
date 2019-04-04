@@ -143,6 +143,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeebasubs/Model/CreditNoteTemplates.php',
 			'administrator/components/com_akeebasubs/Model/Import.php',
 			'administrator/components/com_akeebasubs/Model/InvoiceTemplates.php',
+			'administrator/components/com_akeebasubs/Model/PaymentMethods.php',
 			'administrator/components/com_akeebasubs/Model/States.php',
 			'administrator/components/com_akeebasubs/Model/TaxHelper.php',
 			'administrator/components/com_akeebasubs/Model/TaxRules.php',
@@ -150,6 +151,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 
             'administrator/components/com_akeebasubs/ViewTemplates/ControlPanel/wizard.blade.php',
             'administrator/components/com_akeebasubs/ViewTemplates/Subscriptions/form_customparams.blade.php',
+            'administrator/components/com_akeebasubs/ViewTemplates/Common/EntryPaymentPlugins.php',
 
 			'components/com_akeebasubs/Controller/APICoupons.php',
 			'components/com_akeebasubs/Controller/TaxConfig.php',
@@ -158,10 +160,12 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
             'components/com_akeebasubs/Model/APICoupons.php',
             'components/com_akeebasubs/Model/InvoiceTemplates.php',
             'components/com_akeebasubs/Model/LevelGroups.php',
+            'components/com_akeebasubs/Model/PaymentMethods.php',
 			'components/com_akeebasubs/Model/States.php',
 			'components/com_akeebasubs/Model/Subscribe/Validation/Business.php',
 			'components/com_akeebasubs/Model/Subscribe/Validation/Country.php',
 			'components/com_akeebasubs/Model/Subscribe/Validation/CustomFields.php',
+			'components/com_akeebasubs/Model/Subscribe/Validation/PaymentMethod.php',
 			'components/com_akeebasubs/Model/Subscribe/Validation/State.php',
 			'components/com_akeebasubs/Model/Subscribe/Validation/SubscriptionCustomFields.php',
 			'components/com_akeebasubs/Model/TaxConfig.php',

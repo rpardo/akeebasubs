@@ -71,6 +71,55 @@ function validateForm()
     })(akeeba.jQuery);
 }
 
+function akeebaSubscriptionsStartPayment()
+{
+    (function ($) {
+        var formData = {
+            coupon: $('#coupon').val(),
+            accept_terms: $('#accept_terms').is('checked')
+        };
+
+        if ($('#name'))
+        {
+            formData['name'] = $('#name').val();
+            formData['username'] = $('#username').val();
+            formData['password'] = $('#password').val();
+            formData['password2'] = $('#password2').val();
+            formData['email'] = $('#email').val();
+            formData['email2'] = $('#email2').val();
+        }
+
+        $.ajax({
+            url: $('#signupForm').attr('action'),
+            data: formData,
+            type: "POST",
+            dataType: "json"
+        }).done(function(ret) {
+            console.log(ret);
+
+            if (ret.method === 'redirect')
+            {
+                if (ret.url === null)
+                {
+                    window.location = window.location;
+
+                    return;
+                }
+
+                window.location = ret.url;
+
+                return;
+            }
+
+            // TODO Use ret.url to open an overlay
+        }).fail(function(jqXHR, textStatus, errorThrown){
+            window.location = window.location;
+        });
+    })(akeeba.jQuery);
+
+    return false;
+}
+
 (function ($) {
     $(document).ready(function () {
         // Disable form submit when ENTER is hit in the coupon field

@@ -14,8 +14,9 @@ use Akeeba\Subscriptions\Site\Model\Subscribe as ModelSubscribe;
 use Akeeba\Subscriptions\Site\Model\Subscriptions;
 use FOF30\Container\Container;
 use FOF30\Controller\Controller;
-use FOF30\Controller\Exception\ItemNotFound;
-use FOF30\View\Exception\AccessForbidden;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Router\Route;
 
 class Subscribe extends Controller
 {
@@ -43,10 +44,22 @@ class Subscribe extends Controller
 	 * Handles the POST of the subscription form. It will try to create a new subscription (and user, if the POST came
 	 * from a guest and there's valid information).
 	 *
+	 * It returns a JSON response containing the keys method and url.
+	 *
+	 * The method is only of 'redirect' or 'overlay' and conveys the usage intent of the URL passed in the url param.
+	 *
+	 * In case of an error the URL is null. This means that an error message had been set in the session. The frontend
+	 * JavaScript needs to reload the page to display it.
+	 *
 	 * @return  void
 	 */
 	public function subscribe()
 	{
+		$ret = [
+			'method' => 'redirect',
+			'url'    => null,
+		];
+
 		// Load the models
 
 		/** @var ModelSubscribe $model */
@@ -64,25 +77,30 @@ class Subscribe extends Controller
 		{
 			// Note: do note replace $item with $levelsModel or the view won't see the loaded record because of how
 			// references work in PHP.
-			$item = $levelsModel
+			$level = $levelsModel
 				->id(0)
 				->slug([
 					'method' => 'exact',
-					'value'  => $slug
+					'value'  => $slug,
 				])
 				->firstOrNew();
-
-			$id = $item->getId();
 		}
-
-		// If we do not have a valid level ID throw a 404
-		if (!$id)
+		else
 		{
-			throw new ItemNotFound(\JText::_($slug), 404);
+			$level = $levelsModel->find($id);
 		}
 
-		// Load the level
-		$level = $levelsModel->find($id);
+		// If we do not have a valid level ID cause an error to be displayed
+		if (!$level->getId())
+		{
+			$ret['info'] = 'Cannot find level ID';
+
+			$this->enqueueMessage(Text::_('COM_AKEEBASUBS_LEVEL_ERR_NOSUCHLEVEL'), 'error');
+
+			echo json_encode($ret);
+
+			$this->container->platform->closeApplication();
+		}
 
 		// If the level is marked as only_once we need to make sure we're allowed to access it
 		if ($level->only_once)
@@ -96,8 +114,14 @@ class Subscribe extends Controller
 
 			if ($subscriptions->count())
 			{
+				$ret['info'] = 'Cannot resubscribe to "only once" level';
+
 				// User trying to renew a level which is marked as only_once
-				throw new AccessForbidden;
+				$this->enqueueMessage(Text::_('COM_AKEEBASUBS_LEVEL_ERR_ONLYONCE'), 'error');
+
+				echo json_encode($ret);
+
+				$this->container->platform->closeApplication();
 			}
 		}
 
@@ -106,8 +130,14 @@ class Subscribe extends Controller
 
 		if (!in_array($level->access, $accessLevels))
 		{
-			// User trying to subscribe to a level he doesn't have access to
-			throw new AccessForbidden;
+			$ret['info'] = 'Not authorised (permissions)';
+
+			// User trying to renew a level which is marked as only_once
+			$this->enqueueMessage(Text::_('COM_AKEEBASUBS_LEVEL_ERR_NOTAUTHORISED'), 'error');
+
+			echo json_encode($ret);
+
+			$this->container->platform->closeApplication();
 		}
 
 		// Try to create a new subscription record
@@ -115,41 +145,86 @@ class Subscribe extends Controller
 
 		try
 		{
-			$result = $model->createNewSubscription();
+			$details         = '';
+			$newSubscription = $model->createNewSubscription();
 		}
 		catch (\Exception $e)
 		{
-			$result = false;
+			$details         = $e->getCode() . ":" . $e->getMessage();
+			$newSubscription = null;
 		}
 
 		// Did we fail to create a new subscription?
-		if (!$result)
+		if (is_null($newSubscription))
 		{
 			$this->container->platform->setSessionVar('firstrun', false, 'com_akeebasubs');
 			$this->container->platform->setSessionVar('forcereset', false, 'com_akeebasubs');
 			$helpCode = basename($model->getLogFilename(), '.php');
-			$layout = $this->input->getCmd('layout', 'default');
+			$layout   = $this->input->getCmd('layout', 'default');
 
 
-			$url = str_replace('&amp;', '&', \JRoute::_('index.php?option=com_akeebasubs&view=Level&layout='.$layout.'&slug=' . $model->slug));
-			$msg = \JText::sprintf('COM_AKEEBASUBS_LEVEL_ERR_VALIDATIONOVERALL_HELPCODE', $helpCode);
+			$msg = Text::sprintf('COM_AKEEBASUBS_LEVEL_ERR_VALIDATIONOVERALL_HELPCODE', $helpCode);
 
-			$resetUrl = str_replace('&amp;', '&', \JRoute::_('index.php?option=com_akeebasubs&view=Level&layout='.$layout.'&slug=' . $model->slug . '&reset=1'));
-			$msg .= ' ' . \JText::sprintf('COM_AKEEBASUBS_LEVEL_ERR_VALIDATIONOVERALL_RESET', $resetUrl);
+			$resetUrl = str_replace('&amp;', '&', \JRoute::_('index.php?option=com_akeebasubs&view=Level&layout=' . $layout . '&slug=' . $model->slug . '&reset=1'));
+			$msg      .= ' ' . Text::sprintf('COM_AKEEBASUBS_LEVEL_ERR_VALIDATIONOVERALL_RESET', $resetUrl);
 
-			$this->setRedirect($url, $msg, 'error');
 
-			return;
+			$ret['info'] = $details;
+			$this->enqueueMessage($msg, 'error');
+
+			echo json_encode($ret);
+
+			$this->container->platform->closeApplication();
 		}
 
-		// Set up and display the view
-		$view = $this->getView();
+		$demoPayment = $this->container->params->get('demo_payment', 0);
 
-		$view->setLayout('form');
-		$view->form = $model->getPaymentForm();
-		$view->setDefaultModelName('Subscribe');
-		$view->setModel('Subscribe', $model);
+		if ($newSubscription->gross_amount < 0.01)
+		{
+			// If the subscription is free redirect to the Thank You page immediately.
+			$ret = [
+				'method' => 'redirect',
+				'url'    => Route::_('index.php?option=com_akeebasubs&view=Message&slug=' . $slug . '&layout=order&subid=' . $newSubscription->akeebasubs_subscription_id),
+				'info'   => 'Free',
+			];
+		}
+		elseif ($demoPayment)
+		{
+			// If it's a demo payment redirect to the callback page (which redirects us to Thank You)
+			$ret = [
+				'method' => 'redirect',
+				'url'    => Route::_('index.php?option=com_akeebasubs&view=callback&alert_name=akeebasubs_none&passthrough=' . $newSubscription->getId()),
+				'info'   => 'Demo payment',
+			];
+		}
+		else
+		{
+			$ret['method'] = 'overlay';
+			$ret['info']   = 'Regular payment';
+			// TODO Go through the Paddle API to get the custom checkout URL.
+		}
 
-		$view->display();
+		// Finally, return the information back to the caller
+		echo json_encode($ret);
+
+		$this->container->platform->closeApplication();
+	}
+
+	/**
+	 * Enqueue a Joomla application message and persist the queue in the session (because Joomla won't do that unless
+	 * you redirect).
+	 *
+	 * @param   string  $message  The message to enqueue
+	 * @param   string  $type     The message type, default is 'error'
+	 *
+	 * @throws \Exception
+	 */
+	private function enqueueMessage(string $message, string $type = 'error')
+	{
+		$app     = Factory::getApplication();
+		$session = Factory::getSession();
+
+		$app->enqueueMessage($message, $type);
+		$session->set('application.queue', $app->getMessageQueue());
 	}
 }

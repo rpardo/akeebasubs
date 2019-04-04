@@ -30,7 +30,7 @@
 * Removed all tax-related features (gh-334)
 * Removed all currency exchange rate features (gh-356)
 * Removed all VAT number validation login (gh-357)
-* Removed all former payment plugins except the local test "none" plugin (gh-341)
+* Removed all former payment plugins (gh-341)
 * Removed now obsolete as2cocollation and aspaypalcollation plugins (gh-338)
 * Removed the Hide Lone Payment Option setting
 * Removed the setting to show payment options as text
@@ -40,3 +40,4 @@
 * Removed frontend user information management page (gh-359)
 * Removed the plugins managing automatic user log out upon subscription purchase (gh-359)
 * Removed unused update options
+* Removed the payment plugins infrastructure (gh-342)

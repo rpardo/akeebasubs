@@ -34,9 +34,6 @@
         <file type="plugin" group="akeebasubs" id="joomla">plg_akeebasubs_joomla.zip</file>
         <file type="plugin" group="akeebasubs" id="subscriptionemails">plg_akeebasubs_subscriptionemails.zip</file>
 
-        <!-- Plugins: akpayment -->
-        <file type="plugin" group="akpayment" id="none">plg_akpayment_none.zip</file>
-
         <!-- Plugins: content -->
         <file type="plugin" group="content" id="aslink">plg_content_aslink.zip</file>
         <file type="plugin" group="content" id="asprice">plg_content_asprice.zip</file>

@@ -53,10 +53,6 @@ $discountOptions = [
     </div>
 
     <div class="akeeba-filter-element akeeba-form-group">
-        @selectfilter('processor', \Akeeba\Subscriptions\Admin\Helper\Select::getAllPaymentMethods())
-    </div>
-
-    <div class="akeeba-filter-element akeeba-form-group">
         @searchfilter('paykey', 'paykey', 'COM_AKEEBASUBS_SUBSCRIPTION_PROCESSOR_KEY')
     </div>
 

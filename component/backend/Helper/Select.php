@@ -7,7 +7,6 @@
 
 namespace Akeeba\Subscriptions\Admin\Helper;
 
-use Akeeba\Subscriptions\Admin\Model\PaymentMethods;
 use FOF30\Container\Container;
 use FOF30\Model\DataModel;
 use JHtml;
@@ -350,148 +349,6 @@ abstract class Select
 	}
 
 	/**
-	 * Create a selection interface (drop-down list, image radios) for the payment method
-	 *
-	 * Some interesting attributes:
-	 *
-	 * level_id         int   Show payment methods applicable to this subscription level
-	 * always_dropdown  bool  Always render a drop-down list, never an image selection list
-	 * default_option   bool  Add a default option to unselect everything else
-	 * return_raw_list  bool  Return the raw payments processors array instead of HTML
-	 *
-	 * @param   string  $name      The field's name
-	 * @param   string  $selected  Pre-selected value
-	 * @param   array   $attribs   Field attributes
-	 *
-	 * @return  array|string
-	 */
-	public static function paymentmethods($name = 'paymentmethod', $selected = '', $attribs = array())
-	{
-		// Initialise parameters
-		$level_id        = isset($attribs['level_id']) ? $attribs['level_id'] : 0;
-		$always_dropdown = isset($attribs['always_dropdown']) ? 1 : 0;
-		$default_option  = isset($attribs['default_option']) ? 1 : 0;
-
-        /** @var PaymentMethods $pluginsModel */
-        $pluginsModel = Container::getInstance('com_akeebasubs')->factory
-                            ->model('PaymentMethods')->tmpInstance();
-
-        $plugins = $pluginsModel->getPaymentPlugins();
-
-		$returnRawList = false;
-
-		if (isset($attribs['return_raw_list']))
-		{
-			$returnRawList = $attribs['return_raw_list'];
-			unset($attribs['return_raw_list']);
-		}
-
-		if ($returnRawList)
-		{
-			return $plugins;
-		}
-
-		// Determine how to render the payment method (drop-down or radio box)
-		if (!$always_dropdown)
-		{
-			// Show images instead of a drop-down
-			$options = array();
-
-			foreach ($plugins as $plugin)
-			{
-				if (!isset($plugin->image))
-				{
-					$plugin->image = '';
-				}
-				else
-				{
-					$plugin->image = trim($plugin->image);
-				}
-
-				if (empty($plugin->image))
-				{
-					$plugin->image = rtrim(\JURI::base(), '/') . '/media/com_akeebasubs/images/frontend/credit_card_logos.gif';
-				}
-
-				$innerHTML = '<img border="0" src="' . $plugin->image . '" alt="' . $plugin->title . '" /><span></span> ';
-
-				$options[] = array(
-					'value' => $plugin->name,
-					'label' => $innerHTML,
-				);
-
-				// In case we don't have a default selection, select the first item on the list
-				if (empty($selected))
-				{
-					$selected = $plugin->name;
-				}
-			}
-
-			$html = '<div class="akeebasubs-paymentmethod-images">';
-
-			if (!empty($options))
-			{
-				foreach ($options as $o)
-				{
-					$html .= '<div class="radio"><label><input type="radio" name="' . $name . '" id="' .
-					         $name . $o['value'] . '" value="' . $o['value'] . '" ';
-
-					if ($o['value'] == $selected)
-					{
-						$html .= 'checked="checked"';
-					}
-
-					$html .= '/>' . $o['label'] . '</label></div>';
-				}
-			}
-
-			$html .= '</div>';
-
-			return $html;
-		}
-		else
-		{
-			// Show drop-down
-			$options = array();
-
-			if ($default_option)
-			{
-				$options[] = JHtml::_('select.option', '', JText::_('COM_AKEEBASUBS_LEVEL_FIELD_PAYMENT_PLUGINS_UNSELECT'));
-
-				if (!is_array($selected))
-				{
-					$selected  = explode(',', $selected);
-				}
-			}
-
-			foreach ($plugins as $plugin)
-			{
-				$options[] = JHtml::_('select.option', $plugin->name, $plugin->title);
-			}
-
-			return self::genericlist($options, $name, $attribs, $selected, $name);
-		}
-	}
-
-	/**
-	 * Drop-down lis of all payment processors. Alias to paymentmethods() always showing the default option and always
-	 * showing the list as a dropdown.
-	 *
-	 * @param   string  $selected  The key that is selected
-	 * @param   string  $id        The value of the HTML name attribute
-	 * @param   array   $attribs   Additional HTML attributes for the <select> tag
-	 *
-	 * @return  string  HTML for the list
-	 */
-	public static function processors($selected = null, $name = 'processor', $attribs = array())
-	{
-		$attribs['default_option'] = true;
-		$attribs['always_dropdown'] = true;
-
-		return self::paymentmethods($name, $selected, $attribs);
-	}
-
-	/**
 	 * Drop down list of discount modes
 	 *
 	 * @param   string  $name      The field's name
@@ -694,24 +551,6 @@ abstract class Select
 		$options[] = JHtml::_('select.option', '-99', JText::_('COM_AKEEBASUBS_IMPORT_DELIMITERS_CUSTOM'));
 
 		return self::genericlist($options, $name, $attribs, $selected, $name);
-	}
-
-	public static function getAllPaymentMethods()
-	{
-		/** @var PaymentMethods $pluginsModel */
-		$pluginsModel = Container::getInstance('com_akeebasubs')->factory
-			->model('PaymentMethods')->tmpInstance();
-
-		$plugins = $pluginsModel->getPaymentPlugins();
-
-		$ret = [];
-
-		foreach ($plugins as $plugin)
-		{
-			$ret[$plugin->name ] = $plugin->title;
-		}
-
-		return $ret;
 	}
 
 	/**

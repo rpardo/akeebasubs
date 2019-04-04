@@ -9,53 +9,15 @@ defined('_JEXEC') or die();
 
 /** @var \Akeeba\Subscriptions\Site\View\Level\Html $this */
 
-use Akeeba\Subscriptions\Admin\Helper\Image;
-use Akeeba\Subscriptions\Admin\Helper\Message;
-
-use Akeeba\Subscriptions\Admin\Helper\Select;
-
-$paymentMethodsCount = count(Select::paymentmethods('paymentmethod', '', ['id'              => 'paymentmethod',
-																		  'level_id'        => $this->item->akeebasubs_level_id,
-																		  'return_raw_list' => 1]));
-$hidePaymentMethod   =
-	($paymentMethodsCount <= 1) || ($this->validation->price->gross < 0.01);
+$demoPayment = $this->container->params->get('demo_payment', 0);
+$buttonClass = $demoPayment ? 'red' : 'teal';
 
 ?>
 
-{{-- PAYMENT METHODS --}}
-<div id="paymentmethod-container" style="display: {{$hidePaymentMethod ? 'none' : 'inherit'}}">
-	<div class="akeeba-form-group">
-		<label for="paymentmethod">
-			@lang('COM_AKEEBASUBS_LEVEL_FIELD_METHOD')
-		</label>
-
-		<div id="paymentlist-container">
-			<?php
-			/** @var \Akeeba\Subscriptions\Site\Model\PaymentMethods $paymentMethods */
-			$paymentMethods = $this->getContainer()->factory->model('PaymentMethods')->tmpInstance();
-			$defaultPayment = $this->validation->validation->rawDataForDebug['paymentmethod'];
-
-			if (empty($defaultPayment))
-			{
-				$defaultPayment = $paymentMethods->getLastPaymentPlugin($this->container->platform->getUser()->id);
-			}
-
-			echo Select::paymentmethods(
-					'paymentmethod',
-					$defaultPayment,
-					array(
-							'id'       => 'paymentmethod',
-							'level_id' => $this->item->akeebasubs_level_id,
-					)
-			) ?>
-		</div>
-	</div>
-</div>
-
 {{-- SUBSCRIBE BUTTON --}}
 <div class="akeeba-form-group--pull-right">
-	<button id="subscribenow" class="akeeba-btn--block akeeba-btn--teal akeebasubs-btn-big" type="submit">
-		@lang('COM_AKEEBASUBS_LEVEL_BUTTON_SUBSCRIBE')
+	<button id="subscribenow" class="akeeba-btn--block akeeba-btn--{{ $buttonClass }} akeebasubs-btn-big" onclick="return akeebaSubscriptionsStartPayment()">
+		@lang($demoPayment ? 'COM_AKEEBASUBS_LEVEL_BUTTON_SUBSCRIBE_DEMO' : 'COM_AKEEBASUBS_LEVEL_BUTTON_SUBSCRIBE')
 	</button>
 	<div class="akeeba-help-text akeebasubs-level-footer">
 		<p>

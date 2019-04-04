@@ -134,6 +134,17 @@
 			   description="COM_AKEEBASUBS_CONFIG_PRIVACY_URL_DESC"
 		/>
 
+		<field name="demo_payment"
+			   type="radio" class="switcher btn-group"
+			   default="0"
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_DEMO_PAYMENT_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_DEMO_PAYMENT_DESC"
+			   >
+			<option value="0">JNo</option>
+			<option value="1">JYes</option>
+
+		</field>
+
 		<field name="siteurl" type="hidden" default=""/>
 	</fieldset>
 

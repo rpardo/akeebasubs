@@ -31,9 +31,6 @@ class StateData
 	/** @var   integer  Subscription level ID */
 	public $id = 0;
 
-	/** @var   string   Payment method slug */
-	public $paymentmethod = '';
-
 	/** @var   string   Payment processor key */
 	public $processorkey = '';
 
@@ -116,7 +113,6 @@ class StateData
 			'firstrun'      => $firstRun,
 			'slug'          => $model->getState('slug', '', 'string'),
 			'id'            => $model->getState('id', 0, 'int'),
-			'paymentmethod' => $model->getState('paymentmethod', 'none', 'cmd'),
 			'processorkey'  => $model->getState('processorkey', '', 'raw'),
 			'username'      => $model->getState('username', '', 'string'),
 			'password'      => $model->getState('password', '', 'raw'),
