@@ -39,3 +39,4 @@
 * Removed backend user information management page (gh-359)
 * Removed frontend user information management page (gh-359)
 * Removed the plugins managing automatic user log out upon subscription purchase (gh-359)
+* Removed unused update options
