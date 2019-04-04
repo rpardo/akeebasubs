@@ -38,6 +38,11 @@
  * @license   GNU General Public License version 3, or later
  */
   /*
+ * @package   AkeebaSubs
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
+ */
+  /*
    * Level view. Subscription page.
    */
   /*
@@ -378,6 +383,45 @@
 #akeebasubs .akeebasubs-strappy-price-decimal {
   font-size: 50%;
 }
+@font-face {
+  font-family: 'Akeeba-Subs-Payment-Methods';
+  src: url('../fonts/Akeeba-Subs-Payment-Methods.eot?1ga4cn');
+  src: url('../fonts/Akeeba-Subs-Payment-Methods.eot?1ga4cn#iefix') format('embedded-opentype'), url('../fonts/Akeeba-Subs-Payment-Methods.ttf?1ga4cn') format('truetype'), url('../fonts/Akeeba-Subs-Payment-Methods.woff?1ga4cn') format('woff'), url('../fonts/Akeeba-Subs-Payment-Methods.svg?1ga4cn#Akeeba-Subs-Payment-Methods') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+#akeebasubs [class^="akpayment-icon-"],
+#akeebasubs [class*=" akpayment-icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'Akeeba-Subs-Payment-Methods' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+#akeebasubs .akpayment-icon-paypal:before {
+  content: "\e900";
+}
+#akeebasubs .akpayment-icon-visa:before {
+  content: "\e901";
+}
+#akeebasubs .akpayment-icon-mastercard:before {
+  content: "\e902";
+}
+#akeebasubs .akpayment-icon-amex:before {
+  content: "\e903";
+}
+#akeebasubs .akpayment-icon-bank:before {
+  content: "\e904";
+}
+#akeebasubs .akpayment-icon-apple:before {
+  content: "\e905";
+}
 #akeebasubs form > div[class*=akeeba-container] > div[class*=akeeba-panel] {
   margin-top: 0;
 }
@@ -398,62 +442,6 @@
   font-size: 150%;
   padding: 1em;
 }
-#akeebasubs #REMOVE_OLD_RULES label {
-  font-weight: normal;
-}
-#akeebasubs #REMOVE_OLD_RULES #akeebasubs-panel-order hr {
-  margin: 1.5em 0;
-  border-bottom: double #d6d6d6;
-}
-#akeebasubs #REMOVE_OLD_RULES #akeebasubs-level-login {
-  padding-bottom: 1em;
-}
-#akeebasubs #REMOVE_OLD_RULES #akeebasubs-sum-container {
-  font-size: 120%;
-  margin: 0.8em 0;
-}
-#akeebasubs #REMOVE_OLD_RULES #akeebasubs-sum-price {
-  font-size: 140%;
-}
-#akeebasubs #REMOVE_OLD_RULES #akeebasubs-sum-discount-container {
-  color: #d6d6d6;
-}
-#akeebasubs #REMOVE_OLD_RULES #akeebasubs-sum-original-container {
-  color: #d6d6d6;
-}
-#akeebasubs #REMOVE_OLD_RULES #akeebasubs-vat-container {
-  color: #514F50;
-}
-#akeebasubs #REMOVE_OLD_RULES input.coupon-valid {
-  color: #93C34E;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-#akeebasubs #REMOVE_OLD_RULES input.coupon-invalid {
-  color: #E2363C;
-  font-weight: bold;
-  font-style: italic;
-}
-#akeebasubs #REMOVE_OLD_RULES div.akeebasubs-paymentmethod-images div.radio {
-  border: thin solid #d6d6d6;
-  -webkit-border-radius: 10px;
-  -moz-border-radius: 10px;
-  border-radius: 10px;
-  background: #ffffff;
-  padding: 1em;
-  margin: 1em 0;
-}
-#akeebasubs #REMOVE_OLD_RULES div.akeebasubs-paymentmethod-images div.radio label {
-  width: 100%;
-}
-#akeebasubs #REMOVE_OLD_RULES div.akeebasubs-paymentmethod-images div.radio img {
-  display: block;
-  clear: both;
-  margin-bottom: 0.3em;
-}
-#akeebasubs #REMOVE_OLD_RULES label.checkbox {
-  padding-left: 20px;
-}
 #akeebasubs #akeebasubs-coupon-code-outer-container {
   margin-top: 6pt;
 }
@@ -471,6 +459,13 @@
 }
 #akeebasubs #akeebasubs-sum-price {
   font-size: 12pt;
+}
+#akeebasubs .akeebasubs-level-footer {
+  text-align: center;
+}
+#akeebasubs .akeebasubs-level-footer .akeebasubs-payment-methods {
+  color: #333333;
+  font-size: 18pt;
 }
 #akeebasubs td.subscription-label {
   font-weight: bold;

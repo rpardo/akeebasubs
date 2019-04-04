@@ -57,4 +57,17 @@ $hidePaymentMethod   =
 	<button id="subscribenow" class="akeeba-btn--block akeeba-btn--teal akeebasubs-btn-big" type="submit">
 		@lang('COM_AKEEBASUBS_LEVEL_BUTTON_SUBSCRIBE')
 	</button>
+	<div class="akeeba-help-text akeebasubs-level-footer">
+		<p>
+			@sprintf('COM_AKEEBASUBS_LEVEL_FOOTERTEXT', \Joomla\CMS\Factory::getConfig()->get('sitename'))
+		</p>
+		<p class="akeebasubs-payment-methods">
+			<span class="akpayment-icon-paypal" title="PayPal" class="hasTooltip"></span>
+			<span class="akpayment-icon-visa" title="VISA" class="hasTooltip"></span>
+			<span class="akpayment-icon-mastercard" title="MasterCard" class="hasTooltip"></span>
+			<span class="akpayment-icon-amex" title="American Express" class="hasTooltip"></span>
+			<span class="akpayment-icon-bank" title="Wire Transfer, Bank Deposit, SEPA" class="hasTooltip"></span>
+			<span class="akpayment-icon-apple" title="Apple Pay" class="hasTooltip"></span>
+		</p>
+	</div>
 </div>
