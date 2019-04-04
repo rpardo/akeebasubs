@@ -41,3 +41,55 @@ defined('_JEXEC') or die();
     </label>
     @jhtml('FEFHelper.select.booleanswitch', 'forever', $item->forever)
 </div>
+
+<h4>@lang('COM_AKEEBASUBS_LEVEL_HEADER_PADDLE')</h4>
+
+<div class="akeeba-form-group">
+    <label for="paddle_product_id">
+        @lang('COM_AKEEBASUBS_LEVEL_FIELD_PADDLE_PRODUCT_ID')
+    </label>
+    <input type="text" name="paddle_product_id" id="paddle_product_id" value="{{{ $item->getFieldValue('paddle_product_id', '') }}}" />
+</div>
+
+<div class="akeeba-form-group">
+    <label for="paddle_secret">
+        @lang('COM_AKEEBASUBS_LEVEL_FIELD_PADDLE_SECRET')
+    </label>
+    <input type="text" name="paddle_secret" id="paddle_secret" value="{{{ $item->getFieldValue('paddle_secret', '') }}}" />
+</div>
+
+<div class="akeeba-form-group">
+    <label >
+        @lang('COM_AKEEBASUBS_LEVEL_FIELD_UPSELL')
+    </label>
+    <div class="akeeba-toggle">
+        <input id="upsell-never" type="radio" name="upsell" value="never"
+                {{ ($item->getFieldValue('upsell', 'never') == 'never') ? 'checked' : '' }}
+        />
+        <label for="upsell-never" class="green">Never</label>
+
+        <input id="upsell-renewal" type="radio" name="upsell" value="renewal"
+                {{ ($item->getFieldValue('upsell', 'never') == 'renewal') ? 'checked' : '' }}
+        />
+        <label for="upsell-renewal" class="orange">Renewal</label>
+
+        <input id="upsell-always" type="radio" name="upsell" value="always"
+                {{ ($item->getFieldValue('upsell', 'never') == 'always') ? 'checked' : '' }}
+        />
+        <label for="upsell-always" class="red">Always</label>
+    </div>
+</div>
+
+<div class="akeeba-form-group">
+    <label for="paddle_plan_id">
+        @lang('COM_AKEEBASUBS_LEVEL_FIELD_PADDLE_PLAN_ID')
+    </label>
+    <input type="text" name="paddle_plan_id" id="paddle_plan_id" value="{{{ $item->getFieldValue('paddle_plan_id', '') }}}" />
+</div>
+
+<div class="akeeba-form-group">
+    <label for="paddle_plan_secret">
+        @lang('COM_AKEEBASUBS_LEVEL_FIELD_PADDLE_PLAN_SECRET')
+    </label>
+    <input type="text" name="paddle_plan_secret" id="paddle_plan_secret" value="{{{ $item->getFieldValue('paddle_plan_secret', '') }}}" />
+</div>
