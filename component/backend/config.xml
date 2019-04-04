@@ -134,18 +134,33 @@
 			   description="COM_AKEEBASUBS_CONFIG_PRIVACY_URL_DESC"
 		/>
 
+		<field name="siteurl" type="hidden" default=""/>
+	</fieldset>
+
+	<fieldset name="paddle" label="COM_AKEEBASUBS_CONFIG_PADDLE_TITLE" description="COM_AKEEBASUBS_CONFIG_PADDLE_DESC">
 		<field name="demo_payment"
 			   type="radio" class="switcher btn-group"
 			   default="0"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_DEMO_PAYMENT_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_DEMO_PAYMENT_DESC"
-			   >
+		>
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 
 		</field>
 
-		<field name="siteurl" type="hidden" default=""/>
+		<field name="vendor_id"
+			   type="text"
+			   default="0"
+			   label="COM_AKEEBASUBS_CONFIG_PADDLE_VENDOR_ID_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_PADDLE_VENDOR_ID_DESC" />
+
+		<field name="vendor_auth_code"
+			   type="text"
+			   default="0"
+			   label="COM_AKEEBASUBS_CONFIG_PADDLE_VENDOR_AUTH_CODE_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_PADDLE_VENDOR_AUTH_CODE_LABEL" />
+
 	</fieldset>
 
 	<fieldset
