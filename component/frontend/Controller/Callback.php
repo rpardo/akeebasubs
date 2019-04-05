@@ -33,7 +33,7 @@ class Callback extends Controller
 
 		parent::__construct($container, $config);
 
-		$this->predefinedTaskList = ['callback', 'cancel'];
+		$this->predefinedTaskList = ['callback'];
 
 		$this->cacheableTasks = [];
 	}

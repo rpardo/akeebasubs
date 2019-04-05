@@ -14,6 +14,7 @@ use Akeeba\Subscriptions\Site\Model\Subscribe\StateData;
 use Akeeba\Subscriptions\Site\Model\Subscribe\Validation;
 use Akeeba\Subscriptions\Site\Model\Subscribe\ValidatorFactory;
 use FOF30\Container\Container;
+use FOF30\Input\Input;
 use FOF30\Model\Model;
 use FOF30\Utils\Ip;
 use JUserHelper;
@@ -765,6 +766,13 @@ class Subscribe extends Model
 		$method      = $this->input->getMethod();
 		$alertName   = $this->input->getCmd('alert_name', null);
 		$handler     = 'Paddle';
+
+		// POST requests get special treatment
+		if ($method == 'POST')
+		{
+			$input = new Input('POST');
+			$data = $input->getData();
+		}
 
 		if ($demoPayment && ($method == 'GET') && ($alertName == 'akeebasubs_none'))
 		{
