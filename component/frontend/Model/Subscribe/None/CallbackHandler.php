@@ -10,14 +10,14 @@ namespace Akeeba\Subscriptions\Site\Model\Subscribe\None;
 
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 use Akeeba\Subscriptions\Site\Model\Subscribe\CallbackInterface;
-use Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits\FixSubscriptionDateTrait;
+use Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits\FixSubscriptionDate;
 use FOF30\Container\Container;
 use Joomla\CMS\Language\Text;
 use RuntimeException;
 
 class CallbackHandler implements CallbackInterface
 {
-	use FixSubscriptionDateTrait;
+	use FixSubscriptionDate;
 
 	/**
 	 * The component's Container

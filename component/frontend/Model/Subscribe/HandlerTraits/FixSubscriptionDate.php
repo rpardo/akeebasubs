@@ -16,7 +16,7 @@ use FOF30\Date\Date;
 /**
  * Helps with handling start and end dates of subscriptions
  */
-trait FixSubscriptionDateTrait
+trait FixSubscriptionDate
 {
 	/**
 	 * Fixes the starting and end dates when a payment is accepted after the subscription's start date. This works

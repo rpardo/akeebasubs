@@ -9,7 +9,7 @@ namespace Akeeba\Subscriptions\Site\Model;
 
 use Akeeba\Subscriptions\Admin\PluginAbstracts\AkpaymentBase;
 use Akeeba\Subscriptions\Site\Model\Subscribe\CallbackInterface;
-use Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits\FixSubscriptionDateTrait;
+use Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits\FixSubscriptionDate;
 use Akeeba\Subscriptions\Site\Model\Subscribe\StateData;
 use Akeeba\Subscriptions\Site\Model\Subscribe\Validation;
 use Akeeba\Subscriptions\Site\Model\Subscribe\ValidatorFactory;
@@ -43,7 +43,7 @@ defined('_JEXEC') or die;
  */
 class Subscribe extends Model
 {
-	use FixSubscriptionDateTrait;
+	use FixSubscriptionDate;
 
 	/**
 	 * Raw HTML source of the payment form, as returned by the payment plugin

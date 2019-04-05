@@ -149,6 +149,8 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeebasubs/Model/TaxRules.php',
 			'administrator/components/com_akeebasubs/Model/Users.php',
 
+            'administrator/components/com_akeebasubs/PluginAbstracts/AkpaymentsBase.php',
+
             'administrator/components/com_akeebasubs/ViewTemplates/ControlPanel/wizard.blade.php',
             'administrator/components/com_akeebasubs/ViewTemplates/Subscriptions/form_customparams.blade.php',
             'administrator/components/com_akeebasubs/ViewTemplates/Common/EntryPaymentPlugins.php',

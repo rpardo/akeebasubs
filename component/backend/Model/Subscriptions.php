@@ -71,7 +71,9 @@ use JLoader;
  * @method  $this  first_contact()               first_contact(string $v)
  * @method  $this  second_contact()              second_contact(string $v)
  * @method  $this  after_contact()               after_contact(string $v)
- * @method  $this _noemail()                     _noemail(bool $v)          	    Do not send email on save when true (resets after successful save)
+ * @method  $this  _noemail()                    _noemail(bool $v)          	    Do not send email on save when true (resets after successful save)
+ * @method  $this  _dontNotify()                 _dontNotify(bool $v)
+ * @method  $this  _dontCheckPaymentID()         _dontCheckPaymentID(bool $v)
  * @method  $this refresh()  					 refresh(int $v)            	    Set to 1 to ignore filters, used for running integrations on all subscriptions
  * @method  $this filter_discountmode() 		 filter_discountmode(string $v)     Discount filter mode (none, coupon, upgrade)
  * @method  $this filter_discountcode() 		 filter_discountcode(string $v)     Discount code search (coupon code/title or upgrade title)
