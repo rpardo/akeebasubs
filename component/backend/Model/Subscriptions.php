@@ -39,6 +39,12 @@ use JLoader;
  * @property  array 		$params						Parameters, used by custom fields and plugins
  * @property  string		$ip							IP address of the user who created this subscription
  * @property  string		$ip_country					Country of the user who created this subscription, based on IP geolocation
+ * @property  string        $ua                         User agent
+ * @property  int           $mobile                     Is this subscription originating from a mobile device?
+ * @property  string        $receipt_url                Paddle receipt URL
+ * @property  string        $update_url                 Subscription update URL
+ * @property  string        $cancel_url                 Subscription cancellation URL
+ * @property  string        $payment_url                URL used to pay for the subscription
  * @property  int			$akeebasubs_coupon_id		Coupon code used. FK to coupon relation.
  * @property  int			$akeebasubs_upgrade_id		Upgrade rule used. FK to upgrade relation
  * @property  int			$akeebasubs_invoice_id		Invoice issues. FK to invoice relation.

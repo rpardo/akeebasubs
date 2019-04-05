@@ -208,6 +208,10 @@ class Subscribe extends Controller
 					'url'    => $customCheckout->getCheckoutUrl($newSubscription),
 					'info'   => 'Regular payment',
 				];
+
+				// Store the payment URL to the database
+				$newSubscription->payment_url = $ret['url'];
+				$newSubscription->save();
 			}
 			catch (\Throwable $e)
 			{
