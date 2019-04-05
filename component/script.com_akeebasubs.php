@@ -234,8 +234,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			// Akeeba Subscriptions 7 - Only support MoR integrations
 			'media/com_akeebasubs/tcpdf',
 
-            'administrator/components/com_akeebasubs/assets/elements',
-            'administrator/components/com_akeebasubs/assets/tcpdf',
+            'administrator/components/com_akeebasubs/assets',
 			'administrator/components/com_akeebasubs/creditnotes',
 			'administrator/components/com_akeebasubs/invoices',
 
