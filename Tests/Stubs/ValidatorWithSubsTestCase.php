@@ -125,7 +125,6 @@ abstract class ValidatorWithSubsTestCase extends ValidatorTestCase
 			'net_amount'            => 100,
 			'tax_amount'            => 0,
 			'gross_amount'          => 0,
-			'recurring_amount'      => 0,
 			'tax_percent'           => 0,
 			'created_on'            => $jNow->toSql(),
 			'params'                => '',

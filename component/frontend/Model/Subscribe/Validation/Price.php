@@ -78,15 +78,6 @@ class Price extends Base
 		// Calculate the gross amount minimising rounding errors
 		$grossAmount = $basePrice;
 
-		// Calculate the recurring amount, if necessary
-		$recurringAmount = 0;
-
-		if ($basePriceStructure['isRecurring'])
-		{
-			$discountFactor = $discount / $netPrice;
-			$recurringAmount = $basePriceStructure['levelNet'] * (1.0 - $discountFactor);
-		}
-
 		$result = array(
 			'net'        => sprintf('%1.02F', round($netPrice, 2)),
 			'realnet'    => sprintf('%1.02F', round($basePriceStructure['levelNet'], 2)),
@@ -94,7 +85,6 @@ class Price extends Base
 			'taxrate'    => sprintf('%1.02F', 0.00),
 			'tax'        => sprintf('%1.02F', 0.00),
 			'gross'      => sprintf('%1.02F', round($grossAmount, 2)),
-			'recurring'  => sprintf('%1.02F', round($recurringAmount, 2)),
 			'usecoupon'  => $useCoupon ? 1 : 0,
 			'useauto'    => $useAuto ? 1 : 0,
 			'couponid'   => $couponid,

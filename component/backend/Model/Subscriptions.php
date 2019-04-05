@@ -34,7 +34,6 @@ use JLoader;
  * @property  float			$net_amount					Payable amount without tax
  * @property  float			$tax_amount					Tax portion of payable amount
  * @property  float			$gross_amount				Total payable amount
- * @property  float			$recurring_amount			Total payable amount for further recurring subscriptions
  * @property  float			$tax_percent				% of tax (tax_amount / net_amount)
  * @property  string		$created_on					Date/time when this subscription was created
  * @property  array 		$params						Parameters, used by custom fields and plugins
@@ -59,7 +58,6 @@ use JLoader;
  * @method  $this  net_amount()                  net_amount(float $v)
  * @method  $this  tax_amount()                  tax_amount(float $v)
  * @method  $this  gross_amount()                gross_amount(float $v)
- * @method  $this  recurring_amount()            recurring_amount(float $v)
  * @method  $this  tax_percent()                 tax_percent(float $v)
  * @method  $this  created_on()                  created_on(string $v)
  * @method  $this  akeebasubs_coupon_id()        akeebasubs_coupon_id(int $v)
@@ -1194,7 +1192,6 @@ class Subscriptions extends DataModel
 			'net_amount',
 			'tax_amount',
 			'gross_amount',
-			'recurring_amount',
 			'tax_percent',
 			'params',
 			'akeebasubs_coupon_id',

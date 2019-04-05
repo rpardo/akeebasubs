@@ -139,7 +139,6 @@ class MessageTest extends \PHPUnit\Framework\TestCase
 			['[SUB:NET_AMOUNT]', true, '90.00'],
 			['[SUB:TAX_AMOUNT]', true, '9.00'],
 			['[SUB:GROSS_AMOUNT]', true, '99.00'],
-			['[SUB:RECURRING_AMOUNT]', true, 0],
 			['[SUB:TAX_PERCENT]', true, '10'],
 			['[SUB:CREATED_ON]', true, '2014-04-30 00:00:00'],
 			['[SUB:IP]', true, '8.8.8.8'],

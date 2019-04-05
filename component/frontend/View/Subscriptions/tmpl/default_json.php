@@ -21,7 +21,6 @@ foreach ($this->items as $item)
 		'net_amount',
 		'tax_amount',
 		'gross_amount',
-		'recurring_amount',
 		'tax_percent',
 		'prediscount_amount',
 		'discount_amount',

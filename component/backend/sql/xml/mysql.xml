@@ -269,7 +269,6 @@ CREATE TABLE `#__akeebasubs_subscriptions` (
 	`net_amount` FLOAT NOT NULL,
 	`tax_amount` FLOAT NOT NULL,
 	`gross_amount` FLOAT NOT NULL,
-	`recurring_amount` FLOAT NULL DEFAULT '0',
 	`tax_percent` FLOAT DEFAULT NULL,
 	`created_on` datetime NOT NULL default '0000-00-00 00:00:00',
 	`params` TEXT,
@@ -467,6 +466,13 @@ ALTER TABLE `#__akeebasubs_subscriptions` DROP COLUMN `affiliate_comission`;
             <condition type="missing" value="affiliate_comission_alt" operator="not"  />
             <query><![CDATA[
 ALTER TABLE `#__akeebasubs_subscriptions` DROP COLUMN `affiliate_comission_alt`;
+            ]]></query>
+        </action>
+
+        <action table="#__akeebasubs_subscriptions" canfail="1">
+            <condition type="missing" value="recurring_amount" operator="not"  />
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_subscriptions` DROP COLUMN `recurring_amount`;
             ]]></query>
         </action>
 

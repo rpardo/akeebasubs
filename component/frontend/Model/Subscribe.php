@@ -704,7 +704,6 @@ class Subscribe extends Model
 			'net_amount'                 => $validation->price->net - $validation->price->discount,
 			'tax_amount'                 => $validation->price->tax,
 			'gross_amount'               => $validation->price->gross,
-			'recurring_amount'           => $validation->price->recurring,
 			'tax_percent'                => $validation->price->taxrate,
 			'created_on'                 => $mNow,
 			'params'                     => $subcustom,

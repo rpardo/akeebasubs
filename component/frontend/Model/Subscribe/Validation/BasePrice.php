@@ -16,7 +16,7 @@ class BasePrice extends Base
 	/**
 	 * Get the base price including any price modifiers set by the plugins
 	 *
-	 * @return  array    basePrice, net, isRecurring
+	 * @return  array    levelNet, isRecurring
 	 */
 	protected function getValidationResult()
 	{
