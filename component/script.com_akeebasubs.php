@@ -182,6 +182,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'components/com_akeebasubs/View/Level/tmpl/default_persubscription.blade.php',
 			'components/com_akeebasubs/View/Level/tmpl/default_prepayment.blade.php',
 			'components/com_akeebasubs/View/Level/tmpl/default_summary.blade.php',
+			'components/com_akeebasubs/View/Subscriptions/tmpl/default.php',
 		],
 		'folders' => [
 			'administrator/components/com_akeebasubs/commands',

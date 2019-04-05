@@ -371,6 +371,10 @@ class Subscribe extends Model
 			$user->bind($params);
 			$userIsSaved = $user->save();
 		}
+		else
+		{
+			$userIsSaved = true;
+		}
 
 		// Send activation email for free subscriptions if confirmfree is enabled
 		if ($user->block && ($level->price < 0.01))

@@ -276,10 +276,10 @@ CREATE TABLE `#__akeebasubs_subscriptions` (
 	`ip_country` VARCHAR(255),
 	`ua` VARCHAR(255),
 	`mobile` TINYINT(1) NOT NULL DEFAULT '0',
-	`receipt_url` VARCHAR(255) NULL,
-    `update_url` VARCHAR(255) NULL,
-    `cancel_url` VARCHAR(255) NULL,
-    `payment_url` VARCHAR(255) NULL,
+	`receipt_url` MEDIUMTEXT NULL,
+    `update_url` MEDIUMTEXT NULL,
+    `cancel_url` MEDIUMTEXT NULL,
+    `payment_url` MEDIUMTEXT NULL,
 
 	`akeebasubs_coupon_id` BIGINT(20) NULL,
 	`akeebasubs_upgrade_id` BIGINT(20) NULL,
@@ -581,17 +581,17 @@ AFTER `paddle_plan_id`
             <condition type="missing" value="receipt_url"   />
             <query><![CDATA[
 ALTER TABLE `#__akeebasubs_subscriptions` ADD COLUMN
-`receipt_url` VARCHAR(255) NULL
+`receipt_url` MEDIUMTEXT NULL
 AFTER `mobile`
             ]]></query>
             <query><![CDATA[
 ALTER TABLE `#__akeebasubs_subscriptions` ADD COLUMN
-`update_url` VARCHAR(255) NULL
+`update_url` MEDIUMTEXT NULL
 AFTER `receipt_url`
             ]]></query>
             <query><![CDATA[
 ALTER TABLE `#__akeebasubs_subscriptions` ADD COLUMN
-`cancel_url` VARCHAR(255) NULL
+`cancel_url` MEDIUMTEXT NULL
 AFTER `update_url`
             ]]></query>
         </action>
@@ -600,7 +600,7 @@ AFTER `update_url`
             <condition type="missing" value="payment_url"   />
             <query><![CDATA[
 ALTER TABLE `#__akeebasubs_subscriptions` ADD COLUMN
-`payment_url` VARCHAR(255) NULL
+`payment_url` MEDIUMTEXT NULL
 AFTER `cancel_url`
             ]]></query>
         </action>
