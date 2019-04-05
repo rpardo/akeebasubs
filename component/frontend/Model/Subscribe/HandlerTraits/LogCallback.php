@@ -11,8 +11,20 @@ namespace Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits;
 use Joomla\CMS\Filesystem\File;
 use Joomla\Registry\Registry;
 
+/**
+ * Webhook callback information logging
+ *
+ * @since   7.0.0
+ */
 trait LogCallback
 {
+	/**
+	 * Maximum size of a log file before triggering automatic rotation
+	 *
+	 * @var   int
+	 *
+	 * @since 7.0.0
+	 */
 	protected static $maxLogFileSize = 1048756;
 
 	/**
@@ -22,6 +34,8 @@ trait LogCallback
 	 * @param   string  $decision
 	 *
 	 * @return  void
+	 *
+	 * @since   7.0.0
 	 */
 	protected function logCallback(array $data, string $decision): void
 	{
@@ -58,6 +72,8 @@ TXT;
 	 * rotated.
 	 *
 	 * @return  string
+	 *
+	 * @since   7.0.0
 	 */
 	private function getLogFilePath(): string
 	{
@@ -107,6 +123,8 @@ TXT;
 	 * @param   string  $webhookName  The Paddle webhook name.
 	 *
 	 * @return  string
+	 *
+	 * @since   7.0.0
 	 */
 	private function translateAlertName(string $webhookName): string
 	{

@@ -11,7 +11,12 @@ namespace Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 use FOF30\Date\Date;
 
-class RecurringSubscriptions
+/**
+ * Handle the updates of recurring subscriptions
+ *
+ * @since   7.0.0
+ */
+trait RecurringSubscriptions
 {
 	/**
 	 * Handles a recurring subscription's payment
@@ -20,7 +25,7 @@ class RecurringSubscriptions
 	 * @param   array         $updates      Updates to the currently active subscription
 	 *
 	 *
-	 * @since version
+	 * @since   7.0.0
 	 */
 	protected function handleRecurringSubscription(Subscriptions $subscription, array $updates): array
 	{

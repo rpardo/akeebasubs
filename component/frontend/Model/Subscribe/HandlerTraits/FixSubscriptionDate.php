@@ -15,6 +15,8 @@ use FOF30\Date\Date;
 
 /**
  * Helps with handling start and end dates of subscriptions
+ *
+ * @since   7.0.0
  */
 trait FixSubscriptionDate
 {
@@ -28,6 +30,8 @@ trait FixSubscriptionDate
 	 * @param   array          $updates       Updates to be applied to $subscription
 	 *
 	 * @return  array  Updates to be applied to $subscription (may be modified compared to input)
+	 *
+	 * @since   7.0.0
 	 */
 	public function fixSubscriptionDates(Subscriptions $subscription, array $updates): array
 	{

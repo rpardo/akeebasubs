@@ -159,7 +159,13 @@
 			   type="text"
 			   default="0"
 			   label="COM_AKEEBASUBS_CONFIG_PADDLE_VENDOR_AUTH_CODE_LABEL"
-			   description="COM_AKEEBASUBS_CONFIG_PADDLE_VENDOR_AUTH_CODE_LABEL" />
+			   description="COM_AKEEBASUBS_CONFIG_PADDLE_VENDOR_AUTH_CODE_DESC" />
+
+		<field name="public_key"
+			   type="textarea" cols="60" rows="14"
+			   default=""
+			   label="COM_AKEEBASUBS_CONFIG_PADDLE_PUBLIC_KEY_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_PADDLE_PUBLIC_KEY_DESC" />
 
 	</fieldset>
 
