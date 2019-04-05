@@ -739,15 +739,6 @@ class Subscribe extends Model
 		return $subscription;
 	}
 
-	public function runCancelRecurring()
-	{
-		$state = $this->getStateVariables();
-
-		$data = $this->input->getData();
-
-		// TODO
-	}
-
 	/**
 	 * Runs a payment callback
 	 *
