@@ -276,6 +276,9 @@ CREATE TABLE `#__akeebasubs_subscriptions` (
 	`ip_country` VARCHAR(255),
 	`ua` VARCHAR(255),
 	`mobile` TINYINT(1) NOT NULL DEFAULT '0',
+	`receipt_url` VARCHAR(255) NULL,
+    `update_url` VARCHAR(255) NULL,
+    `cancel_url` VARCHAR(255) NULL,
 
 	`akeebasubs_coupon_id` BIGINT(20) NULL,
 	`akeebasubs_upgrade_id` BIGINT(20) NULL,
@@ -381,35 +384,6 @@ ALTER TABLE `#__akeebasubs_levels` DROP COLUMN `payment_plugins`;
             <condition type="missing" value="signupfee" operator="not"  />
             <query><![CDATA[
 ALTER TABLE `#__akeebasubs_levels` DROP COLUMN `signupfee`;
-            ]]></query>
-        </action>
-
-        <action table="#__akeebasubs_subscriptions" canfail="1">
-            <condition type="missing" value="paddle_product_id"   />
-            <query><![CDATA[
-ALTER TABLE `#__akeebasubs_levels` ADD COLUMN
-`paddle_product_id` varchar(100) NULL
-AFTER `price`
-            ]]></query>
-            <query><![CDATA[
-ALTER TABLE `#__akeebasubs_levels` ADD COLUMN
-`paddle_secret` varchar(100) NULL
-AFTER `paddle_product_id`
-            ]]></query>
-            <query><![CDATA[
-ALTER TABLE `#__akeebasubs_levels` ADD COLUMN
-`upsell` ENUM('never', 'always', 'renewal') DEFAULT 'never'
-AFTER `paddle_secret`
-            ]]></query>
-            <query><![CDATA[
-ALTER TABLE `#__akeebasubs_levels` ADD COLUMN
-`paddle_plan_id` varchar(100) NULL
-AFTER `upsell`
-            ]]></query>
-            <query><![CDATA[
-ALTER TABLE `#__akeebasubs_levels` ADD COLUMN
-`paddle_plan_secret` varchar(100) NULL
-AFTER `paddle_plan_id`
             ]]></query>
         </action>
 
@@ -567,6 +541,57 @@ DROP TABLE IF EXISTS `#__akeebasubs_states`;
             <condition type="missing" value="" operator="not" />
             <query><![CDATA[
 DROP TABLE IF EXISTS`#__akeebasubs_taxrules`
+            ]]></query>
+        </action>
+
+
+
+        <!-- New columns -->
+        <action table="#__akeebasubs_levels" canfail="0">
+            <condition type="missing" value="paddle_product_id"   />
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_levels` ADD COLUMN
+`paddle_product_id` varchar(100) NULL
+AFTER `price`
+            ]]></query>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_levels` ADD COLUMN
+`paddle_secret` varchar(100) NULL
+AFTER `paddle_product_id`
+            ]]></query>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_levels` ADD COLUMN
+`upsell` ENUM('never', 'always', 'renewal') DEFAULT 'never'
+AFTER `paddle_secret`
+            ]]></query>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_levels` ADD COLUMN
+`paddle_plan_id` varchar(100) NULL
+AFTER `upsell`
+            ]]></query>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_levels` ADD COLUMN
+`paddle_plan_secret` varchar(100) NULL
+AFTER `paddle_plan_id`
+            ]]></query>
+        </action>
+
+        <action table="#__akeebasubs_subscriptions" canfail="0">
+            <condition type="missing" value="receipt_url"   />
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_subscriptions` ADD COLUMN
+`receipt_url` VARCHAR(255) NULL
+AFTER `mobile`
+            ]]></query>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_subscriptions` ADD COLUMN
+`update_url` VARCHAR(255) NULL
+AFTER `receipt_url`
+            ]]></query>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_subscriptions` ADD COLUMN
+`cancel_url` VARCHAR(255) NULL
+AFTER `update_url`
             ]]></query>
         </action>
     </sql>
