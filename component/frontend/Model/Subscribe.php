@@ -16,6 +16,7 @@ use Akeeba\Subscriptions\Site\Model\Subscribe\ValidatorFactory;
 use FOF30\Container\Container;
 use FOF30\Model\Model;
 use FOF30\Utils\Ip;
+use JUserHelper;
 use RuntimeException;
 use JLoader;
 use Joomla\CMS\Environment\Browser as JBrowser;
@@ -335,7 +336,6 @@ class Subscribe extends Model
 			// We have to use JUser directly instead of Factory getUser
 			$user = new JUser(0);
 
-			JLoader::import('joomla.application.component.helper');
 			$usersConfig = \JComponentHelper::getParams('com_users');
 			$newUsertype = $usersConfig->get('new_usertype');
 
@@ -357,11 +357,9 @@ class Subscribe extends Model
 			// We always block the user, so that only a successful payment or
 			// clicking on the email link activates his account. This is to
 			// prevent spam registrations when the subscription form is abused.
-			JLoader::import('joomla.user.helper');
-			JLoader::import('cms.application.helper');
 			$params['block'] = 1;
 
-			$randomString = \JUserHelper::genRandomPassword();
+			$randomString = JUserHelper::genRandomPassword();
 			$hash = \JApplicationHelper::getHash($randomString);
 			$params['activation'] = $hash;
 
@@ -384,9 +382,8 @@ class Subscribe extends Model
 
 			if (!empty($state->password) && ($state->password == $state->password2))
 			{
-				JLoader::import('joomla.user.helper');
-				$salt = \JUserHelper::genRandomPassword(32);
-				$pass = \JUserHelper::getCryptedPassword($state->password, $salt);
+				$salt = JUserHelper::genRandomPassword(32);
+				$pass = JUserHelper::getCryptedPassword($state->password, $salt);
 				$updates['password'] = $pass . ':' . $salt;
 			}
 
@@ -684,7 +681,6 @@ class Subscribe extends Model
 		}
 
 		// Get the User Agent string
-		JLoader::import('joomla.environment.browser');
 		$browser = new JBrowser();
 		$ua      = $browser->getAgentString();
 		$mobile  = $browser->isMobile();
@@ -938,7 +934,7 @@ class Subscribe extends Model
 		// Check if the user needs to activate their account.
 		if (($useractivation == 1) || ($useractivation == 2))
 		{
-			$user->activation    = \JApplicationHelper::getHash(\JUserHelper::genRandomPassword());
+			$user->activation    = \JApplicationHelper::getHash(JUserHelper::genRandomPassword());
 			$user->block         = 1;
 			$user->lastvisitDate = Factory::getDbo()->getNullDate();
 		}

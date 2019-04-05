@@ -74,8 +74,6 @@ class Html extends \FOF30\View\DataView\Html
 
 		if ($this->items->count())
 		{
-			\JLoader::import('joomla.utilities.date');
-
 			/** @var Subscriptions $sub */
 			foreach ($this->items as $sub)
 			{

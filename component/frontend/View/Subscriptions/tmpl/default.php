@@ -12,8 +12,6 @@ defined('_JEXEC') or die();
 use Akeeba\Subscriptions\Admin\Helper\Format;
 use FOF30\Date\Date;
 
-JLoader::import('joomla.utilities.date');
-
 if (!property_exists($this, 'extensions'))
 {
 	$this->extensions = array();

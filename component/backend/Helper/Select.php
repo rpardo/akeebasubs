@@ -186,7 +186,6 @@ abstract class Select
 	 */
 	public static function languages($selected = null, $id = 'language', $attribs = array())
 	{
-		JLoader::import('joomla.language.helper');
 		$languages = \JLanguageHelper::getLanguages('lang_code');
 		$options   = array();
 		$options[] = JHtml::_('select.option', '*', JText::_('JALL_LANGUAGE'));

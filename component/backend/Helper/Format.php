@@ -94,7 +94,6 @@ abstract class Format
 	 */
 	public static function checkDateFormat($date)
 	{
-		JLoader::import('joomla.utilities.date');
 		$regex = '/^\d{1,4}(\/|-)\d{1,2}(\/|-)\d{2,4}[[:space:]]{0,}(\d{1,2}:\d{1,2}(:\d{1,2}){0,1}){0,1}$/';
 
 		if (!preg_match($regex, $date))

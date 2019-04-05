@@ -11,6 +11,7 @@ defined('_JEXEC') or die;
 
 use FOF30\Container\Container;
 use FOF30\Model\DataModel;
+use JPluginHelper;
 
 /**
  * Model for the invoices issued
@@ -338,9 +339,8 @@ class Invoices extends DataModel
 		{
 			$rawOptions = array();
 
-			\JLoader::import('joomla.plugin.helper');
-			\JPluginHelper::importPlugin('akeebasubs');
-			\JPluginHelper::importPlugin('system');
+			JPluginHelper::importPlugin('akeebasubs');
+			JPluginHelper::importPlugin('system');
 			$app       = \JFactory::getApplication();
 			$jResponse = $app->triggerEvent('onAKGetInvoicingOptions', array());
 

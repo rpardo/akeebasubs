@@ -138,9 +138,6 @@ class Coupons extends DataModel
 		// Normalize coupon code to uppercase
 		$this->coupon = strtoupper($this->coupon);
 
-		// Assign sensible publish_up and publish_down settings
-		JLoader::import('joomla.utilities.date');
-
 		// Normalise the publish up / down dates
 		$this->publish_up = $this->normaliseDate($this->publish_up, '2001-01-01 00:00:00');
 		$this->publish_down = $this->normaliseDate($this->publish_down, '2038-01-18 00:00:00');

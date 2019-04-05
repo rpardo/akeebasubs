@@ -147,9 +147,6 @@ use JUserHelper;
 	 */
 	public function createNewUser(array $params)
 	{
-		JLoader::import('joomla.application.component.helper');
-		JLoader::import('joomla.user.helper');
-
 		$user = new JUser(0);
 
 		$usersConfig = JComponentHelper::getParams('com_users');

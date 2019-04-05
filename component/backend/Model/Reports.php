@@ -98,7 +98,6 @@ class Reports extends Model
 
 	public function getInvoiceListParameters()
 	{
-		JLoader::import('joomla.utilities.date');
 		$jNow = new Date();
 
 		$month = $this->input->getInt('month', 0);

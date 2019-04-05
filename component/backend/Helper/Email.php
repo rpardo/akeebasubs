@@ -66,7 +66,6 @@ abstract class Email
 		{
 			$rawOptions = array();
 
-			JLoader::import('joomla.plugin.helper');
 			JPluginHelper::importPlugin('akeebasubs');
 			JPluginHelper::importPlugin('system');
 			$app       = JFactory::getApplication();
@@ -151,8 +150,6 @@ abstract class Email
 		$jlang->load($extension . '.override', JPATH_ADMINISTRATOR, null, true);
 
 		// -- User's preferred language
-		JLoader::import('joomla.registry.registry');
-
 		$uparams  = is_object($user->params) ? $user->params : new JRegistry($user->params);
 		$userlang = $uparams->get('language', '');
 

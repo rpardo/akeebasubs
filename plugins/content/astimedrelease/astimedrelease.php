@@ -7,8 +7,6 @@
 
 defined('_JEXEC') or die();
 
-JLoader::import('joomla.plugin.plugin');
-
 use FOF30\Container\Container;
 use Akeeba\Subscriptions\Site\Model\Levels;
 use Akeeba\Subscriptions\Site\Model\Subscriptions;
@@ -53,8 +51,6 @@ class plgContentAstimedrelease extends JPlugin
 		}
 
 		// Do not run if Akeeba Subscriptions is not enabled
-		JLoader::import('joomla.application.component.helper');
-
 		if (!JComponentHelper::isEnabled('com_akeebasubs'))
 		{
 			$this->enabled = false;
@@ -162,8 +158,6 @@ class plgContentAstimedrelease extends JPlugin
 		{
 			return;
 		}
-
-		JLoader::import('joomla.utilities.date');
 
 		$levelElapsed  = array();
 		$levelDuration = array();

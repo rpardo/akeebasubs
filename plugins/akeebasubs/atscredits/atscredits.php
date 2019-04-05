@@ -11,7 +11,6 @@ use Akeeba\Subscriptions\Admin\Model\Levels;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 
 // Make sure ATS is installed and activated
-JLoader::import('joomla.application.component.helper');
 if (!JComponentHelper::isEnabled('com_ats', true))
 {
 	return;

@@ -12,9 +12,6 @@ defined('_JEXEC') or die();
 Use Akeeba\Subscriptions\Admin\Helper\Format;
 use Akeeba\Subscriptions\Admin\Helper\Validator;
 
-JLoader::import('joomla.utilities.date');
-JLoader::import('joomla.plugin.helper');
-
 $this->getContainer()->platform->importPlugin('akeebasubs');
 
 $app        = JFactory::getApplication();

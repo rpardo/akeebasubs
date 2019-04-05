@@ -316,7 +316,6 @@ abstract class Message
 
 		if ($isCli)
 		{
-			JLoader::import('joomla.application.component.helper');
 			$baseURL    = self::getContainer()->params->get('siteurl', 'http://www.example.com');
 			$temp       = str_replace('http://', '', $baseURL);
 			$temp       = str_replace('https://', '', $temp);
@@ -376,7 +375,6 @@ abstract class Message
 		$symbol       = self::getContainer()->params->get('currencysymbol', 'EUR');
 
 		// Dates
-		JLoader::import('joomla.utilities.date');
 		$jFrom = new Date($sub->publish_up);
 		$jTo   = new Date($sub->publish_down);
 
@@ -479,7 +477,6 @@ abstract class Message
 
 					if (!is_object($params))
 					{
-						JLoader::import('joomla.registry.registry');
 						$params = new JRegistry($params);
 					}
 
@@ -557,12 +554,6 @@ abstract class Message
 		// Find where the tag starts
 		$nextPos      = 0;
 		$tagStartText = '[RENEWALURL:';
-
-		if (!class_exists('JUri', true))
-		{
-			JLoader::import('joomla.environment.uri');
-			JLoader::import('joomla.uri.uri');
-		}
 
 		$uri = new \JUri($renewalURL);
 

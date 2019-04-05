@@ -469,7 +469,6 @@ class Subscriptions extends DataModel
 		$tableAlias = $this->getBehaviorParam('tableAlias', null);
 		$tableAlias = !empty($tableAlias) ? ($db->qn($tableAlias) . '.') : '';
 
-		\JLoader::import('joomla.utilities.date');
 		$publish_up   = $this->getState('publish_up', null, 'string');
 		$publish_upto = $this->getState('publish_upto', null, 'string');
 		$publish_down = $this->getState('publish_down', null, 'string');
@@ -589,7 +588,6 @@ class Subscriptions extends DataModel
 		$tableAlias = $this->getBehaviorParam('tableAlias', null);
 		$tableAlias = !empty($tableAlias) ? ($db->qn($tableAlias) . '.') : '';
 
-		\JLoader::import('joomla.utilities.date');
 		$since = $this->getState('since', null, 'string');
 		$until = $this->getState('until', null, 'string');
 
@@ -673,7 +671,6 @@ class Subscriptions extends DataModel
 		$tableAlias = $this->getBehaviorParam('tableAlias', null);
 		$tableAlias = !empty($tableAlias) ? ($db->qn($tableAlias) . '.') : '';
 
-		\JLoader::import('joomla.utilities.date');
 		$expires_from = $this->getState('expires_from', null, 'string');
 		$expires_to = $this->getState('expires_to', null, 'string');
 
@@ -806,7 +803,6 @@ class Subscriptions extends DataModel
 			return;
 		}
 
-		JLoader::import('joomla.utilities.date');
 		$jNow = new Date();
 		$uNow = $jNow->toUnix();
 
@@ -1029,7 +1025,6 @@ class Subscriptions extends DataModel
 	 */
 	protected function normaliseEnabled()
 	{
-		JLoader::import('joomla.utilities.date');
 		$jNow  = new Date();
 		$uNow  = $jNow->toUnix();
 		$jDown = new Date($this->publish_down);
