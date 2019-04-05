@@ -322,6 +322,11 @@ class Subscribe extends Model
 			}
 		}
 
+		/**
+		 * Unlike previous versions of Akeeba Subscriptions, in AS7 we only create new users. We do not update existing
+		 * users'information since the entire interface has gone away. If a user wants to update their email address or
+		 * other preference they have to go through Joomla's user account page.
+		 */
 		if (is_null($user->id) || ($user->id == 0))
 		{
 			// CREATE A NEW USER
@@ -365,34 +370,6 @@ class Subscribe extends Model
 
 			$user->bind($params);
 			$userIsSaved = $user->save();
-		}
-		else
-		{
-			// UPDATE EXISTING USER
-
-			// Update existing user's details
-			/** @var JoomlaUsers $userRecord */
-			$userRecord = $this->container->factory->model('JoomlaUsers')->tmpInstance();
-			$userRecord->find($user->id);
-
-			$updates = array(
-				'name'  => $state->name,
-				'email' => $state->email
-			);
-
-			if (!empty($state->password) && ($state->password == $state->password2))
-			{
-				$salt = JUserHelper::genRandomPassword(32);
-				$pass = JUserHelper::getCryptedPassword($state->password, $salt);
-				$updates['password'] = $pass . ':' . $salt;
-			}
-
-			if (!empty($state->username))
-			{
-				$updates['username'] = $state->username;
-			}
-
-			$userIsSaved = $userRecord->save($updates);
 		}
 
 		// Send activation email for free subscriptions if confirmfree is enabled
