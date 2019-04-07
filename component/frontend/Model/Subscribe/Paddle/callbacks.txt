@@ -1,36 +1,5 @@
 Notes on callbacks I need to create
 
-PaymentSucceeded -- Update subscription record
-================================================================================
-passthrough -- subscription ID
-balance_gross -- gross amount
-balance_tax -- tax amount
-country
-order_id -- payment_key
-payment_method		[apple-pay, card, free, paypal, wire-transfer] --> field by the same name
-product_id
-receipt_url --> field by the same name
-
-Check that product_id matches the level's product or subscription ID.
-
-Update the akeebasubs.contry user profile value with 'country'
-
-Calculate some pricing information and add it to $updates
-    gross_amount = balance_gross
-    tax_amount = balance_tax
-    net_amount = gross_amount - tax_amount
-    tax_percent =  tax_amount / net_amount
-    discount_amount = prediscount_amount - net_amount
-    Save balance_fee
-
-Fulfillment -- Echo success message
-================================================================================
-passthrough -- subscription ID
-p_order_id -- double check with record's payment_key
-p_product_id -- double check with level's product ID OR subscription plan ID
-
-Output the plan's success message.
-
 PaymentRefunded -- Update subscription record
 ================================================================================
 passthrough -- subscription ID
@@ -44,6 +13,8 @@ Actions depend on refund_type:
 vat refund: zero out the tax rate and tax amount, add a note
 partial refund: reduce the gross and tax amount, record net difference as discount, recalculate effective tax rate, add a note
 full refund: cancel the subscription (status X) and set enabled to 0, add a note
+
+I need to adjust the fee_amount as well
 
 HighRiskTransactionCreated -- Update subscription record
 ================================================================================
@@ -86,3 +57,6 @@ status -- MUST be 'closed'
 If the payment_state is X or N do nothing; return.
 If the payment_state is P or C set it to X and set enabled to 0.
 
+TODO - Recurring callbacks
+
+Javascript: add close handler, go through a special Message page which figures out if the subscription is paid, pending, canceled or new. Paid & pending: success page. Canceled & new: Cancel page.
