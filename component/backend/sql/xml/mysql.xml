@@ -284,8 +284,10 @@ CREATE TABLE `#__akeebasubs_subscriptions` (
 	`akeebasubs_coupon_id` BIGINT(20) NULL,
 	`akeebasubs_upgrade_id` BIGINT(20) NULL,
 	`akeebasubs_invoice_id` BIGINT(20) NULL,
+
 	`prediscount_amount` FLOAT NULL,
 	`discount_amount` FLOAT NOT NULL DEFAULT '0',
+	`payment_method` ENUM('apple-pay', 'card', 'free', 'paypal', 'wire-transfer', 'unknown') NOT NULL DEFAULT 'unknown',
 
 	`contact_flag` tinyint(1) NOT NULL DEFAULT '0',
 	`first_contact` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -602,6 +604,15 @@ AFTER `update_url`
 ALTER TABLE `#__akeebasubs_subscriptions` ADD COLUMN
 `payment_url` MEDIUMTEXT NULL
 AFTER `cancel_url`
+            ]]></query>
+        </action>
+
+        <action table="#__akeebasubs_subscriptions" canfail="0">
+            <condition type="missing" value="payment_method"   />
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_subscriptions` ADD COLUMN
+`payment_method` ENUM('apple-pay', 'card', 'free', 'paypal', 'wire-transfer', 'unknown') NOT NULL DEFAULT 'unknown'
+AFTER `discount_amount`
             ]]></query>
         </action>
     </sql>

@@ -183,6 +183,14 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'components/com_akeebasubs/View/Level/tmpl/default_prepayment.blade.php',
 			'components/com_akeebasubs/View/Level/tmpl/default_summary.blade.php',
 			'components/com_akeebasubs/View/Subscriptions/tmpl/default.php',
+
+			'media/com_akeebasubs/images/couponicons.png',
+			'media/com_akeebasubs/images/dollaricons.png',
+			'media/com_akeebasubs/images/export.png',
+			'media/com_akeebasubs/images/sort_asc.png',
+			'media/com_akeebasubs/images/sort_desc.png',
+			'media/com_akeebasubs/images/subrefresh.png',
+			'media/com_akeebasubs/js/autosubmit.js',
 		],
 		'folders' => [
 			'administrator/components/com_akeebasubs/commands',
@@ -257,10 +265,15 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 
             'components/com_akeebasubs/View/APICoupons',
             'components/com_akeebasubs/View/Validate',
+			'components/com_akeebasubs/View/Subscribe',
 
 			'components/com_akeebasubs/Model/Subscribe/Validation/ValidationTrait',
 
 			'components/com_akeebasubs/views/UserInfo',
+
+			'media/com_akeebasubs/images/dashboard',
+			'media/com_akeebasubs/images/frontend',
+			'media/com_akeebasubs/invoices',
 
 			// Akeeba Subscriptions 7 - We no longer need any Composer dependencies
             'administrator/components/com_akeebasubs/vendor',
