@@ -15,6 +15,7 @@ use Akeeba\Subscriptions\Site\Model\Subscriptions;
 use FOF30\Container\Container;
 use FOF30\Controller\DataController;
 use FOF30\View\Exception\AccessForbidden;
+use Joomla\CMS\Router\Route;
 
 class Message extends DataController
 {
@@ -43,9 +44,70 @@ class Message extends DataController
 
 		parent::__construct($container, $config);
 
+		$this->registerTask('show', 'read');
 		$this->registerTask('thankyou', 'read');
 		$this->registerTask('cancel', 'read');
+		$this->registerTask('pending', 'read');
+		$this->registerTask('abandoned', 'read');
 		$this->predefinedTaskList = ['thankyou', 'cancel'];
+	}
+
+	/**
+	 * Runs before executing the "show" task. It goes through the motions of showing a message but instead issues a
+	 * redirect to the *correct* message task based on the subscription record's payment state.
+	 *
+	 * @return  void
+	 */
+	public function onBeforeShow()
+	{
+		// Call the common code
+		$this->onBeforeRead();
+
+		// Set the layout in the input and the object property based on the subscription's status
+		/** @var Subscriptions $subscription */
+		$subscription = $this->getView()->subscription;
+		switch ($subscription->getFieldValue('state', 'N'))
+		{
+			case 'N':
+				$task = 'abandoned';
+				break;
+
+			case 'P':
+				$task = 'pending';
+				break;
+
+			case 'C':
+				$task = 'thankyou';
+				break;
+
+			case 'x':
+				$task = 'cancel';
+				break;
+		}
+
+		$url = 'index.php?option=com_akeebasubs&view=Message&task=' . $task .
+			'&slug=' . $subscription->level->slug .
+			'&subid=' . $subscription->getId();
+
+		$itemId = $this->input->getInt('Itemid', 0);
+
+		if ($itemId)
+		{
+			$url .= '&Itemid=' . $itemId;
+		}
+
+		$this->setRedirect(Route::_($url));
+	}
+
+	/**
+	 * Runs after executing the "show" task.
+	 *
+	 * @return  void
+	 */
+	public function onAfterShow()
+	{
+		// Call the common code
+		$this->onAfterRead();
 	}
 
 	/**
@@ -318,7 +380,7 @@ class Message extends DataController
 	 * Registers page-identifying parameters to the application object. This is used by the Joomla! caching system to
 	 * get the unique identifier of a page and decide its caching status (cached, not cached, cache expired).
 	 *
-	 * @param array $urlparams
+	 * @param   array  $urlparams
 	 */
 	protected function registerUrlParams($urlparams = array())
 	{

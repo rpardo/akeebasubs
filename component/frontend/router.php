@@ -9,8 +9,6 @@ defined('_JEXEC') or die();
 
 include_once JPATH_LIBRARIES . '/fof30/include.php';
 
-use \FOF30\Inflector\Inflector;
-
 function AkeebasubsBuildRoute(&$query)
 {
 	$segments = array();
@@ -66,6 +64,10 @@ function AkeebasubsBuildRoute(&$query)
 		{
 			$newView = 'Abandoned';
 		}
+		elseif (($query['layout'] == 'show') || ($query['task'] == 'show'))
+		{
+			$newView = 'ShowMessage';
+		}
 		else
 		{
 			$newView = 'Cancelled';
@@ -110,11 +112,11 @@ function AkeebasubsBuildRoute(&$query)
 function AkeebasubsParseRoute($segments)
 {
 	// accepted views:
-	$views = array('new', 'thankyou', 'cancelled', 'pending', 'abandoned', 'level', 'levels', 'message', 'subscribe', 'subscription', 'subscriptions', 'callback', 'validate', 'userinfo', 'invoices', 'invoice');
+	$views = array('new', 'thankyou', 'cancelled', 'pending', 'abandoned', 'showmessage', 'level', 'levels', 'message', 'subscribe', 'subscription', 'subscriptions', 'callback', 'validate', 'userinfo', 'invoices', 'invoice');
 
 	// accepted layouts:
 	$layoutsAccepted = array(
-		'Messages' => array('order', 'cancel', 'pending', 'abandoned'),
+		'Messages' => array('order', 'cancel', 'pending', 'abandoned', 'show'),
 		'Invoice' => array('item')
 	);
 
@@ -189,6 +191,13 @@ function AkeebasubsParseRoute($segments)
 				$vars['view'] = 'Messages';
 				$vars['task'] = 'abandoned';
 				$vars['layout'] = 'abandoned';
+				break;
+
+			case 'showmessage':
+			case 'ShowMessage':
+				$vars['view'] = 'Messages';
+				$vars['task'] = 'show';
+				$vars['layout'] = 'show';
 				break;
 
 			case 'userinfo':
