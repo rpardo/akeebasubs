@@ -9,6 +9,7 @@ namespace Akeeba\Subscriptions\Site\Model\Subscribe\Paddle\Handler;
 
 
 use Akeeba\Subscriptions\Admin\Helper\Message;
+use Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits\StackCallback;
 use Akeeba\Subscriptions\Site\Model\Subscribe\SubscriptionCallbackHandlerInterface;
 use Akeeba\Subscriptions\Site\Model\Subscriptions;
 use FOF30\Container\Container;
@@ -17,6 +18,8 @@ use Joomla\CMS\HTML\HTMLHelper;
 
 class Fulfillment implements SubscriptionCallbackHandlerInterface
 {
+	use StackCallback;
+
 	/**
 	 * The component's container
 	 *
@@ -69,6 +72,15 @@ class Fulfillment implements SubscriptionCallbackHandlerInterface
 		if ($needsLogin)
 		{
 			$this->logoutUser();
+		}
+
+		// Stack the callback data to the subscription
+		$updates = $this->getStackCallbackUpdate($subscription, $requestData);
+
+		if (!empty($updates))
+		{
+			$subscription->_dontNotify(true);
+			$subscription->save($updates);
 		}
 
 		return $message;

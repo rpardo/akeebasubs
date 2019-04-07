@@ -32,7 +32,17 @@ trait VerifyAuthenticity
 	{
 		/** @var Container $container */
 		$container  = $this->container;
+		$do_verify  = $container->params->get('verify_callbacks', 1);
 		$public_key = $container->params->get('public_key', '');
+
+		// If verification is disabled I check that p_signature matches the 'secret' parameter, normally used for CRON.
+		if (!$do_verify)
+		{
+			$signature = isset($data['p_signature']) ? $data['p_signature'] : null;
+			$secret    = $container->params->get('secret', '');
+
+			return $signature === $secret;
+		}
 
 		// Get the p_signature parameter & base64 decode it.
 		$signature = base64_decode($data['p_signature']);

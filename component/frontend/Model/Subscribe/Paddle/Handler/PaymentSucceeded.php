@@ -8,6 +8,7 @@
 namespace Akeeba\Subscriptions\Site\Model\Subscribe\Paddle\Handler;
 
 use Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits\FixSubscriptionDate;
+use Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits\StackCallback;
 use Akeeba\Subscriptions\Site\Model\Subscribe\SubscriptionCallbackHandlerInterface;
 use Akeeba\Subscriptions\Site\Model\Subscriptions;
 use FOF30\Container\Container;
@@ -15,6 +16,7 @@ use FOF30\Container\Container;
 class PaymentSucceeded implements SubscriptionCallbackHandlerInterface
 {
 	use FixSubscriptionDate;
+	use StackCallback;
 
 	/**
 	 * The component's container
@@ -72,6 +74,9 @@ class PaymentSucceeded implements SubscriptionCallbackHandlerInterface
 			'discount_amount' => $discount_amount,
 			'fee_amount'      => $fee_amount,
 		];
+
+		// Stack this callback's information to the subscription record
+		$updates = array_merge($updates, $this->getStackCallbackUpdate($subscription, $requestData));
 
 		// Fix the subscription publish up / down dates
 		$updates = $this->fixSubscriptionDates($subscription, $updates);

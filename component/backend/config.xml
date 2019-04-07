@@ -146,7 +146,6 @@
 		>
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
-
 		</field>
 
 		<field name="vendor_id"
@@ -166,6 +165,26 @@
 			   default=""
 			   label="COM_AKEEBASUBS_CONFIG_PADDLE_PUBLIC_KEY_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_PADDLE_PUBLIC_KEY_DESC" />
+
+		<field name="log_callbacks"
+			   type="radio" class="switcher btn-group"
+			   default="0"
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_LOG_CALLBACKS_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_LOG_CALLBACKS_DESC"
+		>
+			<option value="0">JNo</option>
+			<option value="1">JYes</option>
+		</field>
+
+		<field name="verify_callbacks"
+			   type="radio" class="switcher btn-group"
+			   default="1"
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_VERIFY_CALLBACKS_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_VERIFY_CALLBACKS_DESC"
+		>
+			<option value="0">JNo</option>
+			<option value="1">JYes</option>
+		</field>
 	</fieldset>
 
 	<fieldset name="messages" label="COM_AKEEBASUBS_CONFIG_MESSAGES_TITLE" description="COM_AKEEBASUBS_CONFIG_MESSAGES_DESC">
