@@ -31,7 +31,6 @@ use JFactory;
  * @property  string    $paddle_plan_id
  * @property  string    $paddle_plan_secret
  * @property  string    $ordertext
- * @property  string    $canceltext
  * @property  bool      $only_once
  * @property  bool      $recurring
  * @property  bool      $forever
@@ -59,7 +58,6 @@ use JFactory;
  * @method  $this  paddle_plan_id()            paddle_plan_id(string $v)
  * @method  $this  paddle_plan_secret()        paddle_plan_secret(string $v)
  * @method  $this  ordertext()                 ordertext(string $v)
- * @method  $this  canceltext()                canceltext(string $v)
  * @method  $this  only_once()                 only_once(bool $v)
  * @method  $this  recurring()                 recurring(bool $v)
  * @method  $this  forever()                   forever(bool $v)

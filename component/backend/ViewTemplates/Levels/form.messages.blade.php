@@ -19,12 +19,3 @@ defined('_JEXEC') or die();
         @jhtml('FEFHelper.edit.editor', 'ordertext', $item->ordertext)
     </div>
 </div>
-
-<div class="akeeba-form-group">
-    <label for="canceltext">
-        @lang('COM_AKEEBASUBS_LEVEL_FIELD_CANCELTEXT')
-    </label>
-    <div class="akeeba-nofef">
-        @jhtml('FEFHelper.edit.editor', 'canceltext', $item->canceltext)
-    </div>
-</div>
