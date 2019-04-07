@@ -1,12 +1,6 @@
 Notes on callbacks I need to create
 
-First, I need to add payment_method to #__akeebasubs_subscriptions
-	ENUM('apple-pay', 'card', 'free', 'paypal', 'wire-transfer', 'unknown') DEFAULT 'unknown'
-
-Render it in the backend and sort by it.
-
-
-payment_succeeded -- Update subscription record
+PaymentSucceeded -- Update subscription record
 ================================================================================
 passthrough -- subscription ID
 balance_gross -- gross amount
@@ -38,7 +32,7 @@ p_product_id -- double check with level's product ID OR subscription plan ID
 
 Output the plan's success message.
 
-payment_refunded -- Update subscription record
+PaymentRefunded -- Update subscription record
 ================================================================================
 passthrough -- subscription ID
 balance_gross_refund
@@ -52,7 +46,7 @@ vat refund: zero out the tax rate and tax amount, add a note
 partial refund: reduce the gross and tax amount, record net difference as discount, recalculate effective tax rate, add a note
 full refund: cancel the subscription (status X) and set enabled to 0, add a note
 
-high_risk_transaction_created -- Update subscription record
+HighRiskTransactionCreated -- Update subscription record
 ================================================================================
 passthrough -- subscription ID
 case_id
@@ -62,7 +56,7 @@ status	-- MUST be 'pending'
 Set the payment status to 'P' (Pending).
 Create a note "Transaction flagged as high risk on [DATE_TZ]. Case ID [CASE_ID], risk score [RISK_SCORE]%\n"
 
-high_risk_transaction_updated -- Update subscription record
+HighRiskTransactionUpdated -- Update subscription record
 ================================================================================
 passthrough -- subscription ID
 case_id
@@ -77,7 +71,7 @@ IF status == 'rejected'
 	Set payment status to 'X'
 	Add note "High risk transaction rejected on [DATE_TZ]. Case ID [CASE_ID], risk score [RISK_SCORE]%\n"
 
-payment_dispute_created -- Update subscription record
+PaymentDisputeCreated -- Update subscription record
 ================================================================================
 passthrough -- subscription ID
 status -- MUST be 'open'
@@ -85,7 +79,7 @@ status -- MUST be 'open'
 Set payment_status to 'P' (Pending).
 Create a note "Payment dispute opened on [DATE_TZ]. Subscription deactivated temporarily.%\n"
 
-payment_dispute_closed -- Update subscription record
+PaymentDisputeClosed -- Update subscription record
 ================================================================================
 passthrough -- subscription ID
 status -- MUST be 'closed'
