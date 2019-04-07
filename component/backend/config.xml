@@ -166,7 +166,29 @@
 			   default=""
 			   label="COM_AKEEBASUBS_CONFIG_PADDLE_PUBLIC_KEY_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_PADDLE_PUBLIC_KEY_DESC" />
+	</fieldset>
 
+	<fieldset name="messages" label="COM_AKEEBASUBS_CONFIG_MESSAGES_TITLE" description="COM_AKEEBASUBS_CONFIG_MESSAGES_DESC">
+		<field name="pendingtext" type="editor"
+			   default=""
+			   width="100%" height="400px"
+			   buttons="true"
+			   label="COM_AKEEBASUBS_CONFIG_MESSAGES_PENDINGTEXT_TITLE"
+			   description="COM_AKEEBASUBS_CONFIG_MESSAGES_PENDINGTEXT_DESC" />
+
+		<field name="abandonedtext" type="editor"
+			   default=""
+			   width="100%" height="400px"
+			   buttons="true"
+			   label="COM_AKEEBASUBS_CONFIG_MESSAGES_ABANDONEDTEXT_TITLE"
+			   description="COM_AKEEBASUBS_CONFIG_MESSAGES_ABANDONEDTEXT_DESC" />
+
+		<field name="canceltext" type="editor"
+			   default=""
+			   width="100%" height="400px"
+			   buttons="true"
+			   label="COM_AKEEBASUBS_CONFIG_MESSAGES_CANCELTEXT_TITLE"
+			   description="COM_AKEEBASUBS_CONFIG_MESSAGES_CANCELTEXT_TITLE" />
 	</fieldset>
 
 	<fieldset

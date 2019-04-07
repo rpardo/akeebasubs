@@ -114,6 +114,7 @@ abstract class Message
 				'net_amount',
 				'gross_amount',
 				'tax_amount',
+				'fee_amount',
 				'prediscount_amount',
 				'discount_amount',
 			)))

@@ -47,6 +47,14 @@ class Html extends \FOF30\View\DataView\Html
 			case 'cancel':
 				$this->prepareView('onCancelMessage','canceltext');
 				break;
+
+			case 'pending':
+				$this->prepareView('onCancelMessage','pendingtext');
+				break;
+
+			case 'abandoned':
+				$this->prepareView('onCancelMessage','abandonedtext');
+				break;
 		}
 	}
 

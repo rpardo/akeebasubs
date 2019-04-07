@@ -101,6 +101,58 @@ class Message extends DataController
 	}
 
 	/**
+	 * Runs before executing the "pending" task. Used to force-set the layout.
+	 *
+	 * @return  void
+	 */
+	public function onBeforePending()
+	{
+		// Set the layout in the input and the object property
+		$this->input->set('layout', 'pending');
+		$this->layout = 'pending';
+
+		// Call the common code
+		$this->onBeforeRead();
+	}
+
+	/**
+	 * Runs after executing the "pending" task.
+	 *
+	 * @return  void
+	 */
+	public function onAfterPending()
+	{
+		// Call the common code
+		$this->onAfterRead();
+	}
+
+	/**
+	 * Runs before executing the "abandoned" task. Used to force-set the layout.
+	 *
+	 * @return  void
+	 */
+	public function onBeforeAbandoned()
+	{
+		// Set the layout in the input and the object property
+		$this->input->set('layout', 'abandoned');
+		$this->layout = 'abandoned';
+
+		// Call the common code
+		$this->onBeforeRead();
+	}
+
+	/**
+	 * Runs after executing the "abandoned" task.
+	 *
+	 * @return  void
+	 */
+	public function onAfterAbandoned()
+	{
+		// Call the common code
+		$this->onAfterRead();
+	}
+
+	/**
 	 * Use the slug instead of the id to read a record
 	 *
 	 * @return  void

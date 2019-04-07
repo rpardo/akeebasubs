@@ -54,9 +54,17 @@ function AkeebasubsBuildRoute(&$query)
 			$query['layout'] = 'order';
 		}
 
-		if ($query['layout'] == 'order')
+		if (($query['layout'] == 'order') || ($query['task'] == 'thankyou'))
 		{
 			$newView = 'ThankYou';
+		}
+		elseif (($query['layout'] == 'pending') || ($query['task'] == 'pending'))
+		{
+			$newView = 'Pending';
+		}
+		elseif (($query['layout'] == 'abandoned') || ($query['task'] == 'abandoned'))
+		{
+			$newView = 'Abandoned';
 		}
 		else
 		{
@@ -64,6 +72,7 @@ function AkeebasubsBuildRoute(&$query)
 		}
 
 		unset($query['layout']);
+		unset($query['task']);
 	}
 	elseif (($newView == 'Userinfo') || ($newView == 'UserInfo'))
 	{
@@ -101,11 +110,11 @@ function AkeebasubsBuildRoute(&$query)
 function AkeebasubsParseRoute($segments)
 {
 	// accepted views:
-	$views = array('new', 'thankyou', 'cancelled', 'level', 'levels', 'message', 'subscribe', 'subscription', 'subscriptions', 'callback', 'validate', 'userinfo', 'invoices', 'invoice');
+	$views = array('new', 'thankyou', 'cancelled', 'pending', 'abandoned', 'level', 'levels', 'message', 'subscribe', 'subscription', 'subscriptions', 'callback', 'validate', 'userinfo', 'invoices', 'invoice');
 
 	// accepted layouts:
 	$layoutsAccepted = array(
-		'Messages' => array('order', 'cancel'),
+		'Messages' => array('order', 'cancel', 'pending', 'abandoned'),
 		'Invoice' => array('item')
 	);
 
@@ -166,6 +175,20 @@ function AkeebasubsParseRoute($segments)
 				$vars['view'] = 'Messages';
 				$vars['task'] = 'cancel';
 				$vars['layout'] = 'cancel';
+				break;
+
+			case 'pending':
+			case 'Pending':
+				$vars['view'] = 'Messages';
+				$vars['task'] = 'pending';
+				$vars['layout'] = 'pending';
+				break;
+
+			case 'abandoned':
+			case 'Abandoned':
+				$vars['view'] = 'Messages';
+				$vars['task'] = 'abandoned';
+				$vars['layout'] = 'abandoned';
 				break;
 
 			case 'userinfo':
