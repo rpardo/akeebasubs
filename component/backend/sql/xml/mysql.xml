@@ -186,9 +186,7 @@ CREATE TABLE `#__akeebasubs_levels` (
 	`paddle_plan_id` varchar(100) NULL,
 	`paddle_plan_secret` varchar(100) NULL,
 	`ordertext` text,
-    `orderurl` VARCHAR( 255 ) NULL,
 	`canceltext` text,
-    `cancelurl` VARCHAR( 255 ) NULL,
 	`only_once` TINYINT(3) NOT NULL DEFAULT 0,
 	`recurring` TINYINT(3) NOT NULL DEFAULT 0,
 	`forever` TINYINT(3) NOT NULL DEFAULT 0,
@@ -388,6 +386,19 @@ ALTER TABLE `#__akeebasubs_levels` DROP COLUMN `payment_plugins`;
             <condition type="missing" value="signupfee" operator="not"  />
             <query><![CDATA[
 ALTER TABLE `#__akeebasubs_levels` DROP COLUMN `signupfee`;
+            ]]></query>
+        </action>
+
+        <action table="#__akeebasubs_levels" canfail="1">
+            <condition type="missing" value="orderurl" operator="not"  />
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_levels` DROP COLUMN `orderurl`;
+            ]]></query>
+        </action>
+        <action table="#__akeebasubs_levels" canfail="1">
+            <condition type="missing" value="cancelurl" operator="not"  />
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_levels` DROP COLUMN `cancelurl`;
             ]]></query>
         </action>
 

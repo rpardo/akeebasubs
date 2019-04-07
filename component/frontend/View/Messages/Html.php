@@ -41,30 +41,42 @@ class Html extends \FOF30\View\DataView\Html
 		{
 			case 'thankyou':
 			default:
-				$this->prepareView('onOrderMessage', 'orderurl', 'ordertext');
+				$this->prepareView('onOrderMessage','ordertext');
 				break;
 
 			case 'cancel':
-				$this->prepareView('onCancelMessage', 'cancelurl', 'canceltext');
+				$this->prepareView('onCancelMessage','canceltext');
 				break;
 		}
 	}
 
-	protected function prepareView($event = 'onOrderMessage', $urlField = 'orderurl', $messageField = 'ordertext')
+	/**
+	 * Prepare the view parameters
+	 *
+	 * @param   string  $event         Plugin event to call
+	 * @param   string  $messageField  Which field should I use to get the message's template
+	 *
+	 * @throws \Exception
+	 */
+	protected function prepareView($event = 'onOrderMessage', $messageField = 'ordertext')
 	{
 		parent::onBeforeRead();
 
 		$app = \JFactory::getApplication();
 
-		// Do I have a custom redirect URL? Follow it instead of showing the message
-		// This check has been put here so controller and model can do all their logic and trigger every event
-		if ($this->item->$urlField)
+		// Get and process the message from the subscription level
+		switch ($messageField)
 		{
-			$this->container->platform->redirect($this->item->$urlField);
+			case 'ordertext':
+				$message = $this->item->$messageField;
+				break;
+
+			default:
+				$message = $this->container->params->get($messageField, '');
+				break;
 		}
 
-		// Get and process the message from the subscription level
-		$message = Message::processLanguage($this->item->$messageField);
+		$message = Message::processLanguage($message);
 		$message = Message::processSubscriptionTags($message, $this->subscription);
 		$this->message = \JHTML::_('content.prepare', $message);
 
