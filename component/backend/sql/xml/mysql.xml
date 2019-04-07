@@ -270,6 +270,7 @@ CREATE TABLE `#__akeebasubs_subscriptions` (
 	`tax_amount` FLOAT NOT NULL,
 	`gross_amount` FLOAT NOT NULL,
 	`tax_percent` FLOAT DEFAULT NULL,
+	`fee_amount` FLOAT DEFAULT NULL,
 	`created_on` datetime NOT NULL default '0000-00-00 00:00:00',
 	`params` TEXT,
 	`ip` VARCHAR(255),
@@ -613,6 +614,15 @@ AFTER `cancel_url`
 ALTER TABLE `#__akeebasubs_subscriptions` ADD COLUMN
 `payment_method` ENUM('apple-pay', 'card', 'free', 'paypal', 'wire-transfer', 'unknown') NOT NULL DEFAULT 'unknown'
 AFTER `discount_amount`
+            ]]></query>
+        </action>
+
+        <action table="#__akeebasubs_subscriptions" canfail="0">
+            <condition type="missing" value="fee_amount"   />
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_subscriptions` ADD COLUMN
+`fee_amount` FLOAT DEFAULT NULL
+AFTER `tax_percent`
             ]]></query>
         </action>
     </sql>

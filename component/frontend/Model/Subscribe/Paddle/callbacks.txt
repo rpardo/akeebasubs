@@ -21,8 +21,7 @@ Calculate some pricing information and add it to $updates
     net_amount = gross_amount - tax_amount
     tax_percent =  tax_amount / net_amount
     discount_amount = prediscount_amount - net_amount
-
-Replicate the logic from the former PayPal plugin sans recurring subscription logic of course.
+    Save balance_fee
 
 Fulfillment -- Echo success message
 ================================================================================

@@ -53,6 +53,7 @@ class PaymentSucceeded implements SubscriptionCallbackHandlerInterface
 		// Calculate the price parameters
 		$gross_amount    = (float) $requestData['balance_gross'];
 		$tax_amount      = (float) $requestData['balance_tax'];
+		$fee_amount      = (float) $requestData['balance_fee'];
 		$net_amount      = $gross_amount - $tax_amount;
 		$tax_percent     = sprintf('%0.2f', $tax_amount / $net_amount);
 		$discount_amount = $subscription->prediscount_amount - $net_amount;
@@ -69,7 +70,7 @@ class PaymentSucceeded implements SubscriptionCallbackHandlerInterface
 			'net_amount'      => $net_amount,
 			'tax_percent'     => $tax_percent,
 			'discount_amount' => $discount_amount,
-			// TODO Save fee amount
+			'fee_amount'      => $fee_amount,
 		];
 
 		// Fix the subscription publish up / down dates
@@ -78,9 +79,9 @@ class PaymentSucceeded implements SubscriptionCallbackHandlerInterface
 		// Save the changes and trigger the necessary plugin events
 		$this->container->platform->importPlugin('akeebasubs');
 		$subscription->save($updates);
-		$this->container->platform->runPlugins('onAKAfterPaymentCallback', array(
-			$subscription
-		));
+		$this->container->platform->runPlugins('onAKAfterPaymentCallback', [
+			$subscription,
+		]);
 
 		// Done. No output to be sent (returns a 200 OK with an empty body)
 		return null;

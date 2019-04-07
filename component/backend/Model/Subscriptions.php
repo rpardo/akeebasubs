@@ -35,6 +35,7 @@ use JLoader;
  * @property  float			$tax_amount					Tax portion of payable amount
  * @property  float			$gross_amount				Total payable amount
  * @property  float			$tax_percent				% of tax (tax_amount / net_amount)
+ * @property  float			$fee_amount                 The fee kept by the payment processor.
  * @property  string		$created_on					Date/time when this subscription was created
  * @property  array 		$params						Parameters, used by custom fields and plugins
  * @property  string		$ip							IP address of the user who created this subscription
@@ -45,6 +46,7 @@ use JLoader;
  * @property  string        $update_url                 Subscription update URL
  * @property  string        $cancel_url                 Subscription cancellation URL
  * @property  string        $payment_url                URL used to pay for the subscription
+ * @property  string        $payment_method             Payment method: 'apple-pay', 'card', 'free', 'paypal', 'wire-transfer', 'unknown'
  * @property  int			$akeebasubs_coupon_id		Coupon code used. FK to coupon relation.
  * @property  int			$akeebasubs_upgrade_id		Upgrade rule used. FK to upgrade relation
  * @property  int			$akeebasubs_invoice_id		Invoice issues. FK to invoice relation.
@@ -70,6 +72,7 @@ use JLoader;
  * @method  $this  akeebasubs_upgrade_id()       akeebasubs_upgrade_id(int $v)
  * @method  $this  akeebasubs_invoice_id()       akeebasubs_invoice_id(int|array $v)
  * @method  $this  prediscount_amount()          prediscount_amount(float $v)
+ * @method  $this  payment_method()              payment_method(string $v)
  * @method  $this  discount_amount()             discount_amount(float $v)
  * @method  $this  contact_flag()                contact_flag(bool $v)
  * @method  $this  first_contact()               first_contact(string $v)
@@ -166,6 +169,11 @@ class Subscriptions extends DataModel
 		if (!$this->getState('_dontCheckPaymentID', false))
 		{
 			$this->assertNotEmpty($this->processor, 'COM_AKEEBASUBS_SUBSCRIPTION_ERR_PROCESSOR_KEY');
+		}
+
+		if (!in_array($this->payment_method, ['apple-pay', 'card', 'free', 'paypal', 'wire-transfer', 'unknown']))
+		{
+			$this->payment_method = 'unknown';
 		}
 
 		// If the _noemail state variable is set we have to modify contact_flag
