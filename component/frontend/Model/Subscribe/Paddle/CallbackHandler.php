@@ -99,7 +99,7 @@ class CallbackHandler implements CallbackInterface
 		{
 			$this->logCallback($requestData, 'INVALID -- VERIFICATION FAILED');
 
-			return null;
+			throw new RuntimeException('Invalid callback', 403);
 		}
 
 		// Get the alert name. If none is set up, it's a fulfilment webhook.

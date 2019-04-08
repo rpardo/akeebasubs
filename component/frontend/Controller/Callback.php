@@ -51,6 +51,8 @@ class Callback extends Controller
 
 		$result = $model->runCallback();
 
+		header('HTTP/1.1 ' . $result);
+
 		$this->container->platform->closeApplication($result);
 	}
 }
