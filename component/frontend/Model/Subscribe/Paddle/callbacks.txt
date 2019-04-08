@@ -1,21 +1,5 @@
 Notes on callbacks I need to create
 
-PaymentRefunded -- Update subscription record
-================================================================================
-passthrough -- subscription ID
-balance_gross_refund
-balance_tax_refund
-order_id -- payment_key
-refund_type -- full, vat, partial (only cancel subscription on "full")
-
-Actions depend on refund_type:
-
-vat refund: zero out the tax rate and tax amount, add a note
-partial refund: reduce the gross and tax amount, record net difference as discount, recalculate effective tax rate, add a note
-full refund: cancel the subscription (status X) and set enabled to 0, add a note
-
-I need to adjust the fee_amount as well
-
 HighRiskTransactionCreated -- Update subscription record
 ================================================================================
 passthrough -- subscription ID
@@ -59,4 +43,75 @@ If the payment_state is P or C set it to X and set enabled to 0.
 
 TODO - Recurring callbacks
 
-Javascript: add close handler, go through a special Message page which figures out if the subscription is paid, pending, canceled or new. Paid & pending: success page. Canceled & new: Cancel page.
+JAVASCRIPT HANDLERS
+================================================================================
+Payment closed: show the Abandoned Order page.
+
+Payment success: go through Message.show to redirect the user to the correct message page.
+
+
+WHAT HAPPENS WHEN USER CANCELS AN ABANDONED SUBSCRIPTION
+================================================================================
+The record is removed
+If the user was blocked, unblock them.
+The user is sent to the Level page with the message "The subscription attempt has been canceled at your request. If you would like to retry subscribing please use the form below."
+
+
+PENDING PAYMENT PAGE
+================================================================================
+Use the message from the component's Options.
+
+PAYMENT CANCELLATION PAGE
+================================================================================
+Use the message from the component's Options. I could use this as the default:
+
+Your payment failed. You have not been charged.
+
+Please contact <Paddle's success team>. They will help you with any payment issue or question you may have.
+
+(I think I need to somehow include the order ID / checkout ID, if available? Or at least reference the payment URL?)
+
+
+ABANDONED ORDER PAGE
+================================================================================
+>> Use a token OR rely on the session to allow access to it for blocked accounts
+>> If the user accesses this page from an email link (that is, with a token) unblock them
+
+
+Hi there!
+
+You had started purchasing a [LEVEL] subscription with username [USERNAME] on [CREATED_ON] but you didn't get the chance to finish paying for it. Would you like to retry the payment?
+
+[ Retry payment ]  -- [ I changed my mind ]
+
+Did you have an issue? Let us help you!
+
+Change the country
+    On the payment popup look at its bottom right. There's a "Log out" link. Click on it. You can now re-enter your email address and select a different country.
+    Pro tip: We will remember your country selection next time you buy something from us!
+
+Enter my VAT / tax ID
+    On the payment popup look at its bottom left. You can enter the tax ID there _without_ the country prefix. For example, enter 012345678 instead of EL012345678.
+    If the VAT / tax ID is not accepted please check that the detected country is correct. Unsure? See above how to change your country.
+
+Use a different payment method
+    No problem! Click here to retry paying with a different payment method.
+
+Enter a coupon code
+    Click on "I changed my mind". Then retry subscribing. Before you click "Subscribe Now" look below the price. There's an option there to enter your coupon code.
+
+Payment issue
+    We are sorry to hear that! Please contact the <success team> of our reseller, Paddle, to help you sort it out. They are really good at figuring these things out, we promise!
+
+
+RETRY TO SUBSCRIBE ON A PENDING LEVEL WITHIN A WEEK -- Level PAGE, ABOVE Subscribe Now, WITHOUT ToS ACCEPTANCE.
+================================================================================
+
+You had started buying this product on [DATE].
+
+[ Resume payment ] -- [ Start over ]
+
+Did you have an issue? Let us help you! (same as Pending page MINUS Enter a coupon code, it needs different text, see below)
+
+Enter a coupon code
+    Click on "Start over". Before you click "Subscribe Now" look below the price. There's an option there to enter your coupon code.

@@ -939,7 +939,6 @@ class Subscriptions extends DataModel
 		// Handle the fake payment_state field
 		if (isset($data['payment_state']))
 		{
-			//$this->setFieldValue('state', $data['payment_state']);
 			$data['state'] = $data['payment_state'];
 
 			unset($data['payment_state']);
