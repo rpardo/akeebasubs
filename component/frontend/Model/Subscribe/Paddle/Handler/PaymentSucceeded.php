@@ -48,6 +48,8 @@ class PaymentSucceeded implements SubscriptionCallbackHandlerInterface
 	 *
 	 * @throws  \RuntimeException  In case an error occurs. The exception code will be used as the HTTP status.
 	 *
+	 * @see  https://paddle.com/docs/reference-using-webhooks/#payment_succeeded
+	 *
 	 * @since  7.0.0
 	 */
 	public function handleCallback(Subscriptions $subscription, array $requestData): ?string
@@ -66,6 +68,8 @@ class PaymentSucceeded implements SubscriptionCallbackHandlerInterface
 			// Yeah, enabled is 0. Upon saving it gets updated to 1 and triggers the plugins.
 			'enabled'         => 0,
 			'payment_method'  => $requestData['payment_method'],
+			// This effectively marks the transaction as "don't let the user try to pay again"
+			'payment_url'     => '',
 			'receipt_url'     => $requestData['receipt_url'],
 			'gross_amount'    => $gross_amount,
 			'tax_amount'      => $tax_amount,
@@ -77,6 +81,14 @@ class PaymentSucceeded implements SubscriptionCallbackHandlerInterface
 
 		// Stack this callback's information to the subscription record
 		$updates = array_merge($updates, $this->getStackCallbackUpdate($subscription, $requestData));
+
+		// Store the checkout_id
+		if (!isset($updates['params']))
+		{
+			$updates['params'] = [];
+		}
+
+		$updates['params']['checkout_id'] = $requestData['checkout_id'];
 
 		// Fix the subscription publish up / down dates
 		$updates = $this->fixSubscriptionDates($subscription, $updates);
