@@ -35,10 +35,15 @@ trait VerifyAuthenticity
 		$do_verify  = $container->params->get('verify_callbacks', 1);
 		$public_key = $container->params->get('public_key', '');
 
+		if (!isset($data['p_signature']))
+		{
+			return false;
+		}
+
 		// If verification is disabled I check that p_signature matches the 'secret' parameter, normally used for CRON.
 		if (!$do_verify)
 		{
-			$signature = isset($data['p_signature']) ? $data['p_signature'] : null;
+			$signature = $data['p_signature'];
 			$secret    = $container->params->get('secret', '');
 
 			return $signature === $secret;
@@ -62,6 +67,11 @@ trait VerifyAuthenticity
 		}
 
 		$data = serialize($data);
+
+		if (empty($public_key))
+		{
+			return false;
+		}
 
 		// Verify the signature
 		$verification = openssl_verify($data, $signature, $public_key, OPENSSL_ALGO_SHA1);
