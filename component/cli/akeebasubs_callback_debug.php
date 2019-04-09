@@ -485,6 +485,69 @@ TEXT;
 		];
 	}
 
+	protected function paymentRefunded(Subscriptions $subscription): array
+	{
+		$type      = $this->input->getCmd('type', 'full');
+		$container = $subscription->getContainer();
+
+		if (!in_array($type, ['full', 'vat', 'partial']))
+		{
+			$type = 'full';
+		}
+
+		switch ($type)
+		{
+			case 'partial':
+				$amount     = $this->input->getFloat('amount', 1.23);
+				$tax_factor = $subscription->tax_amount / $subscription->net_amount;
+				$refund_net = $amount / (1 + $tax_factor);
+				$refund_tax = $refund_net * $tax_factor;
+				break;
+
+			case 'vat':
+				$amount     = $subscription->tax_amount;
+				$refund_net = 0.00;
+				$refund_tax = $subscription->tax_amount;
+				break;
+
+			case 'full':
+				$amount     = $subscription->gross_amount;
+				$refund_net = $subscription->net_amount;
+				$refund_tax = $subscription->tax_amount;
+		}
+
+		$new_tax      = $subscription->tax_amount - $refund_tax;
+		$new_gross    = $subscription->gross_amount - $refund_net - $refund_tax;
+		$new_fee      = ($type == 'full') ? 0 : 0.50 * $new_gross;
+		$refund_fee   = $subscription->fee_amount - $new_fee;
+		$old_earnings = $subscription->gross_amount - $subscription->fee_amount - $subscription->tax_amount;
+		$new_earnings = $new_gross - $new_fee - $new_tax;
+
+		return [
+			'alert_name'                => 'payment_refunded',
+			'amount'                    => $amount,
+			'balance_currency'          => $container->params->get('currency', 'EUR'),
+			'balance_earnings_decrease' => $old_earnings - $new_earnings,
+			'balance_fee_refund'        => $refund_fee,
+			'balance_gross_refund'      => $subscription->gross_amount - $new_gross,
+			'balance_tax_refund'        => $refund_tax,
+			'checkout_id'               => $subscription->params['checkout_id'],
+			'currency'                  => $container->params->get('currency', 'EUR'),
+			'earnings_decrease'         => $old_earnings - $new_earnings,
+			'email'                     => $subscription->juser->email,
+			'event_time'                => gmdate('Y-m-d H:i:s'),
+			'fee_refund'                => $refund_fee,
+			'gross_refund'              => $subscription->gross_amount - $new_gross,
+			'marketing_consent'         => 0,
+			'order_id'                  => $subscription->processor_key,
+			'passthrough'               => $subscription->getId(),
+			'quantity'                  => 1,
+			'refund_type'               => $type,
+			'tax_refund'                => $refund_tax,
+			'p_signature'               => $container->params->get('secret'),
+		];
+	}
+
 	/**
 	 * Creates a dummy session under the CLI using our special CLI session handler
 	 *

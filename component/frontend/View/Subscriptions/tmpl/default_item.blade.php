@@ -116,7 +116,7 @@ $hasButtons = $hasRenew || $hasRecurringButtons || $hasReceipt || $hasLegacyInvo
 			@elseif ($sub->getFieldValue('state') == 'P')
 				@lang('COM_AKEEBASUBS_SUBSCRIPTIONS_PENDING_PAYMENT')
 			@elseif ($sub->getFieldValue('state') == 'X')
-				@lang('COM_AKEEBASUBS_SUBSCRIPTIONS_CANCELLED')
+				@lang('COM_AKEEBASUBS_SUBSCRIPTION_DETAILED_CANCELLATION_REASON_' . $sub->cancellation_reason)
 			@elseif ($sub->enabled)
 				@sprintf(
 					'COM_AKEEBASUBS_SUBSCRIPTIONS_PUBLISHDATES_ACTIVE',

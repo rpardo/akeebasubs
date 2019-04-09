@@ -77,10 +77,11 @@ class PaymentRefunded implements SubscriptionCallbackHandlerInterface
 
 			$subscription->save([
 				// Cancel the subscription
-				'state' => 'X',
+				'state'               => 'X',
+				// Set the cancellation reason
+				'cancellation_reason' => 'refund',
 				// Update the notes
-				'notes' => $subscription->notes . "\n" . $message,
-
+				'notes'               => $subscription->notes . "\n" . $message,
 			]);
 
 			return null;

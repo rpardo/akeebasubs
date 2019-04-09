@@ -178,6 +178,11 @@ class Subscriptions extends DataModel
 			$this->payment_method = 'unknown';
 		}
 
+		if (!in_array($this->cancellation_reason, ['refund', 'risk', 'past_due', 'user', 'upgrade', 'tos', 'other']))
+		{
+			$this->payment_method = 'other';
+		}
+
 		// If the _noemail state variable is set we have to modify contact_flag
 		$this->applyNoEmailFlag();
 	}
