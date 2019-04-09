@@ -75,14 +75,19 @@ class PaymentRefunded implements SubscriptionCallbackHandlerInterface
 				gmdate('Y-m-d H:i:s'));
 
 
-			$subscription->save([
+			$updates = [
 				// Cancel the subscription
 				'state'               => 'X',
 				// Set the cancellation reason
 				'cancellation_reason' => 'refund',
 				// Update the notes
 				'notes'               => $subscription->notes . "\n" . $message,
-			]);
+			];
+
+			// Stack this callback's information to the subscription record
+			$updates = array_merge($updates, $this->getStackCallbackUpdate($subscription, $requestData));
+
+			$subscription->save($updates);
 
 			return null;
 		}

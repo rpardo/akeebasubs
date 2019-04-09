@@ -239,9 +239,10 @@ $user = JFactory::getUser($item->user_id ?? 0);
 		<?php $country = $item->juser->getProfileField('akeebasubs.country') ?>
 		@if (!empty($country))
 			<p>
-				<span class="akeeba-label--grey">
+				<span class="akeeba-label--teal">
 					{{ $country }}
 				</span>
+				{{ \Akeeba\Subscriptions\Admin\Helper\Select::countryToEmoji($country) }}
 				{{ \Akeeba\Subscriptions\Admin\Helper\Select::formatCountry($country) }}
 			</p>
 		@endif

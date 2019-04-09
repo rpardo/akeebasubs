@@ -1,8 +1,5 @@
 Notes on callbacks I need to create
 
-Payment success: store country
-Refund: add cancellation_reason
-
 https://paddle.com/docs/reference-using-webhooks/
 
 HighRiskTransactionCreated -- Update subscription record

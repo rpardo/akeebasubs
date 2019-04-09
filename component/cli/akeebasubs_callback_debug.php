@@ -17,7 +17,6 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Input\Cli;
-use Joomla\Registry\Registry;
 
 /**
  * A simplistic exception handler
@@ -346,7 +345,6 @@ Webhooks
 		
 	high_risk_transaction_updated
 		--status  [accepted, rejected]	
-		--risk    0.01 to 99.99
 	
 	payment_dispute_created
 		No parameters
@@ -485,6 +483,15 @@ TEXT;
 		];
 	}
 
+	/**
+	 * Create a subscription refund webhook message
+	 *
+	 * @param   Subscriptions  $subscription  The subscription record involved in the callback
+	 *
+	 * @return  array  Data to send in a POST request
+	 *
+	 * @since   7.0.0
+	 */
 	protected function paymentRefunded(Subscriptions $subscription): array
 	{
 		$type      = $this->input->getCmd('type', 'full');
@@ -547,6 +554,85 @@ TEXT;
 			'p_signature'               => $container->params->get('secret'),
 		];
 	}
+
+	/**
+	 * Create a high risk subscription created webhook message
+	 *
+	 * @param   Subscriptions  $subscription  The subscription record involved in the callback
+	 *
+	 * @return  array  Data to send in a POST request
+	 *
+	 * @since   7.0.0
+	 */
+	protected function highRiskTransactionCreated(Subscriptions $subscription): array
+	{
+		$container = $subscription->getContainer();
+
+		try
+		{
+			$riskScore = random_int(0, 9999);
+		}
+		catch (Exception $e)
+		{
+			$riskScore = 1234;
+		}
+
+		$riskScore = $this->input->getFloat('risk', $riskScore);
+
+		return [
+			'alert_name'             => 'high_risk_transaction_created',
+			'case_id'                => $this->uuid_v4(),
+			'checkout_id'            => $subscription->params['checkout_id'],
+			'created_at'             => gmdate('Y-m-d H:i:s', time() - 10),
+			'customer_email_address' => $subscription->juser->email,
+			'customer_user_id'       => $this->uuid_v4(),
+			'event_time'             => gmdate('Y-m-d H:i:s'),
+			'marketing_consent'      => 0,
+			'passthrough'            => $subscription->getId(),
+			'product_id'             => $subscription->level->paddle_product_id,
+			'risk_score'             => sprintf('%0.2f', $riskScore / 100.00),
+			'status'                 => 'pending',
+			'p_signature'            => $container->params->get('secret'),
+		];
+	}
+
+	/**
+	 * Create a high risk subscription updated webhook message
+	 *
+	 * @param   Subscriptions  $subscription  The subscription record involved in the callback
+	 *
+	 * @return  array  Data to send in a POST request
+	 *
+	 * @since   7.0.0
+	 */
+	protected function highRiskTransactionUpdated(Subscriptions $subscription): array
+	{
+		$status = $this->input->getCmd('status', 'accepted');
+
+		if (!in_array($status, ['accepted', 'rejected']))
+		{
+			$status = 'accepted';
+		}
+
+		$container = $subscription->getContainer();
+
+		return [
+			'alert_name'             => 'high_risk_transaction_updated',
+			'case_id'                => $subscription->params['risk_case_id'],
+			'checkout_id'            => $subscription->params['checkout_id'],
+			'created_at'             => $subscription->params['risk_case_created'],
+			'customer_email_address' => $subscription->juser->email,
+			'customer_user_id'       => $subscription->params['paddle_customer_user_id'],
+			'event_time'             => gmdate('Y-m-d H:i:s'),
+			'marketing_consent'      => 0,
+			'passthrough'            => $subscription->getId(),
+			'product_id'             => $subscription->level->paddle_product_id,
+			'risk_score'             => $subscription->params['risk_score'],
+			'status'                 => $status,
+			'p_signature'            => $container->params->get('secret'),
+		];
+	}
+
 
 	/**
 	 * Creates a dummy session under the CLI using our special CLI session handler
