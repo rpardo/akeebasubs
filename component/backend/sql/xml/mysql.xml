@@ -263,6 +263,7 @@ CREATE TABLE `#__akeebasubs_subscriptions` (
 	`processor` varchar(255) NOT NULL,
 	`processor_key` varchar(255) NOT NULL,
 	`state` ENUM('N','P','C','X') not null default 'X',
+	`cancellation_reason` ENUM('refund', 'risk', 'past_due', 'user', 'upgrade', 'tos', 'other') NOT NULL default 'other',
 	`net_amount` FLOAT NOT NULL,
 	`tax_amount` FLOAT NOT NULL,
 	`gross_amount` FLOAT NOT NULL,
@@ -641,6 +642,15 @@ AFTER `discount_amount`
 ALTER TABLE `#__akeebasubs_subscriptions` ADD COLUMN
 `fee_amount` FLOAT DEFAULT NULL
 AFTER `tax_percent`
+            ]]></query>
+        </action>
+
+        <action table="#__akeebasubs_subscriptions" canfail="0">
+            <condition type="missing" value="cancellation_reason"   />
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_subscriptions` ADD COLUMN
+`cancellation_reason` ENUM('refund', 'risk', 'past_due', 'user', 'upgrade', 'tos', 'other') NOT NULL default 'other'
+AFTER `state`
             ]]></query>
         </action>
     </sql>

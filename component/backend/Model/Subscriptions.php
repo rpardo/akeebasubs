@@ -31,6 +31,7 @@ use JLoader;
  * @property  string		$processor					Payments processor
  * @property  string		$processor_key				Unique key for the payments processor
  * @property  string		$state						Payment state (N new, P pending, C completed, X cancelled)
+ * @property  string        $cancellation_reason        Reason for cancellation: 'refund', 'risk', 'past_due', 'user', 'upgrade', 'tos', 'other'
  * @property  float			$net_amount					Payable amount without tax
  * @property  float			$tax_amount					Tax portion of payable amount
  * @property  float			$gross_amount				Total payable amount
@@ -73,6 +74,7 @@ use JLoader;
  * @method  $this  akeebasubs_invoice_id()       akeebasubs_invoice_id(int|array $v)
  * @method  $this  prediscount_amount()          prediscount_amount(float $v)
  * @method  $this  payment_method()              payment_method(string $v)
+ * @method  $this  cancellation_reason()         cancellation_reason(string $v)
  * @method  $this  discount_amount()             discount_amount(float $v)
  * @method  $this  contact_flag()                contact_flag(bool $v)
  * @method  $this  first_contact()               first_contact(string $v)

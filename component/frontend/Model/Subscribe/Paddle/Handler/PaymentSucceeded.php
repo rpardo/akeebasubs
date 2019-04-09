@@ -64,7 +64,7 @@ class PaymentSucceeded implements SubscriptionCallbackHandlerInterface
 		$tax_amount      = (float) $requestData['balance_tax'];
 		$fee_amount      = (float) $requestData['balance_fee'];
 		$net_amount      = $gross_amount - $tax_amount;
-		$tax_percent     = sprintf('%0.2f', $tax_amount / $net_amount);
+		$tax_percent     = sprintf('%0.2f', 100.00 * $tax_amount / $net_amount);
 		$discount_amount = $subscription->prediscount_amount - $net_amount;
 
 		$updates = [

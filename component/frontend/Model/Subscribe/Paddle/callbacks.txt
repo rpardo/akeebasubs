@@ -1,5 +1,10 @@
 Notes on callbacks I need to create
 
+Payment success: store country
+Refund: add cancellation_reason
+
+https://paddle.com/docs/reference-using-webhooks/
+
 HighRiskTransactionCreated -- Update subscription record
 ================================================================================
 passthrough -- subscription ID
@@ -38,28 +43,138 @@ PaymentDisputeClosed -- Update subscription record
 passthrough -- subscription ID
 status -- MUST be 'closed'
 
-If the payment_state is X or N do nothing; return.
-If the payment_state is P or C set it to X and set enabled to 0.
+If the payment_state is N do nothing; return (the case is about a transaction we did not get notified about).
+If the payment_state is X do nothing; return (case resolved with a refund, a different event was / will be triggered).
+If the payment_state is P, set it to C (resolved without refund, we keep our money and the client their subscription).
 
 TODO - Recurring callbacks
+https://paddle.com/docs/subscriptions-event-reference/
+
+SubscriptionCreated
+================================================================================
+Fired when creating a recuring subscription. Only used to save the cancel_url and update_url.
+
+cancel_url => same named field
+update_url => same named field
+
+Set email attempt to 3 to avoid emailing the user (Paddle will do it for us!).
+
+SubscriptionUpdated
+================================================================================
+When a user switches subscription plans OR the price is updated (need info from Paddle).
+
+status (CHECK THIS)
+    active -- the price was updated
+    trialing -- zero charge for now, I have changed the user to a trial or his bill date changed
+    past_due -- failed recurring charge. Should not happen in this event! Stop processing.
+    deleted -- canceled subscription. Should not happen in this event! Stop processing.
+cancel_url => same named field
+update_url => same named field
+next_bill_date => publish_down should be this + 2 days
+new_price => Should I store it in gross amount???
+subscription_plan_id ==> If that changes the user has switched to a different subscription level. I will need to update the active subscription record with the new subscription level using the plan ID (can be either recurring or an upsell!) and create a canceled one (with enabled=1 for the plugins to run) with the previous record's information. Basically the same logic as renewing a subscription BUT with a level change as well.
+
+Set email attempt to 3 to avoid emailing the user (Paddle will do it for us!).
+
+
+SubscriptionCancelled
+================================================================================
+The user cancels the subscription BUT does not get their money back for the last instalment.
+
+status -- must be 'deleted'
+cancellation_effective_date => publish_down
+
+Set email attempt to 3 to avoid emailing the user.
+
+We do not cancel the subscription immediately. Remember, the user is billed in advance of the billing cycle.
+
+
+SubscriptionPaymentSucceeded
+================================================================================
+Similar to PaymentSucceeded but we also need to call the recurring subscription logic to do the subscription record
+switchover.
+Effective publish_up is date and time or receipt. Effective publish_down is next_bill_date + 1 day.
+
+balance_fee
+balance_gross
+balance_tax
+checkout_id
+country
+initial_payment => 1 for the first payment, 0 otherwise. Message: "First payment"
+instalments => Use it with initial_payment to construct a message. "Recurring payment #[INSTALMENTS]"
+next_bill_date => publish_down (add one more day)
+order_id => processor_key
+payment_method
+receipt_url
+subscription_id
+
+Set email attempt to 3 to avoid emailing the user (Paddle will do it for us!).
+
+
+SubscriptionPaymentFailed
+================================================================================
+The recurring charge failed to process. It can be a soft failure (will retry) or hard failure (the subscription is canceled because of lack of funds).
+
+status -- must be 'past_due'
+hard_failure -- If 'true' no more attempts will be made. Set paystate to "X".
+cancel_url => save to same named field
+update_url => save to same named field
+next_retry_date
+
+If hard_failure == 'true' (STRING, NOT BOOLEAN!)
+    Set paystate to 'X'
+ElseIf component option on_past_due_pending == 1
+    Set paystate to 'P'
+    We should use _dontNotify since Paddle has emailed the client about the payment failure.
+Else
+    publish_down = next_retry_date + 1 day
+    We should use _dontNotify since Paddle has emailed the client about the payment failure.
+
+
+SubscriptionPaymentRefunded
+================================================================================
+Can be full, vat or partial.
+Exact same logic as PaymentRefunded with a few extras:
+
+initial_payment => 1 for the first payment, 0 otherwise. Message: "First payment"
+instalments => Use it with initial_payment to construct a message. "Recurring payment #[INSTALMENTS]"
+
+I just need to save the recurring payment installment message together with the refund message.
+
 
 JAVASCRIPT HANDLERS
 ================================================================================
-Payment closed: show the Abandoned Order page.
+Payment closed (meaning: without payment): show the Abandoned Order page.
 
-Payment success: go through Message.show to redirect the user to the correct message page.
+Payment success: go through 'Message.show' task to redirect the user to the correct message page.
 
 
 WHAT HAPPENS WHEN USER CANCELS AN ABANDONED SUBSCRIPTION
 ================================================================================
-The record is removed
-If the user was blocked, unblock them.
+The record is removed.
 The user is sent to the Level page with the message "The subscription attempt has been canceled at your request. If you would like to retry subscribing please use the form below."
+    If the user is guest we should prefill the name, username and email with the stored ones - makes it easier to subscribe after all.
 
 
 PENDING PAYMENT PAGE
 ================================================================================
-Use the message from the component's Options.
+Use the message from the component's Options. I could use something similar to:
+
+Your payment is in progress. You have not been charged yet.
+
+You are seeing this page for one of two reasons:
+
+* You tried to pay with a bank / wire transfer. Your transaction needs to go through the banks. For this reason, payment clearance can take a few days.
+* Your transaction was automatically flagged for manual clearance by Paddle, our reseller. We have no control over the reasons this may happen and it usually takes a few hours or days for the transaction to clear.
+
+Once your payment clears you will be charged and your [LEVEL] subscription will be activated.
+
+If the payment fails to clear you will not be charged but your [LEVEL] subscription will not be activated. You will be notified about a canceled transaction in this case by Paddle, our reseller.
+
+If it's been more than 7 business days since you tried to make a payment please contact the Paddle <Success Team> and tell them your enquiry is about Order [ORDER_ID].
+
+Please do not contact us directly with a payment progress enquiry. We don't receive any details on payment progress except for the outcome i.e. if the transaction clears or not. Paddle's Success Team has access to more details and can help you.
+
 
 PAYMENT CANCELLATION PAGE
 ================================================================================
@@ -102,6 +217,7 @@ Enter a coupon code
 
 Payment issue
     We are sorry to hear that! Please contact the <success team> of our reseller, Paddle, to help you sort it out. They are really good at figuring these things out, we promise!
+    Please note that if you paid by bank / wire transfer it might take a few days for the payment to clear. During this time your subscription will appear as not yet paid due to technical limitations. If this is the case please wait and don't try to pay for the subscription again. Thank you for your understanding!
 
 
 RETRY TO SUBSCRIBE ON A PENDING LEVEL WITHIN A WEEK -- Level PAGE, ABOVE Subscribe Now, WITHOUT ToS ACCEPTANCE.
@@ -115,3 +231,14 @@ Did you have an issue? Let us help you! (same as Pending page MINUS Enter a coup
 
 Enter a coupon code
     Click on "Start over". Before you click "Subscribe Now" look below the price. There's an option there to enter your coupon code.
+
+
+RECOVERY EMAILS
+================================================================================
+Same logic as subscription notification emails
+First email: after 6 hours
+Second email: after 18 hours
+We record which email has been sent (0, 1, 2)
+We also record a TOKEN which is used to enable the user account and access the Abandoned Payment (Message.abandoned) page.
+Emails triggered via CRON job using a plugin. See how I am doing that in the notification emails plugin.
+Recovery emails are only to be sent to subscriptions with paystate N and a non-empty payment_url.

@@ -59,7 +59,8 @@ use JUserHelper;
  * @method  $this  requireReset()   requireReset(bool $v)
  * @method  $this  search()         search(string $userInfoToSearch)
  *
- **/class JoomlaUsers extends DataModel
+ **/
+class JoomlaUsers extends DataModel
 {
 	/**
 	 * Override the constructor since I need to attach to a core table and add the Filters behaviour
@@ -184,6 +185,35 @@ use JUserHelper;
 		else
 		{
 			return false;
+		}
+	}
+
+	/**
+	 * Returns a profile key value from the database
+	 *
+	 * @param   string  $key  The profile key to retrieve
+	 *
+	 * @return  string|null  The profile value; null if it does not exis
+	 *
+	 * @since   7.0.0
+	 */
+	public function getProfileField(string $key): ?string
+	{
+		$db = $this->getDbo();
+
+		$query = $db->getQuery(true)
+			->select($db->qn('profile_value'))
+			->from($db->qn('#__user_profiles'))
+			->where($db->qn('user_id') . ' = ' . $db->q($this->id))
+			->where($db->qn('profile_key') . ' = ' . $db->q($key));
+
+		try
+		{
+			return $db->setQuery($query)->loadResult();
+		}
+		catch (\Exception $e)
+		{
+			return null;
 		}
 	}
 }
