@@ -163,13 +163,13 @@ class CallbackHandler implements CallbackInterface
 
 		try
 		{
-			$subscription->findOrFail($key);
+			$subscription->findOrFail($findKeys);
 		}
 		catch (\Exception $e)
 		{
 			$this->logCallback($requestData, 'INVALID -- Cannot find the subscription record');
 
-			return null;
+			return sprintf('Invalid subscription key %s', print_r($findKeys, true));
 		}
 
 		/**
@@ -180,6 +180,8 @@ class CallbackHandler implements CallbackInterface
 		if (!class_exists($class, true))
 		{
 			$this->logCallback($requestData, 'NOT IMPLEMENTED -- I do not have a handler for these webhooks (yet)');
+
+			return null;
 		}
 
 		/** @var SubscriptionCallbackHandlerInterface $handler */

@@ -633,6 +633,62 @@ TEXT;
 		];
 	}
 
+	/**
+	 * Create a payment dispute created webhook message
+	 *
+	 * @param   Subscriptions  $subscription  The subscription record involved in the callback
+	 *
+	 * @return  array  Data to send in a POST request
+	 *
+	 * @since   7.0.0
+	 */
+	protected function paymentDisputeCreated(Subscriptions $subscription): array
+	{
+		$container = $subscription->getContainer();
+
+		return [
+			'alert_name'        => 'payment_dispute_created',
+			'amount'            => $subscription->gross_amount,
+			'checkout_id'       => $subscription->params['checkout_id'],
+			'currency'          => $container->params->get('currency', 'EUR'),
+			'email'             => $subscription->juser->email,
+			'event_time'        => gmdate('Y-m-d H:i:s'),
+			'fee_usd'           => 20.00,
+			'marketing_consent' => 0,
+			'order_id'          => $subscription->processor_key,
+			'status'            => 'open',
+			'p_signature'       => $container->params->get('secret'),
+		];
+	}
+
+	/**
+	 * Create a payment dispute closed webhook message
+	 *
+	 * @param   Subscriptions  $subscription  The subscription record involved in the callback
+	 *
+	 * @return  array  Data to send in a POST request
+	 *
+	 * @since   7.0.0
+	 */
+	protected function paymentDisputeClosed(Subscriptions $subscription): array
+	{
+		$container = $subscription->getContainer();
+
+		return [
+			'alert_name'        => 'payment_dispute_closed',
+			'amount'            => $subscription->gross_amount,
+			'checkout_id'       => $subscription->params['checkout_id'],
+			'currency'          => $container->params->get('currency', 'EUR'),
+			'email'             => $subscription->juser->email,
+			'event_time'        => gmdate('Y-m-d H:i:s'),
+			'fee_usd'           => 20.00,
+			'marketing_consent' => 0,
+			'order_id'          => $subscription->processor_key,
+			'status'            => 'closed',
+			'p_signature'       => $container->params->get('secret'),
+		];
+	}
+
 
 	/**
 	 * Creates a dummy session under the CLI using our special CLI session handler

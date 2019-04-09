@@ -2,48 +2,6 @@ Notes on callbacks I need to create
 
 https://paddle.com/docs/reference-using-webhooks/
 
-HighRiskTransactionCreated -- Update subscription record
-================================================================================
-passthrough -- subscription ID
-case_id
-risk_score
-status	-- MUST be 'pending'
-
-Set the payment status to 'P' (Pending).
-Create a note "Transaction flagged as high risk on [DATE_TZ]. Case ID [CASE_ID], risk score [RISK_SCORE]%\n"
-
-HighRiskTransactionUpdated -- Update subscription record
-================================================================================
-passthrough -- subscription ID
-case_id
-risk_score
-status -- accepted OR rejected
-
-IF status == 'accepted'
-	Set payment status to 'C'
-	Add note "High risk transaction cleared on [DATE_TZ]. Case ID [CASE_ID], risk score [RISK_SCORE]%\n"
-
-IF status == 'rejected'
-	Set payment status to 'X'
-	Add note "High risk transaction rejected on [DATE_TZ]. Case ID [CASE_ID], risk score [RISK_SCORE]%\n"
-
-PaymentDisputeCreated -- Update subscription record
-================================================================================
-passthrough -- subscription ID
-status -- MUST be 'open'
-
-Set payment_status to 'P' (Pending).
-Create a note "Payment dispute opened on [DATE_TZ]. Subscription deactivated temporarily.%\n"
-
-PaymentDisputeClosed -- Update subscription record
-================================================================================
-passthrough -- subscription ID
-status -- MUST be 'closed'
-
-If the payment_state is N do nothing; return (the case is about a transaction we did not get notified about).
-If the payment_state is X do nothing; return (case resolved with a refund, a different event was / will be triggered).
-If the payment_state is P, set it to C (resolved without refund, we keep our money and the client their subscription).
-
 TODO - Recurring callbacks
 https://paddle.com/docs/subscriptions-event-reference/
 
