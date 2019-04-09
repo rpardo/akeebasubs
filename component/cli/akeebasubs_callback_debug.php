@@ -573,7 +573,9 @@ TEXT;
 			CURLOPT_POSTFIELDS     => $webhookData,
 			CURLOPT_TIMEOUT        => 5,
 			CURLOPT_RETURNTRANSFER => 1,
-			CURLOPT_HEADER => 1,
+			CURLOPT_HEADER         => 1,
+			CURLOPT_USERAGENT      => 'Akeeba Subscriptions Debug',
+			CURLOPT_AUTOREFERER    => false,
 		]);
 
 		$content = curl_exec($ch);

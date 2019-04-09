@@ -105,7 +105,56 @@ class PaymentSucceeded implements SubscriptionCallbackHandlerInterface
 			$subscription,
 		]);
 
+		// Update the country, if necessary
+		$currentCountry = $subscription->juser->getProfileField('akeebasubs.country');
+		$newCountry   = $requestData['country'];
+
+		if (is_null($currentCountry))
+		{
+			$this->updateUserProfile($subscription->user_id, 'akeebasubs.country', $newCountry, true);
+		}
+		elseif ($newCountry != $currentCountry)
+		{
+			$this->updateUserProfile($subscription->user_id, 'akeebasubs.country', $newCountry, false);
+		}
+
 		// Done. No output to be sent (returns a 200 OK with an empty body)
 		return null;
+	}
+
+	/**
+	 * Update a user profile field
+	 *
+	 * @param   int     $user_id        User ID
+	 * @param   string  $profile_key    The profile key to update
+	 * @param   string  $profile_value  The new profile value
+	 * @param   bool    $new            Is this a new record?
+	 *
+	 * @return  bool  True on success
+	 *
+	 * @since   7.0.0
+	 */
+	protected function updateUserProfile(int $user_id, string $profile_key, string $profile_value, bool $new = false): bool
+	{
+		$db = $this->container->db;
+
+		if ($new)
+		{
+			$o = (object) [
+				'user_id'       => $user_id,
+				'profile_key'   => $profile_key,
+				'profile_value' => $profile_value,
+			];
+
+			return $db->insertObject('#__user_profiles', $o);
+		}
+
+		$query = $db->getQuery(true)
+			->update($db->qn('#__user_profiles'))
+			->set($db->qn('profile_value') . ' = ' . $db->q($profile_value))
+			->where($db->qn('user_id') . ' = ' . $db->q($user_id))
+			->where($db->qn('profile_key') . ' = ' . $db->q($profile_key));
+
+		return $db->setQuery($query)->execute() !== false;
 	}
 }
