@@ -38,7 +38,7 @@ JS;
 	</p>
 
 	<a class="akeeba-btn--primary--big"
-	   href="javascript:Paddle.Checkout.open({override: '{{ $this->subscription->payment_url }}'});">
+	   href="javascript:Paddle.Checkout.open({override: '{{ $this->subscription->payment_url }}', successCallback: 'akeebasubsCheckoutComplete', closeCallback: 'akeebasubsCheckoutClosed', eventCallback: 'akeebasubsCheckoutEvent'});">
 		<span class="akion-card"></span>
 		@lang('COM_AKEEBASUBS_SUBSCRIPTIONS_BTN_COMPLETEPAYMENT')
 	</a>

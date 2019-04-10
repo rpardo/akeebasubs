@@ -17,6 +17,8 @@ if (typeof (akeeba.jQuery) === "undefined")
     akeeba.jQuery = window.jQuery.noConflict();
 }
 
+var akeebasubsMessageUrl = window.location;
+
 function akeebasubsLevelToggleDetails()
 {
     (function ($) {
@@ -111,8 +113,13 @@ function akeebaSubscriptionsStartPayment()
                 return;
             }
 
+            akeebasubsMessageUrl = ret.messageUrl;
+
             Paddle.Checkout.open({
-                override: ret.url
+                override: ret.url,
+                successCallback: 'akeebasubsCheckoutComplete',
+                closeCallback: 'akeebasubsCheckoutClosed',
+                eventCallback: 'akeebasubsCheckoutEvent'
             });
         }).fail(function(jqXHR, textStatus, errorThrown){
             window.location.reload();
@@ -120,6 +127,45 @@ function akeebaSubscriptionsStartPayment()
     })(akeeba.jQuery);
 
     return false;
+}
+
+/**
+ * Fired when the payment is successful
+ *
+ * @param {Object} data
+ */
+function akeebasubsCheckoutComplete(data)
+{
+    console.log('Got checkout complete');
+    console.log(data);
+
+    window.setTimeout(function() {
+        window.location = akeebasubsMessageUrl;
+    }, 1000);
+}
+
+/**
+ * Fired when the checkout modal closes without a successful payment
+ *
+ * @param {Object} data
+ */
+function akeebasubsCheckoutClosed(data)
+{
+    console.log('Got checkout closed');
+    console.log(data);
+
+    window.setTimeout(function() {
+        window.location = akeebasubsMessageUrl;
+    }, 1000);
+}
+
+/**
+ *
+ * @param {Object} data
+ */
+function akeebasubsCheckoutEvent(data)
+{
+    // TODO Use custom callbacks, defined by plugins
 }
 
 (function ($) {

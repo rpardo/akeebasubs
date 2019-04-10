@@ -145,7 +145,7 @@ $hasButtons = $hasRenew || $hasRecurringButtons || $hasReceipt || $hasLegacyInvo
 		<div class="akeebasubs-subscription-buttons">
 			@if ($hasPayNow)
 				<a class="akeeba-btn--primary--big"
-				   onclick="Paddle.Checkout.open({override: '{{ $sub->payment_url }}'});">
+				   onclick="Paddle.Checkout.open({override: '{{ $sub->payment_url }}', successCallback: 'akeebasubsCheckoutComplete', closeCallback: 'akeebasubsCheckoutClosed', eventCallback: 'akeebasubsCheckoutEvent'});">
 					<span class="akion-card"></span>
 					@lang('COM_AKEEBASUBS_SUBSCRIPTIONS_BTN_COMPLETEPAYMENT')
 				</a>

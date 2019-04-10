@@ -141,6 +141,8 @@ class Subscribe extends Controller
 			$this->container->platform->closeApplication();
 		}
 
+		// TODO At this point try to find an existing subscription record by user_id OR email address. If that fails, create a new subscription. If it's an existing subscription I have to update the user information (full name and password)
+
 		// Try to create a new subscription record
 		$model->setState('id', $id);
 
@@ -215,11 +217,27 @@ class Subscribe extends Controller
 		{
 			try
 			{
+				// Get the URL to the message page. This page is valid for both success and failure redirection.
+				if ($newSubscription->juser->block && $newSubscription->juser->activation)
+				{
+					$urlAuth = 'activation=' . $newSubscription->juser->activation;
+				}
+				else
+				{
+					$secret   = Factory::getConfig()->get('secret', '');
+					$authCode = md5($newSubscription->getId() . $newSubscription->user_id . $secret);
+					$urlAuth  = 'authorization=' . $authCode;
+				}
+
+				$messageUrl = Route::_('index.php?option=com_akeebasubs&view=Message&subid=' . $newSubscription->akeebasubs_subscription_id . '&' . $urlAuth);
+
 				$customCheckout = new CustomCheckout($this->container);
-				$ret            = [
-					'method' => 'overlay',
-					'url'    => $customCheckout->getCheckoutUrl($newSubscription),
-					'info'   => 'Regular payment',
+
+				$ret = [
+					'method'     => 'overlay',
+					'url'        => $customCheckout->getCheckoutUrl($newSubscription),
+					'messageUrl' => $messageUrl,
+					'info'       => 'Regular payment',
 				];
 
 				// Store the payment URL to the database
