@@ -16,12 +16,12 @@ defined('_JEXEC') or die();
 		<h3>
 			@sprintf('Subscription #%s &mdash; %s', $this->subscription->getId(), $this->subscription->level->title)
 			&mdash;
-			The subscription has expired
+			@lang('COM_AKEEBASUBS_MESSAGE_EXPIRED_HEAD_LABEL')
 		</h3>
 	</header>
 
 	<p class="akeeba-block--warning">
-		Your payment was successful but your subscription has expired.
+		@sprintf('COM_AKEEBASUBS_MESSAGE_EXPIRED_TOP_DETAIL', \Akeeba\Subscriptions\Admin\Helper\Format::date($this->subscription->publish_down, \Joomla\CMS\Language\Text::_('DATE_FORMAT_LC2')))
 	</p>
 
 	<?php echo $this->message ?>

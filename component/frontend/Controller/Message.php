@@ -15,6 +15,7 @@ use Akeeba\Subscriptions\Site\Model\Subscriptions;
 use Akeeba\Subscriptions\Site\View\Message\Html;
 use FOF30\Container\Container;
 use FOF30\Controller\Controller;
+use FOF30\Date\Date;
 use FOF30\View\Exception\AccessForbidden;
 use Joomla\CMS\Access\Access;
 use Joomla\CMS\Factory;
@@ -87,9 +88,12 @@ class Message extends Controller
 			case 'C':
 				$layout = 'complete';
 
+				$now = time();
+				$then = (new Date($subscription->publish_up))->getTimestamp();
+
 				if (!$subscription->enabled)
 				{
-					$layout = 'expired';
+					$layout = ($then > $now) ? 'waiting' : 'expired';
 				}
 
 				break;

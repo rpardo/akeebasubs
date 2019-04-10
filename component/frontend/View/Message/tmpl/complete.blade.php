@@ -13,14 +13,14 @@ defined('_JEXEC') or die();
 <div class="akeeba-panel--green">
 	<header class="akeeba-block-header">
 		<h3>
-			@sprintf('Subscription #%s &mdash; %s', $this->subscription->getId(), $this->subscription->level->title)
+			@sprintf('COM_AKEEBASUBS_MESSAGE_HEAD_COMMON', $this->subscription->getId(), $this->subscription->level->title)
 			&mdash;
-			The subscription is active
+			@lang('COM_AKEEBASUBS_MESSAGE_COMPLETE_HEAD_LABEL')
 		</h3>
 	</header>
 
 	<p class="akeeba-block--success">
-		Your payment is successful and your subscription is active.
+		@sprintf('COM_AKEEBASUBS_MESSAGE_COMPLETE_TOP_DETAIL', \Akeeba\Subscriptions\Admin\Helper\Format::date($this->subscription->publish_down, \Joomla\CMS\Language\Text::_('DATE_FORMAT_LC2')))
 	</p>
 
 	<?php echo $this->message ?>

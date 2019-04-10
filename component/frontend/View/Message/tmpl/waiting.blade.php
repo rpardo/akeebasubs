@@ -8,25 +8,20 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
-/** @var \Akeeba\Subscriptions\Site\View\Message\Html $this */
-
 ?>
 
-<div class="akeeba-panel--grey">
+<div class="akeeba-panel--green">
 	<header class="akeeba-block-header">
 		<h3>
 			@sprintf('COM_AKEEBASUBS_MESSAGE_HEAD_COMMON', $this->subscription->getId(), $this->subscription->level->title)
 			&mdash;
-			@lang('COM_AKEEBASUBS_MESSAGE_CANCELED_HEAD_LABEL')
+			@lang('COM_AKEEBASUBS_MESSAGE_COMPLETE_HEAD_LABEL')
 		</h3>
 	</header>
 
-	<p class="akeeba-block--failure">
-		@lang('COM_AKEEBASUBS_SUBSCRIPTION_DETAILED_CANCELLATION_REASON_' . $this->subscription->cancellation_reason)
+	<p class="akeeba-block--success">
+		@sprintf('COM_AKEEBASUBS_MESSAGE_WAITING_TOP_DETAIL', \Akeeba\Subscriptions\Admin\Helper\Format::date($this->subscription->publish_up, \Joomla\CMS\Language\Text::_('DATE_FORMAT_LC2')))
 	</p>
 
-	<p>
-		@lang('COM_AKEEBASUBS_MESSAGE_CANCELED_TOP_DETAIL')
-	</p>
-
+	<?php echo $this->message ?>
 </div>
