@@ -183,9 +183,22 @@ class Subscribe extends Controller
 		if ($newSubscription->gross_amount < 0.01)
 		{
 			// If the subscription is free redirect to the Thank You page immediately.
+			if ($newSubscription->juser->block && $newSubscription->juser->activation)
+			{
+				$urlAuth = 'activation=' . $newSubscription->juser->activation;
+			}
+			else
+			{
+				$secret   = Factory::getConfig()->get('secret', '');
+				$authCode = md5($newSubscription->getId() . $newSubscription->user_id . $secret);
+				$urlAuth  = 'authorization=' . $authCode;
+			}
+
+			$url = 'index.php?option=com_akeebasubs&view=Message&subid=' . $newSubscription->akeebasubs_subscription_id . '&' . $urlAuth;
+
 			$ret = [
 				'method' => 'redirect',
-				'url'    => Route::_('index.php?option=com_akeebasubs&view=Message&slug=' . $slug . '&layout=order&subid=' . $newSubscription->akeebasubs_subscription_id),
+				'url'    => Route::_($url),
 				'info'   => 'Free',
 			];
 		}

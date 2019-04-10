@@ -17,7 +17,7 @@ defined('_JEXEC') or die();
  * This plugin implements the analytics.js method. It won't work with gtag.js (tag manager).
  *
  * The code is only added in the thank-you page, e.g. something like
- * http://www.example.com/index.php?option=com_akeebasubs&view=Message&task=thankyou&slug=SILVER&subid=3
+ * http://www.example.com/index.php?option=com_akeebasubs&view=Message&subid=3
  */
 class plgAkeebasubsGacommerce extends JPlugin
 {

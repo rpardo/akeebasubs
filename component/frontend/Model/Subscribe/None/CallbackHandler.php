@@ -12,6 +12,7 @@ use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 use Akeeba\Subscriptions\Site\Model\Subscribe\CallbackInterface;
 use Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits\FixSubscriptionDate;
 use FOF30\Container\Container;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use RuntimeException;
 
@@ -54,7 +55,7 @@ class CallbackHandler implements CallbackInterface
 			throw new RuntimeException(Text::_('COM_AKEEBASUBS_CALLBACK_ERR_NOSUCHSUBSCRIPTION'), 404);
 		}
 
-		$id = (int)$requestData['passthrough'];
+		$id = (int) $requestData['passthrough'];
 
 		if (empty($id))
 		{
@@ -71,26 +72,34 @@ class CallbackHandler implements CallbackInterface
 			throw new RuntimeException(Text::_('COM_AKEEBASUBS_CALLBACK_ERR_NOSUCHSUBSCRIPTION'), 404);
 		}
 
-		$updates = array(
+		$updates = [
 			'akeebasubs_subscription_id' => $id,
 			'processor_key'              => md5(microtime(false)),
 			'state'                      => 'C',
 			'enabled'                    => 1,
-		);
+		];
 
 		$subscription->save($this->fixSubscriptionDates($subscription, $updates));
 
 		// Run the onAKAfterPaymentCallback events
 		$this->container->platform->importPlugin('akeebasubs');
-		$this->container->platform->runPlugins('onAKAfterPaymentCallback', array(
-			$subscription
-		));
-
+		$this->container->platform->runPlugins('onAKAfterPaymentCallback', [
+			$subscription,
+		]);
 
 		// This callback is a tricky one; it will redirect you to the thank you page ;)
-		$slug = $subscription->level->slug;
+		if ($subscription->juser->block && $subscription->juser->activation)
+		{
+			$urlAuth = 'activation=' . $subscription->juser->activation;
+		}
+		else
+		{
+			$secret   = Factory::getConfig()->get('secret', '');
+			$authCode = md5($subscription->getId() . $subscription->user_id . $secret);
+			$urlAuth  = 'authorization=' . $authCode;
+		}
 
-		$url = 'index.php?option=com_akeebasubs&view=Message&slug=' . $slug . '&layout=order&subid=' . $subscription->akeebasubs_subscription_id;
+		$url = 'index.php?option=com_akeebasubs&view=Message&subid=' . $subscription->akeebasubs_subscription_id . '&' . $urlAuth;
 
 		try
 		{
