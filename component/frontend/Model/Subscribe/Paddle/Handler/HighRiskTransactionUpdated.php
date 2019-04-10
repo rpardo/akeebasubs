@@ -96,6 +96,9 @@ class HighRiskTransactionUpdated implements SubscriptionCallbackHandlerInterface
 		// Stack this callback's information to the subscription record
 		$updates = $this->fixSubscriptionDates($subscription, $updates);
 
+		// Stack this callback's information to the subscription record
+		$updates = array_merge($updates, $this->getStackCallbackUpdate($subscription, $requestData));
+
 		// Add high risk transaction case parameters
 		if (!isset($updates['params']))
 		{

@@ -117,10 +117,11 @@ Use the message from the component's Options. I could use something similar to:
 
 Your payment is in progress. You have not been charged yet.
 
-You are seeing this page for one of two reasons:
+You are seeing this page for one of the following reasons:
 
 * You tried to pay with a bank / wire transfer. Your transaction needs to go through the banks. For this reason, payment clearance can take a few days.
 * Your transaction was automatically flagged for manual clearance by Paddle, our reseller. We have no control over the reasons this may happen and it usually takes a few hours or days for the transaction to clear.
+* You filed a payment dispute. In this case the subscription remains in Pending status until the dispute is closed.
 
 Once your payment clears you will be charged and your [LEVEL] subscription will be activated.
 

@@ -66,9 +66,20 @@ class PaymentDisputeCreated implements SubscriptionCallbackHandlerInterface
 		// Mark the subscription pending
 		$updates = [
 			'state' => 'P',
-			'notes' => $subscription->notes . "\n" . sprintf('Payment Dispute created on %s; subscription halted.', $requestData['event_time'])
+			'notes' => $subscription->notes . "\n" . sprintf('Payment Dispute created on %s; subscription halted.', $requestData['event_time']),
 		];
 
+		// Stack this callback's information to the subscription record
+		$updates = array_merge($updates, $this->getStackCallbackUpdate($subscription, $requestData));
+
+		// Update dispute information
+		if (!isset($updates['params']))
+		{
+			$updates['params'] = $subscription->params;
+		}
+		$updates['params']['dispute'] = true;
+
+		// Save the subscription record
 		$subscription->save($updates);
 
 		// Done. No output to be sent (returns a 200 OK with an empty body)

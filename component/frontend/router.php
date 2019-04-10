@@ -47,31 +47,7 @@ function AkeebasubsBuildRoute(&$query)
 	}
 	elseif ($newView == 'Message')
 	{
-		if (!array_key_exists('layout', $query))
-		{
-			$query['layout'] = 'order';
-		}
-
-		if (($query['layout'] == 'order') || ($query['task'] == 'thankyou'))
-		{
-			$newView = 'ThankYou';
-		}
-		elseif (($query['layout'] == 'pending') || ($query['task'] == 'pending'))
-		{
-			$newView = 'Pending';
-		}
-		elseif (($query['layout'] == 'abandoned') || ($query['task'] == 'abandoned'))
-		{
-			$newView = 'Abandoned';
-		}
-		elseif (($query['layout'] == 'show') || ($query['task'] == 'show'))
-		{
-			$newView = 'ShowMessage';
-		}
-		else
-		{
-			$newView = 'Cancelled';
-		}
+		$newView = 'ThankYou';
 
 		unset($query['layout']);
 		unset($query['task']);
@@ -106,17 +82,23 @@ function AkeebasubsBuildRoute(&$query)
 		}
 	}
 
+	// Add the subscription ID
+	if (($newView == 'ThankYou') && isset($query['subid']))
+	{
+		$segments[] = $query['subid'];
+		unset($query['subid']);
+	}
+
 	return $segments;
 }
 
 function AkeebasubsParseRoute($segments)
 {
 	// accepted views:
-	$views = array('new', 'thankyou', 'cancelled', 'pending', 'abandoned', 'showmessage', 'level', 'levels', 'message', 'subscribe', 'subscription', 'subscriptions', 'callback', 'validate', 'userinfo', 'invoices', 'invoice');
+	$views = array('new', 'thankyou', 'cancelled', 'level', 'levels', 'message', 'subscribe', 'subscription', 'subscriptions', 'callback', 'validate', 'userinfo', 'invoices', 'invoice');
 
 	// accepted layouts:
 	$layoutsAccepted = array(
-		'Messages' => array('order', 'cancel', 'pending', 'abandoned', 'show'),
 		'Invoice' => array('item')
 	);
 
@@ -134,7 +116,7 @@ function AkeebasubsParseRoute($segments)
 	// if there's no view, but the menu item has view info, we use that
 	if (count($segments))
 	{
-		if (!in_array($segments[0], $views))
+		if (!in_array(strtolower($segments[0]), $views))
 		{
 			$vars['view'] = array_key_exists('view', $menu) ? $menu['view'] : $default;
 		}
@@ -168,36 +150,7 @@ function AkeebasubsParseRoute($segments)
 			case 'Thankyou':
 			case 'ThankYou':
 				$vars['view'] = 'Messages';
-				$vars['task'] = 'thankyou';
-				$vars['layout'] = 'order';
-				break;
-
-			case 'cancelled':
-			case 'Cancelled':
-				$vars['view'] = 'Messages';
-				$vars['task'] = 'cancel';
-				$vars['layout'] = 'cancel';
-				break;
-
-			case 'pending':
-			case 'Pending':
-				$vars['view'] = 'Messages';
-				$vars['task'] = 'pending';
-				$vars['layout'] = 'pending';
-				break;
-
-			case 'abandoned':
-			case 'Abandoned':
-				$vars['view'] = 'Messages';
-				$vars['task'] = 'abandoned';
-				$vars['layout'] = 'abandoned';
-				break;
-
-			case 'showmessage':
-			case 'ShowMessage':
-				$vars['view'] = 'Messages';
 				$vars['task'] = 'show';
-				$vars['layout'] = 'show';
 				break;
 
 			case 'userinfo':
@@ -240,6 +193,11 @@ function AkeebasubsParseRoute($segments)
 			{
 				$vars['slug'] = array_shift($segments);
 			}
+		}
+
+		if (($vars['view'] == 'Messages') && !empty($segments))
+		{
+			$vars['subid'] = array_shift($segments);
 		}
 	}
 

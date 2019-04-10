@@ -72,9 +72,20 @@ class PaymentDisputeClosed implements SubscriptionCallbackHandlerInterface
 		// No refund event has been processed and nobody has manually cancelled the subscription. Reinstate it.
 		$updates = [
 			'state' => 'C',
-			'notes' => $subscription->notes . "\n" . sprintf('Payment Dispute closed on %s; subscription reinstated without modifying its validity dates.', $requestData['event_time'])
+			'notes' => $subscription->notes . "\n" . sprintf('Payment Dispute closed on %s; subscription reinstated without modifying its validity dates.', $requestData['event_time']),
 		];
 
+		// Stack this callback's information to the subscription record
+		$updates = array_merge($updates, $this->getStackCallbackUpdate($subscription, $requestData));
+
+		// Update dispute information
+		if (!isset($updates['params']))
+		{
+			$updates['params'] = $subscription->params;
+		}
+		$updates['params']['dispute'] = false;
+
+		// Save the subscription record
 		$subscription->save($updates);
 
 		// Done. No output to be sent (returns a 200 OK with an empty body)

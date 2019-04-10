@@ -151,7 +151,7 @@ $hasButtons = $hasRenew || $hasRecurringButtons || $hasReceipt || $hasLegacyInvo
 				</a>
 
 				<a class="akeeba-btn--ghost--small"
-				   href="@route('index.php?option=com_akeebasubs&view=Subscribe&task=cancel_unpaid&id=' . $subId . '&returnurl=' . base64_encode(Joomla\CMS\Uri\Uri::current()))">
+				   href="@route('index.php?option=com_akeebasubs&view=Subscribe&task=cancel_unpaid&id=' . $subId)">
 					<span class="akion-android-cancel"></span>
 					@lang('COM_AKEEBASUBS_SUBSCRIPTIONS_BTN_CANCEL_UNPAID')
 				</a>

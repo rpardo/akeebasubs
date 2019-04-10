@@ -266,6 +266,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
             'components/com_akeebasubs/View/APICoupons',
             'components/com_akeebasubs/View/Validate',
 			'components/com_akeebasubs/View/Subscribe',
+			'components/com_akeebasubs/View/Messages',
 
 			'components/com_akeebasubs/Model/Subscribe/Validation/ValidationTrait',
 

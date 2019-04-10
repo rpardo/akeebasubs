@@ -9,6 +9,7 @@ namespace Akeeba\Subscriptions\Site\Model\Subscribe\Paddle\Handler;
 
 
 use Akeeba\Subscriptions\Admin\Helper\Message;
+use Akeeba\Subscriptions\Admin\Helper\UserLogin;
 use Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits\StackCallback;
 use Akeeba\Subscriptions\Site\Model\Subscribe\SubscriptionCallbackHandlerInterface;
 use Akeeba\Subscriptions\Site\Model\Subscriptions;
@@ -31,7 +32,7 @@ class Fulfillment implements SubscriptionCallbackHandlerInterface
 	/**
 	 * Constructor
 	 *
-	 * @param Container $container The component container
+	 * @param   Container  $container  The component container
 	 *
 	 * @since  7.0.0
 	 */
@@ -42,8 +43,8 @@ class Fulfillment implements SubscriptionCallbackHandlerInterface
 	/**
 	 * Handle a webhook callback from the payment service provider about a specific subscription
 	 *
-	 * @param Subscriptions $subscription The subscription the webhook refers to
-	 * @param array         $requestData  The request data minus component, option, view, task
+	 * @param   Subscriptions  $subscription  The subscription the webhook refers to
+	 * @param   array          $requestData   The request data minus component, option, view, task
 	 *
 	 * @return  string|null  Text to include in the callback response page
 	 *
@@ -60,7 +61,7 @@ class Fulfillment implements SubscriptionCallbackHandlerInterface
 
 		if ($needsLogin)
 		{
-			$this->loginUser($subscription->user_id);
+			UserLogin::loginUser($subscription->user_id);
 		}
 
 		// Prepare the message
@@ -71,7 +72,7 @@ class Fulfillment implements SubscriptionCallbackHandlerInterface
 		// Logout the temporary logged in user (if we have such a user)
 		if ($needsLogin)
 		{
-			$this->logoutUser();
+			UserLogin::logoutUser();
 		}
 
 		// Stack the callback data to the subscription
@@ -84,73 +85,5 @@ class Fulfillment implements SubscriptionCallbackHandlerInterface
 		}
 
 		return $message;
-	}
-
-	/**
-	 * Logs in a different user than the current one.
-	 *
-	 * @param   int  $userId
-	 *
-	 * @throws  \Exception
-	 *
-	 * @since   7.0.0
-	 */
-	public function loginUser(int $userId): void
-	{
-		// This line returns an empty JUser object
-		$newUserObject = new \JUser();
-
-		// This line FORCE RELOADS the user record.
-		$newUserObject->load($userId);
-
-		if (($newUserObject->id != $userId))
-		{
-			throw new AccessForbidden;
-		}
-
-		// Mark the user as logged in
-		$newUserObject->block = 0;
-		$newUserObject->set('guest', 0);
-
-		// Register the needed session variables
-		$this->container->platform->setSessionVar('user', $newUserObject);
-
-		$db = $this->container->db;
-
-		// Check to see the the session already exists.
-		$app = \JFactory::getApplication();
-		$app->checkSession();
-
-		// Update the user related fields for the Joomla sessions table.
-		$query = $db->getQuery(true)
-			->update($db->qn('#__session'))
-			->set(array(
-				$db->qn('guest') . ' = ' . $db->q($newUserObject->get('guest')),
-				$db->qn('username') . ' = ' . $db->q($newUserObject->get('username')),
-				$db->qn('userid') . ' = ' . (int)$newUserObject->get('id')
-			))->where($db->qn('session_id') . ' = ' . $db->q(\JFactory::getSession()->getId()));
-		$db->setQuery($query);
-		$db->execute();
-
-		// Hit the user last visit field
-		$newUserObject->setLastVisit();
-	}
-
-	public function logoutUser()
-	{
-		$userId = $this->container->platform->getUser()->id;
-		$newUserObject = new \JUser();
-		$newUserObject->load($userId);
-
-		$app = \JFactory::getApplication();
-
-		// Perform the log out.
-		$app->logout();
-
-		if ($newUserObject->block)
-		{
-			$newUserObject->lastvisitDate = $this->container->db->getNullDate();
-			$newUserObject->save();
-		}
 	}
 }
