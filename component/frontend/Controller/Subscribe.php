@@ -141,8 +141,6 @@ class Subscribe extends Controller
 			$this->container->platform->closeApplication();
 		}
 
-		// TODO At this point try to find an existing subscription record by user_id OR email address. If that fails, create a new subscription. If it's an existing subscription I have to update the user information (full name and password)
-
 		// Try to create a new subscription record
 		$model->setState('id', $id);
 

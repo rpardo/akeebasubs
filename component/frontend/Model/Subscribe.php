@@ -15,6 +15,7 @@ use Akeeba\Subscriptions\Site\Model\Subscribe\Validation;
 use Akeeba\Subscriptions\Site\Model\Subscribe\ValidatorFactory;
 use FOF30\Container\Container;
 use FOF30\Input\Input;
+use FOF30\Model\DataModel\Exception\NoItemsFound;
 use FOF30\Model\Model;
 use FOF30\Utils\Ip;
 use JUserHelper;
@@ -501,6 +502,15 @@ class Subscribe extends Model
 		// Store the user's ID in the session
 		$this->container->platform->setSessionVar('subscribes.user_id', $user->id, 'com_akeebasubs');
 
+		// Step #3.b. Look for an existing unpaid subscription for the same level and user
+		// ----------------------------------------------------------------------
+		$existingSubscription = $this->findExistingUnpaidSubscription($user->id, $level->getId());
+
+		if (!is_null($existingSubscription))
+		{
+			return $existingSubscription;
+		}
+
 		// Step #4. Check for existing subscription records and calculate the subscription expiration date
 		// ----------------------------------------------------------------------
 		// @todo Refactor the entire step #4 into a validator class
@@ -559,7 +569,7 @@ class Subscribe extends Model
 				 * want to remind them of the expiring subscriptions. That's why the information for no-contact
 				 * subscriptions is passed to the payment plugin which stores it as custom parameters to the
 				 * subscription record. It will then apply the no-contact information when the payment is finalized, by
-				 * the AkpaymentBase::fixSubscriptionDates() method.
+				 * the fixSubscriptionDates() method.
 				 */
 				$noContact[] = $row->akeebasubs_subscription_id;
 			}
@@ -1281,5 +1291,42 @@ TEXT;
 		}
 
 		return $logFilepath;
+	}
+
+	/**
+	 * Finds an existing unpaid subscription by the same user and for the same subscription level. If it has a
+	 * non-empty payment_url it is returned. In any other case null is returned.
+	 *
+	 * @param   int  $user_id              The user ID the subscription record must be for
+	 * @param   int  $akeebasubs_level_id  The level ID the subscription record must be for
+	 *
+	 * @return  Subscriptions|null  The old subscription record, null if no appropriate record was found
+	 *
+	 * @since   7.0.0
+	 */
+	private function findExistingUnpaidSubscription(int $user_id, int $akeebasubs_level_id): ?Subscriptions
+	{
+		/** @var Subscriptions $subscriptionsModel */
+		$subscriptionsModel = $this->container->factory->model('Subscriptions')->tmpInstance();
+
+		try
+		{
+			$subscription = $subscriptionsModel
+				->user_id($user_id)
+				->level($akeebasubs_level_id)
+				->paystate('N')
+				->firstOrFail();
+
+			if (empty($subscription->payment_url))
+			{
+				return null;
+			}
+
+			return $subscription;
+		}
+		catch (NoItemsFound $e)
+		{
+			return null;
+		}
 	}
 }
