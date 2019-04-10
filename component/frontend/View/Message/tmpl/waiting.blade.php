@@ -15,7 +15,7 @@ defined('_JEXEC') or die();
 		<h3>
 			@sprintf('COM_AKEEBASUBS_MESSAGE_HEAD_COMMON', $this->subscription->getId(), $this->subscription->level->title)
 			&mdash;
-			@lang('COM_AKEEBASUBS_MESSAGE_COMPLETE_HEAD_LABEL')
+			@lang('COM_AKEEBASUBS_MESSAGE_WAITING_HEAD_LABEL')
 		</h3>
 	</header>
 
