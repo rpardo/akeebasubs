@@ -16,6 +16,8 @@ use FOF30\Date\Date;
 use FOF30\Model\DataModel;
 use JFactory;
 use JLoader;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Router\Route;
 use Joomla\Registry\Registry as JRegistry;
 use JText;
 
@@ -393,6 +395,35 @@ abstract class Message
 			$dlid = Filter::myDownloadID($sub->user_id);
 		}
 
+		// -- Message URL
+		if ($sub->juser->block && $sub->juser->activation)
+		{
+			$urlAuth = 'activation=' . $sub->juser->activation;
+		}
+		else
+		{
+			$secret   = Factory::getConfig()->get('secret', '');
+			$authCode = md5($sub->getId() . $sub->user_id . $secret);
+			$urlAuth  = 'authorization=' . $authCode;
+		}
+
+		$messageUrl = Route::_('index.php?option=com_akeebasubs&view=Message&subid=' . $sub->akeebasubs_subscription_id . '&' . $urlAuth);
+
+		if (!$isAdmin && !$isCli)
+		{
+			$messageUrl =
+				str_replace('&amp;', '&', Route::_($messageUrl));
+		}
+
+		$messageUrl = ltrim($url, '/');
+
+		if (substr($messageUrl, 0, strlen($subpathURL) + 1) == "$subpathURL/")
+		{
+			$messageUrl = substr($messageUrl, strlen($subpathURL) + 1);
+		}
+
+		$messageUrl = rtrim($baseURL, '/') . '/' . ltrim($messageUrl, '/');
+
 		// -- The actual replacement
 		$extras = array_merge(array(
 			"\\n"                      => "\n",
@@ -407,6 +438,7 @@ abstract class Message
 			'[SLUG]'                   => $level->slug,
 			'[RENEWALURL]'             => $renewalURL,
 			'[RENEWALURL:]'            => $renewalURL, // Malformed tag without a coupon code...
+			'[MESSAGEURL]'             => $messageUrl,
 			'[ENABLED]'                => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_COMMON_' . ($sub->enabled ? 'ENABLED' :
 					'DISABLED')),
 			'[PAYSTATE]'               => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_STATE_' . $sub->getFieldValue('state', 'N')),
