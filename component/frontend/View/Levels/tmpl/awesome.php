@@ -30,7 +30,7 @@ echo $this->loadAnyTemplate('site:com_akeebasubs/Level/paddlejs')
 			$paddleClass = '';
 			$paddleExtra = '';
 
-			if (!$priceInfo->includeDiscount && $level->paddle_product_id && ($priceInfo->levelPrice >= 0.01))
+			if ($level->paddle_product_id && ($priceInfo->levelPrice >= 0.01))
 			{
 				$paddleClass = 'paddle-net';
 				$paddleExtra = 'data-product="' . $level->paddle_product_id;
@@ -51,18 +51,6 @@ echo $this->loadAnyTemplate('site:com_akeebasubs/Level/paddlejs')
 						<?php if($this->container->params->get('currencypos','before') == 'before'): ?><span class="akeebasubs-awesome-price-currency"><?php echo $this->container->params->get('currencysymbol','€')?></span><?php endif; ?><span class="akeebasubs-awesome-price-integer"><?php echo $priceInfo->priceInteger ?><?php if((int)$priceInfo->priceFractional > 0): ?></span><span class="akeebasubs-awesome-price-separator">.</span><span class="akeebasubs-awesome-price-decimal"><?php echo $priceInfo->priceFractional ?></span><?php endif; ?><?php if($this->container->params->get('currencypos','before') == 'after'): ?><span class="akeebasubs-awesome-price-currency"><?php echo $this->container->params->get('currencysymbol','€')?></span><?php endif; ?>
 						<?php endif; ?>
 					</div>
-					<?php if ($this->includeDiscount): ?>
-					<div class="akeebasubs-awesome-prediscount">
-						<?php if((abs($priceInfo->discount) >= 0.01) && (abs($priceInfo->prediscount) >= 0.01)): ?>
-						<span class="akeebasubs-awesome-prediscount-label">
-						<?php echo JText::_('COM_AKEEBASUBS_LEVEL_FIELD_PREDISCOUNT'); ?>
-						</span>
-						<s>
-						<?php if($this->container->params->get('currencypos','before') == 'before'): ?><span class="akeebasubs-awesome-price-currency"><?php echo $this->container->params->get('currencysymbol','€')?></span><?php endif; ?><span class="akeebasubs-awesome-price-integer"><?php echo $priceInfo->prediscountInteger ?></span><?php if((int)$priceInfo->prediscountFractional > 0): ?><span class="akeebasubs-awesome-price-separator">.</span><span class="akeebasubs-awesome-price-decimal"><?php echo $priceInfo->prediscountFractional ?></span><?php endif; ?><?php if($this->container->params->get('currencypos','before') == 'after'): ?><span class="akeebasubs-awesome-price-currency"><?php echo $this->container->params->get('currencysymbol','€')?></span><?php endif; ?>
-						</s>
-						<?php endif; ?>
-					</div>
-					<?php endif; ?>
 				</div>
 				<div class="akeebasubs-awesome-body">
 					<div class="akeebasubs-awesome-image">
@@ -87,19 +75,6 @@ echo $this->loadAnyTemplate('site:com_akeebasubs/Level/paddlejs')
 		<div class="level-clear"></div>
 	</div>
 </div>
-
-<?php if($this->showNotices && $this->includeDiscount): ?>
-	<div class="akeebasubs-notices">
-		<h4><?php echo JText::_('COM_AKEEBASUBS_LEVELS_NOTICES') ?></h4>
-		<?php if ($this->includeDiscount) : ?>
-			<div class="akeebasubs-include-discount-notice">
-				<p>
-					<?php echo JText::_('COM_AKEEBASUBS_LEVELS_PREDISCOUNT_NOTE'); ?>
-				</p>
-			</div>
-		<?php endif; ?>
-	</div>
-<?php endif; ?>
 
 <?php echo $this->getContainer()->template->loadPosition('akeebasubscriptionslistfooter')?>
 </div>

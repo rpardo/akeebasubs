@@ -109,7 +109,6 @@ abstract class Price
 			$user = $container->platform->getUser();
 
 			self::$pricingParameters = (object) [
-				'includeDiscount'  => $user->guest ? false : $container->params->get('includediscount', 0),
 				'renderAsFree'     => $container->params->get('renderasfree', 0),
 				'currencyPosition' => $container->params->get('currencypos', 'before'),
 				'currency'         => $container->params->get('currency', 'EUR'),
@@ -142,17 +141,6 @@ abstract class Price
 		$params = self::getPricingParameters();
 
 		$preDiscount = max($levelPrice, 0.0);
-
-		if ($params->includeDiscount)
-		{
-			/** @var \Akeeba\Subscriptions\Site\Model\Subscribe $subscribeModel */
-			$subscribeModel = self::getContainer()->factory->model('Subscribe')->savestate(0);
-			$subscribeModel->setState('id', $level->akeebasubs_level_id);
-			$subscribeModel->setState('slug', $level->slug);
-			$subValidation = $subscribeModel->getValidation(true);
-			$discount = $subValidation->price->discount;
-			$levelPrice = $level->price - $discount;
-		}
 
 		if ($levelPrice < 0)
 		{
@@ -193,8 +181,6 @@ abstract class Price
 			'priceInteger'       => $price_integer,
 			'priceFractional'    => $price_fractional,
 			'priceForFormatting' => $priceForFormatting,
-
-			'includeDiscount' => $params->includeDiscount ? true : false,
 		];
 
 		return self::$pricingInformationCache[$levelKey];

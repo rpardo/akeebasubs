@@ -40,7 +40,7 @@ echo $this->loadAnyTemplate('site:com_akeebasubs/Level/paddlejs')
 			$paddleClass = '';
 			$paddleExtra = '';
 
-			if (!$priceInfo->includeDiscount && $level->paddle_product_id && ($priceInfo->levelPrice >= 0.01))
+			if ($level->paddle_product_id && ($priceInfo->levelPrice >= 0.01))
 			{
 				$paddleClass = 'paddle-net';
 				$paddleExtra = 'data-product="' . $level->paddle_product_id;
@@ -56,25 +56,6 @@ echo $this->loadAnyTemplate('site:com_akeebasubs/Level/paddlejs')
 			</td>
 		<?php endforeach ?>
 		</tr>
-
-		<?php if ($this->includeDiscount): ?>
-		<tr>
-			<?php foreach($this->items as $level):
-				$priceInfo = $this->getLevelPriceInformation($level);
-				?>
-				<td class="akeebasubs-strappy-prediscount">
-					<?php if((abs($priceInfo->discount) >= 0.01) && (abs($priceInfo->prediscount) >= 0.01)): ?>
-						<span class="akeebasubs-strappy-prediscount-label">
-						<?php echo JText::_('COM_AKEEBASUBS_LEVEL_FIELD_PREDISCOUNT'); ?>
-						</span>
-						<s>
-						<?php if($this->container->params->get('currencypos','before') == 'before'): ?><span class="akeebasubs-strappy-price-currency"><?php echo $this->container->params->get('currencysymbol','€')?></span><?php endif; ?><span class="akeebasubs-strappy-price-integer"><?php echo $priceInfo->prediscountInteger ?></span><?php if((int)$priceInfo->prediscountFractional > 0): ?><span class="akeebasubs-strappy-price-separator">.</span><span class="akeebasubs-strappy-price-decimal"><?php echo $priceInfo->prediscountFractional ?></span><?php endif; ?><?php if($this->container->params->get('currencypos','before') == 'after'): ?><span class="akeebasubs-strappy-price-currency"><?php echo $this->container->params->get('currencysymbol','€')?></span><?php endif; ?>
-						</s>
-					<?php endif; ?>
-				</td>
-			<?php endforeach ?>
-		</tr>
-		<?php endif; ?>
 
 		<tr>
 		<?php foreach($this->items as $level):?>
@@ -102,19 +83,6 @@ echo $this->loadAnyTemplate('site:com_akeebasubs/Level/paddlejs')
 		<?php endforeach ?>
 		</tr>
 	</table>
-
-	<?php if($this->showNotices && $this->includeDiscount): ?>
-<div class="akeebasubs-notices">
-<h4><?php echo JText::_('COM_AKEEBASUBS_LEVELS_NOTICES') ?></h4>
-<?php if ($this->includeDiscount) : ?>
-	<div class="akeebasubs-include-discount-notice">
-		<p>
-			<?php echo JText::_('COM_AKEEBASUBS_LEVELS_PREDISCOUNT_NOTE'); ?>
-		</p>
-	</div>
-<?php endif; ?>
-</div>
-<?php endif; ?>
 
 <?php echo $this->getContainer()->template->loadPosition('akeebasubscriptionslistfooter')?>
 </div>

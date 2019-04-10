@@ -28,7 +28,7 @@ echo $this->loadAnyTemplate('site:com_akeebasubs/Level/paddlejs')
 	$paddleClass = '';
 	$paddleExtra = '';
 
-	if (!$priceInfo->includeDiscount && $level->paddle_product_id && ($priceInfo->levelPrice >= 0.01))
+	if ($level->paddle_product_id && ($priceInfo->levelPrice >= 0.01))
 	{
 		$paddleClass = 'paddle-net';
 		$paddleExtra = 'data-product="' . $level->paddle_product_id;

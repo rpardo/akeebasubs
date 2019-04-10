@@ -22,13 +22,6 @@ class Html extends \FOF30\View\DataView\Html
 	public $subIDs = [];
 
 	/**
-	 * Should I include discounts in the displayed prices?
-	 *
-	 * @var  bool
-	 */
-	public $includeDiscount = false;
-
-	/**
 	 * Should I render prices of 0 as "FREE"?
 	 *
 	 * @var  bool
@@ -55,7 +48,6 @@ class Html extends \FOF30\View\DataView\Html
 		$params = Price::getPricingParameters();
 
 		$this->subIDs          = Price::getSubIDs();
-		$this->includeDiscount = $params->includeDiscount;
 		$this->renderAsFree    = $params->renderAsFree;
 	}
 
