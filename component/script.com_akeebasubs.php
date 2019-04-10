@@ -305,6 +305,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 				'autocity',
 				'canalyticscommerce',
 				'customfields',
+				'gacommerce',
 				'invoices',
 				'iplogger',
 				'iproperty',

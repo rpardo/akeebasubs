@@ -160,12 +160,30 @@ function akeebasubsCheckoutClosed(data)
 }
 
 /**
+ * Executes when Paddle fires an event. Used for Google Analytics e-commerce tracking.
  *
  * @param {Object} data
  */
 function akeebasubsCheckoutEvent(data)
 {
-    // TODO Use custom callbacks, defined by plugins
+    if (data.event === 'Checkout.PaymentComplete')
+    {
+        console.log("AkeebaSubs GACommerce: Submitting e-commerce information using ga.js");
+        ga('require', 'ecommerce');
+        ga('ecommerce:addTransaction', {
+            'id': data.checkout.passthrough,
+            'revenue': data.checkout.prices.vendor.total,
+            'currency': data.checkout.prices.vendor.currency
+        });
+        ga('ecommerce:addItem', {
+            'id': data.checkout.passthrough,
+            'name': data.product.name,
+            'sku': data.product.id,
+            'price': data.checkout.prices.vendor.total,
+            'currency': data.checkout.prices.vendor.currency
+        });
+        ga('ecommerce:send');
+    }
 }
 
 (function ($) {
