@@ -18,6 +18,19 @@ defined('_JEXEC') or die();
 
 	@include('site:com_akeebasubs/Subscriptions/tz_warning')
 
+	@if(empty($this->subIDs))
+		<p>
+			@lang('COM_AKEEBASUBS_SUBSCRIPTIONS_NO_SUBSCRIPTIONS')
+		</p>
+		<p>
+			<a href="@route('index.php?option=com_akeebasubs&view=Levels')"
+			   class="akeeba-btn--big">
+				<span class="akion-ios-cart"></span>
+				@lang('COM_AKEEBASUBS_LEVELS_SUBSCRIBE')
+			</a>
+		</p>
+	@endif
+
 	{{-- UNPAID SUBSCRIPTIONS (NEW) --}}
 	@if(count($this->sortTable['new']))
 		<div class="akeeba-panel--red">
