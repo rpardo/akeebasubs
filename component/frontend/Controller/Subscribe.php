@@ -10,6 +10,7 @@ namespace Akeeba\Subscriptions\Site\Controller;
 defined('_JEXEC') or die;
 
 use Akeeba\Subscriptions\Admin\Controller\Mixin;
+use Akeeba\Subscriptions\Admin\Helper\UserLogin;
 use Akeeba\Subscriptions\Site\Model\Subscribe as ModelSubscribe;
 use Akeeba\Subscriptions\Site\Model\Subscriptions;
 use FOF30\Container\Container;
@@ -36,7 +37,7 @@ class Subscribe extends Controller
 
 		parent::__construct($container, $config);
 
-		$this->predefinedTaskList = ['subscribe'];
+		$this->predefinedTaskList = ['subscribe', 'cancel_unpaid'];
 
 		$this->cacheableTasks = [];
 	}
@@ -260,6 +261,105 @@ class Subscribe extends Controller
 		echo json_encode($ret);
 
 		$this->container->platform->closeApplication();
+	}
+
+	/**
+	 * Cancels a not yet paid for subscription. Afterwards, it redirects the user to the subscription page.
+	 *
+	 * @return  void
+	 */
+	public function cancel_unpaid()
+	{
+		/** @var ModelSubscribe $model */
+		$model = $this->getModel();
+
+		// Try to find the subscription
+		$subid = $this->input->getInt('id', null);
+
+		// We need a subscription ID
+		if (empty($subid))
+		{
+			throw new \RuntimeException(Text::_('JLIB_APPLICATION_ERROR_ACCESS_FORBIDDEN'), 403);
+		}
+
+		// Make sure the subscription exists
+		/** @var Subscriptions $subscription */
+		$subscription = $this->container->factory->model('Subscriptions')->tmpInstance();
+		try
+		{
+			$subscription->findOrFail($subid);
+		}
+		catch (\Exception $e)
+		{
+			throw new \RuntimeException(Text::_('JLIB_APPLICATION_ERROR_ACCESS_FORBIDDEN'), 403);
+		}
+
+		$user          = $this->container->platform->getUser();
+		$authorization = $this->input->getString('authorization');
+		$secret        = Factory::getConfig()->get('secret', '');
+		$authCode      = md5($subscription->getId() . $subscription->user_id . $secret);
+		$loggedInUser  = false;
+
+		// Do I have to log in a user using an authorization code?
+		if ($user->guest && !empty($authorization) && ($authorization == $authCode))
+		{
+			UserLogin::loginUser($subscription->user_id, false);
+			$user         = $this->container->platform->getUser();
+			$loggedInUser = true;
+		}
+
+		// Make sure it's our own subscription
+		if ($user->guest || ($user->id != $subscription->user_id))
+		{
+			if ($loggedInUser)
+			{
+				UserLogin::logoutUser();
+			}
+
+			throw new \RuntimeException(Text::_('JLIB_APPLICATION_ERROR_ACCESS_FORBIDDEN'), 403);
+		}
+
+		// Make sure it's not yet paid
+		if ($subscription->getFieldValue('state') != 'N')
+		{
+			if ($loggedInUser)
+			{
+				UserLogin::logoutUser();
+			}
+			throw new \RuntimeException(Text::_('JLIB_APPLICATION_ERROR_ACCESS_FORBIDDEN'), 403);
+		}
+
+		// Construct the return URL before removing the subscription
+		$urlParams = [
+			'option'   => 'com_akeebasubs',
+			'view'     => 'Level',
+			'slug'     => $subscription->level->slug,
+			'username' => $user->username,
+			'email'    => $user->email,
+			'email2'   => $user->email,
+		];
+		$returnUrl = Route::_('index.php?' . http_build_query($urlParams));
+
+		// Make sure we can delete the subscription
+		try
+		{
+			$subscription->delete($subid);
+		}
+		catch (\Exception $e)
+		{
+			if ($loggedInUser)
+			{
+				UserLogin::logoutUser();
+			}
+			throw new \RuntimeException(Text::_('JLIB_APPLICATION_ERROR_ACCESS_FORBIDDEN'), 403);
+		}
+
+		if ($loggedInUser)
+		{
+			UserLogin::logoutUser();
+		}
+
+		$this->setRedirect($returnUrl);
 	}
 
 	/**
