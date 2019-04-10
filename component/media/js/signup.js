@@ -186,6 +186,70 @@ function akeebasubsCheckoutEvent(data)
     }
 }
 
+/**
+ * Localises a price using the Paddle API. Only for single products, not recurring subscriptions.
+ *
+ * @param   {Number}   product            Paddle product ID
+ * @param   {Boolean}  allowTaxInclusive  Should I display tax inclusive pricing in grossTarget?
+ * @param   {String}   grossTarget        ID of the element to display the gross price
+ * @param   {String}   taxTarget          ID of the element to display the tax price
+ * @param   {String}   taxContainer       ID of an element to hide if Paddle returns non-tax-inclusive price
+ * @param   {String}   countryTarget      ID of the element to display the country code
+ *
+ * @see https://paddle.com/docs/paddlejs-localized-prices/
+ */
+function akeebasubsLocalisePrice(product, allowTaxInclusive, grossTarget, taxTarget, taxContainer, countryTarget)
+{
+    Paddle.Product.Prices(product, 1, function(prices) {
+        if (grossTarget)
+        {
+            var elGross = document.getElementById(grossTarget);
+
+            if (elGross !== undefined)
+            {
+                elGross.innerText = allowTaxInclusive ? prices.price.gross : prices.price.net;
+            }
+        }
+
+        if (taxTarget)
+        {
+            var elTax = document.getElementById(taxTarget);
+
+            if (elTax !== undefined)
+            {
+                elTax.innerText = prices.price.tax;
+            }
+        }
+
+        if (taxContainer)
+        {
+            var elTaxContainer = document.getElementById(taxContainer);
+
+            if (elTaxContainer !== undefined)
+            {
+                elTaxContainer.style.display = prices.price.tax_included ? 'block' : 'none'
+            }
+        }
+
+        if (countryTarget)
+        {
+            var elCountry = document.getElementById(countryTarget);
+
+            if (elCountry !== undefined)
+            {
+                if ('value' in elCountry)
+                {
+                    elCountry.value = prices.country;
+                }
+                else
+                {
+                    elCountry.innerText = prices.country;
+                }
+            }
+        }
+    });
+}
+
 (function ($) {
     $(document).ready(function () {
         // Disable form submit when ENTER is hit in the coupon field
