@@ -182,7 +182,13 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'components/com_akeebasubs/View/Level/tmpl/default_persubscription.blade.php',
 			'components/com_akeebasubs/View/Level/tmpl/default_prepayment.blade.php',
 			'components/com_akeebasubs/View/Level/tmpl/default_summary.blade.php',
+			'components/com_akeebasubs/View/Levels/tmpl/awesome.php',
+			'components/com_akeebasubs/View/Levels/tmpl/default.php',
+			'components/com_akeebasubs/View/Levels/tmpl/strappy.php',
 			'components/com_akeebasubs/View/Subscriptions/tmpl/default.php',
+
+            'components/com_akeebasubs/views/Levels/tmpl/awesome.xml',
+            'components/com_akeebasubs/views/Levels/tmpl/strappy.xml',
 
 			'media/com_akeebasubs/images/couponicons.png',
 			'media/com_akeebasubs/images/dollaricons.png',

@@ -96,6 +96,20 @@
 			<option value="1">JYes</option>
 		</field>
 
+		<field name="localisePrice" type="radio" class="switcher btn-group" default="1"
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_LOCALISEPRICE_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_LOCALISEPRICE_DESC">
+			<option value="0">JNo</option>
+			<option value="1">JYes</option>
+		</field>
+
+		<field name="showEstimatedTax" type="radio" class="switcher btn-group" default="1"
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWESTIMATEDTAX_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWESTIMATEDTAX_DESC">
+			<option value="0">JNo</option>
+			<option value="1">JYes</option>
+		</field>
+
 		<field name="summaryimages" type="list" default="0"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_SUMMARYIMAGES_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_SUMMARYIMAGES_DESC">

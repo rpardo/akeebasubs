@@ -2,6 +2,8 @@ Notes on callbacks I need to create
 
 https://paddle.com/docs/reference-using-webhooks/
 
+TODO -- Do not override price for checkout popup when we do not have any discounts applied
+
 TODO - Recurring callbacks
 https://paddle.com/docs/subscriptions-event-reference/
 

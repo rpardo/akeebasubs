@@ -24,16 +24,32 @@ class Html extends \FOF30\View\DataView\Html
 	/**
 	 * Should I render prices of 0 as "FREE"?
 	 *
-	 * @var  bool
+	 * @var   bool
 	 */
 	public $renderAsFree = false;
 
 	/**
 	 * Should I display notices about
 	 *
-	 * @var bool
+	 * @var   bool
 	 */
 	public $showNotices = true;
+
+	/**
+	 * Should I localise prices?
+	 *
+	 * @var   bool
+	 * @since 7.0.0
+	 */
+	public $localisePrice = true;
+
+	/**
+	 * Should I include tax in localised prices?
+	 *
+	 * @var   bool
+	 * @since 7.0.0
+	 */
+	public $isTaxAllowed = true;
 
 	/**
 	 * Cache of pricing information per subscription level, required to cut down on queries in the Strappy layout.
@@ -49,6 +65,9 @@ class Html extends \FOF30\View\DataView\Html
 
 		$this->subIDs          = Price::getSubIDs();
 		$this->renderAsFree    = $params->renderAsFree;
+
+		$this->localisePrice    = $this->container->params->get('localisePrice', 1);
+		$this->isTaxAllowed     = $this->localisePrice && $this->container->params->get('showEstimatedTax', 1);
 	}
 
 	/**
@@ -56,6 +75,7 @@ class Html extends \FOF30\View\DataView\Html
 	 */
 	protected function onBeforeBrowse()
 	{
+		$this->setLayout('default');
 		$this->applyViewConfiguration();
 
 		parent::onBeforeBrowse();
