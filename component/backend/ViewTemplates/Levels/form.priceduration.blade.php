@@ -42,6 +42,16 @@ defined('_JEXEC') or die();
     @jhtml('FEFHelper.select.booleanswitch', 'forever', $item->forever)
 </div>
 
+<div class="akeeba-form-group">
+    <label for="related_level_id">
+        @lang('COM_AKEEBASUBS_LEVEL_FIELD_RELATED_LEVEL_ID')
+    </label>
+    {{ \Akeeba\Subscriptions\Admin\Helper\Select::levels('related_level_id', $item->related_level_id, ['include_none' => true, 'multiple' => 1]) }}
+    <p class="akeeba-help-text">
+        @lang('COM_AKEEBASUBS_LEVEL_FIELD_RELATED_LEVEL_ID_HELP')
+    </p>
+</div>
+
 <h4>@lang('COM_AKEEBASUBS_LEVEL_HEADER_PADDLE')</h4>
 
 <div class="akeeba-form-group">

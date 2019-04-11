@@ -25,6 +25,7 @@ use JFactory;
  * @property  string    $description
  * @property  int       $duration
  * @property  float     $price
+ * @property  array     $related_levels
  * @property  string    $paddle_product_id
  * @property  string    $paddle_secret
  * @property  string    $upsell
@@ -402,6 +403,30 @@ class Levels extends DataModel
 	protected function setParamsAttribute($value)
 	{
 		return $this->setAttributeForJson($value);
+	}
+
+	/**
+	 * Converts the loaded string of related levels into an array
+	 *
+	 * @param   string  $value  The string
+	 *
+	 * @return  array  The array of levels
+	 */
+	protected function getRelatedLevelsAttribute($value)
+	{
+		return $this->getAttributeForImplodedArray($value);
+	}
+
+	/**
+	 * Converts the array of related levels into a string
+	 *
+	 * @param   array  $value  The array of values
+	 *
+	 * @return  string  The string
+	 */
+	protected function setRelatedLevelsAttribute($value)
+	{
+		return $this->setAttributeForImplodedArray($value);
 	}
 
 	/**

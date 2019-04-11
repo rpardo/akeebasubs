@@ -180,6 +180,7 @@ CREATE TABLE `#__akeebasubs_levels` (
 	`description` text,
 	`duration` INT(10) UNSIGNED NOT NULL DEFAULT 365,
 	`price` FLOAT NOT NULL DEFAULT '0',
+    `related_levels` TINYTEXT NULL,
     `paddle_product_id` varchar(100) NULL,
 	`paddle_secret` varchar(100) NULL,
 	`upsell` ENUM('never', 'always', 'renewal') DEFAULT 'never',
@@ -613,6 +614,15 @@ AFTER `upsell`
 ALTER TABLE `#__akeebasubs_levels` ADD COLUMN
 `paddle_plan_secret` varchar(100) NULL
 AFTER `paddle_plan_id`
+            ]]></query>
+        </action>
+
+        <action table="#__akeebasubs_levels" canfail="0">
+            <condition type="missing" value="related_levels"   />
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_levels` ADD COLUMN
+`related_levels` `related_levels` TINYTEXT NULL,
+AFTER `price`
             ]]></query>
         </action>
 
