@@ -11,6 +11,7 @@ defined('_JEXEC') or die;
 
 use Akeeba\Subscriptions\Site\Model\Levels;
 use Akeeba\Subscriptions\Site\Model\Subscribe;
+use Joomla\CMS\Factory;
 
 class Html extends \FOF30\View\DataView\Html
 {
@@ -37,11 +38,19 @@ class Html extends \FOF30\View\DataView\Html
 	public $validation = null;
 
 	/**
+	 * Subscription levels I can upsell the user to
+	 *
+	 * @var   array
+	 * @since 7.0.0
+	 */
+	public $upsellLevels = [];
+
+	/**
 	 * The record loaded (read, edit, add views)
 	 *
 	 * @var  Levels
 	 */
-	protected $item = null;
+	public $item = null;
 
 	/**
 	 * Get the value of a field from the session cache. If it's empty use the value from the user parameters cache.
@@ -100,8 +109,8 @@ class Html extends \FOF30\View\DataView\Html
 		}
 
 		// Get component parameters and pass them to the view
-		$localisePrice    = $this->container->params->get('localisePrice', 1);
-		$isTaxAllowed     = $localisePrice && $this->container->params->get('showEstimatedTax', 1);
+		$localisePrice   = $this->container->params->get('localisePrice', 1);
+		$isTaxAllowed    = $localisePrice && $this->container->params->get('showEstimatedTax', 1);
 		$componentParams = (object) [
 			'currencypos'    => $this->container->params->get('currencypos', 'before'),
 			'stepsbar'       => $this->container->params->get('stepsbar', 1),
@@ -115,10 +124,11 @@ class Html extends \FOF30\View\DataView\Html
 		$this->apply_validation = $this->container->platform->getSessionVar('apply_validation.' . $this->item->akeebasubs_level_id, 0, 'com_akeebasubs') ? 'true' : 'false';
 
 		/** @var Subscribe $subModel */
-		$subModel         = $this->container->factory->model('Subscribe')->tmpInstance();
-		$this->validation = $subModel->getValidation();
+		$subModel           = $this->container->factory->model('Subscribe')->tmpInstance();
+		$this->validation   = $subModel->getValidation();
+		$this->upsellLevels = $subModel->getRelatedLevelUpsells();
 
 		// Makes sure SiteGround's SuperCache doesn't cache the subscription page
-		\JFactory::getApplication()->setHeader('X-Cache-Control', 'False', true);
+		Factory::getApplication()->setHeader('X-Cache-Control', 'False', true);
 	}
 }

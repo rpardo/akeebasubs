@@ -622,7 +622,7 @@ AFTER `paddle_plan_id`
             <condition type="missing" value="related_levels"   />
             <query><![CDATA[
 ALTER TABLE `#__akeebasubs_levels` ADD COLUMN
-`related_levels` TINYTEXT NULL,
+`related_levels` TINYTEXT NULL
 AFTER `price`
             ]]></query>
         </action>

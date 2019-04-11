@@ -359,30 +359,6 @@ class Levels extends DataModel
 	}
 
 	/**
-	 * Converts the loaded comma-separated list of payment plugins into an array
-	 *
-	 * @param   string  $value  The comma-separated list
-	 *
-	 * @return  array  The exploded array
-	 */
-	protected function getPaymentPluginsAttribute($value)
-	{
-		return $this->getAttributeForImplodedArray($value);
-	}
-
-	/**
-	 * Converts the array of payment plugins into a comma separated list
-	 *
-	 * @param   array  $value  The array of values
-	 *
-	 * @return  string  The imploded comma-separated list
-	 */
-	protected function setPaymentPluginsAttribute($value)
-	{
-		return $this->setAttributeForImplodedArray($value);
-	}
-
-	/**
 	 * Converts the loaded JSON string of params into an array
 	 *
 	 * @param   string  $value  The JSON string

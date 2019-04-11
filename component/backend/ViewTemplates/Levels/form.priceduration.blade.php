@@ -43,10 +43,10 @@ defined('_JEXEC') or die();
 </div>
 
 <div class="akeeba-form-group">
-    <label for="related_level_id">
+    <label for="related_levels">
         @lang('COM_AKEEBASUBS_LEVEL_FIELD_RELATED_LEVELS')
     </label>
-    {{ \Akeeba\Subscriptions\Admin\Helper\Select::levels('related_level_id', $item->related_level_id, ['include_none' => true, 'multiple' => 1]) }}
+    {{ \Akeeba\Subscriptions\Admin\Helper\Select::levels('related_levels', $item->related_levels, ['include_none' => true, 'multiple' => 'multiple']) }}
     <p class="akeeba-help-text">
         @lang('COM_AKEEBASUBS_LEVEL_FIELD_RELATED_LEVELS_HELP')
     </p>

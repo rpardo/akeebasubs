@@ -53,7 +53,8 @@ class ValidatorFactory
 	 */
 	public function setStateData(StateData $state)
 	{
-		$this->state = $state;
+		$this->state      = $state;
+		$this->validators = [];
 	}
 
 	/**

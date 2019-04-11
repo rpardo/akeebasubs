@@ -7,7 +7,6 @@
 
 namespace Akeeba\Subscriptions\Site\Model;
 
-use Akeeba\Subscriptions\Admin\PluginAbstracts\AkpaymentBase;
 use Akeeba\Subscriptions\Site\Model\Subscribe\CallbackInterface;
 use Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits\FixSubscriptionDate;
 use Akeeba\Subscriptions\Site\Model\Subscribe\StateData;
@@ -16,17 +15,18 @@ use Akeeba\Subscriptions\Site\Model\Subscribe\ValidatorFactory;
 use FOF30\Container\Container;
 use FOF30\Input\Input;
 use FOF30\Model\DataModel\Exception\NoItemsFound;
+use FOF30\Model\DataModel\Exception\RecordNotLoaded;
 use FOF30\Model\Model;
 use FOF30\Utils\Ip;
-use JUserHelper;
-use RuntimeException;
-use JLoader;
 use Joomla\CMS\Environment\Browser as JBrowser;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Filesystem\Folder;
 use Joomla\CMS\Log\Log as JLog;
+use Joomla\CMS\User\User;
 use Joomla\CMS\User\User as JUser;
+use JUserHelper;
+use RuntimeException;
 
 defined('_JEXEC') or die;
 
@@ -1328,5 +1328,106 @@ TEXT;
 		{
 			return null;
 		}
+	}
+
+	/**
+	 * Get upsell information for every related level
+	 *
+	 * @return array
+	 *
+	 * @since version
+	 */
+	public function getRelatedLevelUpsells(): array
+	{
+		$ret = [];
+
+		// Can I upsell?
+		/** @var Levels $level */
+		$state = $this->getStateVariables(false);
+		$level = $this->container->factory->model('Levels')->tmpInstance()->find($state->id);
+		$user  = $this->container->platform->getUser();
+
+		if (!$this->canUpsell($level, $user))
+		{
+			return $ret;
+		}
+
+		// Go through each related level and calculate the upsell information
+		foreach ($level->related_levels as $level_id)
+		{
+			// Get the related level and set its slug in the Subscribe model object's state
+			/** @var Levels $newLevel */
+			$newLevel = $this->container->factory->model('Levels')->tmpInstance();
+			try
+			{
+				$newLevel->findOrFail($level_id);
+			}
+			catch (RecordNotLoaded $e)
+			{
+				// Obviously, if the related level does not exist anymore I cannot upsell the user to it.
+				continue;
+			}
+
+			// If the level is no longer published I cannot upsell to it.
+			if (!$level->enabled)
+			{
+				continue;
+			}
+
+			// Construct the return information for this level
+			$ret[] = [
+				'level_id'   => $level_id,
+				'slug'       => $newLevel->slug,
+				'title'      => $newLevel->title,
+				'product_id' => $newLevel->paddle_product_id,
+				'info_url'   => $newLevel->product_url ?? '',
+			];
+		}
+
+		return $ret;
+	}
+
+	/**
+	 * Can I upsell a user to the level's Related Levels?
+	 *
+	 * If it's a guest user I can always upsell.
+	 *
+	 * If it's a logged in user I check to see if they have any subscriptions with a payment state Completed or Pending
+	 * in any of the Related Levels. Yes, that includes expired subscriptions *on purpose*. If someone had bought an
+	 * expensive bundle and decided to downgrade to a cheaper subscription I don't want to try to upsell them to what
+	 * they are clearly no longer interested in; that would probably backfire.
+	 *
+	 * @param   Levels  $level
+	 * @param   JUser   $user
+	 *
+	 * @return  bool
+	 *
+	 * @since   7.0.0
+	 */
+	protected function canUpsell(Levels $level, User $user): bool
+	{
+		// We can never upsell if there are no related levels
+		if (empty($level->related_levels))
+		{
+			return false;
+		}
+
+		// We can always upsell to Guest users
+		if ($user->guest)
+		{
+			return true;
+		}
+
+		// Get all of the paid and pending subscriptions of a logged in user
+		/** @var Subscriptions $subsModel */
+		$subsModel = $this->container->factory->model('Subscriptions')->tmpInstance();
+		$subscriptions = $subsModel
+			->user_id($user->id)
+			->level($level->related_levels)
+			->paystate(['C', 'P'])
+			->get(true);
+
+		// We can only upsell if no subscription was found.
+		return $subscriptions->count() == 0;
 	}
 }
