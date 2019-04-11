@@ -8,7 +8,18 @@
 defined('_JEXEC') or die();
 
 /** @var \Akeeba\Subscriptions\Site\View\Level\Html $this */
+$allowTax = $this->cparams->isTaxAllowed ? 'true' : 'false';
+$js = <<< JS
+window.jQuery(document).ready(function ($){
+	akeebasubsLocalisePrice('{$this->item->paddle_product_id}', $allowTax, 'akeebasubs-sum-price-amount', 'akeebasubs-sum-tax-field', 'akeebasubs-sum-net-field', 'akeebasubs-sum-localised-tax-container', 'akeebasubs-detected-country')
+});
+
+JS;
+
 ?>
+@if ($this->cparams->localisePrice && !($this->validation->price->discount > 0.009))
+	@inlineJs($js)
+@endif
 
 <div id="akeebasubs-panel-yourorder" class="akeeba-panel--info">
 	<header class="akeeba-block-header">
@@ -78,15 +89,52 @@ defined('_JEXEC') or die();
 						@endif
 					</div>
 				</div>
+				@elseif ($this->cparams->isTaxAllowed)
+				<div id="akeebasubs-sum-localised-tax-container">
+					<div id="akeebasubs-sum-net-container" class="akeeba-container--50-50">
+						<div id="akeebasubs-net-label">
+							@lang('COM_AKEEBASUBS_LEVEL_SUM_NET')
+						</div>
+
+						<div id="akeebasubs-sum-net-field">
+							@if ($this->cparams->currencypos == 'before')
+								<span class="akeebasubs-level-price-currency">{{{ $this->cparams->currencysymbol }}}</span>
+							@endif
+							<span class="akeebasubs-level-price" id="akeebasubs-sum-net">{{ $this->validation->price->net }}</span>
+							@if ($this->cparams->currencypos == 'after')
+								<span class="akeebasubs-level-price-currency">{{{ $this->cparams->currencysymbol }}}</span>
+							@endif
+						</div>
+					</div>
+					<div id="akeebasubs-sum-tax-container" class="akeeba-container--50-50">
+						<div id="akeebasubs-tax-label">
+							@lang('COM_AKEEBASUBS_LEVEL_SUM_TAX') <sup>&dagger;</sup>
+						</div>
+
+						<div id="akeebasubs-sum-tax-field">
+							@if ($this->cparams->currencypos == 'before')
+								<span class="akeebasubs-level-price-currency">{{{ $this->cparams->currencysymbol }}}</span>
+							@endif
+							0.00
+							@if ($this->cparams->currencypos == 'after')
+								<span class="akeebasubs-level-price-currency">{{{ $this->cparams->currencysymbol }}}</span>
+							@endif
+						</div>
+					</div>
+				</div>
 				@endif
 
 				<div id="akeebasubs-sum-container" class="akeeba-container--50-50">
 					<div id="akeebasubs-sum-label">
-						@lang('COM_AKEEBASUBS_LEVEL_SUM_TOTAL')
+						@if (($this->validation->price->discount < 0.01) && $this->cparams->isTaxAllowed)
+							@lang('COM_AKEEBASUBS_LEVEL_SUM_TOTAL_ESTIMATE') <sup>&dagger;</sup>
+						@else
+							@lang('COM_AKEEBASUBS_LEVEL_SUM_TOTAL')
+						@endif
 					</div>
 
 					<div id="akeebasubs-sum-price">
-						<span class="akeeba-label--green">
+						<span class="akeeba-label--green" id="akeebasubs-sum-price-amount">
 							@if ($this->cparams->currencypos == 'before')
 								<span class="akeebasubs-level-price-currency">{{{ $this->cparams->currencysymbol }}}</span>
 							@endif

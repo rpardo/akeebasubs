@@ -100,10 +100,14 @@ class Html extends \FOF30\View\DataView\Html
 		}
 
 		// Get component parameters and pass them to the view
+		$localisePrice    = $this->container->params->get('localisePrice', 1);
+		$isTaxAllowed     = $localisePrice && $this->container->params->get('showEstimatedTax', 1);
 		$componentParams = (object) [
 			'currencypos'    => $this->container->params->get('currencypos', 'before'),
 			'stepsbar'       => $this->container->params->get('stepsbar', 1),
 			'currencysymbol' => $this->container->params->get('currencysymbol', '€'),
+			'localisePrice'  => $localisePrice,
+			'isTaxAllowed'   => $isTaxAllowed,
 		];
 
 		$this->cparams = $componentParams;

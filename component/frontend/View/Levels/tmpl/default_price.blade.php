@@ -30,6 +30,7 @@ $js = <<< JS
 window.jQuery(document).ready(function ($){
 	akeebasubsLocalisePrice('$level->paddle_product_id', $allowTax, '$grossTargetId', '$taxTargetId', '$netTargetId', '$taxContainerId', '$countryTarget')
 });
+
 JS;
 
 ?>

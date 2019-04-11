@@ -66,3 +66,16 @@ $layout = $this->input->getCmd('layout', 'default');
 
 	<div class="clearfix"></div>
 </div>
+
+@if ($this->cparams->localisePrice && !($this->validation->price->discount > 0.009))
+	<hr />
+	<p class="akeeba-help-text">
+		@sprintf('COM_AKEEBASUBS_LEVEL_LBL_PRICEINFO_LOCALISED_SUBSCRIBEPAGE', $this->container->params->get('currency', '€'), $this->container->params->get('currencysymbol', '€'))
+	</p>
+
+	@if ($this->cparams->isTaxAllowed)
+		<p class="akeeba-help-text">
+			&dagger; @lang('COM_AKEEBASUBS_LEVEL_LBL_PRICEINFO_ESTIMATETAX')
+		</p>
+	@endif
+@endif
