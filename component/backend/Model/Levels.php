@@ -25,6 +25,7 @@ use JFactory;
  * @property  string    $description
  * @property  int       $duration
  * @property  float     $price
+ * @property  string    $product_url
  * @property  array     $related_levels
  * @property  string    $paddle_product_id
  * @property  string    $paddle_secret

@@ -44,11 +44,11 @@ defined('_JEXEC') or die();
 
 <div class="akeeba-form-group">
     <label for="related_level_id">
-        @lang('COM_AKEEBASUBS_LEVEL_FIELD_RELATED_LEVEL_ID')
+        @lang('COM_AKEEBASUBS_LEVEL_FIELD_RELATED_LEVELS')
     </label>
     {{ \Akeeba\Subscriptions\Admin\Helper\Select::levels('related_level_id', $item->related_level_id, ['include_none' => true, 'multiple' => 1]) }}
     <p class="akeeba-help-text">
-        @lang('COM_AKEEBASUBS_LEVEL_FIELD_RELATED_LEVEL_ID_HELP')
+        @lang('COM_AKEEBASUBS_LEVEL_FIELD_RELATED_LEVELS_HELP')
     </p>
 </div>
 
