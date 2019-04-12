@@ -9,7 +9,6 @@ defined('_JEXEC') or die();
 
 /** @var \Akeeba\Subscriptions\Site\View\Level\Html $this */
 
-$layout = $this->input->getCmd('layout', 'default');
 ?>
 {{-- Include Paddle JavaScript --}}
 @include('site:com_akeebasubs/Level/paddlejs')
@@ -39,13 +38,16 @@ $layout = $this->input->getCmd('layout', 'default');
 	</noscript>
 
 	<form
-		action="@route('index.php?option=com_akeebasubs&view=Subscribe&layout='.$layout.'&slug=' . $this->input->getString('slug', ''))"
+		action="@route('index.php?option=com_akeebasubs&view=Subscribe&slug=' . $this->input->getString('slug', ''))"
 		method="post"
 		id="signupForm" class="akeeba-form--horizontal">
 		<input type="hidden" name="@token()" value="1"/>
 
 		{{-- PRODUCT SUMMARY --}}
 		@include('site:com_akeebasubs/Level/default_product')
+
+		{{-- UPSELL TO RECURRING --}}
+		@include('site:com_akeebasubs/Level/default_recurring')
 
 		{{-- UPSELL TO RELATED LEVELS --}}
 		@if (!empty($this->upsellLevels))
@@ -70,8 +72,11 @@ $layout = $this->input->getCmd('layout', 'default');
 	<div class="clearfix"></div>
 </div>
 
-@if ($this->cparams->localisePrice && !($this->validation->price->discount > 0.009))
+@if (($this->cparams->localisePrice && !($this->validation->price->discount > 0.009)) || !empty($this->upsellPlanId))
 	<hr />
+@endif
+
+@if ($this->cparams->localisePrice && !($this->validation->price->discount > 0.009))
 	<p class="akeeba-help-text">
 		@sprintf('COM_AKEEBASUBS_LEVEL_LBL_PRICEINFO_LOCALISED_SUBSCRIBEPAGE', $this->container->params->get('currency', '€'), $this->container->params->get('currencysymbol', '€'))
 	</p>
@@ -82,3 +87,9 @@ $layout = $this->input->getCmd('layout', 'default');
 		</p>
 	@endif
 @endif
+
+@unless(empty($this->upsellPlanId))
+	<p class="akeeba-help-text" id="akeebasubs-optin-recurring-info" style="display: none">
+		@lang('COM_AKEEBASUBS_LEVEL_LBL_OPTIN_RECURRING_INFO')
+	</p>
+@endunless

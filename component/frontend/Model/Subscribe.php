@@ -14,6 +14,7 @@ use Akeeba\Subscriptions\Site\Model\Subscribe\Validation;
 use Akeeba\Subscriptions\Site\Model\Subscribe\ValidatorFactory;
 use FOF30\Container\Container;
 use FOF30\Input\Input;
+use FOF30\Model\DataModel\Collection;
 use FOF30\Model\DataModel\Exception\NoItemsFound;
 use FOF30\Model\DataModel\Exception\RecordNotLoaded;
 use FOF30\Model\Model;
@@ -127,7 +128,7 @@ class Subscribe extends Model
 			case 'username':
 				$response->validation = (object)[
 					'username' => $this->getValidator('username')->execute(),
-					'password' => $this->getValidator('password')->execute()
+					'password' => $this->getValidator('password')->execute(),
 				];
 				break;
 
@@ -337,7 +338,7 @@ class Subscribe extends Model
 				'username'  => $state->username,
 				'email'     => $state->email,
 				'password'  => $state->password,
-				'password2' => $state->password2
+				'password2' => $state->password2,
 			);
 
 			// We have to use JUser directly instead of Factory getUser
@@ -358,7 +359,7 @@ class Subscribe extends Model
 
 			// Set the user's default language to whatever the site's current language is
 			$params['params'] = array(
-				'language' => $this->container->platform->getConfig()->get('language')
+				'language' => $this->container->platform->getConfig()->get('language'),
 			);
 
 			// We always block the user, so that only a successful payment or
@@ -1439,5 +1440,161 @@ TEXT;
 
 		// We can only upsell if no subscription was found.
 		return $subscriptions->count() == 0;
+	}
+
+	/**
+	 * Get a recurring subscription plan ID I can use to upsell the user to a recurring subscription instead of an one-
+	 * off purchase.
+	 *
+	 * @param   JUser|null   $user  The user in question. Default: null (use currently logged in user)
+	 *
+	 * @return  string|null  The plan ID or null if upsell is not possible
+	 *
+	 * @since   7.0.0
+	 */
+	public function getRecurringUpsellProductId(?User $user = null): ?string
+	{
+		/** @var Levels $level */
+		$state = $this->getStateVariables(false);
+		$level = $this->container->factory->model('Levels')->tmpInstance()->find($state->id);
+
+		if (!($user instanceof User))
+		{
+			$user  = $this->container->platform->getUser();
+		}
+
+		$recurringId = $level->paddle_plan_id;
+
+		// I can only upsell if there is a plan to upsell to
+		if (empty($recurringId))
+		{
+			return null;
+		}
+
+		// I cannot upsell if the feature is disabled
+		if ($level->upsell == 'never')
+		{
+			return null;
+		}
+
+		/**
+		 * Guest users have a very simpler logic.
+		 *
+		 * If we are allowed to always upsell I show them the upsell.
+		 *
+		 * If we are only allowed to upsell on renewal, the guest user cannot possibly purchase a renewal so we cannot
+		 * upsell to them
+		 */
+		if ($user->guest)
+		{
+			return ($level->upsell == 'always') ? $recurringId : null;
+		}
+
+		/**
+		 * If the user already has recurring subscriptions on the same level I cannot upsell them; they already have a
+		 * subscription.
+		 */
+		if ($this->hasSubscriptionOnThisLevel(true, true, $user))
+		{
+			return null;
+		}
+
+		// I have a user who has not bought a recurring subscription. If I'm allowed to always upsell to them I am done.
+		if ($level->upsell == 'always')
+		{
+			return $recurringId;
+		}
+
+		// User with no recurring subscriptions and I can only upsell on upgrade. Is this an early subscription upgrade?
+		// TODO I should be able to override this check with a coupon code.
+		if (!$this->hasSubscriptionOnThisLevel(true, false, $user))
+		{
+			return null;
+		}
+
+		return $recurringId;
+	}
+
+	/**
+	 * Do I have a subscription on the currently selected level with a payment status of C or P? Can return active or
+	 * all subscription; and/or recurring or all subscriptions.
+	 *
+	 * @param   bool        $onlyActive     Only include currently active subscriptions
+	 * @param   bool        $onlyRecurring  Only include recurring subscriptions
+	 * @param   JUser|null  $user           The user in question. Default: null (use currently logged in user)
+	 *
+	 * @return  bool
+	 *
+	 * @since   7.0.0
+	 */
+	public function hasSubscriptionOnThisLevel($onlyActive = true, $onlyRecurring = true, ?User $user = null): bool
+	{
+		$subscriptions = $this->getSubscriptionsOnThisLevel($onlyActive, $onlyRecurring, $user);
+
+		if ($subscriptions->isEmpty())
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Get a list of the user's subscriptions on the currently selected level with a payment status C or P. Optionally,
+	 * you can specify only active (enabled == 1) or recurring (non-empty update or cancel URL) subscriptions.
+	 *
+	 * @param   bool        $onlyActive     Only include currently active subscriptions
+	 * @param   bool        $onlyRecurring  Only include recurring subscriptions
+	 * @param   JUser|null  $user           The user in question. Default: null (use currently logged in user)
+	 *
+	 * @return  Collection  The subscriptions DataCollection
+	 *
+	 * @since   7.0.0
+	 */
+	public function getSubscriptionsOnThisLevel($onlyActive = true, $onlyRecurring = true, ?User $user = null): Collection
+	{
+		if (!($user instanceof User))
+		{
+			$user = $this->container->platform->getUser();
+		}
+
+		// Guest users do not have any subscription, let alone a recurring one :)
+		if ($user->guest)
+		{
+			return new Collection([]);
+		}
+
+		// Get the subscription level ID
+		$state    = $this->getStateVariables(false);
+		$level_id = $state->id;
+
+		/** @var Subscriptions $subsModel */
+		$subsModel = $this->container->factory->model('Subscriptions')->tmpInstance();
+		$subsModel
+			->user_id($user->id)
+			->level($level_id)
+			->paystate(['C', 'P']);
+		$subscriptions = $subsModel->get(true);
+
+		if ($onlyActive)
+		{
+			$subscriptions = $subscriptions->filter(function (Subscriptions $item) {
+				return $item->enabled != 0;
+			});
+		}
+
+		if ($onlyRecurring)
+		{
+			$subscriptions = $subscriptions->filter(function (Subscriptions $item) {
+				if (!empty($item->update_url) || !empty($item->cancel_url))
+				{
+					return true;
+				}
+
+				return false;
+			});
+		}
+
+		return $subscriptions;
 	}
 }

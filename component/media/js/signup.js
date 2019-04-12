@@ -332,30 +332,39 @@ function validateForm()
 function akeebaSubscriptionsStartPayment()
 {
     (function ($) {
+        var elUseRecurring = $("#use_recurring");
+        var useRecurring   = false;
+
+        if (elUseRecurring)
+        {
+            useRecurring = elUseRecurring.is(":checked") ? 1 : 0;
+        }
+
         var formData = {
-            coupon: $('#coupon').val(),
-            accept_terms: $('#accept_terms').is(':checked') ? 1 : 0
+            coupon:        $("#coupon").val(),
+            accept_terms:  $("#accept_terms").is(":checked") ? 1 : 0,
+            use_recurring: useRecurring
         };
 
-        if ($('#name'))
+        if ($("#name"))
         {
-            formData['name'] = $('#name').val();
-            formData['username'] = $('#username').val();
-            formData['password'] = $('#password').val();
-            formData['password2'] = $('#password2').val();
-            formData['email'] = $('#email').val();
-            formData['email2'] = $('#email2').val();
+            formData["name"]      = $("#name").val();
+            formData["username"]  = $("#username").val();
+            formData["password"]  = $("#password").val();
+            formData["password2"] = $("#password2").val();
+            formData["email"]     = $("#email").val();
+            formData["email2"]    = $("#email2").val();
         }
 
         $.ajax({
-            url: $('#signupForm').attr('action'),
-            data: formData,
-            type: "POST",
+            url:      $("#signupForm").attr("action"),
+            data:     formData,
+            type:     "POST",
             dataType: "json"
-        }).done(function(ret) {
+        }).done(function (ret) {
             console.log(ret);
 
-            if (ret.method === 'redirect')
+            if (ret.method === "redirect")
             {
                 if (ret.url === null)
                 {
@@ -372,12 +381,12 @@ function akeebaSubscriptionsStartPayment()
             akeebasubsMessageUrl = ret.messageUrl;
 
             Paddle.Checkout.open({
-                override: ret.url,
-                successCallback: 'akeebasubsCheckoutComplete',
-                closeCallback: 'akeebasubsCheckoutClosed',
-                eventCallback: 'akeebasubsCheckoutEvent'
+                override:        ret.url,
+                successCallback: "akeebasubsCheckoutComplete",
+                closeCallback:   "akeebasubsCheckoutClosed",
+                eventCallback:   "akeebasubsCheckoutEvent"
             });
-        }).fail(function(jqXHR, textStatus, errorThrown){
+        }).fail(function (jqXHR, textStatus, errorThrown) {
             window.location.reload();
         });
     })(akeeba.jQuery);
@@ -518,12 +527,74 @@ function akeebasubsLocalisePrice(product, allowTaxInclusive, grossTarget, taxTar
     });
 }
 
+/**
+ * Localises the price of a recurring product which can be bought instead on a (discounted) upgrade.
+ *
+ * @param   {Number}  product     Subscription plan ID
+ * @param   {Boolean} includeTax  Include tax in the price?
+ */
+function akeebasubsLocaliseRecurring(product, includeTax)
+{
+    if (!product)
+    {
+        return;
+    }
+
+    if (includeTax === null)
+    {
+        includeTax = true;
+    }
+
+    Paddle.Product.Prices(product, 1, function(prices) {
+        console.log(prices);
+
+        var elContainer = document.getElementById('akeebasubs-optin-recurring-container');
+        var elInfoBox   = document.getElementById('akeebasubs-optin-recurring-info');
+        var elPrice     = document.getElementById('akeebasubs-optin-recurring-price');
+        var elFrequency = document.getElementById('akeebasubs-optin-recurring-frequency');
+
+        if (!prices.hasOwnProperty('recurring'))
+        {
+            return;
+        }
+
+        if (elContainer !== null)
+        {
+            elContainer.style.display = 'block';
+        }
+
+        if (elPrice !== null)
+        {
+            elPrice.innerText = includeTax ? prices.recurring.price.gross : prices.recurring.price.net;
+        }
+
+        if (elFrequency !== null)
+        {
+            var type   = prices.recurring.subscription.type;
+            var length = prices.recurring.subscription.length;
+            var frequency = length + ' ' + Joomla.Text._('COM_AKEEBASUBS_LEVEL_LBL_OPTIN_RECURRING_PERIOD_' + type);
+
+            if (length === 1)
+            {
+                frequency = Joomla.Text._('COM_AKEEBASUBS_LEVEL_LBL_OPTIN_RECURRING_PERIOD_ONE_' + type);
+            }
+
+            elFrequency.innerText = frequency;
+        }
+
+        if (elInfoBox !== null)
+        {
+            elInfoBox.style.display = 'block';
+        }
+    });
+}
+
 (function ($) {
     $(document).ready(function () {
         // Disable form submit when ENTER is hit in the coupon field
         $("input#coupon")
             .keypress(function (e) {
-                if (e.which == 13)
+                if (e.which === 13)
                 {
                     validateForm();
                     return false;
