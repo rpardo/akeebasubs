@@ -136,6 +136,7 @@ class Subscribe extends Model
 				$response->validation = (object)$this->getValidator('PersonalInformation')->execute();
 				$response->validation->username = $this->getValidator('username')->execute();
 				$response->validation->password = $this->getValidator('password')->execute();
+				$response->validation->recurring = $this->getValidator('recurring')->execute();
 				$response->price = (object)$this->getValidator('Price')->execute();
 
 				break;
@@ -174,6 +175,8 @@ class Subscribe extends Model
 			}
 
 			$isValid = $isValid && $validData;
+
+			// TODO Also check recurring validation information
 
 			if (!$isValid)
 			{

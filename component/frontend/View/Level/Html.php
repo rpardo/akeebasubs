@@ -46,14 +46,6 @@ class Html extends \FOF30\View\DataView\Html
 	public $upsellLevels = [];
 
 	/**
-	 * The recurring subscription's plan ID I can upsell the user to
-	 *
-	 * @var   int|null
-	 * @since 7.0.0
-	 */
-	public $upsellPlanId = null;
-
-	/**
 	 * The record loaded (read, edit, add views)
 	 *
 	 * @var  Levels
@@ -135,7 +127,6 @@ class Html extends \FOF30\View\DataView\Html
 		$subModel           = $this->container->factory->model('Subscribe')->tmpInstance();
 		$this->validation   = $subModel->getValidation();
 		$this->upsellLevels = $subModel->getRelatedLevelUpsells();
-		$this->upsellPlanId = $subModel->getRecurringUpsellProductId();
 
 		// Makes sure SiteGround's SuperCache doesn't cache the subscription page
 		Factory::getApplication()->setHeader('X-Cache-Control', 'False', true);
