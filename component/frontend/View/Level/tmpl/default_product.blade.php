@@ -30,22 +30,19 @@ JS;
 
 	<div class="akeeba-container--66-33">
 		<div id="akeebasubs-column-product">
+			<img src="{{ \Joomla\CMS\Uri\Uri::base() }}{{ $this->item->image }}"
+				 class="akeebasubs-subscription-level-image hasTooltip"
+				 style="margin: 0 1em 1em 0"
+				 align="left"
+				 width="64px"
+				 title="{{{ $this->item->title }}}" />
+
 			<div id="akeebasubs-column-product-title">
 				<h3>
 					{{{$this->item->title}}}
-
-					@jhtml('bootstrap.tooltip')
-					<small>
-						<span
-								class="akion-information-circled hasTooltip"
-								style="cursor: pointer"
-								title="@lang('COM_AKEEBASUBS_LEVEL_LBL_MOREINFO')"
-								onclick="akeebasubsLevelToggleDetails()"
-						></span>
-					</small>
 				</h3>
 			</div>
-			<div style="display: none" id="akeebasubs-column-product-description">
+			<div id="akeebasubs-column-product-description">
 				@jhtml('content.prepare', Akeeba\Subscriptions\Admin\Helper\Message::processLanguage($this->item->description))
 			</div>
 		</div>
@@ -171,7 +168,7 @@ JS;
 		</div>
 	</div>
 
-	@if (!$this->cparams->isTaxAllowed)
+	@if (!$this->cparams->isTaxAllowed || ($this->validation->price->discount >= 0.009))
 	<p class="akeeba-block--info" id="akeebasubs-panel-yourorder-info">
 		@lang('COM_AKEEBASUBS_LEVEL_LBL_PRICE_AND_TAX')
 	</p>
