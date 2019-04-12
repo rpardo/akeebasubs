@@ -108,7 +108,7 @@ JS;
 					</div>
 					<div id="akeebasubs-sum-tax-container" class="akeeba-container--50-50">
 						<div id="akeebasubs-tax-label">
-							@lang('COM_AKEEBASUBS_LEVEL_SUM_TAX') <sup>&dagger;</sup>
+							@lang('COM_AKEEBASUBS_LEVEL_SUM_TAX') *
 						</div>
 
 						<div id="akeebasubs-sum-tax-field">
@@ -127,7 +127,7 @@ JS;
 				<div id="akeebasubs-sum-container" class="akeeba-container--50-50">
 					<div id="akeebasubs-sum-label">
 						@if (($this->validation->price->discount < 0.01) && $this->cparams->isTaxAllowed)
-							@lang('COM_AKEEBASUBS_LEVEL_SUM_TOTAL_ESTIMATE') <sup>&dagger;</sup>
+							@lang('COM_AKEEBASUBS_LEVEL_SUM_TOTAL_ESTIMATE') *
 						@else
 							@lang('COM_AKEEBASUBS_LEVEL_SUM_TOTAL')
 						@endif
@@ -171,8 +171,10 @@ JS;
 		</div>
 	</div>
 
+	@if (!$this->cparams->isTaxAllowed)
 	<p class="akeeba-block--info" id="akeebasubs-panel-yourorder-info">
 		@lang('COM_AKEEBASUBS_LEVEL_LBL_PRICE_AND_TAX')
 	</p>
+	@endif
 </div>
 

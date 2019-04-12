@@ -58,13 +58,13 @@ JS;
 		<span class="hasTooltip" title="@lang('COM_AKEEBASUBS_LEVEL_LBL_ESTIMATED_TAX_TOOLTIP')">
 			@lang('COM_AKEEBASUBS_LEVEL_LBL_ESTIMATED_TAX') <span id="{{ $taxTargetId }}"></span>
 		</span>
-		<sup>&dagger;</sup>
+		*
 	</div>
 	<div class="akeebasubs-awesome-prediscount">
 		<span class="hasTooltip" title="@lang('COM_AKEEBASUBS_LEVEL_LBL_ESTIMATED_GROSS_TOOLTIP')">
 			@lang('COM_AKEEBASUBS_LEVEL_LBL_ESTIMATED_GROSS') <span id="{{ $grossTargetId }}"></span>
 		</span>
-		<sup>&dagger;</sup>
+		*
 	</div>
 </div>
 @endunless

@@ -56,7 +56,7 @@ $i          = 0;
 
 @if ($this->isTaxAllowed)
 <p class="akeeba-help-text">
-	&dagger; @lang('COM_AKEEBASUBS_LEVEL_LBL_PRICEINFO_ESTIMATETAX')
+	* @lang('COM_AKEEBASUBS_LEVEL_LBL_PRICEINFO_ESTIMATETAX')
 </p>
 @else
 <p class="akeeba-help-text">

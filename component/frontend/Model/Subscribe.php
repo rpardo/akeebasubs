@@ -1352,6 +1352,8 @@ TEXT;
 			return $ret;
 		}
 
+		$myValidation = $this->getValidation();
+
 		// Go through each related level and calculate the upsell information
 		foreach ($level->related_levels as $level_id)
 		{
@@ -1374,13 +1376,21 @@ TEXT;
 				continue;
 			}
 
+			$newSubscribe = $this->getClone()->savestate(false)->setIgnoreRequest(true);
+			$newSubscribe->setState('slug', $level->slug);
+			$newSubscribe->setState('id', $level->getId());
+			$validation = $newSubscribe->getValidation(true);
+
 			// Construct the return information for this level
 			$ret[] = [
-				'level_id'   => $level_id,
-				'slug'       => $newLevel->slug,
-				'title'      => $newLevel->title,
-				'product_id' => $newLevel->paddle_product_id,
-				'info_url'   => $newLevel->product_url ?? '',
+				'level_id'    => $level_id,
+				'slug'        => $newLevel->slug,
+				'title'       => $newLevel->title,
+				'product_id'  => $newLevel->paddle_product_id,
+				'price'       => $validation->price->gross,
+				'price_diff'  => $validation->price->gross - $myValidation->price->gross,
+				'canLocalise' => $validation->price->discount < 0.01,
+				'info_url'    => $newLevel->product_url ?? '',
 			];
 		}
 

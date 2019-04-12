@@ -481,6 +481,8 @@
 }
 #akeebasubs #akeebasubs-sum-original-field,
 #akeebasubs #akeebasubs-sum-discount-field,
+#akeebasubs #akeebasubs-sum-net-field,
+#akeebasubs #akeebasubs-sum-tax-field,
 #akeebasubs #akeebasubs-sum-price {
   text-align: right;
 }

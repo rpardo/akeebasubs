@@ -14,8 +14,6 @@ $layout = $this->input->getCmd('layout', 'default');
 {{-- Include Paddle JavaScript --}}
 @include('site:com_akeebasubs/Level/paddlejs')
 
-{{--<span class="paddle-gross" data-product="12345">--}}
-
 <div id="akeebasubs">
 
 	{{-- Module position 'akeebasubscriptionsheader' --}}
@@ -49,6 +47,11 @@ $layout = $this->input->getCmd('layout', 'default');
 		{{-- PRODUCT SUMMARY --}}
 		@include('site:com_akeebasubs/Level/default_product')
 
+		{{-- UPSELL TO RELATED LEVELS --}}
+		@if (!empty($this->upsellLevels))
+			@include('site:com_akeebasubs/Level/default_related')
+		@endif
+
 		{{-- USER ACCOUNT--}}
 		@include('site:com_akeebasubs/Level/default_account')
 
@@ -75,7 +78,7 @@ $layout = $this->input->getCmd('layout', 'default');
 
 	@if ($this->cparams->isTaxAllowed)
 		<p class="akeeba-help-text">
-			&dagger; @lang('COM_AKEEBASUBS_LEVEL_LBL_PRICEINFO_ESTIMATETAX')
+			* @lang('COM_AKEEBASUBS_LEVEL_LBL_PRICEINFO_ESTIMATETAX')
 		</p>
 	@endif
 @endif
