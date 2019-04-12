@@ -7,13 +7,13 @@
 
 /** @var \Akeeba\Subscriptions\Site\View\Level\Html $this */
 
-if (empty($this->validation->validation->recurring['recurringId'])) return;
+if (empty($this->validation->recurring['recurringId'])) return;
 
 $allowTax = $this->cparams->isTaxAllowed ? 'true' : 'false';
 
 $js = <<< JS
 window.jQuery(document).ready(function($) {
-	akeebasubsLocaliseRecurring({$this->validation->validation->recurring['recurringId']}, $allowTax)
+	akeebasubsLocaliseRecurring({$this->validation->recurring['recurringId']}, $allowTax)
 });
 
 JS;
@@ -43,12 +43,12 @@ array_walk($langStrings, [\Joomla\CMS\Language\Text::class, 'script']);
 	<div class="akeeba-form-group--checkbox--pull-right">
 		<label>
 			<?php
-			$frequency = $this->validation->validation->recurring['recurring_frequency'];
-			$type = $this->validation->validation->recurring['recurring_type'];
+			$frequency = $this->validation->recurring['recurring_frequency'];
+			$type = $this->validation->recurring['recurring_type'];
 			$frequency = ($frequency == 1) ? \Joomla\CMS\Language\Text::_('COM_AKEEBASUBS_LEVEL_LBL_OPTIN_RECURRING_PERIOD_ONE_' . $type) : ($frequency . ' ' . \Joomla\CMS\Language\Text::_('COM_AKEEBASUBS_LEVEL_LBL_OPTIN_RECURRING_PERIOD_' . $type));
 			?>
 			<input type="checkbox" name="use_recurring" id="use_recurring">
-			@sprintf('COM_AKEEBASUBS_LEVEL_LBL_OPTIN_RECURRING_CHECKBOX', $this->validation->validation->recurring['recurring_price'], $frequency)
+			@sprintf('COM_AKEEBASUBS_LEVEL_LBL_OPTIN_RECURRING_CHECKBOX', $this->validation->recurring['recurring_price'], $frequency)
 			@if($this->cparams->isTaxAllowed)
 				*
 			@endif

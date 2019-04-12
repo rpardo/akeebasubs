@@ -88,6 +88,9 @@ defined('_JEXEC') or die();
         />
         <label for="upsell-always" class="red">Always</label>
     </div>
+    <p class="akeeba-help-text">
+        @lang('COM_AKEEBASUBS_LEVEL_FIELD_UPSELL_HELP')
+    </p>
 </div>
 
 <div class="akeeba-form-group">

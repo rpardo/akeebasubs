@@ -7,8 +7,11 @@
 
 namespace Akeeba\Subscriptions\Site\Model\Subscribe\Validation;
 
+use Akeeba\Subscriptions\Site\Model\Coupons;
 use Akeeba\Subscriptions\Site\Model\Levels;
 use Akeeba\Subscriptions\Site\Model\Subscriptions;
+use FOF30\Date\Date;
+use FOF30\Utils\Collection;
 use FOF30\Utils\Ip;
 use Joomla\CMS\Http\HttpFactory;
 
@@ -28,7 +31,7 @@ class Recurring extends Base
 			'recurringId'               => null,
 			// IDs of the subscriptions blocking upsell to a recurring level
 			'blocking_subscription_ids' => null,
-			// Initial period price, user currency (net or gross, based on component parameters)
+			// Initial period price, merchant currency (always net)
 			'initial_price'             => 0.00,
 			// Recurring price, user currency (net or gross, based on component parameters)
 			'recurring_price'           => 0.00,
@@ -54,6 +57,18 @@ class Recurring extends Base
 			return $ret;
 		}
 
+		// If I have a special access coupon I can upsell to the user
+		$couponValidation = $this->factory->getValidator('Coupon')->execute();
+		/** @var Coupons $coupon */
+		$coupon = $couponValidation['coupon'];
+
+		if ($couponValidation['couponFound'] && $couponValidation['valid'] && $coupon->recurring_access)
+		{
+			$ret = array_merge($ret, $this->getRecurringPricing($recurringId, true));
+
+			return $ret;
+		}
+
 		/**
 		 * Guest users have a very simple logic.
 		 *
@@ -64,7 +79,10 @@ class Recurring extends Base
 		 */
 		if ($this->jUser->guest)
 		{
-			$ret = array_merge($ret, $this->getRecurringPricing($recurringId));
+			if ($level->upsell == 'always')
+			{
+				$ret = array_merge($ret, $this->getRecurringPricing($recurringId, false));
+			}
 
 			return $ret;
 		}
@@ -108,24 +126,23 @@ class Recurring extends Base
 		// I have a user who has not bought a recurring subscription. If I'm allowed to always upsell to them I am done.
 		if ($level->upsell == 'always')
 		{
-			$ret = array_merge($ret, $this->getRecurringPricing($recurringId));
+			$ret = array_merge($ret, $this->getRecurringPricing($recurringId, false));
 
 			return $ret;
 		}
 
 		// User with no recurring subscriptions and I can only upsell on upgrade. Is this an early subscription upgrade?
-		// TODO I should be able to override this check with a coupon code.
 		if ($allSubs->count() == 0)
 		{
 			return $ret;
 		}
 
-		$ret = array_merge($ret, $this->getRecurringPricing($recurringId));
+		$ret = array_merge($ret, $this->getRecurringPricing($recurringId, false));
 
 		return $ret;
 	}
 
-	private function getRecurringPricing($recurringId): array
+	private function getRecurringPricing(string $recurringId, bool $hasSpecialCoupon): array
 	{
 		// Initialize the return value
 		$ret = [
@@ -217,6 +234,69 @@ class Recurring extends Base
 		$ret['recurring_frequency'] = $product->subscription->frequency;
 		$ret['recurring_type']      = $product->subscription->interval;
 		$ret['trial_days']          = $product->subscription->trial_days;
+
+		// Recalculate trial_days and initial_price
+
+		/**
+		 * A. Special access user (with coupon)
+		 *   trial_days: 0
+		 *   initial_price: 0
+		 */
+		if ($hasSpecialCoupon)
+		{
+			$ret['trial_days']      = 0;
+			$ret['recurring_price'] = 0;
+
+			return $ret;
+		}
+
+		/** @var Subscriptions $subsModel */
+		$subsModel = $this->container->factory->model('Subscriptions')->tmpInstance();
+		$subsModel
+			->user_id($this->jUser->id)
+			->level($this->state->id)
+			->paystate(['C'])
+			->enabled(1);
+		$allSubs = $subsModel->get(true);
+
+		/**
+		 * B. User WITH an active subscription on this level:
+		 *   trial_days: remaining subscription time, rounded down -- minus one day
+		 *   initial_price: 0
+		 */
+		if (!empty($allSubs))
+		{
+			$maxExpiration = $allSubs->reduce(function (int $carry, Subscriptions $sub) {
+				$jDate = new Date($sub->publish_down);
+				$toInt = $jDate->getTimestamp();
+
+				if ($toInt > $carry)
+				{
+					$carry = $toInt;
+				}
+
+				return $toInt;
+			}, 0);
+
+			$now  = time();
+			$days = floor(floatval($now - $maxExpiration) / 86400.00) - 1;
+
+			$ret['trial_days']    = max(0, $days);
+			$ret['initial_price'] = 0;
+		}
+
+		/**
+		 * C. User WITHOUT an active subscription on this level:
+		 *   trial_days: level duration
+		 *   initial_price: post-discount price (use the price validator)
+		 */
+		/** @var Levels $level */
+		$level = $this->container->factory->model('Levels')->tmpInstance();
+		$level->find($this->state->id);
+
+		$priceValidation      = $this->factory->getValidator('Price')->execute();
+		$ret['trial_days']    = $level->duration;
+		$ret['initial_price'] = $priceValidation['net'];
 
 		return $ret;
 	}

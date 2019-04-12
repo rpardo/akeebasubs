@@ -136,7 +136,7 @@ class Subscribe extends Model
 				$response->validation = (object)$this->getValidator('PersonalInformation')->execute();
 				$response->validation->username = $this->getValidator('username')->execute();
 				$response->validation->password = $this->getValidator('password')->execute();
-				$response->validation->recurring = $this->getValidator('recurring')->execute();
+				$response->recurring = $this->getValidator('recurring')->execute();
 				$response->price = (object)$this->getValidator('Price')->execute();
 
 				break;
@@ -175,8 +175,6 @@ class Subscribe extends Model
 			}
 
 			$isValid = $isValid && $validData;
-
-			// TODO Also check recurring validation information
 
 			if (!$isValid)
 			{
@@ -472,6 +470,12 @@ class Subscribe extends Model
 			throw new RuntimeException('Subscription level has the Only Once flag but the user has already a subscription in it.');
 		}
 
+		// Step #1.c. Handle recurring subscription support
+		// ----------------------------------------------------------------------
+		$recurringId = ($state->use_recurring && $validation->recurring['recurringId']) ? $validation->recurring['recurringId'] : null;
+
+		// Step #1.d. Preparation
+		// ----------------------------------------------------------------------
 		// Fetch the level's object, used later on
 		$level = $levelsModel->getClone()->find($state->id);
 
@@ -508,6 +512,7 @@ class Subscribe extends Model
 
 		// Step #3.b. Look for an existing unpaid subscription for the same level and user
 		// ----------------------------------------------------------------------
+		// TODO Pass the $recurringId here. We need to check the unpaid subscription is for the correct plan, otherwise I need to *replace* the subscription which doesn't match
 		$existingSubscription = $this->findExistingUnpaidSubscription($user->id, $level->getId());
 
 		if (!is_null($existingSubscription))
@@ -517,7 +522,6 @@ class Subscribe extends Model
 
 		// Step #4. Check for existing subscription records and calculate the subscription expiration date
 		// ----------------------------------------------------------------------
-		// @todo Refactor the entire step #4 into a validator class
 		// Get subscriptions on the same level.
 		/** @var Subscriptions $subscriptionsModel */
 		$subscriptionsModel = $this->container->factory->model('Subscriptions')->tmpInstance();
@@ -635,7 +639,7 @@ class Subscribe extends Model
 
 		// Step #5. Create a new subscription record
 		// ----------------------------------------------------------------------
-		// @todo Get the start ($mStartDate) and end ($mEndDate) dates and the $noContact array from the validator plugin which replaces step 4
+		// TODO If step 3.b found a level to replace I will need to update the record, not create a new one.
 
 		// Store the price validation's "oldsub" and "expiration" keys in
 		// the subscriptions subcustom array
@@ -680,6 +684,8 @@ class Subscribe extends Model
 		$browser = new JBrowser();
 		$ua      = $browser->getAgentString();
 		$mobile  = $browser->isMobile();
+
+		// TODO Based on $recurringId I may need to modify $subCustom to include the recurring plan ID
 
 		// Setup the new subscription
 		$data = array(
@@ -1443,161 +1449,5 @@ TEXT;
 
 		// We can only upsell if no subscription was found.
 		return $subscriptions->count() == 0;
-	}
-
-	/**
-	 * Get a recurring subscription plan ID I can use to upsell the user to a recurring subscription instead of an one-
-	 * off purchase.
-	 *
-	 * @param   JUser|null   $user  The user in question. Default: null (use currently logged in user)
-	 *
-	 * @return  string|null  The plan ID or null if upsell is not possible
-	 *
-	 * @since   7.0.0
-	 */
-	public function getRecurringUpsellProductId(?User $user = null): ?string
-	{
-		/** @var Levels $level */
-		$state = $this->getStateVariables(false);
-		$level = $this->container->factory->model('Levels')->tmpInstance()->find($state->id);
-
-		if (!($user instanceof User))
-		{
-			$user  = $this->container->platform->getUser();
-		}
-
-		$recurringId = $level->paddle_plan_id;
-
-		// I can only upsell if there is a plan to upsell to
-		if (empty($recurringId))
-		{
-			return null;
-		}
-
-		// I cannot upsell if the feature is disabled
-		if ($level->upsell == 'never')
-		{
-			return null;
-		}
-
-		/**
-		 * Guest users have a very simpler logic.
-		 *
-		 * If we are allowed to always upsell I show them the upsell.
-		 *
-		 * If we are only allowed to upsell on renewal, the guest user cannot possibly purchase a renewal so we cannot
-		 * upsell to them
-		 */
-		if ($user->guest)
-		{
-			return ($level->upsell == 'always') ? $recurringId : null;
-		}
-
-		/**
-		 * If the user already has recurring subscriptions on the same level I cannot upsell them; they already have a
-		 * subscription.
-		 */
-		if ($this->hasSubscriptionOnThisLevel(true, true, $user))
-		{
-			return null;
-		}
-
-		// I have a user who has not bought a recurring subscription. If I'm allowed to always upsell to them I am done.
-		if ($level->upsell == 'always')
-		{
-			return $recurringId;
-		}
-
-		// User with no recurring subscriptions and I can only upsell on upgrade. Is this an early subscription upgrade?
-		// TODO I should be able to override this check with a coupon code.
-		if (!$this->hasSubscriptionOnThisLevel(true, false, $user))
-		{
-			return null;
-		}
-
-		return $recurringId;
-	}
-
-	/**
-	 * Do I have a subscription on the currently selected level with a payment status of C or P? Can return active or
-	 * all subscription; and/or recurring or all subscriptions.
-	 *
-	 * @param   bool        $onlyActive     Only include currently active subscriptions
-	 * @param   bool        $onlyRecurring  Only include recurring subscriptions
-	 * @param   JUser|null  $user           The user in question. Default: null (use currently logged in user)
-	 *
-	 * @return  bool
-	 *
-	 * @since   7.0.0
-	 */
-	public function hasSubscriptionOnThisLevel($onlyActive = true, $onlyRecurring = true, ?User $user = null): bool
-	{
-		$subscriptions = $this->getSubscriptionsOnThisLevel($onlyActive, $onlyRecurring, $user);
-
-		if ($subscriptions->isEmpty())
-		{
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
-	 * Get a list of the user's subscriptions on the currently selected level with a payment status C or P. Optionally,
-	 * you can specify only active (enabled == 1) or recurring (non-empty update or cancel URL) subscriptions.
-	 *
-	 * @param   bool        $onlyActive     Only include currently active subscriptions
-	 * @param   bool        $onlyRecurring  Only include recurring subscriptions
-	 * @param   JUser|null  $user           The user in question. Default: null (use currently logged in user)
-	 *
-	 * @return  Collection  The subscriptions DataCollection
-	 *
-	 * @since   7.0.0
-	 */
-	public function getSubscriptionsOnThisLevel($onlyActive = true, $onlyRecurring = true, ?User $user = null): Collection
-	{
-		if (!($user instanceof User))
-		{
-			$user = $this->container->platform->getUser();
-		}
-
-		// Guest users do not have any subscription, let alone a recurring one :)
-		if ($user->guest)
-		{
-			return new Collection([]);
-		}
-
-		// Get the subscription level ID
-		$state    = $this->getStateVariables(false);
-		$level_id = $state->id;
-
-		/** @var Subscriptions $subsModel */
-		$subsModel = $this->container->factory->model('Subscriptions')->tmpInstance();
-		$subsModel
-			->user_id($user->id)
-			->level($level_id)
-			->paystate(['C', 'P']);
-		$subscriptions = $subsModel->get(true);
-
-		if ($onlyActive)
-		{
-			$subscriptions = $subscriptions->filter(function (Subscriptions $item) {
-				return $item->enabled != 0;
-			});
-		}
-
-		if ($onlyRecurring)
-		{
-			$subscriptions = $subscriptions->filter(function (Subscriptions $item) {
-				if (!empty($item->update_url) || !empty($item->cancel_url))
-				{
-					return true;
-				}
-
-				return false;
-			});
-		}
-
-		return $subscriptions;
 	}
 }

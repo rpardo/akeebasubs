@@ -59,6 +59,7 @@ CREATE TABLE `#__akeebasubs_coupons` (
 	`usergroups` VARCHAR(255) NULL,
 	`type` ENUM('value','percent','lastpercent') NOT NULL DEFAULT 'value',
 	`value` FLOAT NOT NULL DEFAULT 0.0,
+	`recurring_access` TINYINT(1) NOT NULL DEFAULT 0,
 
 	`enabled` tinyint(1) NOT NULL DEFAULT '1',
 	`ordering` bigint(20) unsigned NOT NULL,
@@ -589,6 +590,15 @@ DROP TABLE IF EXISTS`#__akeebasubs_taxrules`
 
 
         <!-- New columns -->
+        <action table="#__akeebasubs_coupons" canfail="0">
+            <condition type="missing" value="recurring_access" />
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_coupons` ADD COLUMN
+`recurring_access` TINYINT(1) NOT NULL DEFAULT 0
+AFTER `value`
+            ]]></query>
+        </action>
+
         <action table="#__akeebasubs_levels" canfail="0">
             <condition type="missing" value="paddle_product_id"   />
             <query><![CDATA[

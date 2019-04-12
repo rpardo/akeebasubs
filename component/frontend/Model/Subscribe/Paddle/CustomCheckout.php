@@ -66,6 +66,11 @@ class CustomCheckout
 			throw new RuntimeException(sprintf('There is no Paddle product associated with %s', $level->title));
 		}
 
+		// TODO Check if this is meant to be a recurring subscription. Use the validation for plan information.
+
+		// TODO Recurring subscriptions. I may need to override trial_days
+		// TODO Recurring subscriptions. I may need to override the first charge, prices => ['EUR:12.34']
+
 		$fields = [
 			'vendor_id'         => $this->container->params->get('vendor_id'),
 			'vendor_auth_code'  => $this->container->params->get('vendor_auth_code'),
@@ -74,7 +79,6 @@ class CustomCheckout
 				$this->container->params->get('currency') . ':' . sprintf('%0.2f', $sub->net_amount),
 			],
 			'discountable'      => 0,
-			//'image_url'         => Image::getURL($level->image),
 			'quantity_variable' => 0,
 			'quantity'          => 1,
 			'marketing_consent' => 0,

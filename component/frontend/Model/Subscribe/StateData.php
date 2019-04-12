@@ -55,6 +55,9 @@ class StateData
 	/** @var   string  Coupon code */
 	public $coupon = '';
 
+	/** @var   bool  Should I use the recurring option instead? */
+	public $use_recurring = false;
+
 	/** @var   bool  Have they accepted the Terms of Service and Privacy Policy */
 	public $accept_terms = false;
 
@@ -121,8 +124,9 @@ class StateData
 			'email'         => $model->getState('email', '', 'string'),
 			'email2'        => $model->getState('email2', '', 'string'),
 			'coupon'        => $model->getState('coupon', '', 'string'),
+			'use_recurring' => $model->getState('use_recurring', false, 'bool'),
 			'accept_terms'  => $model->getContainer()->input->getBool('accept_terms', false) == true,
-			'opt'           => $model->getState('opt', '', 'cmd')
+			'opt'           => $model->getState('opt', '', 'cmd'),
 		);
 
 		/**

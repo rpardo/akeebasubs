@@ -61,6 +61,13 @@ $item = $this->getItem();
             </div>
 
             <div class="akeeba-form-group">
+                <label for="recurring_access">
+                    @fieldtitle('recurring_access')
+                </label>
+                @jhtml('FEFHelper.select.booleanswitch', 'recurring_access', $item->recurring_access)
+            </div>
+
+            <div class="akeeba-form-group">
                 <label for="enabled">
                     @lang('JPUBLISHED')
                 </label>

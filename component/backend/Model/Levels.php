@@ -356,6 +356,13 @@ class Levels extends DataModel
 		{
 			$this->assert($this->duration >= 1, 'COM_AKEEBASUBS_LEVEL_ERR_LENGTH');
 		}
+
+		// Disable upsell for recurring and forever subscriptions (it does not make sense!)
+		$isFixedDate = !empty($this->fixed_date) && !($this->fixed_date == $nullDate);
+		if ($this->forever || $isFixedDate)
+		{
+			$this->upsell = 'never';
+		}
 	}
 
 	/**

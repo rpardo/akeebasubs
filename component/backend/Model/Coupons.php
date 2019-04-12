@@ -19,29 +19,30 @@ use JText;
  *
  * Fields:
  *
- * @property  int     $akeebasubs_coupon_id
- * @property  string  $title
- * @property  string  $coupon
- * @property  string  $publish_up
- * @property  string  $publish_down
- * @property  int[]   $subscriptions
- * @property  int     $user
- * @property  string  $email
- * @property  array   $params
- * @property  int     $hitslimit
- * @property  int     $userhits
- * @property  int[]   $usergroups
- * @property  string  $type
- * @property  float   $value
- * @property  int     $enabled
- * @property  int     $ordering
- * @property  string  $created_on
- * @property  int     $created_by
- * @property  string  $modified_on
- * @property  int     $modified_by
- * @property  string  $locked_on
- * @property  int     $locked_by
- * @property  int     $hits
+ * @property  int     $akeebasubs_coupon_id  Numeric coupon ID, for foreign keys
+ * @property  string  $title             Coupon title, for internal use
+ * @property  string  $coupon            Coupon code the user has to enter
+ * @property  string  $publish_up        Enable the coupon after this date and time
+ * @property  string  $publish_down      Disable the coupon after this date and time
+ * @property  int[]   $subscriptions     Subscription levels the coupon is valid for
+ * @property  int     $user              Only allow the coupon for this user
+ * @property  string  $email             Only allow the coupon for users with this email address
+ * @property  array   $params            Parameters
+ * @property  int     $hitslimit         Maximum overall hits before coupon is disabled
+ * @property  int     $userhits          Maximum times a single user account can use this coupon code in his lifetime
+ * @property  int[]   $usergroups        User groups this coupon is available to
+ * @property  string  $type              Coupon type: value, percent, lastpercent
+ * @property  float   $value             Value (percentage points or money value)
+ * @property  int     $recurring_access  Does this coupon allow access to recurring subscription upsell
+ * @property  int     $enabled           Is this coupon code enabled
+ * @property  int     $ordering          Coupon ordering in the backend
+ * @property  string  $created_on        When was the coupon created?
+ * @property  int     $created_by        Who created this coupon?
+ * @property  string  $modified_on       When was the coupon modified?
+ * @property  int     $modified_by       Who modified this coupon?
+ * @property  string  $locked_on         When was the coupon locked for editing?
+ * @property  int     $locked_by         Who locked this coupon?
+ * @property  int     $hits              How many times the coupon has been hit?
  *
  * Filters:
  *
