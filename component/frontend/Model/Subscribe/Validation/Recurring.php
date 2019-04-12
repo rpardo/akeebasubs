@@ -171,7 +171,15 @@ class Recurring extends Base
 
 		$url      = 'https://checkout.paddle.com/api/2.0/prices?' . http_build_query($urlParams);
 		$http     = HttpFactory::getHttp();
-		$response = $http->get($url, [], 10);
+
+		try
+		{
+			$response = $http->get($url, [], 10);
+		}
+		catch (\Exception $e)
+		{
+			return $ret;
+		}
 
 		// Did the request fail?
 		if ($response->code != 200)
@@ -296,7 +304,7 @@ class Recurring extends Base
 
 		$priceValidation      = $this->factory->getValidator('Price')->execute();
 		$ret['trial_days']    = $level->duration;
-		$ret['initial_price'] = $priceValidation['net'];
+		$ret['initial_price'] = $priceValidation['gross'];
 
 		return $ret;
 	}

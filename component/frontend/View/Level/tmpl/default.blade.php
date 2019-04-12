@@ -88,7 +88,7 @@ defined('_JEXEC') or die();
 	@endif
 @endif
 
-@unless(empty($this->upsellPlanId))
+@unless(empty($this->validation->recurring['recurringId']))
 	<p class="akeeba-help-text" id="akeebasubs-optin-recurring-info" style="display: none">
 		@lang('COM_AKEEBASUBS_LEVEL_LBL_OPTIN_RECURRING_INFO')
 	</p>
