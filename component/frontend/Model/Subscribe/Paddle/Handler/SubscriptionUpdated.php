@@ -14,10 +14,18 @@ use Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits\StackCallback;
 use Akeeba\Subscriptions\Site\Model\Subscribe\SubscriptionCallbackHandlerInterface;
 use Akeeba\Subscriptions\Site\Model\Subscriptions;
 use FOF30\Container\Container;
+use FOF30\Date\Date;
 use FOF30\View\Exception\AccessForbidden;
 use Joomla\CMS\HTML\HTMLHelper;
 
-class Fulfillment implements SubscriptionCallbackHandlerInterface
+/**
+ * Handle a subscription update event
+ *
+ * @see         https://paddle.com/docs/subscriptions-event-reference/#subscription_updated
+ *
+ * @since       7.0.0
+ */
+class SubscriptionUpdated implements SubscriptionCallbackHandlerInterface
 {
 	use StackCallback;
 
@@ -56,34 +64,51 @@ class Fulfillment implements SubscriptionCallbackHandlerInterface
 	 */
 	public function handleCallback(Subscriptions $subscription, array $requestData): ?string
 	{
-		// I need the subscription's user to be my effective user when processing the message
-		$needsLogin = $this->container->platform->getUser()->id != $subscription->user_id;
-
-		if ($needsLogin)
+		switch ($requestData['status'])
 		{
-			UserLogin::loginUser($subscription->user_id);
-		}
+			// The price was updated OR we went from trialing to active
+			case 'active':
+			// Trial mode started
+			case 'trialing':
+				break;
 
-		// Prepare the message
-		$message = Message::processLanguage($subscription->level->ordertext);
-		$message = Message::processSubscriptionTags($message, $subscription);
-		$message = HTMLHelper::_('content.prepare', $message);
+			// Automatic charge failed -- CANNOT HAPPEN IN THIS EVENT
+			case 'past_due':
+				// Subscription cancelled -- CANNOT HAPPEN IN THIS EVENT
+			case 'deleted':
+				throw new \RuntimeException(sprintf('Invalid subscription status “%s”', $requestData['status']), 403);
+				break;
 
-		// Logout the temporary logged in user (if we have such a user)
-		if ($needsLogin)
-		{
-			UserLogin::logoutUser();
+			default:
+				throw new \RuntimeException('Invalid or no subscription status', 403);
+				break;
 		}
 
 		// Stack the callback data to the subscription
 		$updates = $this->getStackCallbackUpdate($subscription, $requestData);
 
-		if ($updates['params'] != $subscription->params)
+		// Store the subscription update and cancel URLs
+		$updates['update_url'] = $requestData['update_url'];
+		$updates['cancel_url'] = $requestData['cancel_url'];
+
+		// Do not send emails about automatically recurring subscriptions
+		$updates['contact_flag'] = 3;
+
+		// Subscription plan update
+		if (isset($requestData['subscription_plan_id']))
 		{
-			$subscription->_dontNotify(true);
-			$subscription->save($updates);
+			$updates['params']['recurring_plan_id'] = $requestData['subscription_plan_id'];
 		}
 
-		return $message;
+		$jDate      = new Date($requestData['next_bill_date']);
+		$plusOneDay = new \DateInterval('P1D');
+		$jDate->add($plusOneDay);
+		$updates['publish_down'] = $jDate->format('Y-m-d H:i:s');
+
+		// TODO If there is a $requestData['subscription_plan_id'] go through handleRecurringSubscription before save().
+
+		$subscription->save($updates);
+
+		return null;
 	}
 }

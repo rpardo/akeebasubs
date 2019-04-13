@@ -24,7 +24,9 @@ trait RecurringSubscriptions
 	 * @param   Subscriptions $subscription The currently active subscription
 	 * @param   array         $updates      Updates to the currently active subscription
 	 *
+	 * @return  array
 	 *
+	 * @throws  \Exception
 	 * @since   7.0.0
 	 */
 	protected function handleRecurringSubscription(Subscriptions $subscription, array $updates): array
@@ -56,13 +58,29 @@ trait RecurringSubscriptions
 		$oldSubscription->bind($oldData)->save();
 		$oldSubscription->_dontNotify(false);
 
-		/**
-		 * If there's an invoice for the currently active (old) subscription we need to reassign it to the new ID of the
-		 * old subscription (since the existing subscription ID is actually reused for the recurring installment). This
-		 * will allow a new invoice to be issued for the new installment despite it having an old ID.
-		 */
+		// Remove obsolete invoice information
 		$updates['akeebasubs_invoice_id'] = 0;
 
+		// Legacy: we no longer have integrated invoicing and can do away with reassigning invoices.
+		// $this->reassignInvoices($subscription, $oldSubscription);
+
+		return $updates;
+	}
+
+	/**
+	 * If there's an invoice for the currently active (old) subscription we need to reassign it to the new ID of the
+	 * old subscription (since the existing subscription ID is actually reused for the recurring installment). This
+	 * will allow a new invoice to be issued for the new installment despite it having an old ID.
+	 *
+	 * @param   Subscriptions  $subscription
+	 * @param   Subscriptions  $oldSubscription
+	 *
+	 * @return  void
+	 *
+	 * @deprecated 7.0.0
+	 */
+	private function reassignInvoices(Subscriptions $subscription, Subscriptions $oldSubscription): void
+	{
 		$db    = $subscription->getDbo();
 		$query = $db->getQuery(true)
 			->update($db->qn('#__akeebasubs_invoices'))
@@ -70,8 +88,6 @@ trait RecurringSubscriptions
 			->where($db->qn('akeebasubs_subscription_id') . '=' . $db->q($subscription->getId()));
 		$db->setQuery($query);
 		$db->execute();
-
-		return $updates;
 	}
 
 }

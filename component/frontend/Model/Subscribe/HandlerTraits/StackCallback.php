@@ -29,24 +29,29 @@ trait StackCallback
 		/** @var Container $container */
 		$container     = $this->container;
 		$log_callbacks = $container->params->get('log_callbacks', 0);
+		$params        = $subscription->params;
 
 		// Only proceed if I have to log callbacks inside the subscription records.
 		if (!$log_callbacks)
 		{
-			return [];
+			return [
+				'params' => $params,
+			];
 		}
-
-		$params = $subscription->params;
 
 		if (!isset($params['callbacks']))
 		{
 			$params['callbacks'] = [];
 		}
 
+		$newRecord = array_merge([
+			'akeebasubs_when' => gmdate('Y-m-d H:i:s'),
+		], $requestData);
+
+		$params['callbacks'][] = $newRecord;
+
 		return [
-			'params' => array_merge([
-				'akeebasubs_when' => gmdate('Y-m-d H:i:s'),
-			], $requestData),
+			'params' => $params,
 		];
 	}
 }

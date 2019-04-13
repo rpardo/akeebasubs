@@ -192,6 +192,16 @@
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
+
+		<field name="on_past_due_pending"
+			   type="radio" class="switcher btn-group"
+			   default="1"
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_ON_PAST_DUE_PENDING_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_ON_PAST_DUE_PENDING_DESC"
+		>
+			<option value="0">COM_AKEEBASUBS_CONFIG_FRONTEND_ON_PAST_DUE_PENDING_EXTEND</option>
+			<option value="1">COM_AKEEBASUBS_CONFIG_FRONTEND_ON_PAST_DUE_PENDING_SUSPEND</option>
+		</field>
 	</fieldset>
 
 	<fieldset

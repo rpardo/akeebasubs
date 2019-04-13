@@ -14,10 +14,18 @@ use Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits\StackCallback;
 use Akeeba\Subscriptions\Site\Model\Subscribe\SubscriptionCallbackHandlerInterface;
 use Akeeba\Subscriptions\Site\Model\Subscriptions;
 use FOF30\Container\Container;
+use FOF30\Date\Date;
 use FOF30\View\Exception\AccessForbidden;
 use Joomla\CMS\HTML\HTMLHelper;
 
-class Fulfillment implements SubscriptionCallbackHandlerInterface
+/**
+ * Handle a subscription's recurring payment failure
+ *
+ * @see         https://paddle.com/docs/subscriptions-event-reference/#subscription_payment_failed
+ *
+ * @since       7.0.0
+ */
+class SubscriptionPaymentFailed implements SubscriptionCallbackHandlerInterface
 {
 	use StackCallback;
 
@@ -56,34 +64,50 @@ class Fulfillment implements SubscriptionCallbackHandlerInterface
 	 */
 	public function handleCallback(Subscriptions $subscription, array $requestData): ?string
 	{
-		// I need the subscription's user to be my effective user when processing the message
-		$needsLogin = $this->container->platform->getUser()->id != $subscription->user_id;
-
-		if ($needsLogin)
+		if ($requestData['status'] != 'past_due')
 		{
-			UserLogin::loginUser($subscription->user_id);
-		}
-
-		// Prepare the message
-		$message = Message::processLanguage($subscription->level->ordertext);
-		$message = Message::processSubscriptionTags($message, $subscription);
-		$message = HTMLHelper::_('content.prepare', $message);
-
-		// Logout the temporary logged in user (if we have such a user)
-		if ($needsLogin)
-		{
-			UserLogin::logoutUser();
+			throw new \RuntimeException('Invalid or no subscription status', 403);
 		}
 
 		// Stack the callback data to the subscription
 		$updates = $this->getStackCallbackUpdate($subscription, $requestData);
 
-		if ($updates['params'] != $subscription->params)
+		// Store the subscription update and cancel URLs
+		$updates['update_url'] = $requestData['update_url'];
+		$updates['cancel_url'] = $requestData['cancel_url'];
+
+		// Do not send emails about automatically recurring subscriptions
+		$updates['contact_flag'] = 3;
+
+		$jDate      = new Date($requestData['next_retry_date']);
+		$plusOneDay = new \DateInterval('P1D');
+		$jDate->add($plusOneDay);
+
+		// Yup, that's a STRING, not a boolean. We get a STRING from Paddle.
+		$hardFailure = $requestData['hard_failure'] === 'true';
+		$setPending  = $this->container->params->get('on_past_due_pending', 1);
+
+		if ($hardFailure)
 		{
+			$updates['publish_down'] = gmdate('Y-m-d H:i:s');
+			$updates['state'] = 'X';
+			$updates['cancellation_reason'] = 'past_due';
+		}
+		elseif($setPending)
+		{
+			$updates['state'] = 'P';
+			$updates['cancellation_reason'] = 'past_due';
 			$subscription->_dontNotify(true);
-			$subscription->save($updates);
+		}
+		else
+		{
+			$updates['publish_down'] = $jDate->format('Y-m-d H:i:s');
+			$subscription->_dontNotify(true);
 		}
 
-		return $message;
+		$subscription->save($updates);
+		$subscription->_dontNotify(false);
+
+		return null;
 	}
 }

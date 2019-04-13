@@ -7,19 +7,24 @@
 
 namespace Akeeba\Subscriptions\Site\Model\Subscribe\Paddle\Handler;
 
+
+use Akeeba\Subscriptions\Admin\Helper\Message;
+use Akeeba\Subscriptions\Admin\Helper\UserLogin;
 use Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits\StackCallback;
 use Akeeba\Subscriptions\Site\Model\Subscribe\SubscriptionCallbackHandlerInterface;
 use Akeeba\Subscriptions\Site\Model\Subscriptions;
 use FOF30\Container\Container;
+use FOF30\View\Exception\AccessForbidden;
+use Joomla\CMS\HTML\HTMLHelper;
 
 /**
- * Handle a notification of a high risk transaction
+ * Handle a new subscription created event
  *
- * @see         https://paddle.com/docs/reference-using-webhooks/#high_risk_transaction_created
+ * @see         https://paddle.com/docs/subscriptions-event-reference/#subscription_created
  *
  * @since       7.0.0
  */
-class HighRiskTransactionCreated implements SubscriptionCallbackHandlerInterface
+class SubscriptionCreated implements SubscriptionCallbackHandlerInterface
 {
 	use StackCallback;
 
@@ -34,7 +39,7 @@ class HighRiskTransactionCreated implements SubscriptionCallbackHandlerInterface
 	/**
 	 * Constructor
 	 *
-	 * @param Container $container The component container
+	 * @param   Container  $container  The component container
 	 *
 	 * @since  7.0.0
 	 */
@@ -42,7 +47,6 @@ class HighRiskTransactionCreated implements SubscriptionCallbackHandlerInterface
 	{
 		$this->container = $container;
 	}
-
 	/**
 	 * Handle a webhook callback from the payment service provider about a specific subscription
 	 *
@@ -54,42 +58,24 @@ class HighRiskTransactionCreated implements SubscriptionCallbackHandlerInterface
 	 * @throws  \RuntimeException  In case an error occurs. The exception code will be used as the HTTP status.
 	 *
 	 * @since  7.0.0
+	 *
+	 * @throws \Exception
 	 */
 	public function handleCallback(Subscriptions $subscription, array $requestData): ?string
 	{
-		// Sanity check
-		if ($requestData['status'] != 'pending')
-		{
-			return null;
-		}
+		// Stack the callback data to the subscription
+		$updates = $this->getStackCallbackUpdate($subscription, $requestData);
 
-		// Create a message
-		$eventTime = $requestData['event_time'];
-		$caseId    = $requestData['case_id'];
-		$riskScore = (float) $requestData['risk_score'];
-		$message   = sprintf("Transaction flagged as high risk on %s. Case ID %s, risk score %0.2f",
-			$eventTime, $caseId, $riskScore);
-
-		// Set the transaction to Pending status
-		$updates = [
-			'state' => 'P',
-			'notes' => $subscription->notes . "\n" . $message,
-		];
-
-		// Stack this callback's information to the subscription record
-		$updates = array_merge($updates, $this->getStackCallbackUpdate($subscription, $requestData));
-
-		// Add high risk transaction case parameters
-		$updates['params'] = array_merge($updates['params'], [
-			'risk_case_id'            => $requestData['case_id'],
-			'risk_case_created'       => $requestData['created_at'],
-			'risk_score'              => $requestData['risk_score'],
-			'paddle_customer_user_id' => $requestData['customer_user_id'],
-		]);
+		// Store the subscription update and cancel URLs
+		$updates['update_url'] = $requestData['update_url'];
+		$updates['cancel_url'] = $requestData['cancel_url'];
+		// Do not send emails about automatically recurring subscriptions
+		$updates['contact_flag'] = 3;
+		// Save the Paddle subscription ID
+		$updates['params']['subscription_id'] = $requestData['subscription_id'];
 
 		$subscription->save($updates);
 
-		// Done. No output to be sent (returns a 200 OK with an empty body)
 		return null;
 	}
 }

@@ -7,12 +7,12 @@ https://paddle.com/docs/subscriptions-event-reference/
 
 SubscriptionCreated
 ================================================================================
-Fired when creating a recuring subscription. Only used to save the cancel_url and update_url.
+Fired when creating a recurring subscription. Only used to save the cancel_url and update_url.
 
 cancel_url => same named field
 update_url => same named field
 
-Set email attempt to 3 to avoid emailing the user (Paddle will do it for us!).
+Set contact flag to 3 to avoid emailing the user (Paddle will do it for us!).
 
 SubscriptionUpdated
 ================================================================================
@@ -29,19 +29,7 @@ next_bill_date => publish_down should be this + 2 days
 new_price => Should I store it in gross amount???
 subscription_plan_id ==> If that changes the user has switched to a different subscription level. I will need to update the active subscription record with the new subscription level using the plan ID (can be either recurring or an upsell!) and create a canceled one (with enabled=1 for the plugins to run) with the previous record's information. Basically the same logic as renewing a subscription BUT with a level change as well.
 
-Set email attempt to 3 to avoid emailing the user (Paddle will do it for us!).
-
-
-SubscriptionCancelled
-================================================================================
-The user cancels the subscription BUT does not get their money back for the last instalment.
-
-status -- must be 'deleted'
-cancellation_effective_date => publish_down
-
-Set email attempt to 3 to avoid emailing the user.
-
-We do not cancel the subscription immediately. Remember, the user is billed in advance of the billing cycle.
+Set contact flag to 3 to avoid emailing the user (Paddle will do it for us!).
 
 
 SubscriptionPaymentSucceeded
@@ -63,7 +51,30 @@ payment_method
 receipt_url
 subscription_id
 
-Set email attempt to 3 to avoid emailing the user (Paddle will do it for us!).
+Set contact flag to 3 to avoid emailing the user (Paddle will do it for us!).
+
+
+SubscriptionPaymentRefunded
+================================================================================
+Can be full, vat or partial.
+Exact same logic as PaymentRefunded with a few extras:
+
+initial_payment => 1 for the first payment, 0 otherwise. Message: "First payment"
+instalments => Use it with initial_payment to construct a message. "Recurring payment #[INSTALMENTS]"
+
+I just need to save the recurring payment installment message together with the refund message.
+
+
+SubscriptionCancelled
+================================================================================
+The user cancels the subscription BUT does not get their money back for the last instalment.
+
+status -- must be 'deleted'
+cancellation_effective_date => publish_down
+
+Set contact flag to 3 to avoid emailing the user.
+
+We do not cancel the subscription immediately. Remember, the user is billed in advance of the billing cycle.
 
 
 SubscriptionPaymentFailed
@@ -84,24 +95,6 @@ ElseIf component option on_past_due_pending == 1
 Else
     publish_down = next_retry_date + 1 day
     We should use _dontNotify since Paddle has emailed the client about the payment failure.
-
-
-SubscriptionPaymentRefunded
-================================================================================
-Can be full, vat or partial.
-Exact same logic as PaymentRefunded with a few extras:
-
-initial_payment => 1 for the first payment, 0 otherwise. Message: "First payment"
-instalments => Use it with initial_payment to construct a message. "Recurring payment #[INSTALMENTS]"
-
-I just need to save the recurring payment installment message together with the refund message.
-
-
-JAVASCRIPT HANDLERS
-================================================================================
-Payment closed (meaning: without payment): show the Abandoned Order page.
-
-Payment success: go through 'Message.show' task to redirect the user to the correct message page.
 
 
 RECOVERY EMAILS

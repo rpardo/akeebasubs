@@ -31,7 +31,7 @@ class PaymentSucceeded implements SubscriptionCallbackHandlerInterface
 	 * @var   Container
 	 * @since 7.0.0
 	 */
-	private $container;
+	protected $container;
 
 	/**
 	 * Constructor
@@ -88,11 +88,6 @@ class PaymentSucceeded implements SubscriptionCallbackHandlerInterface
 		$updates = array_merge($updates, $this->getStackCallbackUpdate($subscription, $requestData));
 
 		// Store the checkout_id
-		if (!isset($updates['params']))
-		{
-			$updates['params'] = [];
-		}
-
 		$updates['params']['checkout_id'] = $requestData['checkout_id'];
 
 		// Fix the subscription publish up / down dates

@@ -79,10 +79,6 @@ class PaymentDisputeClosed implements SubscriptionCallbackHandlerInterface
 		$updates = array_merge($updates, $this->getStackCallbackUpdate($subscription, $requestData));
 
 		// Update dispute information
-		if (!isset($updates['params']))
-		{
-			$updates['params'] = $subscription->params;
-		}
 		$updates['params']['dispute'] = false;
 
 		// Save the subscription record
