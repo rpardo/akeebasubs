@@ -829,6 +829,11 @@ class Subscriptions extends DataModel
 
 		$alreadyRunning = true;
 
+		// Get the payment recovery cutoff date; unpaid subscriptions created before that date are non-recoverable.
+		$recoveryDays      = $this->container->params->get('payment_recovery_lifetime', 7);
+		$recoveryThreshold = time() - $recoveryDays * 24 * 3600;
+		$deletedIndices = [];
+
 		foreach ($resultArray as $index => &$row)
 		{
 			if (!($row instanceof Subscriptions))
@@ -841,6 +846,26 @@ class Subscriptions extends DataModel
 			if (is_null($row->params) || empty($row->params))
 			{
 				$row->params = [];
+			}
+
+			/**
+			 * Special handling for New (unpaid) subscriptions with a payment_url.
+			 *
+			 * If the are more than payment_recovery_lifetime days old we get to delete them.
+			 *
+			 * Why? The payment_url contains a fixed price which was valid for the user when they tried to subscribe. If
+			 * they made use of any discount (coupon code, automatic discount, tried to buy the subscription before its
+			 * price changed) that discount may no longer be valid. You can say that if they called dibs they deserve to
+			 * get the nice price for a few more days – but not after months or years have passed!
+			 */
+			$jDate = new Date($row->created_on);
+
+			if (($row->getFieldValue('state', 'N') == 'N') && ($jDate->getTimestamp() < $recoveryThreshold))
+			{
+				$deletedIndices[] = $index;
+				$row->delete($row->getId());
+
+				continue;
 			}
 
 			/**
@@ -913,6 +938,17 @@ class Subscriptions extends DataModel
 
 				continue;
 			}
+		}
+
+		// Remove all the records I just deleted
+		if (!empty($deletedIndices))
+		{
+			foreach ($deletedIndices as $idx)
+			{
+				unset($resultArray[$idx]);
+			}
+
+
 		}
 
 		$alreadyRunning = false;

@@ -10,6 +10,7 @@ namespace Akeeba\Subscriptions\Site\Model\Subscribe\Paddle;
 use Akeeba\Subscriptions\Site\Model\Levels;
 use Akeeba\Subscriptions\Site\Model\Subscriptions;
 use FOF30\Container\Container;
+use FOF30\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\User;
 use RuntimeException;
@@ -75,7 +76,13 @@ class CustomCheckout
 		// The product ID is either a product (one-off purchase) or a subscription plan (recurring). Get the correct one.
 		$product_id = $purchasingRecurring ? $plan_id : $level->paddle_product_id;
 
-		$fields     = [
+		// Get the checkout URL expiration date
+		$jExpires     = new Date();
+		$recoveryDays = $this->container->params->get('payment_recovery_lifetime', 7);
+		$period       = new \DateInterval('P' . ($recoveryDays + 1) . 'D');
+		$jExpires->add($period);
+
+		$fields = [
 			'vendor_id'         => $this->container->params->get('vendor_id'),
 			'vendor_auth_code'  => $this->container->params->get('vendor_auth_code'),
 			'product_id'        => $product_id,
@@ -88,6 +95,7 @@ class CustomCheckout
 			'marketing_consent' => 0,
 			'customer_email'    => $user->email,
 			'passthrough'       => $sub->getId(),
+			'expires'           => $jExpires->format('Y-m-d'),
 		];
 
 		// Recurring subscriptions need some more work on our part
@@ -135,7 +143,15 @@ class CustomCheckout
 		// Add country from the user's profile
 		$country = $this->getCountry($user);
 
-		if (!empty($country) && ($country != 'XX'))
+		/**
+		 * We only send the country if it does NOT fall into one of the following categories:
+		 * - Empty value -- very old record with no country attached
+		 * - 'XX'        -- invalid country, possibly from the obsolete import users feature
+		 * - 'AF'        -- Afghanistan. Most likely that's an idiot who couldn't get arsed to enter their real country
+		 *                  and selected the first item on the list, resulting in an invalid record (and having them
+		 *                  essentially break the law because they are tax evading!).
+		 */
+		if (!empty($country) && ($country != 'XX') && ($country != 'AF'))
 		{
 			$fields['customer_country'] = $country;
 		}

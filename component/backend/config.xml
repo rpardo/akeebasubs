@@ -193,6 +193,12 @@
 			<option value="1">JYes</option>
 		</field>
 
+		<field name="payment_recovery_lifetime"
+			   type="text"
+			   default="7"
+			   label="COM_AKEEBASUBS_CONFIG_PADDLE_PAYMENT_RECOVERY_LIFETIME_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_PADDLE_PAYMENT_RECOVERY_LIFETIME_DESC" />
+
 		<field name="on_past_due_pending"
 			   type="radio" class="switcher btn-group"
 			   default="1"
