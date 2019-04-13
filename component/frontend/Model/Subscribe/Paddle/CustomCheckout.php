@@ -56,7 +56,7 @@ class CustomCheckout
 	 */
 	public function getCheckoutUrl(Subscriptions $sub): string
 	{
-		$user   = Factory::getUser($sub->user_id);
+		$user = Factory::getUser($sub->user_id);
 		/** @var Levels $level */
 		$level = $this->container->factory->model('Levels')->tmpInstance();
 		$level->findOrFail($sub->akeebasubs_level_id);
@@ -66,15 +66,19 @@ class CustomCheckout
 			throw new RuntimeException(sprintf('There is no Paddle product associated with %s', $level->title));
 		}
 
-		// TODO Check if this is meant to be a recurring subscription. Use the validation for plan information.
+		// If it's a recurring subscription I will need to extract some values from the subscription parameters
+		$plan_id             = isset($sub->params['recurring_plan_id']) ? $sub->params['recurring_plan_id'] : null;
+		$trial_days          = isset($sub->params['override_trial_days']) ? $sub->params['override_trial_days'] : 0.00;
+		$initial_price       = isset($sub->params['override_initial_price']) ? $sub->params['override_initial_price'] : null;
+		$purchasingRecurring = !is_null($plan_id);
 
-		// TODO Recurring subscriptions. I may need to override trial_days
-		// TODO Recurring subscriptions. I may need to override the first charge, prices => ['EUR:12.34']
+		// The product ID is either a product (one-off purchase) or a subscription plan (recurring). Get the correct one.
+		$product_id = $purchasingRecurring ? $plan_id : $level->paddle_product_id;
 
-		$fields = [
+		$fields     = [
 			'vendor_id'         => $this->container->params->get('vendor_id'),
 			'vendor_auth_code'  => $this->container->params->get('vendor_auth_code'),
-			'product_id'        => $level->paddle_product_id,
+			'product_id'        => $product_id,
 			'prices'            => [
 				$this->container->params->get('currency') . ':' . sprintf('%0.2f', $sub->net_amount),
 			],
@@ -85,6 +89,37 @@ class CustomCheckout
 			'customer_email'    => $user->email,
 			'passthrough'       => $sub->getId(),
 		];
+
+		// Recurring subscriptions need some more work on our part
+		if ($purchasingRecurring)
+		{
+			/**
+			 * If the initial price is zero (or not overridden), we have to unset the custom initial pricing field. This
+			 * is due to Paddle's web UI always setting the initial price to 0.00 when you edit a subscription plan,
+			 * i.e. leaving the value empty always results in a zero initial payment.
+			 */
+			if (is_null($initial_price) && ($initial_price < 0.01))
+			{
+				unset($fields['prices']);
+			}
+			/**
+			 * When we have a non-zero initial price we need to send it to Paddle explicitly.
+			 */
+			else
+			{
+				$fields['prices'] = [
+					$this->container->params->get('currency') . ':' . sprintf('%0.2f', $initial_price),
+				];
+			}
+
+			/**
+			 * If we have a trial_days override we need to pass that along to Paddle.
+			 */
+			if (!is_null($trial_days))
+			{
+				$fields['trial_days'] = $trial_days;
+			}
+		}
 
 		// Add country from the user's profile
 		$country = $this->getCountry($user);
@@ -102,7 +137,7 @@ class CustomCheckout
 		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($fields));
 		$response = curl_exec($ch);
 
-		$curlErrNo = curl_errno($ch);
+		$curlErrNo  = curl_errno($ch);
 		$curlErrMsg = curl_error($ch);
 
 		if ($curlErrNo)

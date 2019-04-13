@@ -512,12 +512,31 @@ class Subscribe extends Model
 
 		// Step #3.b. Look for an existing unpaid subscription for the same level and user
 		// ----------------------------------------------------------------------
-		// TODO Pass the $recurringId here. We need to check the unpaid subscription is for the correct plan, otherwise I need to *replace* the subscription which doesn't match
 		$existingSubscription = $this->findExistingUnpaidSubscription($user->id, $level->getId());
+		$useExistingSubscription = false;
 
+		/**
+		 * If I have a subscription AND the recurringId (upsell to recurring subscription) matches I'll return it,
+		 * allowing the user to continue paying for a subscription he never finished paying for.
+		 */
 		if (!is_null($existingSubscription))
 		{
-			return $existingSubscription;
+			// Get the recurring plan ID from the subscription parameters
+			$params          = $existingSubscription->params;
+			$recurringPlanId = isset($params['recurring_plan_id']) ? $params['recurring_plan_id'] : null;
+			// Both null: the subscription is an one-off product and we are meant to sell an one-off product
+			$bothNull        = is_null($recurringId) && is_null($recurringPlanId);
+			// Matching plans: the subscription record is for a recurring subscription and the plan ID matches $recurringId
+			$matchingPlans   = $recurringId == $recurringPlanId;
+
+			// If we have matching characteristics return the old subscription record without update
+			if ($bothNull || $matchingPlans)
+			{
+				return $existingSubscription;
+			}
+
+			// Otherwise, notify our code we have to update an existing subscription
+			$useExistingSubscription = true;
 		}
 
 		// Step #4. Check for existing subscription records and calculate the subscription expiration date
@@ -639,7 +658,6 @@ class Subscribe extends Model
 
 		// Step #5. Create a new subscription record
 		// ----------------------------------------------------------------------
-		// TODO If step 3.b found a level to replace I will need to update the record, not create a new one.
 
 		// Store the price validation's "oldsub" and "expiration" keys in
 		// the subscriptions subcustom array
@@ -685,7 +703,28 @@ class Subscribe extends Model
 		$ua      = $browser->getAgentString();
 		$mobile  = $browser->isMobile();
 
-		// TODO Based on $recurringId I may need to modify $subCustom to include the recurring plan ID
+		// Update subscription parameters based on whether I have a $recurringId
+		if (is_null($recurringId))
+		{
+			if (isset($subcustom['recurring_plan_id']))
+			{
+				unset($subcustom['recurring_plan_id']);
+			}
+
+			if (isset($subcustom['override_trial_days']))
+			{
+				unset($subcustom['override_trial_days']);
+			}
+
+			if (isset($subcustom['override_initial_price']))
+			{
+				unset($subcustom['override_initial_price']);
+			}
+		}
+		else
+		{
+			$subcustom['recurring_plan_id'] = $recurringId;
+		}
 
 		// Setup the new subscription
 		$data = array(
@@ -720,9 +759,19 @@ class Subscribe extends Model
 			'_dontCheckPaymentID'        => true,
 		);
 
-		/** @var Subscriptions $subscription */
-		$subscription = $this->container->factory->model('Subscriptions')->tmpInstance();
-		$this->_item = $subscription->reset(true, true)->save($data);
+		// If step 3.b found a level to replace I will need to update the record, not create a new one.
+		if ($useExistingSubscription)
+		{
+			$subscription = $existingSubscription->save($data);
+		}
+		else
+		{
+			/** @var Subscriptions $subscription */
+			$subscription = $this->container->factory->model('Subscriptions')->tmpInstance();
+			$subscription->reset(true, true)->save($data);
+		}
+
+		$this->_item = $subscription;
 
 		// Step #7. Hit the coupon code, if a coupon is indeed used
 		// ----------------------------------------------------------------------

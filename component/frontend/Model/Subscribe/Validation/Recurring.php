@@ -253,7 +253,7 @@ class Recurring extends Base
 		if ($hasSpecialCoupon)
 		{
 			$ret['trial_days']      = 0;
-			$ret['recurring_price'] = 0;
+			$ret['initial_price'] = 0;
 
 			return $ret;
 		}
