@@ -14,7 +14,6 @@ use Akeeba\Subscriptions\Site\Model\Subscribe\Validation;
 use Akeeba\Subscriptions\Site\Model\Subscribe\ValidatorFactory;
 use FOF30\Container\Container;
 use FOF30\Input\Input;
-use FOF30\Model\DataModel\Collection;
 use FOF30\Model\DataModel\Exception\NoItemsFound;
 use FOF30\Model\DataModel\Exception\RecordNotLoaded;
 use FOF30\Model\Model;
@@ -873,14 +872,6 @@ class Subscribe extends Model
 		}
 
 		return 200;
-	}
-
-	/**
-	 * Get the form set by the active payment plugin
-	 */
-	public function getPaymentForm()
-	{
-		return $this->paymentForm;
 	}
 
 	/**

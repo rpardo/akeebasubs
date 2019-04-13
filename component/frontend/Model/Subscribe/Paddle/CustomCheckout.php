@@ -93,6 +93,8 @@ class CustomCheckout
 		// Recurring subscriptions need some more work on our part
 		if ($purchasingRecurring)
 		{
+			unset($fields['discountable']);
+
 			/**
 			 * If the initial price is zero (or not overridden), we have to unset the custom initial pricing field. This
 			 * is due to Paddle's web UI always setting the initial price to 0.00 when you edit a subscription plan,
@@ -118,6 +120,15 @@ class CustomCheckout
 			if (!is_null($trial_days))
 			{
 				$fields['trial_days'] = $trial_days;
+			}
+		}
+		else
+		{
+			// Do not override the price and Paddle coupons on full price subscriptions
+			if ($sub->discount_amount < 0.01)
+			{
+				unset($fields['prices']);
+				unset($fields['discountable']);
 			}
 		}
 
