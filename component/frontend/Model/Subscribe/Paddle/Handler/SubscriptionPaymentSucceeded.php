@@ -128,7 +128,10 @@ class SubscriptionPaymentSucceeded extends PaymentSucceeded
 		// Handle the recurring subscription switchover
 		try
 		{
-			$updates = $this->handleRecurringSubscription($subscription, $updates);
+			if (!$is_initial_payment)
+			{
+				$updates = $this->handleRecurringSubscription($subscription, $updates);
+			}
 		}
 		catch (Exception $e)
 		{
