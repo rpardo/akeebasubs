@@ -11,6 +11,7 @@ define('JDEBUG', 1);
 
 use Akeeba\Subscriptions\Site\Model\Subscriptions;
 use FOF30\Container\Container;
+use FOF30\Date\Date;
 use Joomla\CMS\Application\CliApplication;
 use Joomla\CMS\Crypt\Crypt;
 use Joomla\CMS\Factory;
@@ -686,6 +687,38 @@ TEXT;
 			'order_id'          => $subscription->processor_key,
 			'status'            => 'closed',
 			'p_signature'       => $container->params->get('secret'),
+		];
+	}
+
+	protected function subscriptionCreated(Subscriptions $subscription): array
+	{
+		$container     = $subscription->getContainer();
+		$user          = Factory::getUser($subscription->user_id);
+		$orderId       = $this->uuid_v4();
+		$jNextBill     = new Date($subscription->publish_up);
+		$jNextBill->add(new DateInterval('P3M'));
+		$jNextBill->setTime(0, 0, 0, 0);
+
+		$trial_days = isset($subscription->params['override_trial_days']) ? $subscription->params['override_trial_days'] : 0.00;
+		$status     = ($trial_days != 0) ? 'trialing' : 'active';
+
+		return [
+			'alert_name'           => 'subscription_created',
+			'cancel_url'           => 'https://www.example.com/cancel/' . $orderId,
+			'checkout_id'          => $this->uuid_v4(),
+			'currency'             => $container->params->get('currency', 'EUR'),
+			'email'                => $user->email,
+			'event_time'           => gmdate('Y-m-d H:i:s'),
+			'marketing_consent'    => mt_rand(0, 1),
+			'next_bill_date'       => $jNextBill->format('Y-m-d'),
+			'passthrough'          => $subscription->getId(),
+			'quantity'             => 1,
+			'status'               => $status,
+			'subscription_id'      => $this->uuid_v4(),
+			'subscription_plan_id' => $subscription->params['recurring_plan_id'],
+			'unit_price'           => 9,
+			'update_url'           => 'https://www.example.com/update/' . $orderId,
+			'p_signature'          => $container->params->get('secret'),
 		];
 	}
 

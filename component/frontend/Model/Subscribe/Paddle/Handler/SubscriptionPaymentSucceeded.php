@@ -42,6 +42,22 @@ class SubscriptionPaymentSucceeded extends PaymentSucceeded
 	 */
 	public function handleCallback(Subscriptions $subscription, array $requestData): ?string
 	{
+		// Sanity check
+		$isRecurring = isset($subscription->params['recurring_plan_id']) && ($subscription->params['recurring_plan_id'] == $subscription->level->paddle_plan_id);
+
+		if (!$isRecurring)
+		{
+			throw new \RuntimeException('Recurring payment notification was issued for an one-off subscription');
+		}
+
+		$requestPlanId      = $requestData['subscription_plan_id'];
+		$subscriptionPlanId = $subscription->level->paddle_plan_id;
+
+		if ($requestPlanId != $subscriptionPlanId)
+		{
+			throw new \RuntimeException(sprintf('Callback for plan ID %u was sent for a subscription entry belonging to a level linked to plan ID %u.', $requestPlanId, $subscriptionPlanId));
+		}
+
 		// Calculate the price parameters
 		$gross_amount = (float) $requestData['balance_gross'];
 		$tax_amount   = (float) $requestData['balance_tax'];

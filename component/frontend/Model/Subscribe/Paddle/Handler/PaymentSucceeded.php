@@ -59,6 +59,22 @@ class PaymentSucceeded implements SubscriptionCallbackHandlerInterface
 	 */
 	public function handleCallback(Subscriptions $subscription, array $requestData): ?string
 	{
+		// Sanity check
+		$isRecurring = isset($subscription->params['recurring_plan_id']) && ($subscription->params['recurring_plan_id'] == $subscription->level->paddle_plan_id);
+
+		if ($isRecurring)
+		{
+			throw new \RuntimeException('One-off payment notification was issued for a recurring subscription');
+		}
+
+		$requestProductId      = $requestData['product_id'];
+		$subscriptionProductId = $subscription->level->paddle_product_id;
+
+		if ($requestProductId != $subscriptionProductId)
+		{
+			throw new \RuntimeException(sprintf('Callback for product ID %u was sent for a subscription entry belonging to a level linked to product ID %u.', $requestProductId, $subscriptionProductId));
+		}
+
 		// Calculate the price parameters
 		$gross_amount    = (float) $requestData['balance_gross'];
 		$tax_amount      = (float) $requestData['balance_tax'];
@@ -102,7 +118,7 @@ class PaymentSucceeded implements SubscriptionCallbackHandlerInterface
 
 		// Update the country, if necessary
 		$currentCountry = $subscription->juser->getProfileField('akeebasubs.country');
-		$newCountry   = $requestData['country'];
+		$newCountry     = $requestData['country'];
 
 		if (is_null($currentCountry))
 		{
