@@ -11,7 +11,6 @@ use DateTimeZone;
 use FOF30\Container\Container;
 use FOF30\Date\Date;
 use FOF30\Model\DataModel;
-use JLoader;
 use Joomla\CMS\Factory;
 use JText;
 

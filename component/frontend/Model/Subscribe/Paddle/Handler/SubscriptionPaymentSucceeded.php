@@ -7,13 +7,10 @@
 
 namespace Akeeba\Subscriptions\Site\Model\Subscribe\Paddle\Handler;
 
-use Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits\FixSubscriptionDate;
-use Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits\RecurringSubscriptions;
+use Akeeba\Subscriptions\Admin\Helper\Format;
 use Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits\StackCallback;
-use Akeeba\Subscriptions\Site\Model\Subscribe\SubscriptionCallbackHandlerInterface;
 use Akeeba\Subscriptions\Site\Model\Subscriptions;
 use Exception;
-use FOF30\Container\Container;
 use FOF30\Date\Date;
 
 /**
@@ -25,7 +22,6 @@ use FOF30\Date\Date;
  */
 class SubscriptionPaymentSucceeded extends PaymentSucceeded
 {
-	use RecurringSubscriptions;
 	use StackCallback;
 
 	/**
@@ -42,6 +38,10 @@ class SubscriptionPaymentSucceeded extends PaymentSucceeded
 	 */
 	public function handleCallback(Subscriptions $subscription, array $requestData): ?string
 	{
+		/**
+		 * IMPORTANT! $subscription always contains the subscription record of the VERY FIRST payment.
+		 */
+
 		// Sanity check
 		$isRecurring = isset($subscription->params['recurring_plan_id']) && ($subscription->params['recurring_plan_id'] == $subscription->level->paddle_plan_id);
 
@@ -89,8 +89,6 @@ class SubscriptionPaymentSucceeded extends PaymentSucceeded
 			$note = sprintf('Instalment (billing period) #%s', $requestData['instalments']);
 		}
 
-		$notes = trim($subscription->notes . "\n" . $note, "\n");
-
 		$jDate      = new Date($requestData['next_bill_date']);
 		$plusOneDay = new \DateInterval('P1D');
 		$jDate->add($plusOneDay);
@@ -110,11 +108,82 @@ class SubscriptionPaymentSucceeded extends PaymentSucceeded
 			'tax_percent'     => $tax_percent,
 			'discount_amount' => $discount_amount,
 			'fee_amount'      => $fee_amount,
-			'notes'           => $notes,
+			'notes'           => $note,
 			'publish_up'      => gmdate('Y-m-d H:i:s'),
 			'publish_down'    => $jDate->format('Y-m-d H:i:s'),
 			'contact_flag'    => 3,
 		];
+
+		// Handle an automatic subscription update (n-th payment)
+		if (!$is_initial_payment)
+		{
+			// Necessary updates to cancel an existing, active subscription
+			$expirationUpdates = [
+				'publish_down' => (new Date())->toSql(),
+				'enabled' => 0,
+				'contact_flag' => 3,
+				'notes' => "Automatically renewed subscription on " . Format::date('now'),
+			];
+
+			/**
+			 * Find the previously active subscription record and immediately expire it.
+			 *
+			 * There are two possibilities:
+			 * -- 2nd payment. There's no params['latest_instalment_subscription']; the latest instalment IS the first
+			 *    payment's subscription record (original subscription record created).
+			 * -- 3rd...nth payment. The params['latest_instalment_subscription'] points us to the n-1 payment's
+			 *    subscription record. Since all previous payment's (1 to n-2) have already been expired we don't need
+			 *    to deal with them. We just deal with the n-1 record.
+			 *
+			 * In all cases we use _dontNotify because we don't want to trigger any plugins due to the (fake) expiration
+			 * of the n-1 record. The expiration is fake because the subscription did not *really* expire! The n-th
+			 * record picks up where the n-1 record stopped. This is a silent renewal!
+			 */
+			if (isset($subscription->params['latest_instalment_subscription']))
+			{
+				// Yes. Load and immediately expire the n-1 payment's subscription record.
+				/** @var Subscriptions $oldSub */
+				$oldSub = $subscription->getClone();
+				$oldSub->load($subscription->params['latest_instalment_subscription']);
+				$expirationUpdates['notes'] = $oldSub->notes . "\n" . $expirationUpdates['notes'];
+				$oldSub->_dontNotify(true);
+				$oldSub->save($expirationUpdates);
+				$oldSub->_dontNotify(false);
+			}
+			else
+			{
+				// No n-1 record. This is the 2nd payment. Immediately expire the 1st payment's subscription record.
+				$subscription->_dontNotify(true);
+				$expirationUpdates['notes'] = $subscription->notes . "\n" . $expirationUpdates['notes'];
+				$subscription->save($expirationUpdates);
+				$subscription->_dontNotify(false);
+			}
+
+			/**
+			 * Get a reference to the initial instalment's record. I need it to update its
+			 * params['latest_instalment_subscription'] after I create a new subscription record ;)
+			 */
+			/** @var Subscriptions $initialSubscription */
+			$initialSubscription = $subscription->getClone();
+
+			/**
+			 * At this point $subscription still contains the 1st payment's record. I don't want to update that record,
+			 * I need to create a NEW record for my n-th instalment. The way to do that is setting
+			 * akeebasubs_subscription_id to 0. This forced the Subscriptions model to create a NEW record.
+			 */
+			$subscription->akeebasubs_subscription_id = 0;
+
+			// In case this was a legacy record with an Akeeba Subs generated invoice I need to remove it as well.
+			$subscription->akeebasubs_invoice_id = 0;
+
+			// Moreover, I need to kill any stacked callback information as they no longer refer to THIS record.
+			if (isset($subscription->params['callbacks']))
+			{
+				$params = $subscription->params;
+				unset($params['callbacks']);
+				$subscription->params = $params;
+			}
+		}
 
 		// Stack this callback's information to the subscription record
 		$updates = array_merge($updates, $this->getStackCallbackUpdate($subscription, $requestData));
@@ -125,21 +194,8 @@ class SubscriptionPaymentSucceeded extends PaymentSucceeded
 		// Save the Paddle subscription ID
 		$updates['params']['subscription_id'] = $requestData['subscription_id'];
 
-		// Handle the recurring subscription switchover
-		try
-		{
-			if (!$is_initial_payment)
-			{
-				$updates = $this->handleRecurringSubscription($subscription, $updates);
-			}
-		}
-		catch (Exception $e)
-		{
-			// Worst case scenario, the previous instalment is overwritten. Who cares?
-		}
-
 		/**
-		 * Save the changes and trigger the necessary plugin events.
+		 * Save the changes (or create a new record) and trigger the necessary plugin events.
 		 *
 		 * Important: we use _noemail to prevent firing the new subscription email on automatic renewals. The client
 		 * has already received notification from Paddle about their successful payment.
@@ -152,7 +208,30 @@ class SubscriptionPaymentSucceeded extends PaymentSucceeded
 			$subscription,
 		]);
 
-		// Update the country, if necessary
+		/**
+		 * If this was the n-th payment I have created a new subscription record. As discussed above, I need to update
+		 * the first payment's record with this latest subscription record's ID. This will be used for the n+1 payment,
+		 * as it will need to expire the n-th payment's record (the record I just created).
+		 */
+		if (!$is_initial_payment && isset($initialSubscription))
+		{
+			$params = $initialSubscription->params;
+			$params['latest_instalment_subscription'] = $subscription->getId();
+			$initialSubscription->params = $params;
+			$initialSubscription->_dontNotify(true);
+			$initialSubscription->save();
+			$initialSubscription->_dontNotify(false);
+		}
+
+		/**
+		 * Update the user's country, if necessary.
+		 *
+		 * Yes, this has to run on every instalment. It's possible that the user originally subscribed as an individual
+		 * residing in Greece and two and a half years later he wants to switch his subscription to a business
+		 * subscription for a company based in Cyprus. The way to do it is to go to the update_url BEFORE the next
+		 * billing cycle and change his country and possibly the VAT number. If I do not update it now I will end up
+		 * with stale information about the user in Akeeba Subs' database.
+		 */
 		$currentCountry = $subscription->juser->getProfileField('akeebasubs.country');
 		$newCountry     = $requestData['country'];
 
