@@ -724,6 +724,8 @@ class Subscribe extends Model
 		else
 		{
 			$subcustom['recurring_plan_id'] = $recurringId;
+			$subcustom['override_trial_days'] = $validation->recurring['trial_days'];
+			$subcustom['override_initial_price'] = $validation->recurring['initial_price'];
 		}
 
 		// Setup the new subscription
