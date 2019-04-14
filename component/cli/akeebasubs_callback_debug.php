@@ -413,7 +413,7 @@ TEXT;
 		$paymentMethod = ($subscription->gross_amount == 0) ? 'free' : $paymentMethods[$payIndex];
 		$tax           = $taxRate * $subscription->net_amount;
 		$gross         = $subscription->net_amount + $tax;
-		$fee           = ($subscription->gross_amount == 0) ? 0 : (0.50 + 0.05 * $gross);
+		$fee           = ($gross == 0) ? 0 : (0.50 + 0.05 * $gross);
 		$earnings      = $gross - $tax - $fee;
 		$orderId       = $this->uuid_v4();
 
@@ -722,6 +722,102 @@ TEXT;
 		];
 	}
 
+	/**
+	 * Create a recurring_payment_succeeded webhook message
+	 *
+	 * @param   Subscriptions  $subscription  The subscription record involved in the callback
+	 *
+	 * @return  array  Data to send in a POST request
+	 *
+	 * @since   7.0.0
+	 */
+	protected function recurringPaymentSucceeded(Subscriptions $subscription): array
+	{
+		$instalment = $this->input->getInt('instalment', 1);
+
+		$taxInfo        = [
+			'GR' => 24,
+			'CY' => 19,
+			'HU' => 27,
+			'IT' => 22,
+		];
+		$paymentMethods = ['apple-pay', 'card', 'paypal', 'wire-transfer'];
+
+		try
+		{
+			$randIndex = random_int(0, count($taxInfo) - 1);
+			$payIndex  = random_int(0, count($paymentMethods) - 1);
+		}
+		catch (Exception $e)
+		{
+			$randIndex = 0;
+			$payIndex  = 0;
+		}
+
+		$recurringNet  = 9.00;
+		$netAmount     = $subscription->net_amount;
+
+		$trial_days = isset($subscription->params['override_trial_days']) ? $subscription->params['override_trial_days'] : 0.00;
+		$status     = ($trial_days != 0) ? 'trialing' : 'active';
+
+		if ($instalment == 1)
+		{
+			$netAmount = ($trial_days == 0) ? $recurringNet : $netAmount;
+		}
+
+		$container     = $subscription->getContainer();
+		$user          = Factory::getUser($subscription->user_id);
+		$countries     = array_keys($taxInfo);
+		$country       = $countries[$randIndex];
+		$taxRate       = $taxInfo[$country] / 100;
+		$paymentMethod = ($subscription->gross_amount == 0) ? 'free' : $paymentMethods[$payIndex];
+		$tax           = $taxRate * $netAmount;
+		$gross         = $netAmount + $tax;
+		$fee           = ($gross == 0) ? 0 : (0.50 + 0.05 * $gross);
+		$earnings      = $gross - $tax - $fee;
+		$orderId       = $this->uuid_v4();
+
+		$jNextBill     = new Date($subscription->publish_up);
+		$jNextBill->add(new DateInterval('P3M'));
+		$jNextBill->setTime(0, 0, 0, 0);
+
+		return [
+			'alert_name'           => 'subscription_payment_succeeded',
+			'balance_currency'     => $container->params->get('currency', 'EUR'),
+			'balance_earnings'     => $earnings,
+			'balance_fee'          => $fee,
+			'balance_gross'        => $gross,
+			'balance_tax'          => $tax,
+			'checkout_id'          => $this->uuid_v4(),
+			'country'              => $country,
+			'coupon'               => '',
+			'currency'             => $container->params->get('currency', 'EUR'),
+			'customer_name'        => $user->name,
+			'earnings'             => $earnings,
+			'email'                => $user->email,
+			'event_time'           => gmdate('Y-m-d H:i:s'),
+			'fee'                  => $fee,
+			'initial_payment'      => ($instalment == 1) ? 1 : 0,
+			'instalments'          => $instalment,
+			'ip'                   => $subscription->ip,
+			'marketing_consent'    => mt_rand(0, 1),
+			'next_bill_date'       => $jNextBill->format('Y-m-d'),
+			'order_id'             => $orderId,
+			'passthrough'          => $subscription->getId(),
+			'payment_method'       => $paymentMethod,
+			'payment_tax'          => $tax,
+			'plan_name'            => 'Integration Test Recurring',
+			'quantity'             => 1,
+			'receipt_url'          => 'https://www.example.com/receipt/' . $orderId,
+			'sale_gross'           => $gross,
+			'status'               => $status,
+			'subscription_id'      => isset($subscription->params['subscription_id']) ? $subscription->params['subscription_id'] : $this->uuid_v4(),
+			'subscription_plan_id' => $subscription->level->paddle_plan_id,
+			'unit_price'           => $recurringNet * (1 + $taxRate),
+			'user_id'              => $this->uuid_v4(),
+			'p_signature'          => $container->params->get('secret'),
+		];
+	}
 
 	/**
 	 * Creates a dummy session under the CLI using our special CLI session handler

@@ -97,16 +97,16 @@ class SubscriptionPaymentFailed implements SubscriptionCallbackHandlerInterface
 		{
 			$updates['state'] = 'P';
 			$updates['cancellation_reason'] = 'past_due';
-			$subscription->_dontNotify(true);
+			$subscription->_noemail(true);
 		}
 		else
 		{
 			$updates['publish_down'] = $jDate->format('Y-m-d H:i:s');
-			$subscription->_dontNotify(true);
+			$subscription->_noemail(true);
 		}
 
 		$subscription->save($updates);
-		$subscription->_dontNotify(false);
+		$subscription->_noemail(false);
 
 		return null;
 	}

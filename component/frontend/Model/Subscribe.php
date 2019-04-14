@@ -14,6 +14,7 @@ use Akeeba\Subscriptions\Site\Model\Subscribe\Validation;
 use Akeeba\Subscriptions\Site\Model\Subscribe\ValidatorFactory;
 use FOF30\Container\Container;
 use FOF30\Input\Input;
+use FOF30\Model\DataModel\Collection;
 use FOF30\Model\DataModel\Exception\NoItemsFound;
 use FOF30\Model\DataModel\Exception\RecordNotLoaded;
 use FOF30\Model\Model;
@@ -1489,5 +1490,134 @@ TEXT;
 
 		// We can only upsell if no subscription was found.
 		return $subscriptions->count() == 0;
+	}
+
+	protected function getAllRelatedLevels(Levels $toThisLevel): Collection
+	{
+		/** @var Levels $levelModel */
+		$levelModel = $this->container->factory->model('Levels')->tmpInstance();
+		$allLevels = $levelModel->enabled(1)->get(true);
+
+		$ret = new Collection();
+		$toThisLevelId = $toThisLevel->getId();
+
+		/** @var Levels $level */
+		foreach ($allLevels as $level)
+		{
+			// Skip over ourselves
+			if ($level->getId() == $toThisLevelId)
+			{
+				continue;
+			}
+
+			if (in_array($toThisLevel, $level->related_levels))
+			{
+				$ret->add($level);
+			}
+		}
+
+		return $ret;
+	}
+
+	/**
+	 * Gets all subscriptions related to the currently selected subscription level.
+	 *
+	 * There are two distinct cases.
+	 *
+	 * -- Case A. Recurring subscriptions ($recurring = true).
+	 *
+	 *    I want to prevent subscription to the currently selected subscription level if there is any paid-for, active
+	 *    subscription EITHER in one of my related levels (can't do a one-off downgrade without canceling the recurring,
+	 *    higher-priced subscription) OR in a lower level that has me as a related level (can't do a one-off upgrade
+	 *    without canceling the recurring, lower-priced subscription) OR in the same level (can't purchase an one-off
+	 *    renewal to a recurring, automatically paid for subscription).
+	 *
+	 * -- Case B. Non-recurring subscriptions ($recurring = false)
+	 *
+	 *    I want to warn about a downgrade when there is an active one-off subscription in a higher level. In this case
+	 *    the lower level subscription will be active in parallel with the higher level, i.e. the subscriber will lose
+	 *    subscription time. This is why I am only looking into my level's related_levels.
+	 *
+	 * @param   bool  $recurring  Should I be looking for recurring subscriptions only (true) or for one-off only
+	 *                            (false)?  Read above for information.
+	 *
+	 * @return  Collection  The subscriptions that block the purchase (A) or I should warn about (B).
+	 *
+	 * @since   7.0.0
+	 */
+	public function getRelatedSubscriptions($recurring = true): Collection
+	{
+		// Get the subscription level the user has chose to subscribe to
+		/** @var Levels $levelsModel */
+		$levelsModel = $this->container->factory->model('Levels')->tmpInstance();
+		$state       = $this->getState();
+		$level       = $levelsModel->find($state->id);
+
+		/**
+		 * Case A. Recurring subscriptions.
+		 *
+		 * I forbid subscription to my related levels and levels that have me as a related level.
+		 *
+		 * Explanation. We have the following setup of related levels:
+		 * -- AKEEBABAKUP   --> ESSENTIALS, JOOMLADELUXE
+		 * -- ADMINTOOLS    --> ESSENTIALS, JOOMLADELUXE
+		 * -- AKEEBATICKETS --> JOOMLADELUXE
+		 * -- ESSENTIALS    --> JOOMLADELUXE
+		 * -- JOOMLADELUXE  --> (none)
+		 *
+		 * If I try to buy Essentials and I have a recurring...
+		 *
+		 * -- AKEEBATICKETS. No problem, unrelated to this level.
+		 * -- ESSENTIALS. This is my level. Can't have auto-recurring and one-off subscription on the same level.
+		 * -- JOOMLADELUXE. It is in my related_levels. Can't have an one-off downgrade without canceling JOOMLADELUXE.
+		 * -- AKEEBABAKUP. This is a level that has me as a related level. Can't have an one-off upgrade without
+		 *    canceling the single product subscription I am called to replace!
+		 */
+		if ($recurring)
+		{
+			// Get all related levels to/from it and also add ourselves
+			$relatedLevels = $this->getAllRelatedLevels($level);
+			$relatedLevels->add($level);
+
+			// Get the IDs of the aforementioned levels
+			$levelIDsToCheck = $relatedLevels->map(function(Levels $item)
+			{
+				return $item->getId();
+			})->toArray();
+		}
+		/**
+		 * Case B. One-off subscriptions.
+		 *
+		 * I need to warn about downgrades.
+		 *
+		 * In the same setup as above, if I try to buy Essentials and I have an one-off...
+		 *
+		 * -- AKEEBATICKETS. Unrelated to this level. No problem.
+		 * -- ESSENTIALS. This is my level. It's a renewal. No problem.
+		 * -- JOOMLADELUXE. It is in my related_levels. Warn about the downgrade (you'll lose subscription time)!
+		 * -- AKEEBABAKUP. This is a level that has me as a related level. It's a subscription upgrade. No problem.
+		 */
+		else
+		{
+			$levelIDsToCheck = $level->related_levels;
+		}
+
+		// Find all paid-for, active subscriptions on those levels
+		/** @var Subscriptions $subscriptionsModel */
+		$subscriptionsModel = $this->container->factory->model('Subscriptions')->tmpInstance();
+		$allSubs = $subscriptionsModel
+			->level($levelIDsToCheck)
+			->paystate(['C'])
+			->enabled(1)
+			->get(true);
+
+		// Filter out one-off or recurring subscriptions
+		$allSubs->filter(function (Subscriptions $item) use ($recurring) {
+			$isRecurring = !empty($item->cancel_url) && !empty($item->update_url);
+
+			return $recurring && $isRecurring;
+		});
+
+		return $allSubs;
 	}
 }

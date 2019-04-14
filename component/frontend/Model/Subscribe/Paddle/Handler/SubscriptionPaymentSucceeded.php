@@ -138,13 +138,13 @@ class SubscriptionPaymentSucceeded extends PaymentSucceeded
 		/**
 		 * Save the changes and trigger the necessary plugin events.
 		 *
-		 * Important: we use _dontNotify to prevent firing the new subscription email on automatic renewals. The client
+		 * Important: we use _noemail to prevent firing the new subscription email on automatic renewals. The client
 		 * has already received notification from Paddle about their successful payment.
 		 */
 		$this->container->platform->importPlugin('akeebasubs');
-		$subscription->_dontNotify(true);
+		$subscription->_noemail(true);
 		$subscription->save($updates);
-		$subscription->_dontNotify(false);
+		$subscription->_noemail(false);
 		$this->container->platform->runPlugins('onAKAfterPaymentCallback', [
 			$subscription,
 		]);
