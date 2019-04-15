@@ -80,6 +80,13 @@ class SubscriptionCancelled implements SubscriptionCallbackHandlerInterface
 		 */
 		$updates['publish_down'] = $requestData['cancellation_effective_date'];
 
+		/**
+		 * Also, mark this subscription as NOT recurring. Whay? If the client tries to resubscribe we must not block
+		 * them from purchasing an one-off renewal or resubscribing to a recurring subscription on the same level.
+		 */
+		$updates['cancel_url'] = '';
+		$updates['update_url'] = '';
+
 		$subscription->save($updates);
 
 		return null;

@@ -11,8 +11,8 @@ defined('_JEXEC') or die();
 
 /**
  * @var \Akeeba\Subscriptions\Site\View\Subscriptions\Html $this
- * @var int $subId
- * @var \Akeeba\Subscriptions\Site\Model\Subscriptions $sub
+ * @var int                                                $subId
+ * @var \Akeeba\Subscriptions\Site\Model\Subscriptions     $sub
  */
 $sub        = $this->items[$subId];
 $subPublish = new Date($sub->publish_up);
@@ -44,7 +44,9 @@ $hasRenew =
 	&& !$this->hasOtherActiveNewOrPendingInLevel($sub)
 	&& ($sub->getFieldValue('state') == 'C');
 
-$hasRenew = $hasRenew || !empty($sub->level->renew_url);
+$hasRenew             = $hasRenew || !empty($sub->level->renew_url);
+$isRecurring          = !empty($sub->update_url) && !empty($sub->cancel_url);
+$isRecurringSuspended = !$isRecurring && isset($sub->params['subscription_id']);
 
 /**
  * A subscription can show the update and cancel URLs if:
@@ -98,6 +100,11 @@ $hasButtons = $hasRenew || $hasRecurringButtons || $hasReceipt || $hasLegacyInvo
 			@endif
 			<span class=akeebasubs-subscription-level-title">
 				{{{ $sub->level->title }}}
+				@if ($isRecurring)
+					<span class="akion-refresh hasTooltip" title="@lang('COM_AKEEBASUBS_SUBSCRIPTIONS_TIP_RECURRING_ACTIVE')"></span>
+				@elseif ($isRecurringSuspended)
+					<span class="akion-android-remove-circle hasTooltip" title="@lang('COM_AKEEBASUBS_SUBSCRIPTIONS_TIP_RECURRING_CANCELED')"></span>
+				@endif
 			</span>
 
 				<span class="akeebasubs-subscription-created pull-right">

@@ -13,6 +13,11 @@ defined('_JEXEC') or die();
 {{-- Include Paddle JavaScript --}}
 @include('site:com_akeebasubs/Level/paddlejs')
 
+@if ($this->blockingSubscriptions->count())
+	@include('site:com_akeebasubs/Level/default_blocking')
+	<?php return; ?>
+@endif
+
 <div id="akeebasubs">
 
 	{{-- Module position 'akeebasubscriptionsheader' --}}
