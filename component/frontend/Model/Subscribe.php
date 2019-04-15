@@ -13,6 +13,7 @@ use Akeeba\Subscriptions\Site\Model\Subscribe\StateData;
 use Akeeba\Subscriptions\Site\Model\Subscribe\Validation;
 use Akeeba\Subscriptions\Site\Model\Subscribe\ValidatorFactory;
 use FOF30\Container\Container;
+use FOF30\Date\Date;
 use FOF30\Input\Input;
 use FOF30\Model\DataModel\Collection;
 use FOF30\Model\DataModel\Exception\NoItemsFound;
@@ -1549,10 +1550,21 @@ TEXT;
 	 */
 	public function getRelatedSubscriptions($recurring = true): Collection
 	{
+		// Get the user I am interested in
+		/** @var User $user */
+		$user = $this->container->platform->getUser();
+		$user = $this->getState('user', $user);
+
+		// A guest user cannot have subscriptions so let's exit early
+		if ($user->guest)
+		{
+			return new Collection();
+		}
+
 		// Get the subscription level the user has chose to subscribe to
 		/** @var Levels $levelsModel */
 		$levelsModel = $this->container->factory->model('Levels')->tmpInstance();
-		$state       = $this->getState();
+		$state       = $this->getStateVariables();
 		$level       = $levelsModel->find($state->id);
 
 		/**
@@ -1581,11 +1593,12 @@ TEXT;
 			$relatedLevels = $this->getAllRelatedLevels($level);
 			$relatedLevels->add($level);
 
-			// Get the IDs of the aforementioned levels
 			$levelIDsToCheck = $relatedLevels->map(function(Levels $item)
 			{
 				return $item->getId();
 			})->toArray();
+
+			$levelIDsToCheck = array_unique(array_merge($levelIDsToCheck, $level->related_levels));
 		}
 		/**
 		 * Case B. One-off subscriptions.
@@ -1604,22 +1617,38 @@ TEXT;
 			$levelIDsToCheck = $level->related_levels;
 		}
 
+		// No levels to check? Bye-bye!
+		if (empty($levelIDsToCheck))
+		{
+			return new Collection();
+		}
+
 		// Find all paid-for, active subscriptions on those levels
 		/** @var Subscriptions $subscriptionsModel */
 		$subscriptionsModel = $this->container->factory->model('Subscriptions')->tmpInstance();
-		$allSubs = $subscriptionsModel
+		$subscriptionsModel
+			->user_id($user->id)
 			->level($levelIDsToCheck)
-			->paystate(['C'])
-			->enabled(1)
-			->get(true);
+			->paystate(['C']);
+
+		if ($recurring)
+		{
+			$subscriptionsModel->enabled(1);
+		}
+
+		$allSubs = $subscriptionsModel->get(true, 0, 0);
+
+		// Can't filter an empty set, now, can I?
+		if ($allSubs->isEmpty())
+		{
+			return $allSubs;
+		}
 
 		// Filter out one-off or recurring subscriptions
-		$allSubs->filter(function (Subscriptions $item) use ($recurring) {
+		return $allSubs->filter(function (Subscriptions $item) use ($recurring) {
 			$isRecurring = !empty($item->cancel_url) && !empty($item->update_url);
 
-			return $recurring && $isRecurring;
+			return ($recurring && $isRecurring);
 		});
-
-		return $allSubs;
 	}
 }

@@ -12,7 +12,6 @@ defined('_JEXEC') or die;
 use FOF30\Container\Container;
 use FOF30\Date\Date;
 use FOF30\Model\DataModel;
-use JLoader;
 
 /**
  * The model for the subscription records
@@ -490,16 +489,19 @@ class Subscriptions extends DataModel
 		$tableAlias = $this->getBehaviorParam('tableAlias', null);
 		$tableAlias = !empty($tableAlias) ? ($db->qn($tableAlias) . '.') : '';
 
-		$publish_up   = $this->getState('publish_up', null, 'string');
-		$publish_upto = $this->getState('publish_upto', null, 'string');
-		$publish_down = $this->getState('publish_down', null, 'string');
+		$publish_up        = $this->getState('publish_up', null, 'string');
+		$publish_upto      = $this->getState('publish_upto', null, 'string');
+		$publish_down      = $this->getState('publish_down', null, 'string');
+		$publish_downafter = $this->getState('publish_downafter', null, 'string');
 
 		$regex = '/^\d{1,4}(\/|-)\d{1,2}(\/|-)\d{2,4}[[:space:]]{0,}(\d{1,2}:\d{1,2}(:\d{1,2}){0,1}){0,1}$/';
 
 		// Filter the dates
-		$from    = trim($publish_up);
-		$fromAlt = trim($publish_upto);
-		$useUpTo = false;
+		$from         = trim($publish_up);
+		$fromAlt      = trim($publish_upto);
+		$toAlt        = trim($publish_downafter);
+		$useUpTo      = false;
+		$useDownAfter = false;
 
 		if (!empty($fromAlt))
 		{
@@ -536,7 +538,15 @@ class Subscriptions extends DataModel
 			$useUpTo = false;
 		}
 
-		$to = trim($publish_down);
+		if (!empty($toAlt))
+		{
+			$to           = trim($toAlt);
+			$useDownAfter = true;
+		}
+		else
+		{
+			$to = trim($publish_down);
+		}
 
 		if (empty($to) || ($to == '0000-00-00') || ($to == '0000-00-00 00:00:00'))
 		{
@@ -562,11 +572,23 @@ class Subscriptions extends DataModel
 			}
 		}
 
+		if (empty($to))
+		{
+			$useDownAfter = false;
+		}
+
 		if (!empty($from) && $useUpTo)
 		{
 			// Filter before date
 			$query->where(
 				$tableAlias . $db->qn('publish_up') . ' <= ' . $db->q($from)
+			);
+		}
+		elseif (!empty($to) && $useDownAfter)
+		{
+			// Filter before date
+			$query->where(
+				$tableAlias . $db->qn('publish_down') . ' >= ' . $db->q($to)
 			);
 		}
 		elseif (!empty($from) && !empty($to))

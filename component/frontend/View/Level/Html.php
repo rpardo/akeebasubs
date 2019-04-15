@@ -11,6 +11,7 @@ defined('_JEXEC') or die;
 
 use Akeeba\Subscriptions\Site\Model\Levels;
 use Akeeba\Subscriptions\Site\Model\Subscribe;
+use FOF30\Model\DataModel\Collection;
 use Joomla\CMS\Factory;
 
 class Html extends \FOF30\View\DataView\Html
@@ -51,6 +52,20 @@ class Html extends \FOF30\View\DataView\Html
 	 * @var  Levels
 	 */
 	public $item = null;
+
+	/**
+	 * Subscriptions of the current user which block subscribing to the currently selected level
+	 *
+	 * @var  Collection
+	 */
+	public $blockingSubscriptions = null;
+
+	/**
+	 * Subscriptions of the current user which warrant a warning that they'll lose subscription time
+	 *
+	 * @var  Collection
+	 */
+	public $warnSubscriptions = null;
 
 	/**
 	 * Get the value of a field from the session cache. If it's empty use the value from the user parameters cache.
@@ -124,9 +139,11 @@ class Html extends \FOF30\View\DataView\Html
 		$this->apply_validation = $this->container->platform->getSessionVar('apply_validation.' . $this->item->akeebasubs_level_id, 0, 'com_akeebasubs') ? 'true' : 'false';
 
 		/** @var Subscribe $subModel */
-		$subModel           = $this->container->factory->model('Subscribe')->tmpInstance();
-		$this->validation   = $subModel->getValidation();
-		$this->upsellLevels = $subModel->getRelatedLevelUpsells();
+		$subModel                    = $this->container->factory->model('Subscribe')->tmpInstance();
+		$this->validation            = $subModel->getValidation();
+		$this->upsellLevels          = $subModel->getRelatedLevelUpsells();
+		$this->blockingSubscriptions = $subModel->getRelatedSubscriptions(true);
+		$this->warnSubscriptions     = $subModel->getRelatedSubscriptions(false);
 
 		// Makes sure SiteGround's SuperCache doesn't cache the subscription page
 		Factory::getApplication()->setHeader('X-Cache-Control', 'False', true);
