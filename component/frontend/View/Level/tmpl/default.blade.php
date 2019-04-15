@@ -42,6 +42,10 @@ defined('_JEXEC') or die();
 		</div>
 	</noscript>
 
+	@if ($this->warnSubscriptions->count())
+		@include('site:com_akeebasubs/Level/default_downgrade')
+	@endif
+
 	<form
 		action="@route('index.php?option=com_akeebasubs&view=Subscribe&slug=' . $this->input->getString('slug', ''))"
 		method="post"

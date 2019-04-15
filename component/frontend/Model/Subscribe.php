@@ -1648,7 +1648,7 @@ TEXT;
 		return $allSubs->filter(function (Subscriptions $item) use ($recurring) {
 			$isRecurring = !empty($item->cancel_url) && !empty($item->update_url);
 
-			return ($recurring && $isRecurring);
+			return ($recurring == $isRecurring);
 		});
 	}
 }
