@@ -337,8 +337,9 @@ class Subscribe extends Controller
 			'username' => $user->username,
 			'email'    => $user->email,
 			'email2'   => $user->email,
+			'force'    => 1,
 		];
-		$returnUrl = Route::_('index.php?' . http_build_query($urlParams));
+		$returnUrl = Route::_('index.php?' . http_build_query($urlParams), false);
 
 		// Make sure we can delete the subscription
 		try

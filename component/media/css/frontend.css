@@ -81,7 +81,7 @@
   height: 210px;
   float: left;
   background-color: #d6d6d6;
-  border: thin solid #514f50;
+  border: thin solid #514F50;
 }
 #akeebasubs .level-title {
   display: block;
@@ -90,8 +90,8 @@
   margin: 0 0 0.5em 0;
   font-size: 14pt;
   font-weight: bold;
-  color: #514f50;
-  background-color: #efefef;
+  color: #514F50;
+  background-color: #EFEFEF;
   text-shadow: 1px 1px 1px white;
 }
 #akeebasubs .level-title:before {
@@ -100,7 +100,7 @@
 #akeebasubs .level-title a {
   font-size: 14pt;
   font-weight: bold;
-  color: #514f50;
+  color: #514F50;
   text-shadow: 1px 1px 1px white;
   text-decoration: none;
 }
@@ -111,16 +111,16 @@
   margin: 0;
   font-size: 20pt;
   color: #339092;
-  text-shadow: 1px 1px 1px #514f50;
+  text-shadow: 1px 1px 1px #514F50;
   font-style: italic;
 }
 #akeebasubs .level-price-decimal {
   font-size: 12pt;
-  color: #40b5b8;
+  color: #40B5B8;
 }
 #akeebasubs .level-price-separator {
   font-size: 12pt;
-  color: #40b5b8;
+  color: #40B5B8;
 }
 #akeebasubs .level-price-taxnotice {
   display: block;
@@ -139,10 +139,10 @@
   max-height: 64px;
   float: right;
   margin: 0.3em 1.3em 0.3em 0.5em;
-  border: thin solid #514f50;
-  -webkit-box-shadow: 1px 1px 4px #514f50;
-  -moz-box-shadow: 1px 1px 4px #514f50;
-  box-shadow: 1px 1px 4px #514f50;
+  border: thin solid #514F50;
+  -webkit-box-shadow: 1px 1px 4px #514F50;
+  -moz-box-shadow: 1px 1px 4px #514F50;
+  box-shadow: 1px 1px 4px #514F50;
 }
 #akeebasubs div.level-description {
   min-height: 80px;
@@ -150,7 +150,7 @@
   padding: 0;
   margin: 0 0.5em;
   background-color: #ffffff;
-  border: thin solid #efefef;
+  border: thin solid #EFEFEF;
   border-radius: 8px;
   -moz-border-radius: 8px;
 }
@@ -172,7 +172,7 @@
 #akeebasubs .akeebasubs-awesome {
   margin-bottom: 15px;
   background: #ffffff;
-  color: #514f50;
+  color: #514F50;
   border-radius: 6px;
 }
 #akeebasubs .akeebasubs-awesome .columns-1 div.akeebasubs-awesome-column {
@@ -206,7 +206,7 @@
   width: 10% !important;
 }
 #akeebasubs .akeebasubs-awesome .columns {
-  border: 1px solid #efefef;
+  border: 1px solid #EFEFEF;
   margin: -1px;
   border-radius: 6px;
 }
@@ -220,13 +220,13 @@
 }
 #akeebasubs div.akeebasubs-awesome-column:hover div.akeebasubs-awesome-header {
   background-color: #266b6c;
-  background-image: linear-gradient(center top, #514f50 10%, #266b6c 80%) !important;
+  background-image: linear-gradient(center top, #514F50 10%, #266b6c 80%) !important;
 }
 #akeebasubs div.akeebasubs-awesome-column:hover .akeebasubs-awesome-level {
   background: #266b6c;
 }
 #akeebasubs .column-first {
-  border-right: 2px solid #efefef;
+  border-right: 2px solid #EFEFEF;
   border-top-left-radius: 6px 6px;
   border-bottom-left-radius: 6px 6px;
 }
@@ -234,7 +234,7 @@
   border-top-left-radius: 6px 6px;
 }
 #akeebasubs .column-middle {
-  border-right: 2px solid #efefef;
+  border-right: 2px solid #EFEFEF;
 }
 #akeebasubs .column-last {
   border-top-right-radius: 6px 6px;
@@ -244,21 +244,21 @@
   border-top-right-radius: 6px 6px;
 }
 #akeebasubs .akeebasubs-awesome-header {
-  background-color: #514f50;
+  background-color: #514F50;
   padding: 0.5em 0;
-  background-image: linear-gradient(center top, #6b686a 10%, #514f50 80%) !important;
+  background-image: linear-gradient(center top, #6b686a 10%, #514F50 80%) !important;
 }
 #akeebasubs .akeebasubs-awesome-level {
   margin-bottom: 0.5em;
   border-top: 1px solid #6b686a;
   border-bottom: 1px solid #6b686a;
-  background: #514f50;
+  background: #514F50;
   text-align: center;
 }
 #akeebasubs a.akeebasubs-awesome-level-link {
   font-weight: bold;
-  color: #efefef !important;
-  text-shadow: #514f50 1px 1px 1px;
+  color: #EFEFEF !important;
+  text-shadow: #514F50 1px 1px 1px;
 }
 #akeebasubs .akeebasubs-awesome-price {
   color: #ffffff;
@@ -267,10 +267,10 @@
   font-weight: bold;
   text-align: center;
   padding: 0.2em 0;
-  text-shadow: #514f50 1px 1px 1px;
+  text-shadow: #514F50 1px 1px 1px;
 }
 #akeebasubs .akeebasubs-awesome-prediscount-label {
-  color: #efefef;
+  color: #EFEFEF;
   font-weight: normal;
 }
 #akeebasubs .akeebasubs-awesome-prediscount {
@@ -279,7 +279,7 @@
   font-weight: bold;
   text-align: center;
   padding: 0.2em 0;
-  text-shadow: #514f50 1px 1px 1px;
+  text-shadow: #514F50 1px 1px 1px;
   height: 1.2em;
 }
 #akeebasubs .akeebasubs-awesome-taxnotice {
@@ -289,18 +289,18 @@
   font-size: 8pt;
   text-align: center;
   padding: 0 0 1em 0;
-  text-shadow: #514f50 1px 1px 1px;
+  text-shadow: #514F50 1px 1px 1px;
   height: 1.2em;
 }
 #akeebasubs .akeebasubs-awesome-price-currency:after {
   content: " ";
 }
 #akeebasubs .akeebasubs-awesome-price-separator {
-  color: #efefef;
+  color: #EFEFEF;
   font-size: 50%;
 }
 #akeebasubs .akeebasubs-awesome-price-decimal {
-  color: #efefef;
+  color: #EFEFEF;
   font-size: 50%;
 }
 #akeebasubs .akeebasubs-awesome-image img {
@@ -327,21 +327,21 @@
   padding: 3px 2px 4px;
   color: #ffffff;
   font-weight: bold;
-  text-shadow: #514f50 1px 1px 1px;
-  border: thin solid #514f50;
-  background-color: #514f50;
+  text-shadow: #514F50 1px 1px 1px;
+  border: thin solid #514F50;
+  background-color: #514F50;
   cursor: pointer;
   border-radius: 5px;
 }
 #akeebasubs input.akeebasubs-awesome-subscribe-button:hover {
   background-color: #6b686a;
-  box-shadow: 0 0 4px #514f50;
+  box-shadow: 0 0 4px #514F50;
 }
 #akeebasubs td.akeebasubs-strappy-level {
   text-align: center !important;
 }
 #akeebasubs td.akeebasubs-strappy-level a {
-  color: #514f50;
+  color: #514F50;
   font-weight: bolder;
   font-size: 110%;
   text-transform: capitalize;
@@ -360,10 +360,10 @@
 #akeebasubs div.akeebasubs-strappy-taxnotice {
   font-size: 8pt;
   text-shadow: none;
-  color: #93c34e;
+  color: #93C34E;
 }
 #akeebasubs td.akeebasubs-strappy-prediscount {
-  color: #e2363c;
+  color: #E2363C;
   font-style: italic;
   font-weight: bold;
   text-align: center !important;
@@ -371,7 +371,7 @@
   padding: 0.5em 0.25em !important;
 }
 #akeebasubs td.akeebasubs-strappy-prediscount span.akeebasubs-strappy-prediscount-label {
-  color: #514f50;
+  color: #514F50;
   font-weight: normal;
 }
 #akeebasubs .akeebasubs-strappy-price-currency:after {
@@ -469,11 +469,34 @@
   font-size: 150%;
   padding: 1em;
 }
+#akeebasubs #akeebasubs-panel-yourorder {
+  padding: 0;
+  border: thin solid #514F50;
+}
+#akeebasubs #akeebasubs-panel-yourorder > div {
+  padding: 2em;
+  text-align: center;
+}
+#akeebasubs #akeebasubs-panel-yourorder .akeebasubs-subscription-level {
+  background-color: #514F50;
+  color: #62c6c9;
+  height: 100%;
+}
+#akeebasubs #akeebasubs-panel-yourorder .akeebasubs-subscription-level div.akeebasubs-subscription-level-inner-container {
+  margin-top: 50%;
+  margin-bottom: 50%;
+}
+#akeebasubs #akeebasubs-panel-yourorder .akeebasubs-subscription-level div.akeebasubs-subscription-level-inner-container h5 {
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 11pt;
+}
 #akeebasubs #akeebasubs-coupon-code-outer-container {
   margin-top: 6pt;
 }
 #akeebasubs #akeebasubs-panel-yourorder-info {
-  margin: 6pt 0;
+  margin: 1em 0;
+  color: #514F50;
   text-align: center;
 }
 #akeebasubs #akeebasubs-panel-yourorder-info::before {
@@ -482,12 +505,17 @@
 #akeebasubs #akeebasubs-sum-original-field,
 #akeebasubs #akeebasubs-sum-discount-field,
 #akeebasubs #akeebasubs-sum-net-field,
-#akeebasubs #akeebasubs-sum-tax-field,
-#akeebasubs #akeebasubs-sum-price {
+#akeebasubs #akeebasubs-sum-tax-field {
   text-align: right;
 }
+#akeebasubs #akeebasubs-sum-label {
+  text-align: center;
+  margin: 1em 0 0.5em;
+}
 #akeebasubs #akeebasubs-sum-price {
-  font-size: 12pt;
+  font-size: 300%;
+  font-weight: bold;
+  text-align: center;
 }
 #akeebasubs .akeebasubs-level-footer {
   text-align: center;
@@ -499,7 +527,7 @@
 #akeebasubs td.subscription-label {
   font-weight: bold;
   min-width: 10em;
-  background-color: #efefef;
+  background-color: #EFEFEF;
 }
 #akeebasubs table.asfelist {
   border-collapse: collapse;
@@ -507,10 +535,10 @@
 #akeebasubs table.asfelist thead tr {
   background-color: #d6d6d6;
   table-layout: fixed;
-  border-bottom: thin solid #514f50;
+  border-bottom: thin solid #514F50;
 }
 #akeebasubs table.asfelist thead th {
-  color: #514f50;
+  color: #514F50;
   font-weight: bold;
   text-align: center;
 }
@@ -523,11 +551,11 @@
   background-color: #ffffff;
 }
 #akeebasubs table.asfelist .row1 td {
-  background-color: #efefef;
+  background-color: #EFEFEF;
 }
 #akeebasubs table.asfelist tfoot tr {
   background-color: #d6d6d6;
-  border-top: thin solid #514f50;
+  border-top: thin solid #514F50;
   text-align: center;
 }
 #akeebasubs table.asfelist tfoot td {

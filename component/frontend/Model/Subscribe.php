@@ -1598,7 +1598,10 @@ TEXT;
 				return $item->getId();
 			})->toArray();
 
-			$levelIDsToCheck = array_unique(array_merge($levelIDsToCheck, $level->related_levels));
+			if (is_array($level->related_levels) && !empty($level->related_levels))
+			{
+				$levelIDsToCheck = array_unique(array_merge($levelIDsToCheck, $level->related_levels));
+			}
 		}
 		/**
 		 * Case B. One-off subscriptions.

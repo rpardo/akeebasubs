@@ -32,12 +32,41 @@ button.akeebasubs-btn-big
   padding: 1em;
 }
 
+#akeebasubs-panel-yourorder
+{
+  padding: 0;
+  border: thin solid @grey;
+
+  > div {
+    padding: 2em;
+    text-align: center;
+  }
+
+  .akeebasubs-subscription-level {
+    background-color: @grey;
+    color: lighten(@teal, 10%);
+    height: 100%;
+
+    div.akeebasubs-subscription-level-inner-container {
+      margin-top: 50%;
+      margin-bottom: 50%;
+
+      h5 {
+        color: @white;
+        font-weight: bold;
+        font-size: 11pt;
+      }
+    }
+  }
+}
+
 #akeebasubs-coupon-code-outer-container {
   margin-top: 6pt;
 }
 
 #akeebasubs-panel-yourorder-info {
-  margin: 6pt 0;
+  margin: 1em 0;
+  color: @grey;
   text-align: center;
 }
 
@@ -48,13 +77,19 @@ button.akeebasubs-btn-big
 #akeebasubs-sum-original-field,
 #akeebasubs-sum-discount-field,
 #akeebasubs-sum-net-field,
-#akeebasubs-sum-tax-field,
-#akeebasubs-sum-price {
+#akeebasubs-sum-tax-field {
   text-align: right;
 }
 
+#akeebasubs-sum-label {
+  text-align: center;
+  margin: 1em 0 0.5em;
+}
+
 #akeebasubs-sum-price {
-  font-size: 12pt;
+  font-size: 300%;
+  font-weight: bold;
+  text-align: center;
 }
 
 .akeebasubs-level-footer {

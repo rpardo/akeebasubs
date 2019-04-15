@@ -42,10 +42,6 @@ defined('_JEXEC') or die();
 		</div>
 	</noscript>
 
-	@if ($this->warnSubscriptions->count())
-		@include('site:com_akeebasubs/Level/default_downgrade')
-	@endif
-
 	<form
 		action="@route('index.php?option=com_akeebasubs&view=Subscribe&slug=' . $this->input->getString('slug', ''))"
 		method="post"
@@ -55,16 +51,39 @@ defined('_JEXEC') or die();
 		{{-- PRODUCT SUMMARY --}}
 		@include('site:com_akeebasubs/Level/default_product')
 
-		{{-- UPSELL TO RECURRING --}}
-		@include('site:com_akeebasubs/Level/default_recurring')
-
 		{{-- UPSELL TO RELATED LEVELS --}}
 		@if (!empty($this->upsellLevels))
 			@include('site:com_akeebasubs/Level/default_related')
 		@endif
 
-		{{-- USER ACCOUNT--}}
-		@include('site:com_akeebasubs/Level/default_account')
+		{{-- DOWNGRADE WARNING --}}
+		@if ($this->warnSubscriptions->count())
+			@include('site:com_akeebasubs/Level/default_downgrade')
+		@endif
+
+		{{-- MAIN FIELDS --}}
+		@unless($this->validation->price->net < 0.01)
+		<div id="akeebasubs-page-level" class="akeeba-container--66-33">
+			<div id="akeebasubs-page-level-orderfields">
+					{{-- USER ACCOUNT--}}
+					@include('site:com_akeebasubs/Level/default_account')
+				</div>
+				<div id="akeebasubs-page-level-pricing">
+					{{-- PRICING INFORMATION--}}
+					@include('site:com_akeebasubs/Level/default_pricing')
+				</div>
+			</div>
+		@else
+			<div id="akeebasubs-page-level-orderfields">
+				{{-- USER ACCOUNT--}}
+				@include('site:com_akeebasubs/Level/default_account')
+			</div>
+		@endunless
+
+
+
+		{{-- UPSELL TO RECURRING --}}
+		@include('site:com_akeebasubs/Level/default_recurring')
 
 		{{-- TOS ACCEPTANCE--}}
 		@include('site:com_akeebasubs/Level/default_tos')
