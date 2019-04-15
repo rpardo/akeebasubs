@@ -20,7 +20,7 @@ $privacyUrl       = $this->getContainer()->params->get('privacy_url', 'privacy.h
 		</h3>
 	</header>
 
-	<div class="akeeba-form-group--checkbox--pull-right{{ $this->validation->validation->tos ? '' : '--error' }}">
+	<div class="akeeba-form-group--checkbox--pull-right">
 		<label>
 			<input type="checkbox" name="accept_terms" id="accept_terms">
 			@sprintf('COM_AKEEBASUBS_LEVEL_LBL_TOS', $tosUrl, $privacyUrl)

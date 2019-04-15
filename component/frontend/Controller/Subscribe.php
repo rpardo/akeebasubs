@@ -12,13 +12,13 @@ defined('_JEXEC') or die;
 use Akeeba\Subscriptions\Admin\Controller\Mixin;
 use Akeeba\Subscriptions\Admin\Helper\UserLogin;
 use Akeeba\Subscriptions\Site\Model\Subscribe as ModelSubscribe;
+use Akeeba\Subscriptions\Site\Model\Subscribe\Paddle\CustomCheckout;
 use Akeeba\Subscriptions\Site\Model\Subscriptions;
 use FOF30\Container\Container;
 use FOF30\Controller\Controller;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
-use Akeeba\Subscriptions\Site\Model\Subscribe\Paddle\CustomCheckout;
 
 class Subscribe extends Controller
 {
@@ -334,6 +334,7 @@ class Subscribe extends Controller
 			'option'   => 'com_akeebasubs',
 			'view'     => 'Level',
 			'slug'     => $subscription->level->slug,
+			'id'       => $subscription->level->getId(),
 			'username' => $user->username,
 			'email'    => $user->email,
 			'email2'   => $user->email,

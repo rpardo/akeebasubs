@@ -62,25 +62,16 @@ defined('_JEXEC') or die();
 		@endif
 
 		{{-- MAIN FIELDS --}}
-		@unless($this->validation->price->net < 0.01)
 		<div id="akeebasubs-page-level" class="akeeba-container--66-33">
-			<div id="akeebasubs-page-level-orderfields">
-					{{-- USER ACCOUNT--}}
-					@include('site:com_akeebasubs/Level/default_account')
-				</div>
-				<div id="akeebasubs-page-level-pricing">
-					{{-- PRICING INFORMATION--}}
-					@include('site:com_akeebasubs/Level/default_pricing')
-				</div>
-			</div>
-		@else
 			<div id="akeebasubs-page-level-orderfields">
 				{{-- USER ACCOUNT--}}
 				@include('site:com_akeebasubs/Level/default_account')
 			</div>
-		@endunless
-
-
+			<div id="akeebasubs-page-level-pricing">
+				{{-- PRICING INFORMATION--}}
+				@include('site:com_akeebasubs/Level/default_pricing')
+			</div>
+		</div>
 
 		{{-- UPSELL TO RECURRING --}}
 		@include('site:com_akeebasubs/Level/default_recurring')
