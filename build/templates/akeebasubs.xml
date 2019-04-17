@@ -50,12 +50,9 @@
             <filename>fof.xml</filename>
             <filename>version.php</filename>
 
-            <folder>assets</folder>
             <folder>Controller</folder>
-            <folder>creditnotes</folder>
             <folder>Dispatcher</folder>
             <folder>Helper</folder>
-            <folder>invoices</folder>
             <folder>Model</folder>
             <folder>PluginAbstracts</folder>
             <folder>sql</folder>
