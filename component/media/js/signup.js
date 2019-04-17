@@ -530,6 +530,57 @@ function akeebasubsLocalisePrice(product, allowTaxInclusive, grossTarget, taxTar
 /**
  * Localises the price of a recurring product which can be bought instead on a (discounted) upgrade.
  *
+ * @param   {Number}  product               Subscription plan ID
+ * @param   {Boolean} includeTax            Include tax in the price?
+ * @param   {String}  priceContainerId      HTML ID of the price container
+ * @param   {String}  frequencyContainerId  HTML ID of the recurring charge frequency container
+ */
+function akeebasubsLocaliseRecurringPriceOnly(product, includeTax, priceContainerId, frequencyContainerId)
+{
+    if (!product)
+    {
+        return;
+    }
+
+    if (includeTax === null)
+    {
+        includeTax = true;
+    }
+
+    Paddle.Product.Prices(product, 1, function(prices) {
+        console.log(prices);
+        var elPrice     = document.getElementById(priceContainerId);
+        var elFrequency = document.getElementById(frequencyContainerId);
+
+        if (!prices.hasOwnProperty('recurring'))
+        {
+            return;
+        }
+
+        if (elPrice !== null)
+        {
+            elPrice.innerText = includeTax ? prices.recurring.price.gross : prices.recurring.price.net;
+        }
+
+        if (elFrequency !== null)
+        {
+            var type   = prices.recurring.subscription.type;
+            var length = prices.recurring.subscription.length;
+            var frequency = length + ' ' + Joomla.Text._('COM_AKEEBASUBS_LEVEL_LBL_OPTIN_RECURRING_PERIOD_' + type);
+
+            if (length === 1)
+            {
+                frequency = Joomla.Text._('COM_AKEEBASUBS_LEVEL_LBL_OPTIN_RECURRING_PERIOD_ONE_' + type);
+            }
+
+            elFrequency.innerText = frequency;
+        }
+    });
+}
+
+/**
+ * Localises the price of a recurring product which can be bought instead on a (discounted) upgrade.
+ *
  * @param   {Number}  product     Subscription plan ID
  * @param   {Boolean} includeTax  Include tax in the price?
  */
