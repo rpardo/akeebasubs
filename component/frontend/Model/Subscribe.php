@@ -1513,9 +1513,12 @@ TEXT;
 				continue;
 			}
 
-			if (in_array($toThisLevel, $level->related_levels))
+			if (is_array($level->related_levels))
 			{
-				$ret->add($level);
+				if (in_array($toThisLevel, $level->related_levels))
+				{
+					$ret->add($level);
+				}
 			}
 		}
 
