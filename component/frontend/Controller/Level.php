@@ -11,9 +11,12 @@ defined('_JEXEC') or die;
 
 use Akeeba\Subscriptions\Admin\Controller\Mixin;
 use FOF30\Container\Container;
+use FOF30\Controller\Mixin\PredefinedTaskList;
 
 class Level extends Levels
 {
+	use PredefinedTaskList;
+
 	/**
 	 * Overridden. Limit the tasks we're allowed to execute.
 	 *
