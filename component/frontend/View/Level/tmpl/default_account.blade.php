@@ -61,51 +61,54 @@ $returnURI->setVar('reset', 1);
 		</header>
 
 		<div>
-			{{-- SOCIAL LOGIN --}}
-			@if (class_exists('Akeeba\SocialLogin\Library\Helper\Integrations'))
-				<?php
-				$this->getContainer()->platform->importPlugin('sociallogin');
-				$buttonDefinitions = $this->getContainer()->platform->runPlugins('onSocialLoginGetLoginButton', [null, null]);
-				?>
-				@unless(!count($buttonDefinitions))
-				<div id="akeebasubs-level-login" class="akeeba-form-group--pull-right">
-					<div class="akeeba-form-group--actions">
-						@foreach ($buttonDefinitions as $button)
-							<a class="akeeba-btn--grey akeeba-sociallogin-button akeeba-sociallogin-button-{{{ $button['slug'] }}} hasTooltip"
-							id="{{{ 'akeeba-sociallogin-' . UserHelper::genRandomPassword(12) . '-' . UserHelper::genRandomPassword(8) }}}"
-							href="{{ $button['link'] }}"
-							title="{{ $button['tooltip'] }}">
-								@unless(empty($button['icon_class']))
-								<span class="{{ $button['icon_class'] }}"></span>
-								@else
-								{{ $button['img'] }}
-								@endunless
-								{{ $button['label'] }}
-							</a>
-						@endforeach
-					</div>
-				</div>
-				<div id="akeebasubs-level-login" class="akeeba-form-group--pull-right">
-						<span class="akeeba-help-text">
-							@lang('COM_AKEEBASUBS_LEVEL_LBL_SOCIALHINT')
-						</span>
-				</div>
-				@endunless
-			@endif
-
-			{{-- Login button --}}
 			<div id="akeebasubs-level-login" class="akeeba-form-group--pull-right">
 				<div class="akeeba-form-group--actions">
-					<a href="@route('index.php?option=com_users&view=login&return=' . base64_encode($returnURI->toString())))"
-					   class="akeeba-btn--primary" rel="nofollow,noindex">
-						<span class="glyphicon glyphicon-log-in"></span>
-						@lang('COM_AKEEBASUBS_LEVEL_BTN_LOGINIFALERADY')
-					</a>
-					<span class="akeeba-help-text">
-						@lang('COM_AKEEBASUBS_LEVEL_LBL_CREATEACCOUNTHINT')
-					</span>
+					{{-- Login button --}}
+					<div class="akeebasubs-level-login-button">
+						<a href="@route('index.php?option=com_users&view=login&return=' . base64_encode($returnURI->toString())))"
+						   class="akeeba-btn--primary--block" rel="nofollow,noindex">
+							<span class="akion-person-stalker"></span>
+							@lang('COM_AKEEBASUBS_LEVEL_BTN_LOGINIFALERADY')
+						</a>
+					</div>
+
+					{{-- SOCIAL LOGIN --}}
+					@if (class_exists('Akeeba\SocialLogin\Library\Helper\Integrations'))
+						<?php
+						$this->getContainer()->platform->importPlugin('sociallogin');
+						$buttonDefinitions = $this->getContainer()->platform->runPlugins('onSocialLoginGetLoginButton', [null, null]);
+						?>
+						@unless(!count($buttonDefinitions))
+							@foreach ($buttonDefinitions as $button)
+								<div class="akeebasubs-level-login-button">
+									<a class="akeeba-btn--grey--block akeeba-sociallogin-button akeeba-sociallogin-button-{{{ $button['slug'] }}} hasTooltip"
+									   id="{{{ 'akeeba-sociallogin-' . UserHelper::genRandomPassword(12) . '-' . UserHelper::genRandomPassword(8) }}}"
+									   href="{{ $button['link'] }}"
+									   title="{{ $button['tooltip'] }}">
+										@unless(empty($button['icon_class']))
+											<span class="{{ $button['icon_class'] }}"></span>
+										@else
+											{{ $button['img'] }}
+										@endunless
+										{{ $button['label'] }}
+									</a>
+								</div>
+							@endforeach
+						@endunless
+					@endif
+
 				</div>
 			</div>
+
+			<div id="akeebasubs-level-login" class="akeeba-form-group--pull-right">
+				<span class="akeeba-help-text">
+					@if (class_exists('Akeeba\SocialLogin\Library\Helper\Integrations') && count($buttonDefinitions))
+						@lang('COM_AKEEBASUBS_LEVEL_LBL_SOCIALHINT')
+					@endif
+					@lang('COM_AKEEBASUBS_LEVEL_LBL_CREATEACCOUNTHINT')
+				</span>
+			</div>
+
 		</div>
 	</div>
 	<div id="akeebasubs-panel-account" class="akeeba-panel--info">
