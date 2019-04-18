@@ -185,7 +185,7 @@ class CustomCheckout
 			return $data->response->url;
 		}
 
-		throw new RuntimeException($data->error->message);
+		throw new RuntimeException('Paddle error: ' . $data->error->message);
 	}
 
 	private function getCountry(User $user): ?string
