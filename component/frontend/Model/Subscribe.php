@@ -12,8 +12,8 @@ use Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits\FixSubscriptionDate;
 use Akeeba\Subscriptions\Site\Model\Subscribe\StateData;
 use Akeeba\Subscriptions\Site\Model\Subscribe\Validation;
 use Akeeba\Subscriptions\Site\Model\Subscribe\ValidatorFactory;
+use Exception;
 use FOF30\Container\Container;
-use FOF30\Date\Date;
 use FOF30\Input\Input;
 use FOF30\Model\DataModel\Collection;
 use FOF30\Model\DataModel\Exception\NoItemsFound;
@@ -24,7 +24,9 @@ use Joomla\CMS\Environment\Browser as JBrowser;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Filesystem\Folder;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log as JLog;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\User as JUser;
 use JUserHelper;
@@ -327,11 +329,6 @@ class Subscribe extends Model
 			}
 		}
 
-		/**
-		 * Unlike previous versions of Akeeba Subscriptions, in AS7 we only create new users. We do not update existing
-		 * users'information since the entire interface has gone away. If a user wants to update their email address or
-		 * other preference they have to go through Joomla's user account page.
-		 */
 		if (is_null($user->id) || ($user->id == 0))
 		{
 			// CREATE A NEW USER
@@ -378,7 +375,71 @@ class Subscribe extends Model
 		}
 		else
 		{
-			$userIsSaved = true;
+			// UPDATE EXISTING USER
+			if (!($user instanceof User))
+			{
+				$user = $this->container->platform->getUser($user->id);
+			}
+
+			$user->name  = $state->name;
+			$user->email = $state->email;
+			$userIsSaved = $user->save();
+		}
+
+		/**
+		 * Save the Agree to ToS into Joomla's Privacy Consent table
+		 */
+		if ($userIsSaved)
+		{
+			try
+			{
+				// Delete an existing record
+				$db = $this->container->db;
+				$query = $db->getQuery(true)
+					->delete($db->quoteName('#__user_profiles'))
+					->where($db->quoteName('user_id') . ' = ' . (int)($user->id))
+					->where($db->quoteName('profile_key') . ' = ' . $db->q('privacyconsent.privacy'));
+				$db->setQuery($query);
+				$db->execute();
+
+				// Insert a new record
+				$o = (object) [
+					'user_id' => $user->id,
+					'profile_key' => 'privacyconsent.privacy',
+					'profile_value' => 1,
+				];
+				$db->insertObject('#__user_profiles', $o);
+			}
+			catch (Exception $e)
+			{
+				// No problem if it fails.
+			}
+		}
+
+		/**
+		 * Save a Joomla! com_privacy user note if the System - Privacy Consent plugin is enabled and loaded
+		 */
+		if ($userIsSaved && PluginHelper::isEnabled('system', 'privacyconsent') && class_exists('PlgSystemPrivacyconsent'))
+		{
+			$ip = Ip::getIp();
+			$userAgent = $this->input->server->get('HTTP_USER_AGENT', '', 'string');
+
+			// Create the user note
+			$userNote = (object) array(
+				'user_id' => $user->id,
+				'subject' => 'PLG_SYSTEM_PRIVACYCONSENT_SUBJECT',
+				'body'    => Text::sprintf('PLG_SYSTEM_PRIVACYCONSENT_BODY', $ip, $userAgent),
+				'created' => Factory::getDate()->toSql(),
+			);
+
+			try
+			{
+				$this->container->db->insertObject('#__privacy_consents', $userNote);
+			}
+			catch (Exception $e)
+			{
+				// Do nothing if the save fails
+			}
 		}
 
 		// Send activation email for free subscriptions if confirmfree is enabled
