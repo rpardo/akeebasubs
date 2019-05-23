@@ -74,8 +74,8 @@ class Subscribe extends Controller
 		$id   = $model->getState('id', 0, 'int');
 		$slug = $model->getState('slug', null, 'string');
 
-		// If the ID is not set but slug is let's try to find the level by slug
-		if (!$id && $slug)
+		// If the slug is set let's try to find the level by slug
+		if ($slug)
 		{
 			// Note: do note replace $item with $levelsModel or the view won't see the loaded record because of how
 			// references work in PHP.
@@ -86,6 +86,8 @@ class Subscribe extends Controller
 					'value'  => $slug,
 				])
 				->firstOrNew();
+
+			$id = $level->getId();
 		}
 		else
 		{
@@ -144,6 +146,10 @@ class Subscribe extends Controller
 
 		// Try to create a new subscription record
 		$model->setState('id', $id);
+		// Force the state variables to use the updated level ID
+		$model->getStateVariables(true);
+		// Do the same for the validation. Otherwise the client ends up buying the WRONG SUSBCRIPTION LEVEL!
+		$model->getValidation(true);
 
 		try
 		{

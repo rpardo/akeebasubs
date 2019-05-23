@@ -230,7 +230,8 @@ class Levels extends DataController
 		// Load any cached user supplied information
 		/** @var SubscribeModel $vModel */
 		$vModel = $this->getModel('Subscribe');
-		$vModel->slug($slug)->id($id);
+		$vModel->slug($slug);
+		$vModel->setState('id', $id);
 
 		// Should we use the coupon code saved in the session?
 		$sessionCoupon = $this->container->platform->getSessionVar('coupon', null, 'com_akeebasubs');
@@ -247,6 +248,8 @@ class Levels extends DataController
 		 * coupon in the code above.
 		 */
 		$cache = (array)($vModel->getStateVariables(true));
+		// Do the same for the validation. Otherwise the client ends up buying the WRONG SUSBCRIPTION LEVEL!
+		$vModel->getValidation(true);
 
 		$view->cache = (array)$cache;
 		$view->validation = $vModel->getValidation();
