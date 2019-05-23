@@ -242,7 +242,11 @@ class Levels extends DataController
 			$this->container->platform->setSessionVar('coupon', null, 'com_akeebasubs');
 		}
 
-		$cache = (array)($vModel->getData());
+		/**
+		 * Force the State Variables to re-initialize because we might have already changed the subscription level and
+		 * coupon in the code above.
+		 */
+		$cache = (array)($vModel->getStateVariables(true));
 
 		$view->cache = (array)$cache;
 		$view->validation = $vModel->getValidation();
