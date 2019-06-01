@@ -1014,6 +1014,29 @@ abstract class Select
 	}
 
 	/**
+	 * Drop down list of payment method types
+	 *
+	 * @param   string  $name      The field's name
+	 * @param   string  $selected  Pre-selected value
+	 * @param   array   $attribs   Field attributes
+	 *
+	 * @return  string  The HTML of the drop-down
+	 */
+	public static function paymentMethods($name = 'flex_uom', $selected = 'rules', $attribs = array())
+	{
+		$options   = array();
+		$options[] = JHtml::_('select.option', '', '- ' . JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_FIELDTITLE') . ' -');
+		$options[] = JHtml::_('select.option', 'apple', JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_APPLE'));
+		$options[] = JHtml::_('select.option', 'card', JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_CARD'));
+		$options[] = JHtml::_('select.option', 'free', JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_FREE'));
+		$options[] = JHtml::_('select.option', 'paypal', JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_PAYPAL'));
+		$options[] = JHtml::_('select.option', 'wire', JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_WIRE'));
+		$options[] = JHtml::_('select.option', 'unknown', JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_UNKNOWN'));
+
+		return self::genericlist($options, $name, $attribs, $selected, $name);
+	}
+
+	/**
 	 * Returns the current Akeeba Subscriptions container object
 	 *
 	 * @return  Container
@@ -1029,4 +1052,5 @@ abstract class Select
 
 		return $container;
 	}
+
 }
