@@ -11,6 +11,7 @@ defined('_JEXEC') or die();
 
 $result = [];
 
+/** @var \Akeeba\Subscriptions\Site\Model\Subscriptions $item */
 foreach ($this->items as $item)
 {
 	// Convert the record to an array
@@ -31,6 +32,27 @@ foreach ($this->items as $item)
 		$v         = $array[$f] ?? 0.00;
 		$array[$f] = sprintf('%0.2f', floatval($v));
 	}
+
+	$array['_userInfo'] = [
+		'name' => $item->juser->name,
+		'username' => $item->juser->username,
+		'v' => $item->juser->username,
+	];
+
+	$array['_levelInfo'] = [
+		'title' => $item->level->title,
+		'slug'  => $item->level->slug,
+		'image' => $item->level->image,
+	];
+
+	$array['_couponInfo'] = is_null($item->coupon) ? [] : [
+		'coupon' => $item->coupon->coupon,
+		'title'  => $item->coupon->title,
+		'type'   => $item->coupon->type,
+		'value'  => $item->coupon->value,
+	];
+
+	$array['_upgradeTitle'] = is_null($item->upgrade) ? '' : $item->upgrade->title;
 
 	// Add the converted record to the result set
 	$result[] = $array;
