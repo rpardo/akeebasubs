@@ -35,8 +35,8 @@ $returnURL = 'index.php?option=com_akeebasubs&view=Subscriptions&task=edit&id=' 
         @lang('COM_AKEEBASUBS_INVOICES_ACTION_PREVIEW')
     </a>
 
-@elseif(!empty($model->receipt_url))
-
+@else
+    @unless(empty($model->receipt_url))
     {{-- Paddle receipt --}}
     <a class="akeeba-btn--grey modal"
        href="{{ $model->receipt_url }}"
@@ -44,12 +44,19 @@ $returnURL = 'index.php?option=com_akeebasubs&view=Subscriptions&task=edit&id=' 
         <span class="akion-document-text"></span>
         @lang('COM_AKEEBASUBS_INVOICES_ACTION_PREVIEW')
     </a>
-
-@else
-
+    @else
     {{-- No invoice available --}}
     <div class="akeeba-block--warning">
         @lang('COM_AKEEBASUBS_SUBSCRIPTION_NO_RECEIPT')
     </div>
 
+    @endif
+
+    {{-- Allow editing of the receipt URL --}}
+    <div class="akeeba-form-group">
+        <label for="receipt_url">
+            @fieldtitle('receipt_url')
+        </label>
+        <input type="text" name="receipt_url" id="receipt_url" value="{{{ $model->receipt_url }}}" />
+    </div>
 @endif
