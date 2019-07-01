@@ -10,7 +10,6 @@ namespace Akeeba\Subscriptions\Admin\Helper;
 use Akeeba\ReleaseSystem\Site\Helper\Filter as Filter;
 use Akeeba\Subscriptions\Admin\Model\Levels;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
-use Akeeba\Subscriptions\Admin\Model\Users;
 use FOF30\Container\Container;
 use FOF30\Date\Date;
 use FOF30\Model\DataModel;
