@@ -236,7 +236,7 @@ $user = JFactory::getUser($item->user_id ?? 0);
 			</p>
 		@endif
 
-		<?php $country = $item->juser->getProfileField('akeebasubs.country') ?>
+		<?php $country = is_null($item->juser) ? null : $item->juser->getProfileField('akeebasubs.country') ?>
 		@if (!empty($country))
 			<p>
 				<span class="akeeba-label--teal">
