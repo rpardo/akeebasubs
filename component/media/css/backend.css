@@ -68,19 +68,17 @@ fieldset.akeebasubs-float-left {
 .akeebasubs-subscription-grossamount { display: block; font-weight: bold; color: #333; font-size: larger; border-top: thin solid #999; }
 .akeebasubs-subscription-amount { text-align: right; width: 60px; }
 
-/**
-tr.expired td { background: rgba(255,220,220,128) !important; color: gray; }
-tr.expired td a { color: gray; }
-tr.expired td .akeebasubs-subscription-netamount { color: gray; }
-tr.expired td .akeebasubs-subscription-taxamount { color: gray; }
-tr.expired td .akeebasubs-subscription-grossamount { color: gray; }
+.akeeba-renderer-fef table[class*=akeeba-table][class*=striped] tbody>tr.expired td { background: #fff0f0;}
+.akeeba-renderer-fef table[class*=akeeba-table][class*=striped] tbody>tr:nth-child(2n+1).expired>td { background: #ffe0e0; }
 
-tr.pending-renewal td { background: rgba(240,255,240,128) !important; color: gray; }
-tr.pending-renewal td a { color: gray; }
-tr.pending-renewal td .akeebasubs-subscription-netamount { color: gray; }
-tr.pending-renewal td .akeebasubs-subscription-taxamount { color: gray; }
-tr.pending-renewal td .akeebasubs-subscription-grossamount { color: gray; }
-/**/
+.akeeba-renderer-fef table[class*=akeeba-table][class*=striped] tbody>tr.pending-renewal td { background: #f0fff0; }
+.akeeba-renderer-fef table[class*=akeeba-table][class*=striped] tbody>tr:nth-child(2n+1).pending-renewal>td { background: #e0ffe0; }
+
+.akeeba-renderer-fef table[class*=akeeba-table][class*=striped] tbody>tr.new td { background: #fffff0; }
+.akeeba-renderer-fef table[class*=akeeba-table][class*=striped] tbody>tr:nth-child(2n+1).new>td { background: #ffffe0; }
+
+.akeeba-renderer-fef table[class*=akeeba-table][class*=striped] tbody>tr.canceled td { background: #E7E9FF; }
+.akeeba-renderer-fef table[class*=akeeba-table][class*=striped] tbody>tr:nth-child(2n+1).canceled>td { background: #EEF2FF; }
 
 .akeebasubs-coupon-discount-value:before{ content: '- '; }
 .akeebasubs-coupon-discount-value { color: red; font-weight: bold; }

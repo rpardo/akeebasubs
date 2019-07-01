@@ -146,6 +146,16 @@ $paymentMethodOptions = [
 	            $trClass = 'pending-renewal';
             }
         }
+
+        if ($row->getFieldValue('state') == 'N')
+        {
+            $trClass = 'new';
+        }
+
+        if ($row->getFieldValue('state') == 'X')
+        {
+            $trClass = 'canceled';
+        }
         ?>
         <tr class="{{ $trClass }}">
             <td>
