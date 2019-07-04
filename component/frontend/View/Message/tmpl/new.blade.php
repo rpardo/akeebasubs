@@ -37,17 +37,12 @@ JS;
 		@sprintf('COM_AKEEBASUBS_MESSAGE_NEW_TOP_DETAIL', $this->subscription->level->title, $this->subscription->juser->username, $this->subscription->juser->email, \Akeeba\Subscriptions\Admin\Helper\Format::date($this->subscription->created_on, \Joomla\CMS\Language\Text::_('DATE_FORMAT_LC2')))
 	</p>
 
-	<a class="akeeba-btn--primary--big"
-	   href="javascript:Paddle.Checkout.open({override: '{{ $this->subscription->payment_url }}', successCallback: 'akeebasubsCheckoutComplete', closeCallback: 'akeebasubsCheckoutClosed', eventCallback: 'akeebasubsCheckoutEvent'});">
-		<span class="akion-card"></span>
-		@lang('COM_AKEEBASUBS_SUBSCRIPTIONS_BTN_COMPLETEPAYMENT')
-	</a>
-
-	<a class="akeeba-btn--ghost--small"
-	   href="@route('index.php?option=com_akeebasubs&view=Subscribe&task=cancel_unpaid&id=' . $this->subscription->getId())">
-		<span class="akion-android-cancel"></span>
-		@lang('COM_AKEEBASUBS_SUBSCRIPTIONS_BTN_CANCEL_UNPAID')
-	</a>
+	<h4>
+		@lang('COM_AKEEBASUBS_MESSAGE_NEW_HEAD_DIDYOUPAY')
+	</h4>
+	<p>
+		@lang('COM_AKEEBASUBS_MESSAGE_NEW_HELP_DIDYOUPAY')
+	</p>
 
 	<h4>
 		@lang('COM_AKEEBASUBS_MESSAGE_NEW_HEAD_WECANHELP')
@@ -90,6 +85,9 @@ JS;
 		<p>
 			@lang('COM_AKEEBASUBS_MESSAGE_NEW_HELP_PAYMETHOD_BODY_P1')
 		</p>
+		<p>
+			@lang('COM_AKEEBASUBS_MESSAGE_NEW_HELP_PAYMETHOD_BODY_P2')
+		</p>
 	</div>
 
 	<h5>
@@ -112,11 +110,26 @@ JS;
 		<p>
 			@lang('COM_AKEEBASUBS_MESSAGE_NEW_HELP_PAYISSUE_BODY_P1')
 		</p>
+		<p class="akeeba-help-text">
+			@lang('COM_AKEEBASUBS_MESSAGE_NEW_MSG_WIRETRANFSER')
+		</p>
 	</div>
 
-	<hr/>
+	<h5>
+		<a href="javascript:akeebasubsToggleHelp('changedmymind')">
+			I changed my mind
+		</a>
+	</h5>
+	<div id="changedmymind" style="display: none;">
+		<p>
+			We are sorry to hear that! If you want to cancel your pending payment and not be reminded about it in the future please click the button below. Thank you!
+		</p>
+		<a class="akeeba-btn--ghost--small"
+		   href="@route('index.php?option=com_akeebasubs&view=Subscribe&task=cancel_unpaid&id=' . $this->subscription->getId())">
+			<span class="akion-android-cancel"></span>
+			@lang('COM_AKEEBASUBS_SUBSCRIPTIONS_BTN_CANCEL_UNPAID')
+		</a>
 
-	<p class="akeeba-help-text">
-		@lang('COM_AKEEBASUBS_MESSAGE_NEW_MSG_WIRETRANFSER')
-	</p>
+	</div>
+
 </div>
