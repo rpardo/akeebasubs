@@ -31,7 +31,7 @@ class Reports extends Model
 				'akuser.isbusiness', 'akuser.businessname', 'akuser.occupation',
 				'akuser.vatnumber',
 				'akuser.viesregistered', 'akuser.address1', 'akuser.address2',
-				'akuser.city', 'akuser.state', 'akuser.zip', 'akuser.country',
+				'akuser.city', 'akuser.zip', 'akuser.country',
 				'aksub.processor', 'aksub.processor_key', 'usr.id', 'usr.name',
 				'usr.username', 'usr.email'
 			))
