@@ -40,7 +40,7 @@ $returnURL = 'index.php?option=com_akeebasubs&view=Subscriptions&task=edit&id=' 
     {{-- Paddle receipt --}}
     <a class="akeeba-btn--grey modal"
        href="{{ $model->receipt_url }}"
-       rel="{handler: 'iframe', size: {x: 800, y: 500}}">
+       target="_blank">
         <span class="akion-document-text"></span>
         @lang('COM_AKEEBASUBS_INVOICES_ACTION_PREVIEW')
     </a>
@@ -58,5 +58,22 @@ $returnURL = 'index.php?option=com_akeebasubs&view=Subscriptions&task=edit&id=' 
             @fieldtitle('receipt_url')
         </label>
         <input type="text" name="receipt_url" id="receipt_url" value="{{{ $model->receipt_url }}}" />
+    </div>
+
+    <h3>@lang('COM_AKEEBASUBS_SUBSCRIPTION_HEAD_RECURRING')</h3>
+
+    {{-- Allow editing of the Update / Billing Info URL --}}
+    <div class="akeeba-form-group">
+        <label for="update_url">
+            @fieldtitle('update_url')
+        </label>
+        <input type="text" name="update_url" id="update_url" value="{{{ $model->update_url }}}" />
+    </div>
+    {{-- Allow editing of the Cancelation URL --}}
+    <div class="akeeba-form-group">
+        <label for="cancel_url">
+            @fieldtitle('cancel_url')
+        </label>
+        <input type="text" name="cancel_url" id="cancel_url" value="{{{ $model->cancel_url }}}" />
     </div>
 @endif
