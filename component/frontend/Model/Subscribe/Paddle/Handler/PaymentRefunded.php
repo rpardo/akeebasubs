@@ -58,6 +58,37 @@ class PaymentRefunded implements SubscriptionCallbackHandlerInterface
 	public function handleCallback(Subscriptions $subscription, array $requestData): ?string
 	{
 		/**
+		 * Before processing the callback I need to check that the order_id matches.
+		 *
+		 * Practical example why this matters.
+		 *
+		 * User purchased subscription #12345. However, he accidentally paid twice. He now has two payments:
+		 * First (old) payment I need to refund: 987654-123098
+		 * Second payment I need to keep:        987654-123123
+		 *
+		 * The subscription record #12345 has payment_key = 987654-123123.
+		 *
+		 * What happens if I refund order ID 987654-123098 from Paddle?
+		 *
+		 * Paddle sends me a refund event with 'passthrough' = 12345 and order_id = 987654-123098.
+		 *
+		 * The Akeeba\Subscriptions\Site\Model\Subscribe\Paddle\CallbackHandler::handleCallback() method pulls the
+		 * record based on the 'passthrough' variable (subscription ID). Therefore the PaymentRefunded callback is
+		 * called and will cancel the subscription.
+		 *
+		 * BUT! I only refunded one of the two payments, even making sure it is the payment that is NOT recorded in the
+		 * database. Therefore the subscription MUST NOT be canceled. How do I do that? By checking the order_id.
+		 *
+		 * If I check the order_id I see that the request says 987654-123098 but my database has 987654-123123. They do
+		 * not match, therefore I can terminate execution of this callback, meaning my subscription is not canceled
+		 * which is what I wanted to do after all.
+		 */
+		if (trim($requestData['order_id'] ?? '') != trim($subscription->processor_key ?? ''))
+		{
+			return null;
+		}
+
+		/**
 		 * Case A. Full refund.
 		 *
 		 * In this case the client gets all of their money back. This is typically the result of a chargeback or the
