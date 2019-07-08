@@ -283,14 +283,16 @@ class Recurring extends Base
 					$carry = $toInt;
 				}
 
-				return $toInt;
+				return $carry;
 			}, 0);
 
 			$now  = time();
-			$days = floor(floatval($now - $maxExpiration) / 86400.00) - 1;
+			$days = floor(floatval($maxExpiration - $now) / 86400.00) - 1;
 
 			$ret['trial_days']    = max(0, $days);
 			$ret['initial_price'] = 0;
+
+			return $ret;
 		}
 
 		/**
