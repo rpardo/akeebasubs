@@ -56,9 +56,6 @@ abstract class ValidatorTestCase extends \PHPUnit\Framework\TestCase
 		]);
 		static::$container->params->save();
 
-		// Force reset the filtered countries list (some tests change the showcountries / hidecountries)
-		Select::getFilteredCountries(true);
-
 		// Set up the StateData object
 		$model = static::$container->factory->model('Subscribe');
 		static::$state = new StateData($model);

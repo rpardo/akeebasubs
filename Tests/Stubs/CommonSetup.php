@@ -8,7 +8,6 @@
 namespace Akeeba\Subscriptions\Tests\Stubs;
 
 use Exception;
-use FOF30\Container\Container;
 use FOF30\Database\Installer;
 use JFactory;
 use JUser;
@@ -43,8 +42,8 @@ abstract class CommonSetup
 				'user1'     => new JUser(1000),
 				'user2'     => new JUser(1001),
 				'user3'     => new JUser(1002),
-				'business'  => new JUser(1010),
-				'forcedvat' => new JUser(1011),
+				'user4'     => new JUser(1010),
+				'user5'     => new JUser(1011),
 				'guineapig' => new JUser(1020),
 			];
 		}

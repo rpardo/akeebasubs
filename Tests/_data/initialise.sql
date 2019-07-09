@@ -44,6 +44,8 @@ VALUES
 	(1000, 'User One', 'user1', 'user1@test.web', '$2y$10$vyC0MR3wtTRwD4JjvQylrOu0NGtFJ2HJSUJkpo9eDyHZO9L7.kj4m', 0, 0, '2015-04-29 18:13:57', '0000-00-00 00:00:00', '', '{}', '0000-00-00 00:00:00', 0, '', '', 0),
 	(1001, 'User Two', 'user2', 'user2@test.web', '$2y$10$LpoNGSf0UMrt6BCrANfFkOD0bwxvJobHULVr4Daz0cDVkmVjwFCqO', 1, 0, '2015-04-29 18:13:57', '0000-00-00 00:00:00', '', '{}', '0000-00-00 00:00:00', 0, '', '', 0),
 	(1002, 'User Three', 'user3', 'user3@test.web', '$2y$10$9ezk6XoWrpyXUXESQccRcOX65xsY0mX8NVLh6tDX7HMxbipQk/ji.', 1, 0, '2015-04-29 18:13:57', '0000-00-00 00:00:00', 'notempty', '{}', '0000-00-00 00:00:00', 0, '', '', 0),
+	(1010, 'User Four', 'user4', 'user4@test.web', '$2y$10$9ezk6XoWrpyXUXESQccRcOX65xsY0mX8NVLh6tDX7HMxbipQk/ji.', 1, 0, '2015-04-29 18:13:57', '2015-04-28 21:28:31', '', '{}', '0000-00-00 00:00:00', 0, '', '', 0),
+	(1011, 'User Five', 'user5', 'user5@test.web', '$2y$10$9ezk6XoWrpyXUXESQccRcOX65xsY0mX8NVLh6tDX7HMxbipQk/ji.', 1, 0, '2015-04-29 18:13:57', '2015-04-28 21:28:31', '', '{}', '0000-00-00 00:00:00', 0, '', '', 0),
   (1020, 'Guinea Pig', 'guineapig', 'guineapig@test.web', '$2y$10$vyC0MR3wtTRwD4JjvQylrOu0NGtFJ2HJSUJkpo9eDyHZO9L7.kj4m', 0, 0, '2015-04-29 18:13:57', '0000-00-00 00:00:00', '', '{}', '0000-00-00 00:00:00', 0, '', '', 0);
 
 # Users to user groups
@@ -57,6 +59,10 @@ VALUES
   (1000, 10),
   (1001, 2),
   (1002, 2),
+  (1010, 2),
+  (1011, 2),
+  (1011, 9),
+  (1011, 11),
   (1020, 2);
 
 # Akeeba Subscriptions: Users
@@ -76,12 +82,13 @@ TRUNCATE TABLE `#__akeebasubs_levels`;
 INSERT INTO `#__akeebasubs_levels` (akeebasubs_level_id, title, slug, image, `description`, duration, price, related_levels, paddle_product_id, paddle_secret, upsell, paddle_plan_id, paddle_plan_secret, ordertext, only_once, recurring, forever, access, fixed_date, renew_url, content_url, params, enabled, ordering, created_on, created_by, modified_on, modified_by, locked_on, locked_by, notify1, notify2, notifyafter) VALUES
 (1, 'DATACOMPLIANCE', 'datacompliance', 'images/levels/product-subscriptions.svg', '<p>One YEAR access to Akeeba Data Compliance downloads and support. Unlimited sites / domains.</p><p>FOO</p><p>BAR</p><p>BAZ</p><p>BAT</p><p>FOOBAR</p><p>FOOBAZ</p><p>FOOBAT</p><p>FOOBARBAZBAT</p><p>BARG</p>', 365, 50, '3', '556046', '1234567', 'always', '556090', 'abcdef0', '<h3>Thank you for your purchase of Akeeba Data Compliance!</h3>
 <p>Your subscription will be active until [PUBLISH_DOWN].</p>
-<p>This is some further text explaining what benefits you get from this subscription and the next steps you can follow.</p>', 0, 0, 0, 1, '0000-00-00 00:00:00', '', '', '{"joomla_addgroups":["13"],"joomla_removegroups":["13"]}', 1, 0, '2019-03-20 16:19:36', 70, '2019-04-15 12:54:28', 70, '0000-00-00 00:00:00', 0, 30, 15, 0),
+<p>This is some further text explaining what benefits you get from this subscription and the next steps you can follow.</p>', 0, 0, 0, 1, '0000-00-00 00:00:00', '', '', '{"joomla_addgroups":["12", "13"],"joomla_removegroups":["12", "13"]}', 1, 0, '2019-03-20 16:19:36', 70, '2019-04-15 12:54:28', 70, '0000-00-00 00:00:00', 0, 30, 15, 0),
 (2, 'CONTACTUS', 'contactus', 'images/levels/product-releasesystem.svg', '<p>One YEAR access to Contact Us downloads and support. Unlimited sites / domains.</p>', 365, 50, '3', '556631', '1234567', 'always', '556725', 'abcdef0', '<h3>Thank you for your purchase of Contact Us!</h3>
 <p>Your subscription will be active until [PUBLISH_DOWN].</p>
-<p>This is some further text explaining what benefits you get from this subscription and the next steps you can follow.</p>', 0, 0, 0, 1, '0000-00-00 00:00:00', '', '', '{"joomla_addgroups":["14"],"joomla_removegroups":["14"]}', 1, 0, '2019-03-20 16:19:43', 70, '2019-04-15 10:30:16', 70, '0000-00-00 00:00:00', 0, 30, 15, 0),
+<p>This is some further text explaining what benefits you get from this subscription and the next steps you can follow.</p>', 0, 0, 0, 1, '0000-00-00 00:00:00', '', '', '{"joomla_addgroups":["12", "14"],"joomla_removegroups":["12", "14"]}', 1, 0, '2019-03-20 16:19:43', 70, '2019-04-15 10:30:16', 70, '0000-00-00 00:00:00', 0, 30, 15, 0),
 (3, 'BUNDLE', 'bundle', 'images/levels/product-joomla-essentials.svg', '<p>One YEAR access to Akeeba Data Compliance and Contact Us downloads and support. Unlimited domains / sites.</p>', 365, 75, '', '556632', '1234567', 'always', '556729', 'abcdef0', '<h3>Thank you for your bundle purchase</h3>
-<p>Here is some text explaining all the amazing stuff you can do with the software you just bought.</p>', 0, 0, 0, 1, '0000-00-00 00:00:00', '', '', '{"joomla_addgroups":["14","13"],"joomla_removegroups":["14","13"]}', 1, 0, '2019-03-20 16:22:43', 70, '2019-04-15 06:25:01', 70, '0000-00-00 00:00:00', 0, 30, 15, 0);
+<p>Here is some text explaining all the amazing stuff you can do with the software you just bought.</p>', 0, 0, 0, 1, '0000-00-00 00:00:00', '', '', '{"joomla_addgroups":["12", "14","13"],"joomla_removegroups":["12", "14","13"]}', 1, 0, '2019-03-20 16:22:43', 70, '2019-04-15 06:25:01', 70, '0000-00-00 00:00:00', 0, 30, 15, 0),
+(6, 'FREE', 'free', 'images/joomla-black.png', '<p>Free as in beer.</p>', 365, 0, '', '', '', 'never', '', '', '<h3>Thank you for your free purchase</h3>', 0, 0, 0, 1, '0000-00-00 00:00:00', '', '', '{"joomla_addgroups":["12"],"joomla_removegroups":["12"]}', 1, 0, '2019-03-20 16:22:43', 70, '2019-04-15 06:25:01', 70, '0000-00-00 00:00:00', 0, 30, 15, 0);
 
 # Coupons
 
@@ -98,7 +105,8 @@ TRUNCATE TABLE `#__akeebasubs_subscriptions`;
 INSERT INTO `#__akeebasubs_subscriptions` (`akeebasubs_subscription_id`, `user_id`, `akeebasubs_level_id`, `publish_up`, `publish_down`, `notes`, `enabled`, `processor`, `processor_key`, `state`, `net_amount`, `tax_amount`, `gross_amount`, `tax_percent`, `created_on`, `params`, `ip`, `ip_country`, `akeebasubs_coupon_id`, `akeebasubs_upgrade_id`, `akeebasubs_invoice_id`, `prediscount_amount`, `discount_amount`, `contact_flag`, `first_contact`, `second_contact`, `after_contact`)
 VALUES
   (1, 1000, 1, '2013-04-30 00:00:00', '2014-04-30 00:00:00', '', 0, 'none', '20130430000000', 'C', 80, 0, 80, 0, '2013-04-30 00:00:00', '[]', '', '', 0, NULL, NULL, NULL, 0, 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
-  (2, 1000, 2, '2014-04-30 00:00:00', '2015-04-29 00:00:00', '', 0, 'none', '20140430000000', 'C', 90, 0, 90, 0, '2014-04-30 00:00:00', '{"subcustom":{"lol": "wut", "foo": 123}}', '', '', 3, NULL, NULL, NULL, 0, 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
+  (2, 1000, 2, '2014-04-30 00:00:00', '2015-04-29 00:00:00', '', 0, 'none', '20140430000001', 'C', 90, 0, 90, 0, '2014-04-30 00:00:00', '{"subcustom":{"lol": "wut", "foo": 123}}', '', '', 3, NULL, NULL, NULL, 0, 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
+  (3, 1011, 1, '2014-04-30 00:00:00', '2038-01-01 00:00:00', '', 0, 'none', '20140430000002', 'C', 90, 0, 90, 0, '2014-04-30 00:00:00', '', '', '', 3, NULL, NULL, NULL, 0, 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
   # For AkpaymentBase testing
   (2000, 1234, 100, '0000-00-00 00:00:00', '0000-00-00 00:00:00', '', 0, 'none', 'AKPBT2000', 'C', 100, 0, 100, 0, '0000-00-00 00:00:00', '[]', '', '', 0, NULL, NULL, NULL, 0, 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
   (2010, 2010, 100, '0000-00-00 00:00:00', '0000-00-00 00:00:00', '', 0, 'none', 'AKPBT2010', 'C', 100, 0, 100, 0, '0000-00-00 00:00:00', '[]', '', '', 0, NULL, NULL, NULL, 0, 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00', '0000-00-00 00:00:00'),
