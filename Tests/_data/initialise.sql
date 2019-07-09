@@ -88,6 +88,8 @@ INSERT INTO `#__akeebasubs_levels` (akeebasubs_level_id, title, slug, image, `de
 <p>This is some further text explaining what benefits you get from this subscription and the next steps you can follow.</p>', 0, 0, 0, 1, '0000-00-00 00:00:00', '', '', '{"joomla_addgroups":["12", "14"],"joomla_removegroups":["12", "14"]}', 1, 0, '2019-03-20 16:19:43', 70, '2019-04-15 10:30:16', 70, '0000-00-00 00:00:00', 0, 30, 15, 0),
 (3, 'BUNDLE', 'bundle', 'images/levels/product-joomla-essentials.svg', '<p>One YEAR access to Akeeba Data Compliance and Contact Us downloads and support. Unlimited domains / sites.</p>', 365, 75, '', '556632', '1234567', 'always', '556729', 'abcdef0', '<h3>Thank you for your bundle purchase</h3>
 <p>Here is some text explaining all the amazing stuff you can do with the software you just bought.</p>', 0, 0, 0, 1, '0000-00-00 00:00:00', '', '', '{"joomla_addgroups":["12", "14","13"],"joomla_removegroups":["12", "14","13"]}', 1, 0, '2019-03-20 16:22:43', 70, '2019-04-15 06:25:01', 70, '0000-00-00 00:00:00', 0, 30, 15, 0),
+(4, 'LEVEL4', 'level4', 'images/level-4.png', '<p>Level 4</p>', 365, 50, '', '556631', '1234567', 'never', '', '', '<h3>Thank you for your LEVEL4 purchase</h3>
+<p>Here is some text explaining all the amazing stuff you can do with the software you just bought.</p>', 0, 0, 0, 1, '0000-00-00 00:00:00', '', '', '{"joomla_addgroups":["12", "14","13"],"joomla_removegroups":["12", "14","13"]}', 1, 0, '2019-03-20 16:22:43', 70, '2019-04-15 06:25:01', 70, '0000-00-00 00:00:00', 0, 30, 15, 0),
 (6, 'FREE', 'free', 'images/joomla-black.png', '<p>Free as in beer.</p>', 365, 0, '', '', '', 'never', '', '', '<h3>Thank you for your free purchase</h3>', 0, 0, 0, 1, '0000-00-00 00:00:00', '', '', '{"joomla_addgroups":["12"],"joomla_removegroups":["12"]}', 1, 0, '2019-03-20 16:22:43', 70, '2019-04-15 06:25:01', 70, '0000-00-00 00:00:00', 0, 30, 15, 0);
 
 # Coupons
@@ -127,9 +129,12 @@ TRUNCATE TABLE `#__akeebasubs_upgrades`;
 INSERT INTO `#__akeebasubs_upgrades` (`akeebasubs_upgrade_id`, `title`, `from_id`, `to_id`, `min_presence`, `max_presence`, `type`, `value`, `combine`, `expired`, `enabled`, `ordering`, `created_on`, `created_by`, `modified_on`, `modified_by`, `locked_on`, `locked_by`, `hits`)
 VALUES
 (1, 'DATACOMPLIANCE early bird', 1, 1, 0, 790, 'percent', 40, 0, 0, 1, 0, '2019-03-20 16:23:24', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0),
-(2, 'CONTACTUS early bird', 2, 2, 0, 730, 'percent', 40, 0, 0, 1, 0, '2019-03-20 16:23:50', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0),
+(2, 'CONTACTUS early bird with last percent', 2, 2, 0, 380, 'lastpercent', 40, 0, 0, 1, 0, '2019-03-20 16:23:50', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0),
 (3, 'FREE to CONTACTUS', 6, 2, 0, 730, 'percent', 20, 0, 0, 1, 0, '2019-03-20 16:23:50', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0),
-(4, 'FREE to DATACOMPLIANCE', 6, 1, 0, 730, 'percent', 30, 0, 0, 1, 0, '2019-03-20 16:23:50', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0);
+(4, 'FREE to DATACOMPLIANCE', 6, 1, 0, 730, 'percent', 30, 1, 0, 1, 0, '2019-03-20 16:23:50', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0),
+(5, 'DATACOMPLIANCE renewal post-expiration', 1, 1, 0, 3650, 'percent', 20, 0, 1, 1, 0, '2019-07-09 11:12:59.000', 100, NULL, 0, NULL, 0, 0),
+(6, 'DATACOMPLIANCE to LEVEL4', 1, 4, 0, 730, 'value', 5.00, 0, 0, 1, 0, '2019-03-20 16:23:50', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0),
+(7, 'LEVEL4 to DATACOMPLIANCE', 4, 1, 0, 730, 'percent', 10.00, 1, 0, 1, 0, '2019-03-20 16:23:50', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0);
 
 # Subscription level relations
 
