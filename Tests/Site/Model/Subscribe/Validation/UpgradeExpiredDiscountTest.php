@@ -40,7 +40,7 @@ class UpgradeExpiredDiscountTest extends ValidatorWithSubsTestCase
 		$j370DaysAgo->sub(new \DateInterval('P370D'));
 
 		return [
-			[
+			'No upgrade' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [],
 				'state'    => [
@@ -49,156 +49,49 @@ class UpgradeExpiredDiscountTest extends ValidatorWithSubsTestCase
 				'expected' => [
 					'upgrade_id' => null,
 					'value'      => 0.0,
-				    'combine'    => false
+					'combine'    => false
 				],
 				'message'  => 'No upgrade'
 			],
-			[
+			'DATACOMPLIANCE renewal – caught by expired subscription rule' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
 						'level' => 1,
 						'publish_up' => $jLastYear->toSql(),
-						'enabled' => 1,
+						'enabled' => 0,
 					]
 				],
 				'state'    => [
 					'id' => '1',
-				],
-				'expected' => [
-					'upgrade_id' => 0,
-					'value'      => 0.0
-					,
-					'combine'    => false
-				],
-				'message'  => 'LEVEL1 subscription renewal (not applied, the subscription is not expired)'
-			],
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [
-					[
-						'level' => 1,
-					    'publish_up' => $jLastYear->toSql(),
-					    'enabled' => 0,
-					]
-				],
-				'state'    => [
-					'id' => '1',
-				],
-				'expected' => [
-					'upgrade_id' => 4,
-					'value'      => 30.0
-					,
-					'combine'    => false
-				],
-				'message'  => 'LEVEL1 expired subscription renewal'
-			],
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [
-					[
-						'level' => 1,
-					    'publish_up' => $jNow->toSql(),
-					]
-				],
-				'state'    => [
-					'id' => '1',
-				],
-				'expected' => [
-					'upgrade_id' => 0,
-					'value'      => 0.0,
-					'combine'    => false
-				],
-				'message'  => 'LEVEL1 renewal, first six months (not applied, subscription active)'
-			],
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [
-					[
-						'level' => 1,
-					    'publish_up' => $jLastHalfYear->toSql(),
-					]
-				],
-				'state'    => [
-					'id' => '1',
-				],
-				'expected' => [
-					'upgrade_id' => 0,
-					'value'      => 0.0,
-					'combine'    => false
-				],
-				'message'  => 'LEVEL1 renewal, last six months (not applied, subscription active)'
-			],
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [
-					[
-						'level' => 1,
-					    'publish_up' => $jLastHalfYear->toSql(),
-						'net_amount' => 80,
-					]
-				],
-				'state'    => [
-					'id' => '1',
-				],
-				'expected' => [
-					'upgrade_id' => 0,
-					'value'      => 0.0,
-					'combine'    => false
-				],
-				'message'  => 'LEVEL1 renewal, last six months, different price for lastpercent (not applied, subscription active)'
-			],
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [
-					[
-						'level' => 1,
-					    'publish_up' => $jLastHalfYear->toSql(),
-					]
-				],
-				'state'    => [
-					'id' => '2',
-				],
-				'expected' => [
-					'upgrade_id' => 0,
-					'value'      => 0.00,
-					'combine'    => false
-				],
-				'message'  => 'LEVEL1 to LEVEL2, fixed price (not applied, subscription active)'
-			],
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [],
-				'state'    => [
-					'id' => '2',
-				],
-				'expected' => [
-					'upgrade_id' => 0,
-					'value'      => 0.00,
-					'combine'    => false
-				],
-				'message'  => 'LEVEL1 to LEVEL2, no subscription (rule not applied)'
-			],
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [
-					[
-						'level' => 1,
-					    'publish_up' => $j370DaysAgo->toSql(),
-					    'enabled' => 0
-					]
-				],
-				'state'    => [
-					'id' => '2',
 				],
 				'expected' => [
 					'upgrade_id' => 5,
-					'value'      => 12.34,
+					'value'      => 10.0
+					,
 					'combine'    => false
 				],
-				'message'  => 'Expired LEVEL1 up to 10 days to LEVEL2, fixed to 12.34'
+				'message'  => 'DATACOMPLIANCE renewal – caught by expired subscription rule'
 			],
-			[
+			'DATACOMPLIANCE renewal, first six months, not expired' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level' => 1,
+						'publish_up' => $jNow->toSql(),
+					]
+				],
+				'state'    => [
+					'id' => '1',
+				],
+				'expected' => [
+					'upgrade_id' => 0,
+					'value'      => 0.0,
+					'combine'    => false
+				],
+				'message'  => 'DATACOMPLIANCE renewal, first six months, not expired'
+			],
+			'DATACOMPLIANCE renewal, last six months, not expired' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
@@ -207,80 +100,68 @@ class UpgradeExpiredDiscountTest extends ValidatorWithSubsTestCase
 					]
 				],
 				'state'    => [
-					'id' => '4',
+					'id' => '1',
 				],
 				'expected' => [
 					'upgrade_id' => 0,
-					'value'      => 0.00,
+					'value'      => 0.0,
 					'combine'    => false
 				],
-				'message'  => 'LEVEL1 to FOREVER, 10% (not applied, subscription active)'
+				'message'  => 'DATACOMPLIANCE renewal, last six months, not expired'
 			],
-			[
+			'CONTACTUS renewal, last six months, different price for lastpercent (not applied; not expired)' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
 						'level' => 2,
 						'publish_up' => $jLastHalfYear->toSql(),
+						'net_amount' => 40,
 					]
 				],
 				'state'    => [
-					'id' => '4',
+					'id' => '2',
+				],
+				'expected' => [
+					'upgrade_id' => 0,
+					'value'      => 0.0,
+					'combine'    => false
+				],
+				'message'  => 'CONTACTUS renewal, last six months, different price for lastpercent (not applied; not expired)'
+			],
+			'LEVEL4 and FREE to DATACOMPLIANCE, combined to 40% (not applied; not expired)' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level' => 4,
+						'publish_up' => $jLastHalfYear->toSql(),
+					],
+					[
+						'level' => 6,
+						'publish_up' => $jLastHalfYear->toSql(),
+					]
+				],
+				'state'    => [
+					'id' => '1',
 				],
 				'expected' => [
 					'upgrade_id' => 0,
 					'value'      => 0.00,
 					'combine'    => false
 				],
-				'message'  => 'LEVEL2 to FOREVER, 10% (not applied, subscription active)'
+				'message'  => 'LEVEL4 and FREE to DATACOMPLIANCE, combined to 40% (not applied; not expired)'
 			],
-			[
+			'Combine two expired subscription discounts – only validated by UpgradeExpiredDiscount' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
-					[
-						'level' => 1,
-						'publish_up' => $jLastHalfYear->toSql(),
-					],
 					[
 						'level' => 2,
-						'publish_up' => $jLastHalfYear->toSql(),
-					]
-				],
-				'state'    => [
-					'id' => '4',
-				],
-				'expected' => [
-					'upgrade_id' => 0,
-					'value'      => 0.00,
-					'combine'    => false
-				],
-				'message'  => 'LEVEL1 and LEVEL2 to FOREVER, combined 10% each  (not applied, subscription active)'
-			],
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [
-					[
-						'level' => 3,
-						'publish_up' => $jLastHalfYear->toSql(),
-					],
-				],
-				'state'    => [
-					'id' => '5',
-				],
-				'expected' => [
-					'upgrade_id' => 0,
-					'value'      => 0.00,
-					'combine'    => false
-				],
-				'message'  => 'RECURRING to FIXED, active, combined 10% (not applied, subscription active)'
-			],
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [
-					[
-						'level' => 3,
 						'publish_up' => $jLastYear->toSql(),
-					    'enabled' => 0
+						'enabled' => 0
+					],
+					[
+						'level' => 5,
+						'publish_up' => $jLastYear->toSql(),
+						'enabled' => 0
 					],
 				],
 				'state'    => [
@@ -291,26 +172,58 @@ class UpgradeExpiredDiscountTest extends ValidatorWithSubsTestCase
 					'value'      => 10.00,
 					'combine'    => true
 				],
-				'message'  => 'RECURRING to FIXED, expired, combined 10%'
+				'message'  => 'Combine two expired subscription discounts – only validated by UpgradeExpiredDiscount'
 			],
-			[
+			// Combine active and expired discounts
+			'Combine active and expired discounts, keep expired' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
-						'level' => 6,
+						'level' => 4,
+						'publish_up' => $jLastHalfYear->toSql(),
+						'enabled' => 1
+					],
+					[
+						'level' => 5,
 						'publish_up' => $jLastYear->toSql(),
+						'enabled' => 0
 					],
 				],
 				'state'    => [
 					'id' => '5',
 				],
 				'expected' => [
-					'upgrade_id' => 0,
-					'value'      => 0.00,
+					'upgrade_id' => 9,
+					'value'      => 5.00,
+					'combine'    => true
+				],
+				'message'  => 'Combine active and expired discounts, keep expired'
+			],
+
+			'One expired rule, one active rule, no combine, pick expired' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level' => 1,
+						'publish_up' => $jLastHalfYear->toSql(),
+						'enabled' => 1
+					],
+					[
+						'level' => 1,
+						'publish_up' => $jLastYear->toSql(),
+						'enabled' => 0
+					],
+				],
+				'state'    => [
+					'id' => '5',
+				],
+				'expected' => [
+					'upgrade_id' => 13,
+					'value'      => 5.00,
 					'combine'    => false
 				],
-				'message'  => 'FREE to FIXED: the rule is unpublished'
-			],
+				'message'  => 'One expired rule, one active rule, no combine, pick expired'
+			]
 		];
 	}
 
