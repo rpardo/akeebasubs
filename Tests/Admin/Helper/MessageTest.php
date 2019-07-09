@@ -129,7 +129,7 @@ class MessageTest extends \PHPUnit\Framework\TestCase
 			['[SUB:NOTES]', true, 'Notes'],
 			['[SUB:ENABLED]', true, 0],
 			['[SUB:PROCESSOR]', true, 'none'],
-			['[SUB:PROCESSOR_KEY]', true, '20140430000000'],
+			['[SUB:PROCESSOR_KEY]', true, '20140430000001'],
 			['[SUB:STATE]', true, 'C'],
 			['[SUB:NET_AMOUNT]', true, '90.00'],
 			['[SUB:TAX_AMOUNT]', true, '9.00'],
