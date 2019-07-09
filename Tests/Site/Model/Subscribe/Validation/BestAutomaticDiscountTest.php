@@ -80,7 +80,7 @@ class BestAutomaticDiscountTest extends ValidatorWithSubsTestCase
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
-						'level'      => 4,
+						'level'      => 3,
 						'publish_up' => $jNow->toSql()
 					]
 				],
