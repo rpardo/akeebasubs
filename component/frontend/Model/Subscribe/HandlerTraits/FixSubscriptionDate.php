@@ -91,8 +91,8 @@ trait FixSubscriptionDate
 				->getClone()
 				->savestate(0)
 				->setIgnoreRequest(true)
-				->reset(true, true)
-				->load($oldsub, true);
+				->reset(true, true);
+			$sub->load($oldsub, true);
 
 			if ($sub->akeebasubs_subscription_id == $oldsub)
 			{
@@ -162,7 +162,7 @@ trait FixSubscriptionDate
 			else
 			{
 				// Get the subscription level and determine if this is a Fixed Expiration subscription.
-				$nullDate = $this->container->db->getNullDate();
+				$nullDate = $subscription->getContainer()->db->getNullDate();
 
 				/** @var Levels $level */
 				if ($subscription->level instanceof Levels)
@@ -172,7 +172,7 @@ trait FixSubscriptionDate
 				else
 				{
 					/** @var Levels $level */
-					$level = $this->container->factory->model('Levels')->tmpInstance();
+					$level = $subscription->getContainer()->factory->model('Levels')->tmpInstance();
 					$level->find($subscription->akeebasubs_level_id);
 				}
 
