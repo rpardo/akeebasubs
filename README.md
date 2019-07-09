@@ -1,16 +1,20 @@
-# Akeeba Subscriptions 5
+# Akeeba Subscriptions 7
 
-**This version of Akeeba Subscriptions is written on FOF 3. It requires Joomla! 3.4 or later and PHP 5.4.0 or later.**
+A Joomla component to sell one-time and recurring subscriptions using Paddle. 
 
-This branch contains the current, actively developed version of Akeeba Subscriptions based on FOF 3. You can study this code as a good example of a real world application utilising the full power of FOF 3. There are things in here you won't find in the FOF 3 documentation.
+**This version of Akeeba Subscriptions is dramatically different to versions 5 and 6. It is no longer a generic subscriptions component, it is a very tight integration with Paddle with features specific to our use case. Most features we did not use ourselves have been dropped. Please do not use unless you understand the implications.**
 
 ## Internal project - No support
 
-Akeeba Subscriptions is a project internal to Akeeba Ltd. We use it as own site's subscriptions system. We make it available free of charge to everyone in hope that it will be useful. However, we will not accept any feature requests, feature patches or support requests. Emails (including through our business site's or personal sites' contact forms), GitHub Issues and Pull Requests containing any of these will be deleted / closed without reply. Thank you for your understanding.
+Akeeba Subscriptions is a project internal to Akeeba Ltd. We use it specifically and exclusively as own site's subscriptions system. We make it available free of charge as an example of how to build a complex component using FOF and because someone out there might find it interesting, useful or inspiring.
+
+Unlike our consumer-oriented, mass-distributed software, Akeeba Subscriptions is NOT to be considered as a feature-stable software. We will remove, modify or add features at any time, without prior notice, as we see fit. If you use it you might end up with a broken site or with an old version we no longer develop. If this happens please don't ask us to reinstate functionality, revert changes or continue developing an obsolete version. We have no interest, no time and no reason to do so.
+
+Moreover, kindly note that we will not accept any feature requests, feature patches or support requests. This software is built specifically for our site, not _your_ site ;)
 
 ## Downloads
 
-We provide _infrequent_ builds available for download from [this repository's Releases section](https://github.com/akeeba/akeebasubs/releases). Please note that these are not released or maintained regularly. We urge developers to build their own packages using the instructions provided below.
+We publish _infrequent_ builds available for download from [this repository's Releases section](https://github.com/akeeba/akeebasubs/releases). Please note that these are not released or maintained regularly, nor are they meant for mass distribution. They simply represent a point in time where we consider the component to have achieved a set of internal objectives; we then tag it and create a ZIP for us to have an easily accessible rollback in case the next development stint goes sideways.
 
 ## Build instructions
 
@@ -51,7 +55,3 @@ phing git
 popd 
 ```
 This will create a dev release ZIP package in `akeebasubs/release`.
-	
-## Collaboration
-
-If you have found a bug you can submit your patch by doing a Pull Request on GitHub. Please do respect the rules set forth earlier in this document. Thank you! 
