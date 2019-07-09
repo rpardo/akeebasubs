@@ -127,7 +127,9 @@ TRUNCATE TABLE `#__akeebasubs_upgrades`;
 INSERT INTO `#__akeebasubs_upgrades` (`akeebasubs_upgrade_id`, `title`, `from_id`, `to_id`, `min_presence`, `max_presence`, `type`, `value`, `combine`, `expired`, `enabled`, `ordering`, `created_on`, `created_by`, `modified_on`, `modified_by`, `locked_on`, `locked_by`, `hits`)
 VALUES
 (1, 'DATACOMPLIANCE early bird', 1, 1, 0, 790, 'percent', 40, 0, 0, 1, 0, '2019-03-20 16:23:24', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0),
-(2, 'CONTACTUS early bird', 2, 2, 0, 730, 'percent', 40, 0, 0, 1, 0, '2019-03-20 16:23:50', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0);
+(2, 'CONTACTUS early bird', 2, 2, 0, 730, 'percent', 40, 0, 0, 1, 0, '2019-03-20 16:23:50', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0),
+(3, 'FREE to CONTACTUS', 6, 2, 0, 730, 'percent', 20, 0, 0, 1, 0, '2019-03-20 16:23:50', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0),
+(4, 'FREE to DATACOMPLIANCE', 6, 1, 0, 730, 'percent', 30, 0, 0, 1, 0, '2019-03-20 16:23:50', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0);
 
 # Subscription level relations
 
@@ -136,4 +138,6 @@ TRUNCATE TABLE `#__akeebasubs_relations`;
 INSERT INTO `#__akeebasubs_relations` (akeebasubs_relation_id, source_level_id, target_level_id, mode, type, amount, low_threshold, low_amount, high_threshold, high_amount, flex_amount, flex_period, flex_uom, flex_timecalculation, time_rounding, expiration, combine, enabled, ordering, created_on, created_by, modified_on, modified_by, locked_on, locked_by)
 VALUES
 (1, 1, 3, 'flexi', 'value', 0, 1, 5, 11, 37.5, 3, 1, 'm', 'future', 'round', 'replace', 1, 1, 0, '2019-03-20 16:27:44', 70, '2019-03-20 16:27:53', 70, '0000-00-00 00:00:00', 0),
-(2, 2, 3, 'flexi', 'value', 0, 1, 5, 11, 37.5, 3, 1, 'm', 'future', 'round', 'replace', 1, 1, 0, '2019-03-20 16:28:44', 70, '2019-03-20 16:28:47', 70, '0000-00-00 00:00:00', 0);
+(2, 2, 3, 'flexi', 'value', 0, 1, 5, 11, 37.5, 3, 1, 'm', 'future', 'round', 'replace', 1, 1, 0, '2019-03-20 16:28:44', 70, '2019-03-20 16:28:47', 70, '0000-00-00 00:00:00', 0),
+(3, 6, 2, 'fixed', 'percent', 30, 0, 0, 0, 0, 0, 0, 'd', 'current', 'round', 'replace', 0, 1, 0, '2019-07-09 10:53:18.000', 100, NULL, 0, NULL, 0),
+(4, 6, 1, 'fixed', 'percent', 20, 0, 0, 0, 0, 0, 0, 'd', 'current', 'round', 'replace', 0, 1, 0, '2019-07-09 10:53:18.000', 100, NULL, 0, NULL, 0);
