@@ -89,7 +89,9 @@ INSERT INTO `#__akeebasubs_levels` (akeebasubs_level_id, title, slug, image, `de
 (3, 'BUNDLE', 'bundle', 'images/levels/product-joomla-essentials.svg', '<p>One YEAR access to Akeeba Data Compliance and Contact Us downloads and support. Unlimited domains / sites.</p>', 365, 75, '', '556632', '1234567', 'always', '556729', 'abcdef0', '<h3>Thank you for your bundle purchase</h3>
 <p>Here is some text explaining all the amazing stuff you can do with the software you just bought.</p>', 0, 0, 0, 1, '0000-00-00 00:00:00', '', '', '{"joomla_addgroups":["12", "14","13"],"joomla_removegroups":["12", "14","13"]}', 1, 0, '2019-03-20 16:22:43', 70, '2019-04-15 06:25:01', 70, '0000-00-00 00:00:00', 0, 30, 15, 0),
 (4, 'LEVEL4', 'level4', 'images/level-4.png', '<p>Level 4</p>', 365, 50, '', '556631', '1234567', 'never', '', '', '<h3>Thank you for your LEVEL4 purchase</h3>
-<p>Here is some text explaining all the amazing stuff you can do with the software you just bought.</p>', 0, 0, 0, 1, '0000-00-00 00:00:00', '', '', '{"joomla_addgroups":["12", "14","13"],"joomla_removegroups":["12", "14","13"]}', 1, 0, '2019-03-20 16:22:43', 70, '2019-04-15 06:25:01', 70, '0000-00-00 00:00:00', 0, 30, 15, 0),
+<p>Here is some text explaining all the amazing stuff you can do with the software you just bought.</p>', 0, 0, 0, 1, '0000-00-00 00:00:00', '', '', '{"joomla_addgroups":["12"],"joomla_removegroups":["12"]}', 1, 0, '2019-03-20 16:22:43', 70, '2019-04-15 06:25:01', 70, '0000-00-00 00:00:00', 0, 30, 15, 0),
+(5, 'LEVEL5', 'level5', 'images/level-5.png', '<p>Level 5</p>', 365, 50, '', '556631', '1234567', 'never', '', '', '<h3>Thank you for your LEVEL5 purchase</h3>
+<p>Here is some text explaining all the amazing stuff you can do with the software you just bought.</p>', 0, 0, 0, 1, '0000-00-00 00:00:00', '', '', '{"joomla_addgroups":["12"],"joomla_removegroups":["12"]}', 1, 0, '2019-03-20 16:22:43', 70, '2019-04-15 06:25:01', 70, '0000-00-00 00:00:00', 0, 30, 15, 0),
 (6, 'FREE', 'free', 'images/joomla-black.png', '<p>Free as in beer.</p>', 365, 0, '', '', '', 'never', '', '', '<h3>Thank you for your free purchase</h3>', 0, 0, 0, 1, '0000-00-00 00:00:00', '', '', '{"joomla_addgroups":["12"],"joomla_removegroups":["12"]}', 1, 0, '2019-03-20 16:22:43', 70, '2019-04-15 06:25:01', 70, '0000-00-00 00:00:00', 0, 30, 15, 0);
 
 # Coupons
@@ -134,7 +136,13 @@ VALUES
 (4, 'FREE to DATACOMPLIANCE', 6, 1, 0, 730, 'percent', 30, 1, 0, 1, 0, '2019-03-20 16:23:50', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0),
 (5, 'DATACOMPLIANCE renewal post-expiration', 1, 1, 0, 3650, 'percent', 20, 0, 1, 1, 0, '2019-07-09 11:12:59.000', 100, NULL, 0, NULL, 0, 0),
 (6, 'DATACOMPLIANCE to LEVEL4', 1, 4, 0, 730, 'value', 5.00, 0, 0, 1, 0, '2019-03-20 16:23:50', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0),
-(7, 'LEVEL4 to DATACOMPLIANCE', 4, 1, 0, 730, 'percent', 10.00, 1, 0, 1, 0, '2019-03-20 16:23:50', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0);
+(7, 'LEVEL4 to DATACOMPLIANCE', 4, 1, 0, 730, 'percent', 10.00, 1, 0, 1, 0, '2019-03-20 16:23:50', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0),
+(8, 'CONTACTUS expired to LEVEL5, combine', 2, 5, 0, 365, 'percent', 10.00, 1, 1, 1, 0, '2019-03-20 16:23:50', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0),
+(9, 'LEVEL5 expired renewal, combine', 5, 5, 0, 365, 'percent', 10.00, 1, 1, 1, 0, '2019-03-20 16:23:50', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0),
+(10, 'LEVEL4 active to LEVEL5, combine', 4, 5, 0, 365, 'percent', 10.00, 1, 0, 1, 0, '2019-03-20 16:23:50', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0),
+(11, 'FREE to LEVEL5 (unpublished)', 6, 5, 0, 365, 'percent', 10.00, 0, 0, 0, 0, '2019-03-20 16:23:50', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0),
+(12, 'DATACOMPLIANCE to LEVEL5, active', 1, 5, 0, 365, 'percent', 30.00, 0, 0, 1, 0, '2019-03-20 16:23:50', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0),
+(13, 'DATACOMPLIANCE to LEVEL5, expired', 1, 5, 0, 365, 'percent', 10.00, 0, 1, 1, 0, '2019-03-20 16:23:50', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0);
 
 # Subscription level relations
 
