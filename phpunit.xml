@@ -2,9 +2,7 @@
 <phpunit
     bootstrap="Tests/bootstrap.php"
     beStrictAboutTestsThatDoNotTestAnything="true"
-    checkForUnintentionallyCoveredCode="false"
     beStrictAboutOutputDuringTests="true"
-    beStrictAboutTestSize="true"
     colors="true"
 >
 	<testsuites>
