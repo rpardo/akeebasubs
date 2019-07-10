@@ -114,7 +114,7 @@ class MessageTest extends \PHPUnit\Framework\TestCase
 			['[CURRENCY]', true, 'USD'],
 			['[$]', true, '$'],
 			['[DLID]', true, ''],
-			['[COUPONCODE]', true, 'HELLOTHERE'],
+			['[COUPONCODE]', true, 'TENHITS'],
 			// Legacy keys
 			['[NAME]', true, 'User'],
 			['[STATE]', true, 'COM_AKEEBASUBS_SUBSCRIPTION_STATE_C'],
@@ -138,7 +138,7 @@ class MessageTest extends \PHPUnit\Framework\TestCase
 			['[SUB:CREATED_ON]', true, '2014-04-30 00:00:00'],
 			['[SUB:IP]', true, '8.8.8.8'],
 			['[SUB:IP_COUNTRY]', true, 'US'],
-			['[SUB:AKEEBASUBS_COUPON_ID]', true, '3'],
+			['[SUB:AKEEBASUBS_COUPON_ID]', true, '15'],
 			['[SUB:AKEEBASUBS_UPGRADE_ID]', true, ''],
 			['[SUB:AKEEBASUBS_INVOICE_ID]', true, ''],
 			['[SUB:PREDISCOUNT_AMOUNT]', true, '100.00'],
