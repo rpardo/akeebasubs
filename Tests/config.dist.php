@@ -14,28 +14,10 @@
  */
 
 $akeebasubsTestConfig = [
-	'site_root' => '/var/www/guineapig',
-	'site_name' => 'Akeeba Subscriptions Unit Tests',
-	'site_url'  => 'http://localhost/guineapig/',
-	// Only used for determining the recurring price
-	'products'  => [
-		'single_product_a' => [
-			'paddle_product_id'  => '12345',
-			'paddle_secret'      => 'abcdef',
-			'paddle_plan_id'     => '12345',
-			'paddle_plan_secret' => 'abcdef',
-		],
-		'single_product_b' => [
-			'paddle_product_id'  => '12345',
-			'paddle_secret'      => 'abcdef',
-			'paddle_plan_id'     => '12345',
-			'paddle_plan_secret' => 'abcdef',
-		],
-		'bundle'           => [
-			'paddle_product_id'  => '12345',
-			'paddle_secret'      => 'abcdef',
-			'paddle_plan_id'     => '12345',
-			'paddle_plan_secret' => 'abcdef',
-		],
-	],
+	'site_root'        => '/var/www/guineapig',
+	'site_name'        => 'Akeeba Subscriptions Unit Tests',
+	'site_url'         => 'http://localhost/guineapig/',
+	// Paddle Vendor ID and Vendor ID authentication code, used for the Recurring validator's testing
+	'vendor_id'        => '123456',
+	'vendor_auth_code' => 'abcdef123',
 ];
