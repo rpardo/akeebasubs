@@ -28,488 +28,445 @@ class CouponDiscountTest extends ValidatorTestCase
 	public function getTestData()
 	{
 		return [
-			'No coupon: invalid' => [
+			'No coupon: invalid'                                                                                      => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
 					'coupon' => '',
 				],
 				'expected' => [
-					'valid' => false,
+					'valid'       => false,
 					'couponFound' => false,
-					'value' => 0,
-					'coupon_id' => null
+					'value'       => 0,
+					'coupon_id'   => null,
 				],
-				'message'  => 'No coupon: invalid'
+				'message'  => 'No coupon: invalid',
 			],
-			'Non-existent coupon code (IAMNOTTHERE): invalid' => [
+			'Non-existent coupon code (IAMNOTTHERE): invalid'                                                         => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
 					'coupon' => 'IAMNOTTHERE',
 				],
 				'expected' => [
-					'valid' => false,
+					'valid'       => false,
 					'couponFound' => false,
-					'value' => 0,
-					'coupon_id' => null
+					'value'       => 0,
+					'coupon_id'   => null,
 				],
-				'message'  => 'Non-existent coupon code (IAMNOTTHERE): invalid'
+				'message'  => 'Non-existent coupon code (IAMNOTTHERE): invalid',
 			],
-			'Valid coupon code, all caps (VALIDALL): valid' => [
+			'Valid coupon code, all caps (VALIDALL): valid'                                                           => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
 					'coupon' => 'VALIDALL',
 				],
 				'expected' => [
-					'valid' => true,
+					'valid'       => true,
 					'couponFound' => true,
-					'value' => 50,
-					'coupon_id' => 1
+					'value'       => 25,
+					'coupon_id'   => 3,
 				],
-				'message'  => 'Valid coupon code, all caps (VALIDALL): valid'
+				'message'  => 'Valid coupon code, all caps (VALIDALL): valid',
 			],
-			'Valid coupon code, all lowercase (validall): valid' => [
+			'Valid coupon code, all lowercase (validall): valid'                                                      => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
 					'coupon' => 'validall',
 				],
 				'expected' => [
-					'valid' => true,
+					'valid'       => true,
 					'couponFound' => true,
-					'value' => 50,
-					'coupon_id' => 1
+					'value'       => 25,
+					'coupon_id'   => 3,
 				],
-				'message'  => 'Valid coupon code, all lowercase (validall): valid'
+				'message'  => 'Valid coupon code, all lowercase (validall): valid',
 			],
-			'Valid coupon code, mixed case (ValidALL): valid' => [
+			'Valid coupon code, mixed case (ValidALL): valid'                                                         => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
 					'coupon' => 'ValidALL',
 				],
 				'expected' => [
-					'valid' => true,
+					'valid'       => true,
 					'couponFound' => true,
-					'value' => 50,
-					'coupon_id' => 1
+					'value'       => 25,
+					'coupon_id'   => 3,
 				],
-				'message'  => 'Valid coupon code, mixed case (ValidALL): valid'
+				'message'  => 'Valid coupon code, mixed case (ValidALL): valid',
 			],
-			'Valid coupon code, spaces before (VALIDALL): valid' => [
+			'Valid coupon code, spaces before (VALIDALL): valid'                                                      => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
 					'coupon' => ' VALIDALL',
 				],
 				'expected' => [
-					'valid' => true,
+					'valid'       => true,
 					'couponFound' => true,
-					'value' => 50,
-					'coupon_id' => 1
+					'value'       => 25,
+					'coupon_id'   => 3,
 				],
-				'message'  => 'Valid coupon code, spaces before (VALIDALL): valid'
+				'message'  => 'Valid coupon code, spaces before (VALIDALL): valid',
 			],
-			'Valid coupon code, spaces after (VALIDALL): valid' => [
+			'Valid coupon code, spaces after (VALIDALL): valid'                                                       => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
 					'coupon' => 'VALIDALL ',
 				],
 				'expected' => [
-					'valid' => true,
+					'valid'       => true,
 					'couponFound' => true,
-					'value' => 50,
-					'coupon_id' => 1
+					'value'       => 25,
+					'coupon_id'   => 3,
 				],
-				'message'  => 'Valid coupon code, spaces after (VALIDALL): valid'
+				'message'  => 'Valid coupon code, spaces after (VALIDALL): valid',
 			],
-			'Valid coupon code, newline after (VALIDALL): valid' => [
+			'Valid coupon code, newline after (VALIDALL): valid'                                                      => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
 					'coupon' => "VALIDALL\n",
 				],
 				'expected' => [
-					'valid' => true,
+					'valid'       => true,
 					'couponFound' => true,
-					'value' => 50,
-					'coupon_id' => 1
+					'value'       => 25,
+					'coupon_id'   => 3,
 				],
-				'message'  => 'Valid coupon code, newline after (VALIDALL): valid'
+				'message'  => 'Valid coupon code, newline after (VALIDALL): valid',
 			],
-			'Valid coupon code, spaces around (VALIDALL): valid' => [
+			'Valid coupon code, spaces around (VALIDALL): valid'                                                      => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
 					'coupon' => ' VALIDALL ',
 				],
 				'expected' => [
-					'valid' => true,
+					'valid'       => true,
 					'couponFound' => true,
-					'value' => 50,
-					'coupon_id' => 1,
+					'value'       => 25,
+					'coupon_id'   => 3,
 				],
-				'message'  => 'Valid coupon code, spaces around (VALIDALL): valid'
+				'message'  => 'Valid coupon code, spaces around (VALIDALL): valid',
 			],
-			'Valid coupon code, not yet active (NOTYETACTIVE): invalid' => [
+			'Valid coupon code, not yet active (NOTYETACTIVE): invalid'                                               => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
 					'coupon' => 'NOTYETACTIVE',
 				],
 				'expected' => [
-					'valid' => false,
+					'valid'       => false,
 					'couponFound' => true,
-					'value' => 0,
-					'coupon_id' => null
+					'value'       => 0,
+					'coupon_id'   => null,
 				],
-				'message'  => 'Valid coupon code, not yet active (NOTYETACTIVE): invalid'
+				'message'  => 'Valid coupon code, not yet active (NOTYETACTIVE): invalid',
 			],
-			'Valid coupon code, expired (ALREADYEXPIRED): invalid' => [
+			'Valid coupon code, expired (ALREADYEXPIRED): invalid'                                                    => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
 					'coupon' => 'ALREADYEXPIRED',
 				],
 				'expected' => [
-					'valid' => false,
+					'valid'       => false,
 					'couponFound' => true,
-					'value' => 0,
-					'coupon_id' => null
+					'value'       => 0,
+					'coupon_id'   => null,
 				],
-				'message'  => 'Valid coupon code, expired (ALREADYEXPIRED): invalid'
+				'message'  => 'Valid coupon code, expired (ALREADYEXPIRED): invalid',
 			],
-			'Valid coupon code, inside the date range (INSIDEDATERANGE): valid' => [
+			'Valid coupon code, inside the date range (INSIDEDATERANGE): valid'                                       => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
 					'coupon' => 'INSIDEDATERANGE',
 				],
 				'expected' => [
-					'valid' => true,
+					'valid'       => true,
 					'couponFound' => true,
-					'value' => 50,
-					'coupon_id' => 16
+					'value'       => 10,
+					'coupon_id'   => 6,
 				],
-				'message'  => 'Valid coupon code, inside the date range (INSIDEDATERANGE): valid'
+				'message'  => 'Valid coupon code, inside the date range (INSIDEDATERANGE): valid',
 			],
-			'Valid coupon code, limited to this subscription level (FORLEVEL1): valid' => [
+			'Valid coupon code, limited to this subscription level (FORLEVEL1): valid'                                => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
 					'coupon' => 'FORLEVEL1',
 				],
 				'expected' => [
-					'valid' => true,
+					'valid'       => true,
 					'couponFound' => true,
-					'value' => 50,
-					'coupon_id' => 4
+					'value'       => 15,
+					'coupon_id'   => 7,
 				],
-				'message'  => 'Valid coupon code, limited to this subscription level (FORLEVEL1): valid'
+				'message'  => 'Valid coupon code, limited to this subscription level (FORLEVEL1): valid',
 			],
-			'Valid coupon code, limited to other subscription level (FORLEVEL2): invalid' => [
+			'Valid coupon code, limited to other subscription level (FORLEVEL2): invalid'                             => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
 					'coupon' => 'FORLEVEL2',
 				],
 				'expected' => [
-					'valid' => false,
+					'valid'       => false,
 					'couponFound' => true,
-					'value' => 0,
-					'coupon_id' => null
+					'value'       => 0,
+					'coupon_id'   => null,
 				],
-				'message'  => 'Valid coupon code, limited to other subscription level (FORLEVEL2): invalid'
+				'message'  => 'Valid coupon code, limited to other subscription level (FORLEVEL2): invalid',
 			],
-			'Valid coupon code, limited to our user (FORUSER1): valid' => [
+			'Valid coupon code, limited to our user (FORUSER1): valid'                                                => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
 					'coupon' => 'FORUSER1',
 				],
 				'expected' => [
-					'valid' => true,
+					'valid'       => true,
 					'couponFound' => true,
-					'value' => 50,
-					'coupon_id' => 6
+					'value'       => 10,
+					'coupon_id'   => 9,
 				],
-				'message'  => 'Valid coupon code, limited to our user (FORUSER1): valid'
+				'message'  => 'Valid coupon code, limited to our user (FORUSER1): valid',
 			],
-			'Valid coupon code, limited to other user (FORUSER2): invalid' => [
+			'Valid coupon code, limited to other user (FORUSER2): invalid'                                            => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
 					'coupon' => 'FORUSER2',
 				],
 				'expected' => [
-					'valid' => false,
+					'valid'       => false,
 					'couponFound' => true,
-					'value' => 0,
-					'coupon_id' => null
+					'value'       => 0,
+					'coupon_id'   => null,
 				],
-				'message'  => 'Valid coupon code, limited to other user (FORUSER2): invalid'
+				'message'  => 'Valid coupon code, limited to other user (FORUSER2): invalid',
 			],
-			'Valid coupon code, limited to our email address (FORUSER1EMAIL): valid' => [
+			'Valid coupon code, limited to our email address (FORUSER1EMAIL): valid'                                  => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
 					'coupon' => 'FORUSER1EMAIL',
 				],
 				'expected' => [
-					'valid' => true,
+					'valid'       => true,
 					'couponFound' => true,
-					'value' => 50,
-					'coupon_id' => 8
+					'value'       => 10,
+					'coupon_id'   => 11,
 				],
-				'message'  => 'Valid coupon code, limited to our email address (FORUSER1EMAIL): valid'
+				'message'  => 'Valid coupon code, limited to our email address (FORUSER1EMAIL): valid',
 			],
-			'Valid coupon code, limited to other email address (FORUSER2EMAIL): invalid' => [
+			'Valid coupon code, limited to other email address (FORUSER2EMAIL): invalid'                              => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
 					'coupon' => 'FORUSER2EMAIL',
 				],
 				'expected' => [
-					'valid' => false,
+					'valid'       => false,
 					'couponFound' => true,
-					'value' => 0,
-					'coupon_id' => null
+					'value'       => 0,
+					'coupon_id'   => null,
 				],
-				'message'  => 'Valid coupon code, limited to other email address (FORUSER2EMAIL): invalid'
+				'message'  => 'Valid coupon code, limited to other email address (FORUSER2EMAIL): invalid',
 			],
-			'Valid coupon code, limited to our user group (FORSUBSCRIBERS): valid' => [
+			'Valid coupon code, limited to our user group (FORSUBSCRIBERS): valid'                                    => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
 					'coupon' => 'FORSUBSCRIBERS',
 				],
 				'expected' => [
-					'valid' => true,
+					'valid'       => true,
 					'couponFound' => true,
-					'value' => 50,
-					'coupon_id' => 10
+					'value'       => 20,
+					'coupon_id'   => 13,
 				],
-				'message'  => 'Valid coupon code, limited to our user group (FORSUBSCRIBERS): valid'
+				'message'  => 'Valid coupon code, limited to our user group (FORSUBSCRIBERS): valid',
 			],
-			'Valid coupon code, limited to other user group (FORSUPERUSERS): invalid' => [
+			'Valid coupon code, limited to other user group (FORSUPERUSERS): invalid'                                 => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
 					'coupon' => 'FORSUPERUSERS',
 				],
 				'expected' => [
-					'valid' => false,
+					'valid'       => false,
 					'couponFound' => true,
-					'value' => 0,
-					'coupon_id' => null
+					'value'       => 0,
+					'coupon_id'   => null,
 				],
-				'message'  => 'Valid coupon code, limited to other user group (FORSUPERUSERS): invalid'
+				'message'  => 'Valid coupon code, limited to other user group (FORSUPERUSERS): invalid',
 			],
-			'Valid coupon code, hits limit not reached (TENHITS): valid' => [
+			'Valid coupon code, hits limit not reached (TENHITS): valid'                                              => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
 					'coupon' => 'TENHITS',
 				],
 				'expected' => [
-					'valid' => true,
+					'valid'       => true,
 					'couponFound' => true,
-					'value' => 50,
-					'coupon_id' => 12,
+					'value'       => 10,
+					'coupon_id'   => 15,
 				],
-				'message'  => 'Valid coupon code, hits limit not reached (TENHITS): valid'
+				'message'  => 'Valid coupon code, hits limit not reached (TENHITS): valid',
 			],
-			'Valid coupon code, hits limit already reached (ONEHIT): invalid' => [
+			'Valid coupon code, hits limit already reached (ONEHIT): invalid'                                         => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
 					'coupon' => 'ONEHIT',
 				],
 				'expected' => [
-					'valid' => false,
+					'valid'       => false,
 					'couponFound' => true,
-					'value' => 0,
-					'coupon_id' => null
+					'value'       => 0,
+					'coupon_id'   => null,
 				],
-				'message'  => 'Valid coupon code, hits limit already reached (ONEHIT): invalid'
+				'message'  => 'Valid coupon code, hits limit already reached (ONEHIT): invalid',
 			],
-			'Valid coupon code, logged in, user hits limit not reached (TENUSERHITS): valid' => [
+			'Valid coupon code, logged in, user hits limit not reached (TENUSERHITS): valid'                          => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
 					'coupon' => 'TENUSERHITS',
 				],
 				'expected' => [
-					'valid' => true,
+					'valid'       => true,
 					'couponFound' => true,
-					'value' => 50,
-					'coupon_id' => 14
+					'value'       => 10,
+					'coupon_id'   => 17,
 				],
-				'message'  => 'Valid coupon code, logged in, user hits limit not reached (TENUSERHITS): valid'
+				'message'  => 'Valid coupon code, logged in, user hits limit not reached (TENUSERHITS): valid',
 			],
-			'Valid coupon code, logged in, user hits limit already reached (ONEUSERHIT): invalid' => [
-				'loggedIn' => 'user1',
+			'Valid coupon code, logged in, user hits limit already reached (ONEUSERHIT): invalid'                     => [
+				'loggedIn' => 'user4',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
+					'id'     => '1',
+					'email'  => 'user4@test.web',
 					'coupon' => 'ONEUSERHIT',
 				],
 				'expected' => [
-					'valid' => false,
+					'valid'       => false,
 					'couponFound' => true,
-					'value' => 0,
-					'coupon_id' => null
+					'value'       => 0,
+					'coupon_id'   => null,
 				],
-				'message'  => 'Valid coupon code, logged in, user hits limit already reached (ONEUSERHIT): invalid'
+				'message'  => 'Valid coupon code, logged in, user hits limit already reached (ONEUSERHIT): invalid',
 			],
 			'Valid coupon code, logged in, user hits limit already reached for a different user (TWOUSERHITS): valid' => [
-				'loggedIn' => 'user1',
+				'loggedIn' => 'user2',
 				'state'    => [
-					'id' => '1',
-					'email' => 'user1@test.web',
-					'coupon' => 'TWOUSERHITS',
+					'id'     => '1',
+					'email'  => 'user1@test.web',
+					'coupon' => 'ONEUSERHIT',
 				],
 				'expected' => [
-					'valid' => true,
+					'valid'       => true,
 					'couponFound' => true,
-					'value' => 50,
-					'coupon_id' => 17
+					'value'       => 10,
+					'coupon_id'   => 18,
 				],
-				'message'  => 'Valid coupon code, logged in, user hits limit already reached for a different user (TWOUSERHITS): valid'
+				'message'  => 'Valid coupon code, logged in, user hits limit already reached for a different user (TWOUSERHITS): valid',
 			],
-			'Valid coupon code, guest, user hits limit (TENUSERHITS): valid' => [
+			'Valid coupon code, guest, user hits limit (TENUSERHITS): valid'                                          => [
 				'loggedIn' => 'guest',
 				'state'    => [
-					'id' => '1',
-					'email' => 'newuser@test.web',
+					'id'     => '1',
+					'email'  => 'newuser@test.web',
 					'coupon' => 'TENUSERHITS',
 				],
 				'expected' => [
-					'valid' => true,
+					'valid'       => true,
 					'couponFound' => true,
-					'value' => 50, // 50% of €100 level price = €50
-					'coupon_id' => 14
+					'value'       => 10,
+					'coupon_id'   => 17,
 				],
-				'message'  => 'Valid coupon code, guest, user hits limit (TENUSERHITS): valid'
+				'message'  => 'Valid coupon code, guest, user hits limit (TENUSERHITS): valid',
 			],
 
 			'Fixed value (12.34), guest user with signup fee' => [
 				'loggedIn' => 'guest',
 				'state'    => [
-					'id' => '1',
-					'email' => 'newuser@test.web',
+					'id'     => '1',
+					'email'  => 'newuser@test.web',
 					'coupon' => 'FIXED1234',
 				],
 				'expected' => [
-					'valid' => true,
+					'valid'       => true,
 					'couponFound' => true,
-					'value' => 12.34,
-					'coupon_id' => 18
+					'value'       => 12.34,
+					'coupon_id'   => 19,
 				],
-				'message'  => 'Fixed value (12.34), guest user with signup fee'
-			],
-			'Fixed value (12.34), logged user who\'s not charged a signup fee' => [
-				'loggedIn' => 'user1',
-				'state'    => [
-					'id' => '1',
-					'email' => 'newuser@test.web',
-					'coupon' => 'FIXED1234',
-				],
-				'expected' => [
-					'valid' => true,
-					'couponFound' => true,
-					'value' => 12.34,
-					'coupon_id' => 18
-				],
-				'message'  => 'Fixed value (12.34), logged user who\'s not charged a signup fee'
-			],
-			'Fixed value (12.34), logged user who\'s charged a signup fee' => [
-				'loggedIn' => 'forcedvat',
-				'state'    => [
-					'id' => '1',
-					'email' => 'newuser@test.web',
-					'coupon' => 'FIXED1234',
-				],
-				'expected' => [
-					'valid' => true,
-					'couponFound' => true,
-					'value' => 12.34,
-					'coupon_id' => 18
-				],
-				'message'  => 'Fixed value (12.34), logged user who\'s charged a signup fee'
+				'message'  => 'Fixed value (12.34), guest user with signup fee',
 			],
 
-			'Last percent (50%), guest user with signup fee' => [
+
+			'Last percent (50%), guest user'                                                                     => [
 				'loggedIn' => 'guest',
 				'state'    => [
-					'id' => '1',
-					'email' => 'newuser@test.web',
+					'id'     => '1',
+					'email'  => 'newuser@test.web',
 					'coupon' => 'LAST50',
 				],
 				'expected' => [
-					'valid' => true,
+					'valid'       => true,
 					'couponFound' => true,
-					'value' => 0, // Guest user has no last transaction
-					'coupon_id' => 19
+					'value'       => 0, // Guest user has no last transaction
+					'coupon_id'   => 20,
 				],
-				'message'  => 'Last percent (50%), guest user with signup fee'
+				'message'  => 'Last percent (50%), guest user',
 			],
-			'Last percent (50%), logged in user without signup fee' => [
+			'Last percent (50%), logged in user'                                              => [
 				'loggedIn' => 'user1',
 				'state'    => [
-					'id' => '1',
-					'email' => 'newuser@test.web',
+					'id'     => '1',
+					'email'  => 'newuser@test.web',
 					'coupon' => 'LAST50',
 				],
 				'expected' => [
-					'valid' => true,
+					'valid'       => true,
 					'couponFound' => true,
-					'value' => 40,
-					'coupon_id' => 19
+					'value'       => 40,
+					'coupon_id'   => 20,
 				],
-				'message'  => 'Last percent (50%), logged in user without signup fee'
+				'message'  => 'Last percent (50%), logged in user',
 			],
-			'Last percent (50%), logged in user with signup fee (hence no previous transactions => no discount)' => [
-				'loggedIn' => 'forcedvat',
-				'state'    => [
-					'id' => '1',
-					'email' => 'newuser@test.web',
-					'coupon' => 'LAST50',
-				],
-				'expected' => [
-					'valid' => true,
-					'couponFound' => true,
-					'value' => 0,
-					'coupon_id' => 19
-				],
-				'message'  => 'Last percent (50%), logged in user with signup fee (hence no previous transactions => no discount)'
-			],
+
 
 		];
 	}
