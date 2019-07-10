@@ -19,6 +19,14 @@ defined('_JEXEC') or die;
 
 class Recurring extends Base
 {
+	/**
+	 * A callback to use instead of the HTTP request to Paddle during unit testing
+	 *
+	 * @var     null|callable
+	 * @since   7.0.0
+	 */
+	public static $callbackForUnitTests = null;
+
 	protected function getValidationResult(): array
 	{
 		// Get the subscription level
@@ -171,10 +179,19 @@ class Recurring extends Base
 
 		$url      = 'https://checkout.paddle.com/api/2.0/prices?' . http_build_query($urlParams);
 		$http     = HttpFactory::getHttp();
+		$response = null;
+
+		if (!is_null(self::$callbackForUnitTests) && is_callable(self::$callbackForUnitTests))
+		{
+			$response = call_user_func(self::$callbackForUnitTests, $urlParams);
+		}
 
 		try
 		{
-			$response = $http->get($url, [], 10);
+			if (is_null($response))
+			{
+				$response = $http->get($url, [], 10);
+			}
 		}
 		catch (\Exception $e)
 		{
@@ -246,13 +263,16 @@ class Recurring extends Base
 		// Recalculate trial_days and initial_price
 
 		/**
+		 * TODO This is wrong. If I belong to either B or C categories below the special access coupon code MUST NOT
+		 * override the currently active subscription or its renewals.
+		 *
 		 * A. Special access user (with coupon)
 		 *   trial_days: 0
 		 *   initial_price: 0
 		 */
 		if ($hasSpecialCoupon)
 		{
-			$ret['trial_days']      = 0;
+			$ret['trial_days']    = 0;
 			$ret['initial_price'] = 0;
 
 			return $ret;

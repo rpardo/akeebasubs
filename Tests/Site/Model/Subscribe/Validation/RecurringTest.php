@@ -7,11 +7,13 @@
 
 namespace Akeeba\Subscriptions\Tests\Site\Model\Subscribe\Validation;
 
+use Akeeba\Subscriptions\Site\Model\Subscribe\Validation\Recurring;
 use Akeeba\Subscriptions\Site\Model\Subscriptions;
 use Akeeba\Subscriptions\Tests\Stubs\ValidatorTestCase;
 use Akeeba\Subscriptions\Tests\Stubs\ValidatorWithSubsTestCase;
 use FOF30\Date\Date;
 use FOF30\Utils\Ip;
+use Joomla\CMS\Http\Response;
 
 /**
  * Test the Recurring validator
@@ -42,14 +44,23 @@ class RecurringTest extends ValidatorWithSubsTestCase
 	{
 		$jNow = new Date();
 
+		// - 365 days ==> expires in 365 days
 		$jLastYear = clone $jNow;
-		$jLastYear->sub(new \DateInterval('P1Y1D'));
+		$jLastYear->sub(new \DateInterval('P365D'));
 
+		// - 181 days ==> expires in 184 days
 		$jLastHalfYear = clone($jNow);
 		$jLastHalfYear->sub(new \DateInterval('P181D'));
 
-		$j370DaysAgo = clone($jNow);
-		$j370DaysAgo->sub(new \DateInterval('P370D'));
+		// NOW ==> 365 remaining, 0 used
+
+		// + 181 days ==> expires in 546 days
+		$jNextHalfYear = clone($jLastHalfYear);
+		$jNextHalfYear->add(new \DateInterval('P181D'));
+
+		// + 365 days ==> expires in 730 days
+		$jNextYear = clone $jNow;
+		$jNextYear->add(new \DateInterval('P365D'));
 
 		$testCases = [
 			//<editor-fold desc="Non-recurring level (3)">
@@ -146,30 +157,65 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					'coupon' => '',
 				],
 				'expected' => [
-					'recurringId'               => null,
+					'recurringId'               => '556090',
+					'initial_price'             => 50.00,
+					'recurring_price'           => 9.00,
+					'recurring_frequency'       => 3,
+					'recurring_type'            => 'month',
+					'trial_days'                => 365,
+					'blocking_subscription_ids' => null,
+
+				],
+			],
+			'Always recurring level, guest, coupon' => [
+				'loggedIn' => 'guest',
+				'subs'     => [],
+				'state'    => [
+					'id'     => '1',
+					'coupon' => 'RECURRING',
+				],
+				'expected' => [
+					'recurringId'               => '556090',
 					'initial_price'             => 0.00,
-					'recurring_price'           => 0.00,
-					'recurring_frequency'       => 0,
-					'recurring_type'            => 'day',
+					'recurring_price'           => 9.00,
+					'recurring_frequency'       => 3,
+					'recurring_type'            => 'month',
 					'trial_days'                => 0,
 					'blocking_subscription_ids' => null,
 
 				],
 			],
-			/**
 			'Always recurring level, no sub' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [],
 				'state'    => [
-					'id'     => '2',
+					'id'     => '1',
 					'coupon' => '',
 				],
 				'expected' => [
-					'recurringId'               => null,
+					'recurringId'               => '556090',
+					'initial_price'             => 50.00,
+					'recurring_price'           => 9.00,
+					'recurring_frequency'       => 3,
+					'recurring_type'            => 'month',
+					'trial_days'                => 365,
+					'blocking_subscription_ids' => null,
+
+				],
+			],
+			'Always recurring level, no sub, coupon' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [],
+				'state'    => [
+					'id'     => '1',
+					'coupon' => 'RECURRING',
+				],
+				'expected' => [
+					'recurringId'               => '556090',
 					'initial_price'             => 0.00,
-					'recurring_price'           => 0.00,
-					'recurring_frequency'       => 0,
-					'recurring_type'            => 'day',
+					'recurring_price'           => 9.00,
+					'recurring_frequency'       => 3,
+					'recurring_type'            => 'month',
 					'trial_days'                => 0,
 					'blocking_subscription_ids' => null,
 
@@ -179,49 +225,120 @@ class RecurringTest extends ValidatorWithSubsTestCase
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
-						'level'      => 3,
+						'level'      => 1,
 						'publish_up' => $jLastHalfYear->toSql(),
 					],
 				],
 				'state'    => [
-					'id'     => '2',
+					'id'     => '1',
 					'coupon' => '',
 				],
 				'expected' => [
-					'recurringId'               => null,
+					'recurringId'               => '556090',
 					'initial_price'             => 0.00,
-					'recurring_price'           => 0.00,
-					'recurring_frequency'       => 0,
-					'recurring_type'            => 'day',
-					'trial_days'                => 0,
+					'recurring_price'           => 9.00,
+					'recurring_frequency'       => 3,
+					'recurring_type'            => 'month',
+					'trial_days'                => 184, // 365 days - 181 already consumed
 					'blocking_subscription_ids' => null,
-
 				],
 			],
-			'Always recurring level, with sub and coupon code' => [
+			'Always recurring level, with sub, coupon' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
-						'level'      => 3,
+						'level'      => 1,
 						'publish_up' => $jLastHalfYear->toSql(),
 					],
 				],
 				'state'    => [
-					'id'     => '2',
-					'coupon' => 'RECURSION',
+					'id'     => '1',
+					'coupon' => 'RECURRING',
 				],
 				'expected' => [
-					'recurringId'               => null,
+					'recurringId'               => '556090',
 					'initial_price'             => 0.00,
-					'recurring_price'           => 0.00,
-					'recurring_frequency'       => 0,
-					'recurring_type'            => 'day',
-					'trial_days'                => 0,
+					'recurring_price'           => 9.00,
+					'recurring_frequency'       => 3,
+					'recurring_type'            => 'month',
+					'trial_days'                => 184, // 365 days - 181 already consumed
 					'blocking_subscription_ids' => null,
-
+				],
+			],
+			'Always recurring level, with two subs' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'      => 1,
+						'publish_up' => $jLastHalfYear->toSql(),
+					],
+					[
+						'level'      => 1,
+						'publish_up' => $jNextHalfYear->toSql(),
+						'enabled' => 0,
+					],
+				],
+				'state'    => [
+					'id'     => '1',
+					'coupon' => '',
+				],
+				'expected' => [
+					'recurringId'               => '556090',
+					'initial_price'             => 0.00,
+					'recurring_price'           => 9.00,
+					'recurring_frequency'       => 3,
+					'recurring_type'            => 'month',
+					'trial_days'                => 184 + 365, // First sub: 365 - 181 consumed; second sub: 365 days
+					'blocking_subscription_ids' => null,
+				],
+			],
+			'Always recurring level, with two subs and coupon' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'      => 1,
+						'publish_up' => $jLastHalfYear->toSql(),
+					],
+					[
+						'level'      => 1,
+						'publish_up' => $jNextHalfYear->toSql(),
+						'enabled' => 0,
+					],
+				],
+				'state'    => [
+					'id'     => '1',
+					'coupon' => 'RECURRING',
+				],
+				'expected' => [
+					'recurringId'               => '556090',
+					'initial_price'             => 0.00,
+					'recurring_price'           => 9.00,
+					'recurring_frequency'       => 3,
+					'recurring_type'            => 'month',
+					'trial_days'                => 184 + 365, // First sub: 365 - 181 consumed; second sub: 365 days
+					'blocking_subscription_ids' => null,
 				],
 			],
 			/**/
+			//</editor-fold>
+
+			//<editor-fold desc="Recurring only on renewal (level 2)">
+			// Guest, no coupon => NOT recurring
+			// Guest, coupon => recursion, 0 trial, 0 initial price
+			// Logged in, no sub => NOT recurring
+			// Logged in, no sub, coupon => recursion, 0 trial, 0 initial price
+			// Logged in, expired sub => NOT recurring
+			// Logged in, expired sub, coupon => recursion, 0 trial, 0 initial price
+			// Logged in, one sub 6 months ago => recursion, 184 trial, 0 initial price
+			// Logged in, one sub 6 months ago, coupon => recursion, 184 trial, 0 initial price
+			// Logged in, two subs 6 months ago + 6 months into the future => recursion, 365 + 184 trial, 0 initial price
+			// Logged in, two subs 6 months ago + 6 months into the future, coupon => recursion, 365 + 184 trial, 0 initial price
+			// Logged in, two subs 375 days ago (expired) + 10 days ago => recursion, 355 trial, 0 initial price
+			// Logged in, two subs 375 days ago (expired) + 10 days ago, coupon => recursion, 355 trial, 0 initial price
+			// Logged in, already has a recurring subscription 6 months ago => no recursion, blocking sub (S1)
+			// Logged in, regular sub 6 months ago, recurring 6 months into the future => no recursion, blocking sub (S2)
+			// Logged in, canceled recurring 6 months ago => no recursion, NO blocking sub
+			// Logged in, canceled recurring 6 months ago, active regular 6 months ago => recursion, 184 trial, 0 initial price
 			//</editor-fold>
 
 		];
@@ -243,7 +360,22 @@ class RecurringTest extends ValidatorWithSubsTestCase
 	 */
 	public function testGetValidationResult($loggedIn, $subs, $state, $expected, $message)
 	{
-		Ip::setIp('85.72.158.96');
+		Recurring::$callbackForUnitTests = function($urlParams)
+		{
+			$response = new Response();
+			$response->code = 200;
+
+			if (in_array(556090, explode(',', $urlParams['product_ids'])))
+			{
+				$response->body = '{"success":true,"response":{"customer_country":"US","products":[{"product_id":556090,"product_title":"TEST DataCompliance","currency":"USD","vendor_set_prices_included_tax":false,"price":{"gross":9.0,"net":9.0,"tax":0.0},"list_price":{"gross":9.0,"net":9.0,"tax":0.0},"subscription":{"trial_days":0,"interval":"month","frequency":3,"price":{"gross":9.0,"net":9.0,"tax":0.0},"list_price":{"gross":9.0,"net":9.0,"tax":0.0}}}]}}
+';
+				return $response;
+			}
+
+			return null;
+		};
+
+		Ip::setIp('72.229.28.185');
 
 		$this->createSubscriptions($subs);
 
