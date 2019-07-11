@@ -92,7 +92,10 @@ INSERT INTO `#__akeebasubs_levels` (akeebasubs_level_id, title, slug, image, `de
 <p>Here is some text explaining all the amazing stuff you can do with the software you just bought.</p>', 0, 0, 0, 1, '0000-00-00 00:00:00', '', '', '{"joomla_addgroups":["12"],"joomla_removegroups":["12"]}', 1, 0, '2019-03-20 16:22:43', 70, '2019-04-15 06:25:01', 70, '0000-00-00 00:00:00', 0, 30, 15, 0),
 (5, 'LEVEL5', 'level5', 'images/level-5.png', '<p>Level 5</p>', 365, 50, '', '556631', '1234567', 'never', '', '', '<h3>Thank you for your LEVEL5 purchase</h3>
 <p>Here is some text explaining all the amazing stuff you can do with the software you just bought.</p>', 0, 0, 0, 1, '0000-00-00 00:00:00', '', '', '{"joomla_addgroups":["12"],"joomla_removegroups":["12"]}', 1, 0, '2019-03-20 16:22:43', 70, '2019-04-15 06:25:01', 70, '0000-00-00 00:00:00', 0, 30, 15, 0),
-(6, 'FREE', 'free', 'images/joomla-black.png', '<p>Free as in beer.</p>', 365, 0, '', '', '', 'never', '', '', '<h3>Thank you for your free purchase</h3>', 0, 0, 0, 1, '0000-00-00 00:00:00', '', '', '{"joomla_addgroups":["12"],"joomla_removegroups":["12"]}', 1, 0, '2019-03-20 16:22:43', 70, '2019-04-15 06:25:01', 70, '0000-00-00 00:00:00', 0, 30, 15, 0);
+(6, 'FREE', 'free', 'images/joomla-black.png', '<p>Free as in beer.</p>', 365, 0, '', '', '', 'never', '', '', '<h3>Thank you for your free purchase</h3>', 0, 0, 0, 1, '0000-00-00 00:00:00', '', '', '{"joomla_addgroups":["12"],"joomla_removegroups":["12"]}', 1, 0, '2019-03-20 16:22:43', 70, '2019-04-15 06:25:01', 70, '0000-00-00 00:00:00', 0, 30, 15, 0),
+(7, 'FOREVER', 'forever', 'images/joomla-black.png', '<p>Forever</p>', 0, 50, '', '556046', '1234567', 'renewal', '556090', 'abcdef0', '<h3>Thanks</h3>', 0, 0, 1, 1, '0000-00-00 00:00:00', '', '', '{"joomla_addgroups":["12"],"joomla_removegroups":["12"]}', 1, 0, '2019-03-20 16:22:43', 70, '2019-04-15 06:25:01', 70, '0000-00-00 00:00:00', 0, 30, 15, 0),
+(8, 'ONLYONCE', 'onlyonce', 'images/joomla-black.png', '<p>Only Once</p>', 365, 50, '', '556046', '1234567', 'renewal', '556090', 'abcdef0', '<h3>Thanks</h3>', 1, 0, 0, 1, '0000-00-00 00:00:00', '', '', '{"joomla_addgroups":["12"],"joomla_removegroups":["12"]}', 1, 0, '2019-03-20 16:22:43', 70, '2019-04-15 06:25:01', 70, '0000-00-00 00:00:00', 0, 30, 15, 0),
+(9, 'FIXED', 'fixed', 'images/joomla-black.png', '<p>Fixed expiration</p>', 0, 50, '', '556046', '1234567', 'renewal', '556090', 'abcdef0', '<h3>Thanks</h3>', 0, 0, 0, 1, '2029-12-31 12:13:14', '', '', '{"joomla_addgroups":["12"],"joomla_removegroups":["12"]}', 1, 0, '2019-03-20 16:22:43', 70, '2019-04-15 06:25:01', 70, '0000-00-00 00:00:00', 0, 30, 15, 0);
 
 # Coupons
 
@@ -121,7 +124,9 @@ INSERT INTO `#__akeebasubs_coupons` (akeebasubs_coupon_id, title, coupon, publis
 (19, '12.34€ off', 'FIXED1234', '2001-01-01 00:00:00', '2038-01-18 00:00:00', '', 0, '', NULL, 0, 0, '', 'value', 12.34, 0, 1, 0, '2015-04-30 10:45:49', 100, '2015-04-30 10:47:37', 100, '0000-00-00 00:00:00', 0, 0),
 (20, 'Last transaction 50%', 'LAST50', '2001-01-01 00:00:00', '2038-01-18 00:00:00', '', 0, '', NULL, 0, 0, '', 'lastpercent', 50, 0, 1, 0, '2015-04-30 10:45:49', 100, '2015-04-30 10:47:37', 100, '0000-00-00 00:00:00', 0, 0),
 (21, '1.23€ off', 'CHEAPSKATE', '2001-01-01 00:00:00', '2038-01-18 00:00:00', '', 0, '', NULL, 0, 0, '', 'value', 1.23, 0, 1, 0, '2015-04-30 10:45:49', 100, '2015-04-30 10:47:37', 100, '0000-00-00 00:00:00', 0, 0),
-(22, 'Recursion Cheat', 'RECURRING', '2001-01-01 00:00:00', '2038-01-18 00:00:00', '', 0, '', NULL, 0, 0, '', 'value', 0.0, 1, 1, 0, '2015-04-30 10:45:49', 100, '2015-04-30 10:47:37', 100, '0000-00-00 00:00:00', 0, 0);
+(22, 'Recursion Cheat', 'RECURRING', '2001-01-01 00:00:00', '2038-01-18 00:00:00', '', 0, '', NULL, 0, 0, '', 'value', 0.0, 1, 1, 0, '2015-04-30 10:45:49', 100, '2015-04-30 10:47:37', 100, '0000-00-00 00:00:00', 0, 0),
+(23, 'Discount + Recurring Access', 'IAMCRAZY', '2001-01-01 00:00:00', '2038-01-18 00:00:00', '', 0, '', '{"notes":""}', 0, 0, '', 'percent', 40, 1, 1, 0, '2019-03-20 16:30:23', 70, '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0);
+
 
 
 # Subscriptions

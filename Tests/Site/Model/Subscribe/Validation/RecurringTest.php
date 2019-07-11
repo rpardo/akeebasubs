@@ -62,6 +62,23 @@ class RecurringTest extends ValidatorWithSubsTestCase
 		$jNextYear = clone($jNow);
 		$jNextYear->add(new DateInterval('P365D'));
 
+		/**
+		 * This is an insane amount of tests and I mean it literally. The number of interactions between features we are
+		 * allowing here is not sane and I am not even sure I have not forgotten something important. When I started
+		 * writing these tests there were barely two dozen. Throughout the day I realised that this number was way too
+		 * low and didn't cover a myriad of cases I can reasonably expect real-world clients to bump into.
+		 *
+		 * All that said and done, there are some cases that are too rare to programmatically deal with. For example,
+		 * what happens if someone has bought renewals for level X for the next five years but suddenly decides to
+		 * upgrade to level Y? Conversely, what happens if the client has already purchased a renewal to a bundle but
+		 * now wants to downgrade? What happens when the client wants to downgrade but there's no level relation to tell
+		 * the system to start the downgrade subscription after the currently active bundle subscription is over?
+		 *
+		 * The last case is simple: just create the damn relationship! The first two are nigh impossible to reasonably
+		 * handle and the only answer that makes sense is "talk to a human and figure this shit out".
+		 *
+		 * Still, I have that feeling that I'm missing something. But what…?
+		 */
 		$testCases = [
 			//<editor-fold desc="Renewal = never">
 			'Non-recurring level, guest'                                                                                     => [
@@ -807,18 +824,18 @@ class RecurringTest extends ValidatorWithSubsTestCase
 			],
 			//</editor-fold>
 
-			//<editor-fold desc="Special cases">
+			//<editor-fold desc="Subscription level upgrades">
 			// Purchasing bundle, always recurring, already recurringly subscribed to single product level => blocked sub
-			'Purchasing bundle, always recurring, already recurringly subscribed to single product level' => [
+			'Purchasing bundle, always recurring, already recurringly subscribed to single product level'                    => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
-						'level'        => 1,
-						'publish_up'   => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
-						'enabled'      => 1,
-						'state'        => 'C',
-						'update_url'   => 'foobar',
-						'cancel_url'   => 'foobar',
+						'level'      => 1,
+						'publish_up' => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
+						'enabled'    => 1,
+						'state'      => 'C',
+						'update_url' => 'foobar',
+						'cancel_url' => 'foobar',
 					],
 				],
 				'state'    => [
@@ -834,7 +851,7 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					'recurring_type'            => 'day',
 					'trial_days'                => 0,
 					'blocking_subscription_ids' => [
-						'S1'
+						'S1',
 					],
 				],
 			],
@@ -842,12 +859,12 @@ class RecurringTest extends ValidatorWithSubsTestCase
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
-						'level'        => 1,
-						'publish_up'   => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
-						'enabled'      => 1,
-						'state'        => 'C',
-						'update_url'   => 'foobar',
-						'cancel_url'   => 'foobar',
+						'level'      => 1,
+						'publish_up' => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
+						'enabled'    => 1,
+						'state'      => 'C',
+						'update_url' => 'foobar',
+						'cancel_url' => 'foobar',
 					],
 				],
 				'state'    => [
@@ -863,19 +880,19 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					'recurring_type'            => 'day',
 					'trial_days'                => 0,
 					'blocking_subscription_ids' => [
-						'S1'
+						'S1',
 					],
 				],
 			],
 			// Purchasing bundle, always recurring, already subscribed to single product level => discount
-			'Purchasing bundle, always recurring, already subscribed to single product level' => [
+			'Purchasing bundle, always recurring, already subscribed to single product level'                                => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
-						'level'        => 1,
-						'publish_up'   => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
-						'enabled'      => 1,
-						'state'        => 'C',
+						'level'      => 1,
+						'publish_up' => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
+						'enabled'    => 1,
+						'state'      => 'C',
 					],
 				],
 				'state'    => [
@@ -889,19 +906,20 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					'recurring_price'           => 11.25,
 					'recurring_frequency'       => 3,
 					'recurring_type'            => 'month',
-					'trial_days'                => 365, // Since it's a level upgrade user pays for 1 year, then recurring
+					'trial_days'                => 365,
+					// Since it's a level upgrade user pays for 1 year, then recurring
 					'blocking_subscription_ids' => null,
 				],
 			],
 			// Purchasing bundle, always recurring, already subscribed to single product level, has coupon => coupon IGNORED
-			'Purchasing bundle, always recurring, already subscribed to single product level, has coupon' => [
+			'Purchasing bundle, always recurring, already subscribed to single product level, has coupon'                    => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
-						'level'        => 1,
-						'publish_up'   => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
-						'enabled'      => 1,
-						'state'        => 'C',
+						'level'      => 1,
+						'publish_up' => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
+						'enabled'    => 1,
+						'state'      => 'C',
 					],
 				],
 				'state'    => [
@@ -915,22 +933,23 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					'recurring_price'           => 11.25,
 					'recurring_frequency'       => 3,
 					'recurring_type'            => 'month',
-					'trial_days'                => 365, // Since it's a level upgrade user pays for 1 year, then recurring
+					'trial_days'                => 365,
+					// Since it's a level upgrade user pays for 1 year, then recurring
 					'blocking_subscription_ids' => null,
 				],
 			],
 
 			// Purchasing bundle, renew recurring, already recurringly subscribed to single product level => blocked sub
-			'Purchasing bundle, renew recurring, already recurringly subscribed to single product level' => [
+			'Purchasing bundle, renew recurring, already recurringly subscribed to single product level'                     => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
-						'level'        => 1,
-						'publish_up'   => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
-						'enabled'      => 1,
-						'state'        => 'C',
-						'update_url'   => 'foobar',
-						'cancel_url'   => 'foobar',
+						'level'      => 1,
+						'publish_up' => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
+						'enabled'    => 1,
+						'state'      => 'C',
+						'update_url' => 'foobar',
+						'cancel_url' => 'foobar',
 					],
 				],
 				'state'    => [
@@ -946,20 +965,20 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					'recurring_type'            => 'day',
 					'trial_days'                => 0,
 					'blocking_subscription_ids' => [
-						'S1'
+						'S1',
 					],
 				],
 			],
-			'Purchasing bundle, renew recurring, already recurringly subscribed to single product level, coupon is ignored' => [
+			'Purchasing bundle, renew recurring, already recurringly subscribed to single product level, coupon is ignored'  => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
-						'level'        => 1,
-						'publish_up'   => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
-						'enabled'      => 1,
-						'state'        => 'C',
-						'update_url'   => 'foobar',
-						'cancel_url'   => 'foobar',
+						'level'      => 1,
+						'publish_up' => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
+						'enabled'    => 1,
+						'state'      => 'C',
+						'update_url' => 'foobar',
+						'cancel_url' => 'foobar',
 					],
 				],
 				'state'    => [
@@ -975,18 +994,18 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					'recurring_type'            => 'day',
 					'trial_days'                => 0,
 					'blocking_subscription_ids' => [
-						'S1'
+						'S1',
 					],
 				],
 			],
-			'Purchasing bundle, renew recurring, already subscribed to single product level, not recurring' => [
+			'Purchasing bundle, renew recurring, already subscribed to single product level, not recurring'                  => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
-						'level'        => 1,
-						'publish_up'   => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
-						'enabled'      => 1,
-						'state'        => 'C',
+						'level'      => 1,
+						'publish_up' => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
+						'enabled'    => 1,
+						'state'      => 'C',
 					],
 				],
 				'state'    => [
@@ -1004,14 +1023,14 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					'blocking_subscription_ids' => null,
 				],
 			],
-			'Purchasing bundle, renew recurring, already subscribed to single product level, coupon allows recurring' => [
+			'Purchasing bundle, renew recurring, already subscribed to single product level, coupon allows recurring'        => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
-						'level'        => 1,
-						'publish_up'   => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
-						'enabled'      => 1,
-						'state'        => 'C',
+						'level'      => 1,
+						'publish_up' => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
+						'enabled'    => 1,
+						'state'      => 'C',
 					],
 				],
 				'state'    => [
@@ -1025,7 +1044,8 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					'recurring_price'           => 11.25,
 					'recurring_frequency'       => 3,
 					'recurring_type'            => 'month',
-					'trial_days'                => 365, // Since it's a level upgrade user pays for 1 year, then recurring
+					'trial_days'                => 365,
+					// Since it's a level upgrade user pays for 1 year, then recurring
 					'blocking_subscription_ids' => null,
 				],
 			],
@@ -1048,7 +1068,9 @@ class RecurringTest extends ValidatorWithSubsTestCase
 			 *
 			 * There are limits to my insanity!
 			 */
+			//</editor-fold>
 
+			//<editor-fold desc="Subscription level downgrades">
 			/**
 			 * Downgrade with a subscription level relation, without a coupon.
 			 *
@@ -1064,13 +1086,13 @@ class RecurringTest extends ValidatorWithSubsTestCase
 			 *
 			 * NOTE: Assisted downgrades require a subscription relation with mode "rules" and expiration "after".
 			 */
-			'Downgrade with a subscription level relation, without a coupon.' => [
+			'Downgrade with a subscription level relation, without a coupon.'                                                => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
 						'level'        => 3,
 						'publish_up'   => (clone $jNow)->sub(new DateInterval('P60D'))->toSql(),
-						'publish_down'   => (clone $jNow)->add(new DateInterval('P29D'))->toSql(),
+						'publish_down' => (clone $jNow)->add(new DateInterval('P29D'))->toSql(),
 						'enabled'      => 1,
 						'state'        => 'C',
 					],
@@ -1090,13 +1112,13 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					'blocking_subscription_ids' => null,
 				],
 			],
-			'Downgrade with a subscription level relation, with a coupon.' => [
+			'Downgrade with a subscription level relation, with a coupon.'                                                   => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
 						'level'        => 3,
 						'publish_up'   => (clone $jNow)->sub(new DateInterval('P60D'))->toSql(),
-						'publish_down'   => (clone $jNow)->add(new DateInterval('P29D'))->toSql(),
+						'publish_down' => (clone $jNow)->add(new DateInterval('P29D'))->toSql(),
 						'enabled'      => 1,
 						'state'        => 'C',
 					],
@@ -1116,13 +1138,13 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					'blocking_subscription_ids' => null,
 				],
 			],
-			'Downgrade with a subscription level relation, target level has "renew" upsell, without a coupon.' => [
+			'Downgrade with a subscription level relation, target level has "renew" upsell, without a coupon.'               => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
 						'level'        => 3,
 						'publish_up'   => (clone $jNow)->sub(new DateInterval('P60D'))->toSql(),
-						'publish_down'   => (clone $jNow)->add(new DateInterval('P29D'))->toSql(),
+						'publish_down' => (clone $jNow)->add(new DateInterval('P29D'))->toSql(),
 						'enabled'      => 1,
 						'state'        => 'C',
 					],
@@ -1142,13 +1164,13 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					'blocking_subscription_ids' => null,
 				],
 			],
-			'Downgrade with a subscription level relation, target level has "renew" upsell, with a coupon.' => [
+			'Downgrade with a subscription level relation, target level has "renew" upsell, with a coupon.'                  => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
 						'level'        => 3,
 						'publish_up'   => (clone $jNow)->sub(new DateInterval('P60D'))->toSql(),
-						'publish_down'   => (clone $jNow)->add(new DateInterval('P29D'))->toSql(),
+						'publish_down' => (clone $jNow)->add(new DateInterval('P29D'))->toSql(),
 						'enabled'      => 1,
 						'state'        => 'C',
 					],
@@ -1166,16 +1188,91 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					'recurring_type'            => 'month',
 					'trial_days'                => 365 + 28,
 					'blocking_subscription_ids' => null,
+				],
+			],
+			//</editor-fold>
+
+			//<editor-fold desc="Discount coupons mixed with recurring payments">
+			// TODO This entire block...
+			// Always recurring, new sub, discount coupon RENEWALDISCOUNT  => recurring sub with a discounted initial price, no tax included
+			// Always recurring, new sub, discount + recurring access coupon IAMCRAZY => recurring sub with no initial price, tax included
+			// Always recurring, downgrade with discount coupon RENEWALDISCOUNT => recurring sub with a discounted initial price and modified trial period, no tax included
+			// Always recurring, downgrade with discount coupon + recurring access coupon IAMCRAZY => recurring sub with a discounted initial price and modified trial period, no tax included
+
+			// Renew recurring, new sub, discount coupon RENEWALDISCOUNT => not recurring
+			// Renew recurring, new sub, discount + recurring access coupon IAMCRAZY => recurring sub with discounted initial price, tax included
+			// Renew recurring, downgrade with discount coupon RENEWALDISCOUNT => recurring sub with a discounted initial price and modified trial period, no tax included
+			// Renew recurring, downgrade with discount coupon + recurring access coupon IAMCRAZY => recurring sub with a discounted initial price and modified trial period, no tax included
+
+			//</editor-fold>
+
+
+			//<editor-fold desc="Special subscription levels prohibiting renewals">
+
+			// Forever subscription (FOREVER #7) => always NOT recurring
+			'Forever subscription'                                                                                           => [
+				'loggedIn' => 'guest',
+				'subs'     => [],
+				'state'    => [
+					'id'      => '7',
+					'coupon'  => '',
+					'_upsell' => 'always',
+				],
+				'expected' => [
+					'recurringId'               => null,
+					'initial_price'             => 0.00,
+					'recurring_price'           => 0.00,
+					'recurring_frequency'       => 0,
+					'recurring_type'            => 'day',
+					'trial_days'                => 0,
+					'blocking_subscription_ids' => null,
+
+				],
+			],
+			// Only once level (ONLYONCE #8) => always NOT recurring
+			'Only Once'                                                                                                      => [
+				'loggedIn' => 'guest',
+				'subs'     => [],
+				'state'    => [
+					'id'      => '8',
+					'coupon'  => '',
+					'_upsell' => 'always',
+				],
+				'expected' => [
+					'recurringId'               => null,
+					'initial_price'             => 0.00,
+					'recurring_price'           => 0.00,
+					'recurring_frequency'       => 0,
+					'recurring_type'            => 'day',
+					'trial_days'                => 0,
+					'blocking_subscription_ids' => null,
+
+				],
+			],
+			// Fixed expiration (FIXED #9) date subscription => always NOT recurring
+			'Fixed expiration'                                                                                               => [
+				'loggedIn' => 'guest',
+				'subs'     => [],
+				'state'    => [
+					'id'      => '9',
+					'coupon'  => '',
+					'_upsell' => 'always',
+				],
+				'expected' => [
+					'recurringId'               => null,
+					'initial_price'             => 0.00,
+					'recurring_price'           => 0.00,
+					'recurring_frequency'       => 0,
+					'recurring_type'            => 'day',
+					'trial_days'                => 0,
+					'blocking_subscription_ids' => null,
+
 				],
 			],
 
-			// Forever subscription => always NOT recurring
-			// Fixed expiration date subscription => always NOT recurring
-			// Always recurring, new sub, discount coupon  => recurring sub with a discounted initial price, no tax included
-			// Always recurring, new sub, discount + recurring access coupon => recurring sub with no initial price, tax included
+			//</editor-fold>
 
 			// TODO When a recurring sub is canceled mark it as NON-recurring so it doesn't screw up calculations.
-			//</editor-fold>
 
 		];
 

@@ -69,7 +69,6 @@ class Recurring extends Base
 		 * - Any levels having me as related (downgrades to me).
 		 *   If you want to upgrade you need to cancel your recurring single-product subscriptions first.
 		 */
-		// TODO Get interesting levels
 		$blockingLevels = $this->getBlockingLevelIDs($level->getId());
 		$blockingSubs   = $this->getBlockingSubscriptionIDs($blockingLevels);
 
@@ -80,8 +79,14 @@ class Recurring extends Base
 			]);
 		}
 
-		// This is a forever subscription. YOU CANNOT CHARGE A RECURRING FEE FOR AN ONE-TIME-PAYMENT SUSBCRIPTION, BRUH!
+		// This is a forever subscription. YOU CANNOT CHARGE A RECURRING FEE FOR AN ONE-TIME-PAYMENT SUBSCRIPTION!
 		if ($level->forever)
+		{
+			return $ret;
+		}
+
+		// This is an only once subscription. YOU CANNOT CHARGE A RECURRING FEE FOR AN ONE-TIME SUBSCRIPTION!
+		if ($level->only_once)
 		{
 			return $ret;
 		}
