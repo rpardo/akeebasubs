@@ -186,15 +186,59 @@ class Recurring extends Base
 		 */
 		if ($level->upsell == 'always')
 		{
-			$priceValidation = $this->factory->getValidator('Price')->execute();
-			$trialPeriod     = $maxTrialPeriod;
-			$isDiscounted    = $priceValidation['discount'] > 0.001;
-			$initialPrice    = $priceValidation['gross'];
+			$priceValidation  = $this->factory->getValidator('Price')->execute();
+			$trialPeriod      = $maxTrialPeriod;
+			$isDiscounted     = $priceValidation['discount'] > 0.001;
+			$initialPrice     = $priceValidation['gross'];
+			$isLevelUpgrade   = $priceValidation['expiration'] == 'replace';
+			$isLevelDowngrade = $priceValidation['expiration'] == 'after';
 
 			if ($isRenewal)
 			{
 				$isDiscounted = false;
 				$initialPrice = 0;
+			}
+			elseif ($isLevelUpgrade && $isDiscounted)
+			{
+				/**
+				 * The user is trying to upgrade his subscription e.g. from a single product to a bundle and there's a
+				 * subscription level relation rule kicking in, asking for the old subscription(s) to be replaced.
+				 *
+				 * If I allowed him to pay no upfront price and gave him a non-zero trial period he would not have an
+				 * upgraded subscription for X days which makes no sense: he's trying to upgrade!
+				 *
+				 * Moreover, I cannot give him a zero initial price and zero trial period because he'd be losing some of
+				 * the subscription time he's already paid in the single product subscription.
+				 *
+				 * The only thing that's fair to the user is to prorate the price he's paying for the actual
+				 * subscription duration (e.g. first year) and then start automatically charging him the recurring
+				 * amount.
+				 *
+				 * Therefore the trial period is unchanged and equal to maxTrialPeriod -- in this case it's essentially
+				 * the level's duration. Moreover, I do not touch the initial price which currently includes any
+				 * discounts.
+				 *
+				 * Why do I check $isLevelUpdgrade and not just $isDiscounted?
+				 *
+				 * Now, if the user gets a discount but there is NO replace relation rule his subscription is not a
+				 * level upgrade. The new subscription either overlaps the existing subscription(s) or it's tucked to
+				 * their expiration date.
+				 *
+				 * If it overlaps it's the same as any other purchase. If there's a coupon I need to waive the trial
+				 * period and the fee.
+				 *
+				 * If it's tucked to the expiration date it's an assisted downgrade and we'll deal with it below.
+				 */
+			}
+			elseif ($isLevelDowngrade)
+			{
+				/**
+				 * The user is performing a downgrade. We have to take into account the subscription levels reported in
+				 * $priceValidation['allsubs'] to calculate a different maxTrialPeriod (when the higher level
+				 * susbcriptions end + downgraded level's duration)
+				 */
+				$daysToLastSub = $this->getDaysToLastSubExpiration($priceValidation);
+				$trialPeriod   = $daysToLastSub + $level->duration;
 			}
 			elseif ($hasCoupon)
 			{
@@ -230,6 +274,65 @@ class Recurring extends Base
 		 * If you are purchasing a renewal you get a trial period to get to the publish_down date of your last active
 		 * or renewal subscription, 0 initial price and recurring payments right away. Coupons don't matter for renewals
 		 */
+		$priceValidation  = $this->factory->getValidator('Price')->execute();
+		$isDiscounted     = $priceValidation['discount'] > 0.001;
+		$isLevelUpgrade   = $priceValidation['expiration'] == 'replace';
+		$isLevelDowngrade = $priceValidation['expiration'] == 'after';
+
+		/**
+		 * Special case: subscription level upgrade with recurring access coupon.
+		 *
+		 * In this case we follow the same idea as with the "always" mode, i.e. we have the user pay the upgrade fee for
+		 * the initial period, his recurring period starts after that.
+		 */
+		if ($isLevelUpgrade && $isDiscounted && $hasCoupon)
+		{
+			return [
+				// Paddle subscription plan ID
+				'recurringId'               => $recurringId,
+				// IDs of the subscriptions blocking upsell to a recurring level
+				'blocking_subscription_ids' => null,
+				// Initial period price, merchant currency (always net)
+				'initial_price'             => $priceValidation['gross'],
+				// Recurring price, user currency (net or gross, based on component parameters)
+				'recurring_price'           => $recurringInfo['recurring_price_net'],
+				// Recurring frequency, integer
+				'recurring_frequency'       => $recurringInfo['recurring_frequency'],
+				// Recurring type: day, week, month, year
+				'recurring_type'            => $recurringInfo['recurring_type'],
+				// Trial days -- adjusted for upgrade subscriptions where necessary
+				'trial_days'                => $maxTrialPeriod,
+			];
+
+		}
+
+		/**
+		 * Special case: subscription level downgrade.
+		 *
+		 * Even without a coupon the downgrade should be treated as a special case of renewing a subscription. Therefore
+		 * we follow the same idea as with the "always" mode.
+		 */
+		if ($isLevelDowngrade)
+		{
+			return [
+				// Paddle subscription plan ID
+				'recurringId'               => $recurringId,
+				// IDs of the subscriptions blocking upsell to a recurring level
+				'blocking_subscription_ids' => null,
+				// Initial period price, merchant currency (always net)
+				'initial_price'             => $priceValidation['gross'],
+				// Recurring price, user currency (net or gross, based on component parameters)
+				'recurring_price'           => $includeTax ? $recurringInfo['recurring_price'] : $recurringInfo['recurring_price_net'],
+				// Recurring frequency, integer
+				'recurring_frequency'       => $recurringInfo['recurring_frequency'],
+				// Recurring type: day, week, month, year
+				'recurring_type'            => $recurringInfo['recurring_type'],
+				// Trial days -- adjusted for upgrade subscriptions where necessary
+				'trial_days'                => $this->getDaysToLastSubExpiration($priceValidation) + $level->duration,
+			];
+
+		}
+
 		if (!$isRenewal && !$hasCoupon)
 		{
 			return $ret;
@@ -541,5 +644,71 @@ class Recurring extends Base
 
 		// Return the unique items only
 		return array_unique($ret);
+	}
+
+	/**
+	 * Get the number of days between now and the expiration date of the last subscription defined in the
+	 * $priceValidation structure.
+	 *
+	 * @param array $priceValidation
+	 *
+	 * @return  int
+	 *
+	 * @throws  \Exception
+	 * @since   7.0.0
+	 */
+	protected function getDaysToLastSubExpiration(array $priceValidation): int
+	{
+		// A guest user cannot have subscriptions. Should never happen.
+		if ($this->jUser->guest)
+		{
+			return 0;
+		}
+
+		// No subscriptions in $priceValidation. Should never happen.
+		if (empty($priceValidation['allsubs'] ?? []))
+		{
+			return 0;
+		}
+
+		/** @var Subscriptions $subscriptionModel */
+		$subscriptionModel = $this->container->factory->model('Subscriptions');
+		$db                = $subscriptionModel->getDbo();
+
+		// Get a collection of all the subscriptions referenced in $priceValidation['allsubs']
+		$allSubs = $subscriptionModel
+			->whereRaw(
+				$db->qn('akeebasubs_subscription_id') . 'IN (' . implode(
+					', ', array_map([$db, 'q'], $priceValidation['allsubs'])
+				) . ')'
+			)
+			->user_id($this->jUser->id)
+			->get(true);
+
+		// No subscriptions were actually found. Should never happen.
+		if ($allSubs->count() < 1)
+		{
+			return 0;
+		}
+
+		/** @var Subscriptions $lastSub */
+		$lastSub = $allSubs
+			->sortBy(function (Subscriptions $sub) {
+				return $this->container->platform->getDate($sub->publish_down)->getTimestamp();
+			}, SORT_NUMERIC)
+			->pop();
+
+		// Get the days to the last subscription's expiration
+		$jNow          = $this->container->platform->getDate()
+			->setTime(0, 0, 0, 0);
+
+		$daysToLastSub = intval($this->container->platform->getDate($lastSub->publish_down)
+			->setTime(0, 0, 0, 0)
+			->sub(new DateInterval('P1D'))
+			->diff($jNow)
+			->format('%a'));
+
+		// Defend against a negative number of days left to the expiration. Should never happen.
+		return max(0, $daysToLastSub);
 	}
 }

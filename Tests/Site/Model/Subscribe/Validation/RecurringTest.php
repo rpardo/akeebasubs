@@ -808,8 +808,8 @@ class RecurringTest extends ValidatorWithSubsTestCase
 			//</editor-fold>
 
 			//<editor-fold desc="Special cases">
-			// Purchasing bundle, already recuring subscribed to single product level => blocked sub
-			'Purchasing bundle, always renewing, already recurringly subscribed to single product level' => [
+			// Purchasing bundle, always recurring, already recurringly subscribed to single product level => blocked sub
+			'Purchasing bundle, always recurring, already recurringly subscribed to single product level' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
@@ -838,8 +838,37 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					],
 				],
 			],
-			// Purchasing bundle, already subscribed to single product level => discount
-			'Purchasing bundle, always renewing, already subscribed to single product level' => [
+			'Purchasing bundle, always recurring, already recurringly subscribed to single product level, coupon is ignored' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'        => 1,
+						'publish_up'   => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
+						'enabled'      => 1,
+						'state'        => 'C',
+						'update_url'   => 'foobar',
+						'cancel_url'   => 'foobar',
+					],
+				],
+				'state'    => [
+					'id'      => '3',
+					'coupon'  => 'RECURRING',
+					'_upsell' => 'always',
+				],
+				'expected' => [
+					'recurringId'               => null,
+					'initial_price'             => 0.00,
+					'recurring_price'           => 0.00,
+					'recurring_frequency'       => 0,
+					'recurring_type'            => 'day',
+					'trial_days'                => 0,
+					'blocking_subscription_ids' => [
+						'S1'
+					],
+				],
+			],
+			// Purchasing bundle, always recurring, already subscribed to single product level => discount
+			'Purchasing bundle, always recurring, already subscribed to single product level' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
@@ -855,19 +884,297 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					'_upsell' => 'always',
 				],
 				'expected' => [
-					'recurringId'               => '556090',
+					'recurringId'               => '556729',
 					'initial_price'             => 37.50,
-					'recurring_price'           => 9.00,
+					'recurring_price'           => 11.25,
 					'recurring_frequency'       => 3,
 					'recurring_type'            => 'month',
-					'trial_days'                => 355,
+					'trial_days'                => 365, // Since it's a level upgrade user pays for 1 year, then recurring
 					'blocking_subscription_ids' => null,
 				],
 			],
+			// Purchasing bundle, always recurring, already subscribed to single product level, has coupon => coupon IGNORED
+			'Purchasing bundle, always recurring, already subscribed to single product level, has coupon' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'        => 1,
+						'publish_up'   => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
+						'enabled'      => 1,
+						'state'        => 'C',
+					],
+				],
+				'state'    => [
+					'id'      => '3',
+					'coupon'  => 'RECURRING',
+					'_upsell' => 'always',
+				],
+				'expected' => [
+					'recurringId'               => '556729',
+					'initial_price'             => 37.50,
+					'recurring_price'           => 11.25,
+					'recurring_frequency'       => 3,
+					'recurring_type'            => 'month',
+					'trial_days'                => 365, // Since it's a level upgrade user pays for 1 year, then recurring
+					'blocking_subscription_ids' => null,
+				],
+			],
+
+			// Purchasing bundle, renew recurring, already recurringly subscribed to single product level => blocked sub
+			'Purchasing bundle, renew recurring, already recurringly subscribed to single product level' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'        => 1,
+						'publish_up'   => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
+						'enabled'      => 1,
+						'state'        => 'C',
+						'update_url'   => 'foobar',
+						'cancel_url'   => 'foobar',
+					],
+				],
+				'state'    => [
+					'id'      => '3',
+					'coupon'  => '',
+					'_upsell' => 'renew',
+				],
+				'expected' => [
+					'recurringId'               => null,
+					'initial_price'             => 0.00,
+					'recurring_price'           => 0.00,
+					'recurring_frequency'       => 0,
+					'recurring_type'            => 'day',
+					'trial_days'                => 0,
+					'blocking_subscription_ids' => [
+						'S1'
+					],
+				],
+			],
+			'Purchasing bundle, renew recurring, already recurringly subscribed to single product level, coupon is ignored' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'        => 1,
+						'publish_up'   => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
+						'enabled'      => 1,
+						'state'        => 'C',
+						'update_url'   => 'foobar',
+						'cancel_url'   => 'foobar',
+					],
+				],
+				'state'    => [
+					'id'      => '3',
+					'coupon'  => 'RECURRING',
+					'_upsell' => 'renew',
+				],
+				'expected' => [
+					'recurringId'               => null,
+					'initial_price'             => 0.00,
+					'recurring_price'           => 0.00,
+					'recurring_frequency'       => 0,
+					'recurring_type'            => 'day',
+					'trial_days'                => 0,
+					'blocking_subscription_ids' => [
+						'S1'
+					],
+				],
+			],
+			'Purchasing bundle, renew recurring, already subscribed to single product level, not recurring' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'        => 1,
+						'publish_up'   => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
+						'enabled'      => 1,
+						'state'        => 'C',
+					],
+				],
+				'state'    => [
+					'id'      => '3',
+					'coupon'  => '',
+					'_upsell' => 'renew',
+				],
+				'expected' => [
+					'recurringId'               => null,
+					'initial_price'             => 0.00,
+					'recurring_price'           => 0.00,
+					'recurring_frequency'       => 0,
+					'recurring_type'            => 'day',
+					'trial_days'                => 0,
+					'blocking_subscription_ids' => null,
+				],
+			],
+			'Purchasing bundle, renew recurring, already subscribed to single product level, coupon allows recurring' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'        => 1,
+						'publish_up'   => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
+						'enabled'      => 1,
+						'state'        => 'C',
+					],
+				],
+				'state'    => [
+					'id'      => '3',
+					'coupon'  => 'RECURRING',
+					'_upsell' => 'renew',
+				],
+				'expected' => [
+					'recurringId'               => '556729',
+					'initial_price'             => 37.50,
+					'recurring_price'           => 11.25,
+					'recurring_frequency'       => 3,
+					'recurring_type'            => 'month',
+					'trial_days'                => 365, // Since it's a level upgrade user pays for 1 year, then recurring
+					'blocking_subscription_ids' => null,
+				],
+			],
+
+			/**
+			 * Here is something I will not test:
+			 *
+			 * Two subscriptions on level 1 (current + renewal), upgrading to level 3. Level 3 is set to always
+			 * recurring.
+			 *
+			 * The reasonable expectation is that the client pays nothing and his upgraded subscription starts
+			 * immediately, then gets recurring payments after a year (or however the prorated start of the subscription
+			 * is).
+			 *
+			 * Reality: I cannot make the subscription level relations give the correct discount and calculate the
+			 * correct expiration date without screwing up the most common cases. In these rare cases I'd rather have
+			 * the client contact me so I can manually upgrade their subscription. Then they can "purchase" a recurring
+			 * renewal which simply activates recurring payments after their manually upgraded subscription expires,
+			 * using the previous rules for "always".
+			 *
+			 * There are limits to my insanity!
+			 */
+
+			/**
+			 * Downgrade with a subscription level relation, without a coupon.
+			 *
+			 * User purchased a recurring level 3 subscription 60 days ago. He canceled it, therefore it now appears as
+			 * a non-recurring subscription from 60 days ago, expiring in 29 days from now.
+			 *
+			 * He now tries to buy a subscription on level 1. There's a subscription relation rule for downgrades which
+			 * gives zero discount and is of the "after" type. The intent is that the purchased downgrade will get
+			 * activated when the current Level 3 subscription expires.
+			 *
+			 * Therefore I need to have a recurring subscription with a trial period of 29 + 365 days and initial
+			 * payment equal to level 1's full price.
+			 *
+			 * NOTE: Assisted downgrades require a subscription relation with mode "rules" and expiration "after".
+			 */
+			'Downgrade with a subscription level relation, without a coupon.' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'        => 3,
+						'publish_up'   => (clone $jNow)->sub(new DateInterval('P60D'))->toSql(),
+						'publish_down'   => (clone $jNow)->add(new DateInterval('P29D'))->toSql(),
+						'enabled'      => 1,
+						'state'        => 'C',
+					],
+				],
+				'state'    => [
+					'id'      => '1',
+					'coupon'  => '',
+					'_upsell' => 'always',
+				],
+				'expected' => [
+					'recurringId'               => '556090',
+					'initial_price'             => 50.00,
+					'recurring_price'           => 11.16,
+					'recurring_frequency'       => 3,
+					'recurring_type'            => 'month',
+					'trial_days'                => 365 + 28,
+					'blocking_subscription_ids' => null,
+				],
+			],
+			'Downgrade with a subscription level relation, with a coupon.' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'        => 3,
+						'publish_up'   => (clone $jNow)->sub(new DateInterval('P60D'))->toSql(),
+						'publish_down'   => (clone $jNow)->add(new DateInterval('P29D'))->toSql(),
+						'enabled'      => 1,
+						'state'        => 'C',
+					],
+				],
+				'state'    => [
+					'id'      => '1',
+					'coupon'  => 'RECURRING',
+					'_upsell' => 'always',
+				],
+				'expected' => [
+					'recurringId'               => '556090',
+					'initial_price'             => 50.00,
+					'recurring_price'           => 11.16,
+					'recurring_frequency'       => 3,
+					'recurring_type'            => 'month',
+					'trial_days'                => 365 + 28,
+					'blocking_subscription_ids' => null,
+				],
+			],
+			'Downgrade with a subscription level relation, target level has "renew" upsell, without a coupon.' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'        => 3,
+						'publish_up'   => (clone $jNow)->sub(new DateInterval('P60D'))->toSql(),
+						'publish_down'   => (clone $jNow)->add(new DateInterval('P29D'))->toSql(),
+						'enabled'      => 1,
+						'state'        => 'C',
+					],
+				],
+				'state'    => [
+					'id'      => '1',
+					'coupon'  => '',
+					'_upsell' => 'renew',
+				],
+				'expected' => [
+					'recurringId'               => '556090',
+					'initial_price'             => 50.00,
+					'recurring_price'           => 11.16,
+					'recurring_frequency'       => 3,
+					'recurring_type'            => 'month',
+					'trial_days'                => 365 + 28,
+					'blocking_subscription_ids' => null,
+				],
+			],
+			'Downgrade with a subscription level relation, target level has "renew" upsell, with a coupon.' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'        => 3,
+						'publish_up'   => (clone $jNow)->sub(new DateInterval('P60D'))->toSql(),
+						'publish_down'   => (clone $jNow)->add(new DateInterval('P29D'))->toSql(),
+						'enabled'      => 1,
+						'state'        => 'C',
+					],
+				],
+				'state'    => [
+					'id'      => '1',
+					'coupon'  => 'RECURRING',
+					'_upsell' => 'renew',
+				],
+				'expected' => [
+					'recurringId'               => '556090',
+					'initial_price'             => 50.00,
+					'recurring_price'           => 11.16,
+					'recurring_frequency'       => 3,
+					'recurring_type'            => 'month',
+					'trial_days'                => 365 + 28,
+					'blocking_subscription_ids' => null,
+				],
+			],
+
 			// Forever subscription => always NOT recurring
 			// Fixed expiration date subscription => always NOT recurring
 			// Always recurring, new sub, discount coupon  => recurring sub with a discounted initial price, no tax included
 			// Always recurring, new sub, discount + recurring access coupon => recurring sub with no initial price, tax included
+
+			// TODO When a recurring sub is canceled mark it as NON-recurring so it doesn't screw up calculations.
 			//</editor-fold>
 
 		];
@@ -905,6 +1212,14 @@ class RecurringTest extends ValidatorWithSubsTestCase
 			if (in_array(556090, explode(',', $urlParams['product_ids'])))
 			{
 				$response->body = '{"success":true,"response":{"customer_country":"GR","products":[{"product_id":556090,"product_title":"TEST DataCompliance","currency":"EUR","vendor_set_prices_included_tax":false,"price":{"gross":11.16,"net":9.0,"tax":2.16},"list_price":{"gross":11.16,"net":9.0,"tax":2.16},"subscription":{"trial_days":0,"interval":"month","frequency":3,"price":{"gross":11.16,"net":9.0,"tax":2.16},"list_price":{"gross":11.16,"net":9.0,"tax":2.16}}}]}}
+';
+
+				return $response;
+			}
+
+			if (in_array(556729, explode(',', $urlParams['product_ids'])))
+			{
+				$response->body = '{"success":true,"response":{"customer_country":"GR","products":[{"product_id":556729,"product_title":"TEST Bundle","currency":"EUR","vendor_set_prices_included_tax":false,"price":{"gross":13.95,"net":11.25,"tax":2.70},"list_price":{"gross":13.95,"net":11.25,"tax":2.70},"subscription":{"trial_days":0,"interval":"month","frequency":3,"price":{"gross":13.95,"net":11.25,"tax":2.70},"list_price":{"gross":13.95,"net":11.25,"tax":2.70}}}]}}
 ';
 
 				return $response;

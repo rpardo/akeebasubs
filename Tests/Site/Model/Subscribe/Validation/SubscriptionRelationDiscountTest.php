@@ -40,6 +40,9 @@ class SubscriptionRelationDiscountTest extends ValidatorWithSubsTestCase
 		$jNextYear = clone $jNow;
 		$jNextYear->add(new \DateInterval('P1Y1D'));
 
+		$jNextHalfYear = clone $jNextYear;
+		$jNextHalfYear->add(new \DateInterval('P365D'));
+
 		$jLastHalfYear = clone($jNow);
 		$jLastHalfYear->sub(new \DateInterval('P181D'));
 
@@ -399,6 +402,35 @@ class SubscriptionRelationDiscountTest extends ValidatorWithSubsTestCase
 				],
 				'message'  => 'Combined flexi relation, middle and high'
 			],
+			/**
+			// This test will always fail. I cannot make a reasonable way to handle this automatically. Clients need to contact me and have me take manual action.
+			'Insanity: flexi relation, current and renewal on level 1, upgrading to level 3 [ALWAYS FAILING -- CANNOT REASONABLY MAKE IT WORK]' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'        => 1,
+						'publish_up'   => $jLastHalfYear->toSql(),
+						'publish_down' => $jNextHalfYear->toSql(),
+						'enabled'      => 1,
+					],
+					[
+						'level'      => 1,
+						'publish_up' => $jNextHalfYear->toSql(),
+						'enabled'    => 0,
+					],
+				],
+				'state'    => [
+					'id' => '3',
+				],
+				'expected' => [
+					'discount' => 2 * 37.5,
+					'relation' => 2,
+					'oldsub'   => 'S2',
+					'allsubs'  => ['S1', 'S2'],
+				],
+				'message'  => 'Combined flexi relation, middle and high',
+			],
+			/**/
 		];
 	}
 
