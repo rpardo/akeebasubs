@@ -808,8 +808,62 @@ class RecurringTest extends ValidatorWithSubsTestCase
 			//</editor-fold>
 
 			//<editor-fold desc="Special cases">
-			// Purchasing bundle, already recurringly subscribed to single product level => blocked sub
+			// Purchasing bundle, already recuring subscribed to single product level => blocked sub
+			'Purchasing bundle, always renewing, already recurringly subscribed to single product level' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'        => 1,
+						'publish_up'   => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
+						'enabled'      => 1,
+						'state'        => 'C',
+						'update_url'   => 'foobar',
+						'cancel_url'   => 'foobar',
+					],
+				],
+				'state'    => [
+					'id'      => '3',
+					'coupon'  => '',
+					'_upsell' => 'always',
+				],
+				'expected' => [
+					'recurringId'               => null,
+					'initial_price'             => 0.00,
+					'recurring_price'           => 0.00,
+					'recurring_frequency'       => 0,
+					'recurring_type'            => 'day',
+					'trial_days'                => 0,
+					'blocking_subscription_ids' => [
+						'S1'
+					],
+				],
+			],
 			// Purchasing bundle, already subscribed to single product level => discount
+			'Purchasing bundle, always renewing, already subscribed to single product level' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'        => 1,
+						'publish_up'   => (clone $jNow)->sub(new DateInterval('P10D'))->toSql(),
+						'enabled'      => 1,
+						'state'        => 'C',
+					],
+				],
+				'state'    => [
+					'id'      => '3',
+					'coupon'  => '',
+					'_upsell' => 'always',
+				],
+				'expected' => [
+					'recurringId'               => '556090',
+					'initial_price'             => 37.50,
+					'recurring_price'           => 9.00,
+					'recurring_frequency'       => 3,
+					'recurring_type'            => 'month',
+					'trial_days'                => 355,
+					'blocking_subscription_ids' => null,
+				],
+			],
 			// Forever subscription => always NOT recurring
 			// Fixed expiration date subscription => always NOT recurring
 			// Always recurring, new sub, discount coupon  => recurring sub with a discounted initial price, no tax included

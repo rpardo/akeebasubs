@@ -55,6 +55,31 @@ class Recurring extends Base
 
 		$recurringId = $level->paddle_plan_id ?? 0;
 
+		/**
+		 * Do not allow subscribing if there is a recurring subscription already purchased on any interesting level.
+		 *
+		 * Interesting levels are:
+		 *
+		 * - The current level.
+		 *   If I'm already recurring, you can't make a one-time or recurring purchase. You are already paying for this!
+		 *
+		 * - My related levels (upgrades to me).
+		 *   If you want to downgrade you need to cancel your recurring bundle subscription first.
+		 *
+		 * - Any levels having me as related (downgrades to me).
+		 *   If you want to upgrade you need to cancel your recurring single-product subscriptions first.
+		 */
+		// TODO Get interesting levels
+		$blockingLevels = $this->getBlockingLevelIDs($level->getId());
+		$blockingSubs   = $this->getBlockingSubscriptionIDs($blockingLevels);
+
+		if (!empty($blockingSubs))
+		{
+			return array_merge($ret, [
+				'blocking_subscription_ids' => $blockingSubs,
+			]);
+		}
+
 		// This is a forever subscription. YOU CANNOT CHARGE A RECURRING FEE FOR AN ONE-TIME-PAYMENT SUSBCRIPTION, BRUH!
 		if ($level->forever)
 		{
@@ -77,16 +102,6 @@ class Recurring extends Base
 		if ($level->upsell == 'never')
 		{
 			return $ret;
-		}
-
-		// Check for blocking subscriptions on this level
-		$blockingSubs = $this->getBlockingSubscriptionIDs($level->getId());
-
-		if (!empty($blockingSubs))
-		{
-			return array_merge($ret, [
-				'blocking_subscription_ids' => $blockingSubs,
-			]);
 		}
 
 		// Get recurring access coupon information
@@ -270,13 +285,13 @@ class Recurring extends Base
 	 * Returns the subscription IDs for paid, enabled, recurring subscriptions of the current user in the given level.
 	 * These subscriptions "block" recurring purchases, hence their name.
 	 *
-	 * @param int $level_id Subscription level ID
+	 * @param int[] $level_id Subscription level ID
 	 *
 	 * @return  int[]  The IDs of the blocking subscription levels
 	 *
 	 * @since   7.0.0
 	 */
-	protected function getBlockingSubscriptionIDs(int $level_id): array
+	protected function getBlockingSubscriptionIDs(array $level_id): array
 	{
 		// Guests do not have any subscriptions.
 		if ($this->jUser->guest)
@@ -293,6 +308,8 @@ class Recurring extends Base
 		 * DO NOT set ->enabled(1) because a user may have already bought early a recurring subscription renewal. In
 		 * this case the recurring subscription is paid (state 'C') but not yet active (enabled '0'), yet it should be
 		 * blocking the purchase or a renewal.
+		 *
+		 * Canceled recurring subscriptions will have state 'X', therefore already excluded from this list.
 		 */
 		return $subsModel
 			// Filter for paid and enabled subs for given user and level
@@ -466,5 +483,63 @@ class Recurring extends Base
 				return $this->container->platform->getDate($sub->publish_down)->getTimestamp();
 			}, SORT_NUMERIC);
 
+	}
+
+	/**
+	 * Get a list of subscription level IDs where a recurring subscription should block any kind of sales for my
+	 * $level_id for this user.
+	 *
+	 * This includes:
+	 *
+	 * - The current level.
+	 *   If I'm already recurring, you can't make a one-time or recurring purchase. You are already paying for this!
+	 *
+	 * - My related levels (upgrades to me).
+	 *   If you want to downgrade you need to cancel your recurring bundle subscription first.
+	 *
+	 * - Any levels having me as related (downgrades to me).
+	 *   If you want to upgrade you need to cancel your recurring single-product subscriptions first.
+	 *
+	 * @param int $level_id The subscription level ID I want to know if I can sell a subscription in.
+	 *
+	 * @return  int[]  The blocking level IDs
+	 *
+	 * @since   7.0.0
+	 */
+	protected function getBlockingLevelIDs(int $level_id): array
+	{
+		// Obviously guests are immune to that.
+		if ($this->jUser->guest)
+		{
+			return [];
+		}
+
+		/** @var Levels $levelsModel */
+		$levelsModel = $this->container->factory->model('Levels')->tmpInstance();
+
+		// 1. Add my own level
+		$ret = [$level_id];
+
+		// 2. Add related levels (my upgrades)
+		$ret = array_merge($levelsModel->findOrFail($level_id)->related_levels, $ret);
+
+		// 3. Add levels related to me (my downgrades)
+		$myDowngrades = $levelsModel
+			->enabled(1)
+			->get(true)
+			->filter(function (Levels $level) use ($level_id) {
+				if (empty($level->related_levels))
+				{
+					return false;
+				}
+
+				return in_array($level_id, $level->related_levels);
+			})
+			->lists('akeebasubs_level_id');
+
+		$ret = array_merge($myDowngrades, $ret);
+
+		// Return the unique items only
+		return array_unique($ret);
 	}
 }
