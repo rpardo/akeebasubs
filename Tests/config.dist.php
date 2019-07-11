@@ -17,7 +17,11 @@ $akeebasubsTestConfig = [
 	'site_root'        => '/var/www/guineapig',
 	'site_name'        => 'Akeeba Subscriptions Unit Tests',
 	'site_url'         => 'http://localhost/guineapig/',
-	// Paddle Vendor ID and Vendor ID authentication code, used for the Recurring validator's testing
+	/**
+	 * OPTIONAL CONFIGURATION.
+	 *
+	 * I only use this when writing new tests. The existing Unit Tests will run just fine without changing this.
+	 */
 	'vendor_id'        => '123456',
 	'vendor_auth_code' => 'abcdef123',
 ];

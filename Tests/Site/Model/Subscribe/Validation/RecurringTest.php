@@ -7,6 +7,7 @@
 
 namespace Akeeba\Subscriptions\Tests\Site\Model\Subscribe\Validation;
 
+use Akeeba\Subscriptions\Site\Model\Levels;
 use Akeeba\Subscriptions\Site\Model\Subscribe\Validation\Recurring;
 use Akeeba\Subscriptions\Site\Model\Subscriptions;
 use Akeeba\Subscriptions\Tests\Stubs\ValidatorTestCase;
@@ -33,7 +34,7 @@ class RecurringTest extends ValidatorWithSubsTestCase
 		global $akeebasubsTestConfig;
 
 		static::$container->params->setParams([
-			'vendor_id' => $akeebasubsTestConfig['vendor_id'],
+			'vendor_id'        => $akeebasubsTestConfig['vendor_id'],
 			'vendor_auth_code' => $akeebasubsTestConfig['vendor_auth_code'],
 		]);
 		static::$container->params->save();
@@ -63,13 +64,14 @@ class RecurringTest extends ValidatorWithSubsTestCase
 		$jNextYear->add(new \DateInterval('P365D'));
 
 		$testCases = [
-			//<editor-fold desc="Non-recurring level (3)">
-			'Non-recurring level, guest' => [
+			//<editor-fold desc="Renewal = never">
+			'Non-recurring level, guest'                      => [
 				'loggedIn' => 'guest',
 				'subs'     => [],
 				'state'    => [
-					'id'     => '3',
-					'coupon' => '',
+					'id'      => '1',
+					'coupon'  => '',
+					'_upsell' => 'never',
 				],
 				'expected' => [
 					'recurringId'               => null,
@@ -82,12 +84,13 @@ class RecurringTest extends ValidatorWithSubsTestCase
 
 				],
 			],
-			'Non-recurring level, no sub' => [
+			'Non-recurring level, no sub'                     => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [],
 				'state'    => [
-					'id'     => '3',
-					'coupon' => '',
+					'id'      => '1',
+					'coupon'  => '',
+					'_upsell' => 'never',
 				],
 				'expected' => [
 					'recurringId'               => null,
@@ -100,7 +103,7 @@ class RecurringTest extends ValidatorWithSubsTestCase
 
 				],
 			],
-			'Non-recurring level, with sub' => [
+			'Non-recurring level, with sub'                   => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
@@ -109,8 +112,9 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					],
 				],
 				'state'    => [
-					'id'     => '3',
-					'coupon' => '',
+					'id'      => '1',
+					'coupon'  => '',
+					'_upsell' => 'never',
 				],
 				'expected' => [
 					'recurringId'               => null,
@@ -123,7 +127,7 @@ class RecurringTest extends ValidatorWithSubsTestCase
 
 				],
 			],
-			'Non-recurring level, with sub and coupon code' => [
+			'Non-recurring level, with sub and coupon code'   => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
@@ -132,8 +136,9 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					],
 				],
 				'state'    => [
-					'id'     => '3',
-					'coupon' => 'RECURSION',
+					'id'      => '1',
+					'coupon'  => 'RECURSION',
+					'_upsell' => 'never',
 				],
 				'expected' => [
 					'recurringId'               => null,
@@ -149,12 +154,13 @@ class RecurringTest extends ValidatorWithSubsTestCase
 			//</editor-fold>
 
 			//<editor-fold desc="Always recurring level (1)">
-			'Always recurring level, guest' => [
+			'Always recurring level, guest'                   => [
 				'loggedIn' => 'guest',
 				'subs'     => [],
 				'state'    => [
-					'id'     => '1',
-					'coupon' => '',
+					'id'      => '1',
+					'coupon'  => '',
+					'_upsell' => 'always',
 				],
 				'expected' => [
 					'recurringId'               => '556090',
@@ -167,12 +173,13 @@ class RecurringTest extends ValidatorWithSubsTestCase
 
 				],
 			],
-			'Always recurring level, guest, coupon' => [
+			'Always recurring level, guest, coupon'           => [
 				'loggedIn' => 'guest',
 				'subs'     => [],
 				'state'    => [
-					'id'     => '1',
-					'coupon' => 'RECURRING',
+					'id'      => '1',
+					'coupon'  => 'RECURRING',
+					'_upsell' => 'always',
 				],
 				'expected' => [
 					'recurringId'               => '556090',
@@ -185,12 +192,13 @@ class RecurringTest extends ValidatorWithSubsTestCase
 
 				],
 			],
-			'Always recurring level, no sub' => [
+			'Always recurring level, no sub'                  => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [],
 				'state'    => [
-					'id'     => '1',
-					'coupon' => '',
+					'id'      => '1',
+					'coupon'  => '',
+					'_upsell' => 'always',
 				],
 				'expected' => [
 					'recurringId'               => '556090',
@@ -203,12 +211,13 @@ class RecurringTest extends ValidatorWithSubsTestCase
 
 				],
 			],
-			'Always recurring level, no sub, coupon' => [
+			'Always recurring level, no sub, coupon'          => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [],
 				'state'    => [
-					'id'     => '1',
-					'coupon' => 'RECURRING',
+					'id'      => '1',
+					'coupon'  => 'RECURRING',
+					'_upsell' => 'always',
 				],
 				'expected' => [
 					'recurringId'               => '556090',
@@ -221,7 +230,7 @@ class RecurringTest extends ValidatorWithSubsTestCase
 
 				],
 			],
-			'Always recurring level, with sub' => [
+			'Always recurring level, with sub'                => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
@@ -230,8 +239,9 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					],
 				],
 				'state'    => [
-					'id'     => '1',
-					'coupon' => '',
+					'id'      => '1',
+					'coupon'  => '',
+					'_upsell' => 'always',
 				],
 				'expected' => [
 					'recurringId'               => '556090',
@@ -243,7 +253,7 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					'blocking_subscription_ids' => null,
 				],
 			],
-			'Always recurring level, with sub, coupon' => [
+			'Always recurring level, with sub, coupon'        => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
@@ -252,8 +262,9 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					],
 				],
 				'state'    => [
-					'id'     => '1',
-					'coupon' => 'RECURRING',
+					'id'      => '1',
+					'coupon'  => 'RECURRING',
+					'_upsell' => 'always',
 				],
 				'expected' => [
 					'recurringId'               => '556090',
@@ -265,7 +276,7 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					'blocking_subscription_ids' => null,
 				],
 			],
-			'Always recurring level, with two subs' => [
+			'Always recurring level, with renewal'            => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
@@ -275,12 +286,13 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					[
 						'level'      => 1,
 						'publish_up' => $jNextHalfYear->toSql(),
-						'enabled' => 0,
+						'enabled'    => 0,
 					],
 				],
 				'state'    => [
-					'id'     => '1',
-					'coupon' => '',
+					'id'      => '1',
+					'coupon'  => '',
+					'_upsell' => 'always',
 				],
 				'expected' => [
 					'recurringId'               => '556090',
@@ -292,7 +304,7 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					'blocking_subscription_ids' => null,
 				],
 			],
-			'Always recurring level, with two subs and coupon' => [
+			'Always recurring level, with renewal and coupon' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
@@ -302,12 +314,13 @@ class RecurringTest extends ValidatorWithSubsTestCase
 					[
 						'level'      => 1,
 						'publish_up' => $jNextHalfYear->toSql(),
-						'enabled' => 0,
+						'enabled'    => 0,
 					],
 				],
 				'state'    => [
-					'id'     => '1',
-					'coupon' => 'RECURRING',
+					'id'      => '1',
+					'coupon'  => 'RECURRING',
+					'_upsell' => 'always',
 				],
 				'expected' => [
 					'recurringId'               => '556090',
@@ -341,12 +354,17 @@ class RecurringTest extends ValidatorWithSubsTestCase
 			// Logged in, canceled recurring 6 months ago, active regular 6 months ago => recursion, 184 trial, 0 initial price
 			//</editor-fold>
 
+			//<editor-fold desc="Special cases">
+			// Purchasing bundle, already recurringly subscribed to single product level => blocked sub
+			// Purchasing bundle, already subscribed to single product level => discount
+			//</editor-fold>
+
 		];
 
 		foreach ($testCases as $message => &$testCase)
 		{
 			$testCase = array_merge($testCase, [
-				'message' => $message
+				'message' => $message,
 			]);
 		}
 
@@ -360,26 +378,64 @@ class RecurringTest extends ValidatorWithSubsTestCase
 	 */
 	public function testGetValidationResult($loggedIn, $subs, $state, $expected, $message)
 	{
-		Recurring::$callbackForUnitTests = function($urlParams)
-		{
-			$response = new Response();
+		/**
+		 * Fake the HTTP response from Paddle. This lets our tests run without making contact with the Paddle server
+		 *
+		 * @param array $urlParams The URL parameters Akeeba Subs sends to Paddle's pricing API
+		 *
+		 * @return  Response|null  A Joomla! HTTP response
+		 *
+		 * @since   7.0.0
+		 */
+		Recurring::$callbackForUnitTests = function ($urlParams) {
+			$response       = new Response();
 			$response->code = 200;
 
 			if (in_array(556090, explode(',', $urlParams['product_ids'])))
 			{
 				$response->body = '{"success":true,"response":{"customer_country":"US","products":[{"product_id":556090,"product_title":"TEST DataCompliance","currency":"USD","vendor_set_prices_included_tax":false,"price":{"gross":9.0,"net":9.0,"tax":0.0},"list_price":{"gross":9.0,"net":9.0,"tax":0.0},"subscription":{"trial_days":0,"interval":"month","frequency":3,"price":{"gross":9.0,"net":9.0,"tax":0.0},"list_price":{"gross":9.0,"net":9.0,"tax":0.0}}}]}}
 ';
+
 				return $response;
 			}
 
 			return null;
 		};
 
+		/**
+		 * Change the recurring subscription access type for the subscription level we will be using for our tests.
+		 *
+		 * If none is specified we set it to "renewal".
+		 */
+		$upsell = 'renewal';
+
+		if (isset($state['_upsell']))
+		{
+			$upsell = $state['_upsell'] ?? 'renewal';
+			unset($state['_upsell']);
+		}
+
+		/** @var Levels $level */
+		$level = static::$container->factory->model('Levels')->tmpInstance();
+		$level->findOrFail($state['id'] ?? 1);
+
+		if ($level->upsell != $upsell)
+		{
+			// Only save stuff to the database if there's a need to, speeding up the tests.
+			$level->bind([
+				'upsell' => $upsell,
+			])->save();
+		}
+
+		/**
+		 * Fake our IP address to pretend we are in the USA. Not really used, unless we remove the
+		 * Recurring::$callbackForUnitTests callback above.
+		 */
 		Ip::setIp('72.229.28.185');
 
 		$this->createSubscriptions($subs);
 
-		self::$jUser = self::$users[ $loggedIn ];
+		self::$jUser = self::$users[$loggedIn];
 		self::$factory->reset();
 
 		parent::testGetValidationResult($state, $expected, $message);
