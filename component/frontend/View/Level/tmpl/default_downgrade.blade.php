@@ -20,7 +20,7 @@ defined('_JEXEC') or die();
 	</header>
 
 	<p>
-		@sprintf('COM_AKEEBASUBS_LEVEL_LBL_DOWNGRADEWARNING_INFO', $this->item->title)
+		@sprintf('COM_AKEEBASUBS_LEVEL_LBL_DOWNGRADEWARNING_INFO_' . $this->validation->price->expiration, $this->item->title)
 	</p>
 
 	<ul>
