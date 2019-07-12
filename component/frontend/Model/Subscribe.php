@@ -1696,7 +1696,8 @@ TEXT;
 		$subscriptionsModel
 			->user_id($user->id)
 			->level($levelIDsToCheck)
-			->paystate(['C']);
+			->paystate(['C'])
+			->expires_from($this->container->platform->getDate()->toSql());
 
 		if ($recurring)
 		{
