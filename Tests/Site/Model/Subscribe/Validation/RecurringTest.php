@@ -1193,16 +1193,191 @@ class RecurringTest extends ValidatorWithSubsTestCase
 			//</editor-fold>
 
 			//<editor-fold desc="Discount coupons mixed with recurring payments">
-			// TODO This entire block...
 			// Always recurring, new sub, discount coupon RENEWALDISCOUNT  => recurring sub with a discounted initial price, no tax included
+			'Always recurring, new sub, discount coupon'                                                => [
+				'loggedIn' => 'guest',
+				'subs'     => [],
+				'state'    => [
+					'id'      => '1',
+					'coupon'  => 'RENEWALDISCOUNT',
+					'_upsell' => 'always',
+				],
+				'expected' => [
+					'recurringId'               => '556090',
+					'initial_price'             => 30.00,
+					'recurring_price'           => 9.00,
+					'recurring_frequency'       => 3,
+					'recurring_type'            => 'month',
+					'trial_days'                => 365,
+					'blocking_subscription_ids' => null,
+				],
+			],
 			// Always recurring, new sub, discount + recurring access coupon IAMCRAZY => recurring sub with no initial price, tax included
+			'Always recurring, new sub, discount + recurring access coupon'                                                => [
+				'loggedIn' => 'guest',
+				'subs'     => [],
+				'state'    => [
+					'id'      => '1',
+					'coupon'  => 'IAMCRAZY',
+					'_upsell' => 'always',
+				],
+				'expected' => [
+					'recurringId'               => '556090',
+					'initial_price'             => 0.00,
+					'recurring_price'           => 11.16,
+					'recurring_frequency'       => 3,
+					'recurring_type'            => 'month',
+					'trial_days'                => 0,
+					'blocking_subscription_ids' => null,
+				],
+			],
 			// Always recurring, downgrade with discount coupon RENEWALDISCOUNT => recurring sub with a discounted initial price and modified trial period, no tax included
+			'Always recurring, downgrade with discount coupon'                                                => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'        => 3,
+						'publish_up'   => (clone $jNow)->sub(new DateInterval('P60D'))->toSql(),
+						'publish_down' => (clone $jNow)->add(new DateInterval('P29D'))->toSql(),
+						'enabled'      => 1,
+						'state'        => 'C',
+					],
+				],
+				'state'    => [
+					'id'      => '1',
+					'coupon'  => 'RENEWALDISCOUNT',
+					'_upsell' => 'always',
+				],
+				'expected' => [
+					'recurringId'               => '556090',
+					'initial_price'             => 30.00,
+					'recurring_price'           => 9.00,
+					'recurring_frequency'       => 3,
+					'recurring_type'            => 'month',
+					'trial_days'                => 365 + 28,
+					'blocking_subscription_ids' => null,
+				],
+			],
 			// Always recurring, downgrade with discount coupon + recurring access coupon IAMCRAZY => recurring sub with a discounted initial price and modified trial period, no tax included
+			'Always recurring, downgrade with discount coupon + recurring access coupon'                                                => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'        => 3,
+						'publish_up'   => (clone $jNow)->sub(new DateInterval('P60D'))->toSql(),
+						'publish_down' => (clone $jNow)->add(new DateInterval('P29D'))->toSql(),
+						'enabled'      => 1,
+						'state'        => 'C',
+					],
+				],
+				'state'    => [
+					'id'      => '1',
+					'coupon'  => 'IAMCRAZY',
+					'_upsell' => 'always',
+				],
+				'expected' => [
+					'recurringId'               => '556090',
+					'initial_price'             => 30.00,
+					'recurring_price'           => 9.00,
+					'recurring_frequency'       => 3,
+					'recurring_type'            => 'month',
+					'trial_days'                => 365 + 28,
+					'blocking_subscription_ids' => null,
+				],
+			],
 
 			// Renew recurring, new sub, discount coupon RENEWALDISCOUNT => not recurring
+			'Renew recurring, new sub, discount coupon'                                                => [
+				'loggedIn' => 'guest',
+				'subs'     => [],
+				'state'    => [
+					'id'      => '1',
+					'coupon'  => 'RENEWALDISCOUNT',
+					'_upsell' => 'renew',
+				],
+				'expected' => [
+					'recurringId'               => null,
+					'initial_price'             => 0.00,
+					'recurring_price'           => 0,
+					'recurring_frequency'       => 0,
+					'recurring_type'            => 'day',
+					'trial_days'                => 0,
+					'blocking_subscription_ids' => null,
+				],
+			],
 			// Renew recurring, new sub, discount + recurring access coupon IAMCRAZY => recurring sub with discounted initial price, tax included
+			'Renew recurring, new sub, discount + recurring access coupon'                                                => [
+				'loggedIn' => 'guest',
+				'subs'     => [],
+				'state'    => [
+					'id'      => '1',
+					'coupon'  => 'IAMCRAZY',
+					'_upsell' => 'always',
+				],
+				'expected' => [
+					'recurringId'               => '556090',
+					'initial_price'             => 0.00,
+					'recurring_price'           => 11.16,
+					'recurring_frequency'       => 3,
+					'recurring_type'            => 'month',
+					'trial_days'                => 0,
+					'blocking_subscription_ids' => null,
+				],
+			],
 			// Renew recurring, downgrade with discount coupon RENEWALDISCOUNT => recurring sub with a discounted initial price and modified trial period, no tax included
+			'Renew recurring, downgrade with discount coupon'                                                => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'        => 3,
+						'publish_up'   => (clone $jNow)->sub(new DateInterval('P60D'))->toSql(),
+						'publish_down' => (clone $jNow)->add(new DateInterval('P29D'))->toSql(),
+						'enabled'      => 1,
+						'state'        => 'C',
+					],
+				],
+				'state'    => [
+					'id'      => '1',
+					'coupon'  => 'RENEWALDISCOUNT',
+					'_upsell' => 'renew',
+				],
+				'expected' => [
+					'recurringId'               => '556090',
+					'initial_price'             => 30.00,
+					'recurring_price'           => 9.00,
+					'recurring_frequency'       => 3,
+					'recurring_type'            => 'month',
+					'trial_days'                => 365 + 28,
+					'blocking_subscription_ids' => null,
+				],
+			],
 			// Renew recurring, downgrade with discount coupon + recurring access coupon IAMCRAZY => recurring sub with a discounted initial price and modified trial period, no tax included
+			'Renew recurring, downgrade with discount coupon + recurring access coupon' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'        => 3,
+						'publish_up'   => (clone $jNow)->sub(new DateInterval('P60D'))->toSql(),
+						'publish_down' => (clone $jNow)->add(new DateInterval('P29D'))->toSql(),
+						'enabled'      => 1,
+						'state'        => 'C',
+					],
+				],
+				'state'    => [
+					'id'      => '1',
+					'coupon'  => 'IAMCRAZY',
+					'_upsell' => 'renew',
+				],
+				'expected' => [
+					'recurringId'               => '556090',
+					'initial_price'             => 30.00,
+					'recurring_price'           => 9.00,
+					'recurring_frequency'       => 3,
+					'recurring_type'            => 'month',
+					'trial_days'                => 365 + 28,
+					'blocking_subscription_ids' => null,
+				],
+			],
 
 			//</editor-fold>
 

@@ -327,7 +327,7 @@ class Recurring extends Base
 				// Initial period price, merchant currency (always net)
 				'initial_price'             => $priceValidation['gross'],
 				// Recurring price, user currency (net or gross, based on component parameters)
-				'recurring_price'           => $includeTax ? $recurringInfo['recurring_price'] : $recurringInfo['recurring_price_net'],
+				'recurring_price'           => (!$isDiscounted && $includeTax) ? $recurringInfo['recurring_price'] : $recurringInfo['recurring_price_net'],
 				// Recurring frequency, integer
 				'recurring_frequency'       => $recurringInfo['recurring_frequency'],
 				// Recurring type: day, week, month, year
