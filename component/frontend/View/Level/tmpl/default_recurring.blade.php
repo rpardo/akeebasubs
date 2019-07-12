@@ -86,7 +86,7 @@ array_walk($langStrings, [\Joomla\CMS\Language\Text::class, 'script']);
 			@endif
 		</label>
 		<p class="akeeba-help-text">
-			@if ($this->isTaxAllowed)
+			@if ($this->cparams->isTaxAllowed)
 				@lang('COM_AKEEBASUBS_LEVEL_LBL_OPTIN_RECURRING_HELP')
 			@else
 				@lang('COM_AKEEBASUBS_LEVEL_LBL_OPTIN_RECURRING_HELP_NOVAT')
