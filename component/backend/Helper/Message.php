@@ -14,7 +14,6 @@ use FOF30\Container\Container;
 use FOF30\Date\Date;
 use FOF30\Model\DataModel;
 use JFactory;
-use JLoader;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
 use Joomla\Registry\Registry as JRegistry;
@@ -406,7 +405,7 @@ abstract class Message
 			$urlAuth  = 'authorization=' . $authCode;
 		}
 
-		$messageUrl = Route::_('index.php?option=com_akeebasubs&view=Message&subid=' . $sub->akeebasubs_subscription_id . '&' . $urlAuth);
+		$messageUrl = self::route('index.php?option=com_akeebasubs&view=Message&subid=' . $sub->akeebasubs_subscription_id . '&' . $urlAuth);
 
 		if (!$isAdmin && !$isCli)
 		{
@@ -581,7 +580,7 @@ abstract class Message
 	 *
 	 * @return  string  The text with the tag replaced with the proper URLs
 	 */
-	public static function substituteRenewalURLWithCoupon($text, $renewalURL)
+	public static function substituteRenewalURLWithCoupon(string $text, string $renewalURL): string
 	{
 		// Find where the tag starts
 		$nextPos      = 0;
@@ -624,5 +623,63 @@ abstract class Message
 		while ($pos !== false);
 
 		return $text;
+	}
+
+	/**
+	 * Route a Joomla URL safely, even if the application cannot be initialized (e.g. CLI or system-under-test)
+	 *
+	 * @param string $url The URL to route
+	 *
+	 * @return  string  The routed URL
+	 */
+	public static function route($url): string
+	{
+		$useJRoute = true;
+
+		try
+		{
+			$app = JFactory::getApplication();
+
+			if (!$app->isClient('site'))
+			{
+				$useJRoute = false;
+			}
+		}
+		catch (\Exception $e)
+		{
+			$useJRoute = false;
+		}
+
+		if ($useJRoute)
+		{
+			return Route::_($url);
+		}
+
+		$container       = self::getContainer();
+		$siteUrl         = $container->params->get('siteurl');
+		$siteUri         = \JUri::getInstance($siteUrl);
+		$options['mode'] = $container->platform->getConfig()->get('sef');
+
+		if (!isset($_SERVER['HTTP_HOST']))
+		{
+			$_SERVER['HTTP_HOST'] = $siteUri->getHost();
+		}
+
+		try
+		{
+			$router = \JRouter::getInstance('site', $options);
+		}
+		catch (\Exception $e)
+		{
+			return rtrim($siteUrl, '/') . '/' . ltrim($url, '/');
+		}
+
+		$routedUri = $router->build($url);
+		$scheme    = ['path', 'query', 'fragment'];
+		$routedUrl = $routedUri->toString($scheme);
+		$routedUrl = preg_replace('/\s/u', '%20', $routedUrl);
+		$routedUrl = htmlspecialchars($routedUrl, ENT_COMPAT, 'UTF-8');
+
+		return $routedUrl;
 	}
 }

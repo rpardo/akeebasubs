@@ -56,7 +56,7 @@ class BestAutomaticDiscountTest extends ValidatorWithSubsTestCase
 		$j370DaysAgo->sub(new \DateInterval('P370D'));
 
 		return [
-			[
+			'Not logged in, no relation or upgrade rule' => [
 				'loggedIn' => 'guest',
 				'subs'     => [
 					[
@@ -74,13 +74,13 @@ class BestAutomaticDiscountTest extends ValidatorWithSubsTestCase
 					'allsubs'    => [],
 					'upgrade_id' => null,
 				],
-				'message'  => 'Not logged in, no SLL or upgrade rule'
+				'message'  => 'Not logged in, no relation or upgrade rule'
 			],
-			[
+			'Logged in, no relation or upgrade rule' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
-						'level'      => 8,
+						'level'      => 3,
 						'publish_up' => $jNow->toSql()
 					]
 				],
@@ -94,107 +94,87 @@ class BestAutomaticDiscountTest extends ValidatorWithSubsTestCase
 					'allsubs'    => [],
 					'upgrade_id' => null,
 				],
-				'message'  => 'Logged in, no SLL or upgrade rule'
+				'message'  => 'Logged in, no relation or upgrade rule'
 			],
-			[
+			'Only upgrade rule' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
 						'level'      => 1,
-						'publish_up' => $jNow->toSql()
+						'publish_up' => $jLastHalfYear->toSql()
 					]
 				],
 				'state'    => [
-					'id' => '9',
+					'id' => '1',
 				],
 				'expected' => [
-					'discount'   => 25.0,
+					'discount'   => 20.0,
 					'expiration' => 'overlap',
 					'oldsub'     => null,
 					'allsubs'    => [],
-					'upgrade_id' => 13,
+					'upgrade_id' => 1,
 				],
 				'message'  => 'Only upgrade rule'
 			],
-			[
+			'Upgrade and relation, relation wins due to bigger discount' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'      => 6,
+						'publish_up' => $jNow->toSql()
+					]
+				],
+				'state'    => [
+					'id' => '2',
+				],
+				'expected' => [
+					'discount'   => 15.0,
+					'expiration' => 'replace',
+					'oldsub'     => 'S1',
+					'allsubs'    => ['S1'],
+					'upgrade_id' => null,
+				],
+				'message'  => 'Upgrade and relation, relation wins due to bigger discount'
+			],
+			'Relation only' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
 						'level'      => 1,
-						'publish_up' => $jNow->toSql()
+						'publish_up' => $jLastHalfYear->toSql()
 					]
 				],
 				'state'    => [
-					'id' => '10',
+					'id' => '3',
+				],
+				'expected' => [
+					'discount'   => 18.0,
+					'expiration' => 'replace',
+					'oldsub'     => 'S1',
+					'allsubs'    => ['S1'],
+					'upgrade_id' => null,
+				],
+				'message'  => 'Relation only'
+			],
+			'Upgrade and relation, the upgrade wins but relation applies the subscription replacement policy, combine is ignored' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'      => 6,
+						'publish_up' => $jLastHalfYear->toSql()
+					]
+				],
+				'state'    => [
+					'id' => '1',
 				],
 				'expected' => [
 					'discount'   => 15.0,
 					'expiration' => 'replace',
 					'oldsub'     => 'S1',
 					'allsubs'    => ['S1'],
-					'upgrade_id' => null,
+					'upgrade_id' => 4,
 				],
-				'message'  => 'Upgrade and SLL, SLL wins due to bigger discount'
-			],
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [
-					[
-						'level'      => 2,
-						'publish_up' => $jNow->toSql()
-					]
-				],
-				'state'    => [
-					'id' => '9',
-				],
-				'expected' => [
-					'discount'   => 15.0,
-					'expiration' => 'replace',
-					'oldsub'     => 'S1',
-					'allsubs'    => ['S1'],
-					'upgrade_id' => null,
-				],
-				'message'  => 'SLL only'
-			],
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [
-					[
-						'level'      => 2,
-						'publish_up' => $jNow->toSql()
-					]
-				],
-				'state'    => [
-					'id' => '9',
-				],
-				'expected' => [
-					'discount'   => 15.0,
-					'expiration' => 'replace',
-					'oldsub'     => 'S1',
-					'allsubs'    => ['S1'],
-					'upgrade_id' => null,
-				],
-				'message'  => 'SLL only'
-			],
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [
-					[
-						'level'      => 2,
-						'publish_up' => $jNow->toSql()
-					]
-				],
-				'state'    => [
-					'id' => '10',
-				],
-				'expected' => [
-					'discount'   => 25.0,
-					'expiration' => 'replace',
-					'oldsub'     => 'S1',
-					'allsubs'    => ['S1'],
-					'upgrade_id' => 15,
-				],
-				'message'  => 'Upgrade and SLL, the upgrade wins but SLL applies the subscription replacement policy, combine is ignored'
+				'message'  => 'Upgrade and relation, the upgrade wins but relation applies the subscription replacement policy, combine is ignored'
 			]
 		];
 	}

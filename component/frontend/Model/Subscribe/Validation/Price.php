@@ -15,53 +15,51 @@ class Price extends Base
 	 * Return the pricing information.
 	 *
 	 * Uses
-	 * 		BasePrice
-	 * 		CouponDiscount
-	 * 		BestAutomaticDiscount
-	 * 		PersonalInformation
+	 *        BasePrice
+	 *        CouponDiscount
+	 *        BestAutomaticDiscount
+	 *        PersonalInformation
 	 *
 	 * @return  array
 	 */
 	protected function getValidationResult()
 	{
 		$basePriceStructure = $this->factory->getValidator('BasePrice')->execute();
-		$netPrice = $basePriceStructure['levelNet'];
+		$netPrice           = $basePriceStructure['levelNet'];
 
 		$couponStructure = $this->factory->getValidator('CouponDiscount')->execute();
-		$couponDiscount = $couponStructure['value'];
+		$couponDiscount  = $couponStructure['value'];
 
 		// Automatic discount (upgrade rules, subscription level relations) validation
 		$discountStructure = $this->factory->getValidator('BestAutomaticDiscount')->execute();
-		$autoDiscount = $discountStructure['discount'];
+		$autoDiscount      = $discountStructure['discount'] ?? 0.00;
 
 		// Should I use the coupon code or the automatic discount?
 		$useCoupon = false;
-		$useAuto = true;
+		$useAuto   = true;
+		$couponid  = $couponStructure['coupon_id'] ?? 0;
+		$upgradeid = $discountStructure['upgrade_id'] ?? 0;
 
 		if ($couponStructure['valid'])
 		{
-			if ($autoDiscount > $couponDiscount)
+			if ($autoDiscount < $couponDiscount)
 			{
-				$useCoupon = false;
-				$useAuto = true;
-				$couponStructure['coupon_id'] = null;
+				$useAuto   = false;
+				$useCoupon = true;
+				$upgradeid = 0;
 			}
 			else
 			{
-				$useAuto = false;
-				$useCoupon = true;
-				$discountStructure['upgrade_id'] = null;
+				$couponid = 0;
 			}
 		}
 
 		$discount = $useCoupon ? $couponDiscount : $autoDiscount;
-		$couponid = is_null($couponStructure['coupon_id']) ? 0 : $couponStructure['coupon_id'];
-		$upgradeid = is_null($discountStructure['upgrade_id']) ? 0 : $discountStructure['upgrade_id'];
 
 		if ($discount < 0.001)
 		{
 			$useCoupon = false;
-			$useAuto = false;
+			$useAuto   = false;
 		}
 
 		// Note: do not reset the oldsup and expiration fields. Subscription level relations must not be bound
@@ -78,7 +76,7 @@ class Price extends Base
 		// Calculate the gross amount minimising rounding errors
 		$grossAmount = $basePrice;
 
-		$result = array(
+		$result = [
 			'net'        => sprintf('%1.02F', round($netPrice, 2)),
 			'realnet'    => sprintf('%1.02F', round($basePriceStructure['levelNet'], 2)),
 			'discount'   => sprintf('%1.02F', round($discount, 2)),
@@ -92,7 +90,7 @@ class Price extends Base
 			'oldsub'     => $discountStructure['oldsub'],
 			'allsubs'    => $discountStructure['allsubs'],
 			'expiration' => $discountStructure['expiration'],
-		);
+		];
 
 		return $result;
 	}

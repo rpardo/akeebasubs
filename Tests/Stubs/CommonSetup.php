@@ -7,8 +7,8 @@
 
 namespace Akeeba\Subscriptions\Tests\Stubs;
 
-use Akeeba\Subscriptions\Admin\Model\TaxConfig;
-use FOF30\Container\Container;
+use Exception;
+use FOF30\Database\Installer;
 use JFactory;
 use JUser;
 use JUserHelper;
@@ -23,8 +23,8 @@ abstract class CommonSetup
 	 */
 	public static function masterSetup()
 	{
+		self::applySchemaUpdates();
 		self::importSQL();
-		self::applyTaxRulesComponentConfig();
 	}
 
 	/**
@@ -42,8 +42,8 @@ abstract class CommonSetup
 				'user1'     => new JUser(1000),
 				'user2'     => new JUser(1001),
 				'user3'     => new JUser(1002),
-				'business'  => new JUser(1010),
-				'forcedvat' => new JUser(1011),
+				'user4'     => new JUser(1010),
+				'user5'     => new JUser(1011),
 				'guineapig' => new JUser(1020),
 			];
 		}
@@ -52,9 +52,34 @@ abstract class CommonSetup
 	}
 
 	/**
-	 * Imports the Tests/_data/initialise.sql file which contains our basic testing environment
+	 * Applies the Akeeba Subscriptions schema updates (mysql.xml) to the site's database.
+	 *
+	 * @return  void
 	 */
-	protected static function importSQL()
+	protected static function applySchemaUpdates(): void
+	{
+		$dbInstaller = new Installer(JFactory::getDbo(), JPATH_ADMINISTRATOR . '/components/com_akeebasubs/sql/xml');
+
+		try
+		{
+			$dbInstaller->updateSchema();
+		}
+		catch (Exception $e)
+		{
+			echo "!! Schema update error\n\n";
+			echo "Error message:\n";
+			echo $e->getMessage() . "\n\n";
+			die;
+		}
+
+	}
+
+	/**
+	 * Imports the Tests/_data/initialise.sql file which contains our basic testing environment
+	 *
+	 * @return  void
+	 */
+	protected static function importSQL(): void
 	{
 		// Load the raw SQL
 		$fileName = __DIR__ . '/../_data/initialise.sql';
@@ -80,7 +105,7 @@ abstract class CommonSetup
 			{
 				$db->setQuery($query)->execute();
 			}
-			catch (\Exception $e)
+			catch (Exception $e)
 			{
 				echo "!! SQL import error\n\nSQL query:\n";
 				echo $query . "\n\nError message:\n";
@@ -91,33 +116,6 @@ abstract class CommonSetup
 
 		// Commit the transaction
 		$db->transactionCommit();
-	}
-
-	/**
-	 * Set up the component configuration side of the tax rules. The actual tax rules are in initialise.sql
-	 */
-	protected static function applyTaxRulesComponentConfig()
-	{
-		$container = Container::getInstance('com_akeebasubs', [
-			'tempInstance' => true,
-			'factoryClass' => '\\FOF30\\Factory\\SwitchFactory'
-		], 'admin');
-		/** @var TaxConfig $taxConfigModel */
-		$taxConfigModel = new TaxConfig($container);
-
-		foreach ([
-					 'novatcalc'           => 0,
-					 'akeebasubs_level_id' => 0,
-					 'country'             => 'CY',
-					 'taxrate'             => '19',
-					 'viesreg'             => 1,
-					 'showvat'             => 0,
-				 ] as $key => $value)
-		{
-			$taxConfigModel->setState($key, $value);
-		}
-
-		$taxConfigModel->applyComponentConfiguration();
 	}
 
 	/**

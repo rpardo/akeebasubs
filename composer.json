@@ -19,6 +19,7 @@
     "ext-soap": "*",
     "ext-json": "*",
     "ext-curl": "*",
-    "ext-openssl": "*"
+    "ext-openssl": "*",
+    "phpunit/phpunit": "^7.0"
   }
 }

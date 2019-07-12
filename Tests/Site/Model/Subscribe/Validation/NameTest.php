@@ -26,28 +26,40 @@ class NameTest extends ValidatorTestCase
 	public function getTestData()
 	{
 		return [
-			[
+			'Empty names are NOT allowed' => [
+				'state' => [
+					'name' => ''
+				],
+				'expected' => false,
+				'message' => 'Empty names are NOT allowed'
+			],
+			/**
+			 * Reason for change: Paddle is dealing with the legally required invoicing information. We don't really
+			 * need the client's full name, just something to call them when they communicate with us. They could use
+			 * their real name or a handle which could conceivably be a single word.
+			 */
+			'Single word names are allowed now' => [
 				'state' => [
 					'name' => 'Foobar'
 				],
-				'expected' => false,
-				'message' => 'Single word names are not allowed'
+				'expected' => true,
+				'message' => 'Single word names are allowed now'
 			],
-			[
+			'Two word names are allowed' => [
 				'state' => [
 					'name' => 'Foo bar'
 				],
 				'expected' => true,
 				'message' => 'Two word names are allowed'
 			],
-			[
+			'Three word names are allowed' => [
 				'state' => [
 					'name' => 'Foo bar baz'
 				],
 				'expected' => true,
 				'message' => 'Three word names are allowed'
 			],
-			[
+			'Single letter names with two parts are allowed' => [
 				'state' => [
 					'name' => 'a b'
 				],

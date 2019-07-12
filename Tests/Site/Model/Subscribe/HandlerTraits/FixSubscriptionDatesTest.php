@@ -1,19 +1,18 @@
 <?php
 /**
- * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
- * @license   GNU General Public License version 3, or later
+ *  @package   AkeebaSubs
+ *  @copyright Copyright (c)2010-$toda.year Nicholas K. Dionysopoulos / Akeeba Ltd
+ *  @license   GNU General Public License version 3, or later
  */
 
-namespace Akeeba\Subscriptions\Tests\Admin\PluginAbstracts;
+namespace Akeeba\Subscriptions\Tests\Site\Model\Subscribe\HandlerTraits;
 
-use Akeeba\Subscriptions\Admin\PluginAbstracts\AkpaymentBase;
+use Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits\FixSubscriptionDate;
 use Akeeba\Subscriptions\Site\Model\Subscriptions;
-use Akeeba\Subscriptions\Tests\Stubs\ValidatorWithSubsTestCase;
 use FOF30\Container\Container;
 use FOF30\Date\Date;
 
-class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
+class FixSubscriptionDatesTest extends \PHPUnit\Framework\TestCase
 {
 
 	/** @var   Container  The container of the component */
@@ -42,7 +41,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 	public function getFixSubscriptionDatesData()
 	{
 		return [
-			[
+			"No fixdates keys, publish_up in the past" => [
 				'uid'         => 2000,
 				'submods2000' => [
 					'publish_up' => 'past', // past, future, now
@@ -55,7 +54,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 				],
 				'message'     => "No fixdates keys, publish_up in the past"
 			],
-			[
+			"No fixdates keys, publish_up now" => [
 				'uid'         => 2000,
 				'submods2000' => [
 					'publish_up' => 'now', // past, future, now
@@ -68,7 +67,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 				],
 				'message'     => "No fixdates keys, publish_up now"
 			],
-			[
+			"No fixdates keys, publish_up in the future" => [
 				'uid'         => 2000,
 				'submods2000' => [
 					'publish_up' => 'future', // past, future, now
@@ -81,7 +80,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 				],
 				'message'     => "No fixdates keys, publish_up in the future"
 			],
-			[
+			"No fixdates, forever/fixed date subscription" => [
 				'uid'         => 2000,
 				'submods2000' => [
 					'level'        => 4,
@@ -96,7 +95,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 				],
 				'message'     => "No fixdates, forever/fixed date subscription"
 			],
-			[
+			"oldsub is null. publish_up in the past." => [
 				'uid'         => 2000,
 				'submods2000' => [
 					'level'      => 4,
@@ -114,7 +113,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 				],
 				'message'     => "oldsub is null. publish_up in the past."
 			],
-			[
+			"oldsub is null and expiration=replace (downgraded to overlap). publish_up in the past." => [
 				'uid'         => 2000,
 				'submods2000' => [
 					'level'      => 4,
@@ -132,7 +131,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 				],
 				'message'     => "oldsub is null and expiration=replace (downgraded to overlap). publish_up in the past."
 			],
-			[
+			"oldsub is null and expiration=after (downgraded to overlap). publish_up in the past." => [
 				'uid'         => 2000,
 				'submods2000' => [
 					'level'      => 4,
@@ -150,7 +149,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 				],
 				'message'     => "oldsub is null and expiration=after (downgraded to overlap). publish_up in the past."
 			],
-			[
+			"oldsub does not exist. publish_up in the past." => [
 				'uid'         => 2000,
 				'submods2000' => [
 					'level'      => 4,
@@ -170,7 +169,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 			],
 
 			// Expiration = replace. The old subscription is on the same level and gets disabled.
-			[
+			"expiration = replace. oldsub in the same level (active), publish_up in the past" => [
 				'uid'         => 2010,
 				'submods2000' => [
 					'publish_up' => 'past', // past, future, now
@@ -187,7 +186,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 				],
 				'message'     => "expiration = replace. oldsub in the same level (active), publish_up in the past"
 			],
-			[
+			"expiration = replace. oldsub in the same level (active), publish_up now" => [
 				'uid'         => 2010,
 				'submods2000' => [
 					'publish_up' => 'now', // past, future, now
@@ -204,7 +203,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 				],
 				'message'     => "expiration = replace. oldsub in the same level (active), publish_up now"
 			],
-			[
+			"expiration = replace. oldsub in the same level (active), publish_up in the future" => [
 				'uid'         => 2010,
 				'submods2000' => [
 					'publish_up' => 'future', // past, future, now
@@ -223,7 +222,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 			],
 
 			// Expiration = replace. The old subscription is on a different level and MUST be disabled
-			[
+			"expiration = replace. oldsub in another level (active), publish_up in the past" => [
 				'uid'         => 2030,
 				'submods2000' => [
 					'publish_up' => 'past', // past, future, now
@@ -240,7 +239,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 				],
 				'message'     => "expiration = replace. oldsub in another level (active), publish_up in the past"
 			],
-			[
+			"expiration = replace. oldsub in another level (active), publish_up now" => [
 				'uid'         => 2030,
 				'submods2000' => [
 					'publish_up' => 'now', // past, future, now
@@ -257,7 +256,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 				],
 				'message'     => "expiration = replace. oldsub in another level (active), publish_up now"
 			],
-			[
+			"expiration = replace. oldsub in another level (active), publish_up in the future" => [
 				'uid'         => 2030,
 				'submods2000' => [
 					'publish_up' => 'future', // past, future, now
@@ -276,7 +275,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 			],
 
 			// Expiration = replace. With many allsubs
-			[
+			"expiration = replace. oldsub in the same level (active), allsubs in mixed levels (active & expired), publish_up in the past." => [
 				'uid'         => 2040,
 				'submods2000' => [
 					'publish_up' => 'past', // past, future, now
@@ -293,7 +292,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 				],
 				'message'     => "expiration = replace. oldsub in the same level (active), allsubs in mixed levels (active & expired), publish_up in the past."
 			],
-			[
+			"expiration = replace. oldsub in the same level (active), allsubs in mixed levels (active & expired), publish_up now" => [
 				'uid'         => 2040,
 				'submods2000' => [
 					'publish_up' => 'now', // past, future, now
@@ -310,7 +309,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 				],
 				'message'     => "expiration = replace. oldsub in the same level (active), allsubs in mixed levels (active & expired), publish_up now"
 			],
-			[
+			"expiration = replace. oldsub in the same level (active), allsubs in mixed levels (active & expired), publish_up in the future" => [
 				'uid'         => 2040,
 				'submods2000' => [
 					'publish_up' => 'future', // past, future, now
@@ -329,7 +328,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 			],
 
 			// Expiration = after. The old subscription 2010 is on the same level and was disabled anyway.
-			[
+			"expiration = after. oldsub in the same level (active), publish_up in the past" => [
 				'uid'         => 2010,
 				'submods2000' => [
 					'publish_up' => 'past', // past, future, now
@@ -346,7 +345,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 				],
 				'message'     => "expiration = after. oldsub in the same level (active), publish_up in the past"
 			],
-			[
+			"expiration = after. oldsub in the same level (active), publish_up now" => [
 				'uid'         => 2010,
 				'submods2000' => [
 					'publish_up' => 'now', // past, future, now
@@ -363,7 +362,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 				],
 				'message'     => "expiration = after. oldsub in the same level (active), publish_up now"
 			],
-			[
+			"expiration = after. oldsub in the same level (active), publish_up now, must become half year from now" => [
 				'uid'         => 2020,
 				'submods2000' => [
 					'publish_up' => 'now', // past, future, now
@@ -381,7 +380,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 				],
 				'message'     => "expiration = after. oldsub in the same level (active), publish_up now, must become half year from now"
 			],
-			[
+			"expiration = after. oldsub in the same level (active), publish_up in the future" => [
 				'uid'         => 2010,
 				'submods2000' => [
 					'publish_up' => 'future', // past, future, now
@@ -400,7 +399,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 			],
 
 			// Expiration = after. The old subscription is in another level
-			[
+			"expiration = after. oldsub in the same level (active), publish_up in the past [The old subscription is in another level]" => [
 				'uid'         => 2030,
 				'submods2000' => [
 					'publish_up' => 'past', // past, future, now
@@ -418,7 +417,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 				],
 				'message'     => "expiration = after. oldsub in the same level (active), publish_up in the past"
 			],
-			[
+			"expiration = after. oldsub in the same level (active), publish_up now [The old subscription is in another level]" => [
 				'uid'         => 2030,
 				'submods2000' => [
 					'publish_up' => 'now', // past, future, now
@@ -436,7 +435,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 				],
 				'message'     => "expiration = after. oldsub in the same level (active), publish_up now"
 			],
-			[
+			"expiration = after. oldsub in the same level (active), publish_up in the future [The old subscription is in another level]" => [
 				'uid'         => 2030,
 				'submods2000' => [
 					'publish_up' => 'future', // past, future, now
@@ -456,7 +455,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 			],
 
 			// Expiration = after. With many allsubs
-			[
+			"expiration = replace. oldsub in the same level (active), allsubs in mixed levels (active & expired), publish_up in the past. [With many allsubs]" => [
 				'uid'         => 2040,
 				'submods2000' => [
 					'publish_up' => 'past', // past, future, now
@@ -474,7 +473,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 				],
 				'message'     => "expiration = replace. oldsub in the same level (active), allsubs in mixed levels (active & expired), publish_up in the past."
 			],
-			[
+			"expiration = replace. oldsub in the same level (active), allsubs in mixed levels (active & expired), publish_up now [With many allsubs]" => [
 				'uid'         => 2040,
 				'submods2000' => [
 					'publish_up' => 'now', // past, future, now
@@ -492,7 +491,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 				],
 				'message'     => "expiration = replace. oldsub in the same level (active), allsubs in mixed levels (active & expired), publish_up now"
 			],
-			[
+			"expiration = replace. oldsub in the same level (active), allsubs in mixed levels (active & expired), publish_up in the future [With many allsubs]" => [
 				'uid'         => 2040,
 				'submods2000' => [
 					'publish_up' => 'future', // past, future, now
@@ -512,7 +511,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 			],
 
 			// Expiration = after. With many allsubs and subscription in the future
-			[
+			"expiration = replace. oldsub in the same level (active), allsubs in mixed levels (active & expired), publish_up in the past. [With many allsubs and subscription in the future]" => [
 				'uid'         => 2040,
 				'submods2000' => [
 					'publish_up' => 'past', // past, future, now
@@ -530,7 +529,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 				],
 				'message'     => "expiration = replace. oldsub in the same level (active), allsubs in mixed levels (active & expired), publish_up in the past."
 			],
-			[
+			"expiration = replace. oldsub in the same level (active), allsubs in mixed levels (active & expired), publish_up now [With many allsubs and subscription in the future]" => [
 				'uid'         => 2040,
 				'submods2000' => [
 					'publish_up' => 'now', // past, future, now
@@ -546,7 +545,7 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 					'enabled'      => 1,
 					'_allsubs_active' => [2041, 2042, 2044, 2045],
 				],
-				'message'     => "expiration = replace. oldsub in the same level (active), allsubs in mixed levels (active & expired), publish_up now"
+				'message'     => "expiration = replace. oldsub in the same level (active), allsubs in mixed levels (active & expired), publish_up now [With many allsubs and subscription in the future]"
 			],
 
 			// What happens if my new subscription starts in the future but BEFORE the existing subscription expires?
@@ -629,7 +628,10 @@ class AkpaymentBaseFixDatesTest extends \PHPUnit\Framework\TestCase
 		$actual = [];
 
 		// Run the test
-		AkpaymentBase::fixSubscriptionDates($sub, $actual);
+
+		$mock   = $this->getMockForTrait(FixSubscriptionDate::class);
+		/** @var FixSubscriptionDate $mock */
+		$actual = $mock->fixSubscriptionDates($sub, $actual);
 
 		// Post-process the $expected array for the dates
 		if ($expected['publish_up'] == 'Now')

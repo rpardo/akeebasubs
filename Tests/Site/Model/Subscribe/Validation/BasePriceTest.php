@@ -7,6 +7,7 @@
 
 namespace Akeeba\Subscriptions\Tests\Site\Model\Subscribe\Validation;
 
+use Akeeba\Subscriptions\Site\Model\Subscriptions;
 use Akeeba\Subscriptions\Tests\Stubs\ValidatorTestCase;
 
 /**
@@ -23,6 +24,15 @@ class BasePriceTest extends ValidatorTestCase
 
 		// Create the base objects
 		parent::setUpBeforeClass();
+
+		// Modify subscription #3 (user5, active sub for level 3) to have publish_up/down dates within a year
+		/** @var Subscriptions $sub */
+		$sub = self::$container->factory->model('Subscriptions')->tmpInstance();
+		$sub->findOrFail(3);
+		$sub->publish_up = self::$container->platform->getDate('@' . (time() - 180 * 24 * 3600));
+		$sub->publish_down = self::$container->platform->getDate('@' . (time() + 180 * 24 * 3600));
+		$sub->created_on = $sub->publish_up;
+		$sub->save();
 	}
 
 	public function getTestData()
@@ -35,31 +45,39 @@ class BasePriceTest extends ValidatorTestCase
 				],
 				'expected'        => [
 					'levelNet'    => 0.0,
-					'basePrice'   => 0.0, // Base price, including sign-up and surcharges
 					'isRecurring' => false
 				],
 				'message'         => 'Invalid level ID'
 			],
-			'Guest user' => [
+			'Guest user, single product' => [
 				'loggedIn'        => 'guest',
 				'state'           => [
 					'id' => 1
 				],
 				'expected'        => [
-					'levelNet'    => 100.0,
-					'basePrice'   => 100.0, // Base price, including sign-up and surcharges
+					'levelNet'    => 50.0,
+					'isRecurring' => false
+				],
+				'message'         => 'Guest user'
+			],
+			'Guest user, bundle product' => [
+				'loggedIn'        => 'guest',
+				'state'           => [
+					'id' => 3
+				],
+				'expected'        => [
+					'levelNet'    => 75.0,
 					'isRecurring' => false
 				],
 				'message'         => 'Guest user'
 			],
 			'User without subscription' => [
-				'loggedIn'        => 'forcedvat',
+				'loggedIn'        => 'user4',
 				'state'           => [
 					'id' => 1
 				],
 				'expected'        => [
-					'levelNet'    => 100.0,
-					'basePrice'   => 100.0, // Base price, including sign-up and surcharges
+					'levelNet'    => 50.0,
 					'isRecurring' => false
 				],
 				'message'         => 'User without subscription'
@@ -70,20 +88,18 @@ class BasePriceTest extends ValidatorTestCase
 					'id' => 1
 				],
 				'expected'        => [
-					'levelNet'    => 100.0,
-					'basePrice'   => 100.0, // Base price, including sign-up and surcharges
+					'levelNet'    => 50.0,
 					'isRecurring' => false
 				],
 				'message'         => 'User with expired subscription'
 			],
 			'User with active subscription' => [
-				'loggedIn'        => 'business',
+				'loggedIn'        => 'user5',
 				'state'           => [
 					'id' => 1
 				],
 				'expected'        => [
-					'levelNet'    => 100.0,
-					'basePrice'   => 100.0, // Base price, including sign-up and surcharges
+					'levelNet'    => 50.0,
 					'isRecurring' => false
 				],
 				'message'         => 'User with active subscription'
@@ -95,7 +111,6 @@ class BasePriceTest extends ValidatorTestCase
 				],
 				'expected'        => [
 					'levelNet'    => 0.0,
-					'basePrice'   => 0.0, // Base price, including sign-up and surcharges
 					'isRecurring' => false
 				],
 				'message'         => 'Free subscription'
