@@ -11,6 +11,7 @@ namespace Akeeba\Subscriptions\Site\Model;
 use FOF30\Container\Container;
 use FOF30\Model\DataModel\Collection as DataCollection;
 use FOF30\Model\Model;
+use FOF30\Utils\Collection;
 use Joomla\CMS\User\User;
 
 class MySubs extends Model
@@ -55,9 +56,13 @@ class MySubs extends Model
 		$this->levels = $this->getLevels($this->items);
 	}
 
-	public function getDisplayData(): array
+	public function getDisplayData(): Collection
 	{
-		$this->levels->map(function (Levels $level) {
+		return $this->levels
+			->sortBy(function (Levels $level) {
+				return $level->ordering;
+			})
+			->map(function (Levels $level) {
 			$isRecurring        = $this->isRecurring($level);
 			$latestRecurringSub = $this->getLastActiveRecurringSubscription($level);
 			$relatedSub         = $this->getRelatedSubscription($level);
@@ -80,11 +85,13 @@ class MySubs extends Model
 					$this->container->platform->getDate($subscription->publish_down)->getTimestamp();
 				}, SORT_NUMERIC);
 
-			return [
+				$levelStatus = $this->getLevelStatus($level);
+
+				return [
 				// Subscription level
 				'level'        => $level,
 				// Overall status (what the user perceives as their subscription status)
-				'status'       => $this->getLevelStatus($level),
+				'status'       => $levelStatus,
 				// Latest subscription, by expiration date
 				'latest'       => $subsInThisLevel->first(),
 				// Recurring charges information
@@ -106,11 +113,9 @@ class MySubs extends Model
 				// Buttons to display at the bottom of the subscription level info
 				'buttons'      => [
 					// Let me repurchase a canceled / expired subscription?
-					'purchase' => false,
+					'purchase' => ($relatedType == 'none') && in_array($levelStatus, ['expired', 'canceled']) && !$isRecurring,
 					// Let me renew this subscription?
-					'renew'    => false,
-					// Let me upgrade to a different level? One boolean per level ID.
-					'upgrade'  => [],
+					'renew'    => ($relatedType == 'none') && ($levelStatus == 'active') && !$isRecurring,
 				],
 				// All transactions in chronological creation order
 				'transactions' => $subsInThisLevel->sortByDesc(function (Subscriptions $subscription) {
@@ -118,8 +123,6 @@ class MySubs extends Model
 				}),
 			];
 		});
-
-		return [];
 	}
 
 	/**

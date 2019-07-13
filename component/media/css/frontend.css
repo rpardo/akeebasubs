@@ -564,4 +564,38 @@
 #akeebasubs table.asfelist tfoot td {
   text-align: center;
 }
+#akeebasubs header.mysubs-level-header {
+  display: flex;
+  flex-wrap: wrap;
+}
+#akeebasubs header.mysubs-level-header > h3 {
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  margin-bottom: 0;
+}
+#akeebasubs header.mysubs-level-header > h3 > img {
+  margin-right: 1em;
+}
+#akeebasubs header.mysubs-level-header div.akeebasubs-subscription-info {
+  align-self: center;
+  text-align: right;
+}
+#akeebasubs header.mysubs-level-header div.akeebasubs-subscription-info span {
+  display: block;
+}
+@media (max-width: 576px) {
+  #akeebasubs header.mysubs-level-header {
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+  #akeebasubs header.mysubs-level-header div.akeebasubs-subscription-info {
+    margin-top: 0.75em;
+    border-top: 1px solid rgba(255, 255, 255, 0.5);
+    padding-top: 0.75em;
+    align-self: stretch;
+    text-align: left;
+  }
+}
 /*# sourceMappingURL=frontend.css.map */

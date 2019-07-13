@@ -82,16 +82,21 @@ class Subscriptions extends \Akeeba\Subscriptions\Admin\Model\Subscriptions
 			return 'canceled';
 		}
 
-		if ($this->enabled)
+		$now         = time();
+		$expiresWhen = $this->container->platform->getDate($this->publish_down)->getTimestamp();
+
+		if ($expiresWhen <= $now)
 		{
-			return 'active';
+			return 'expired';
 		}
 
-		if ($this->container->platform->getDate($this->publish_up)->getTimestamp() >= time())
+		$activeWhen = $this->container->platform->getDate($this->publish_up)->getTimestamp();
+
+		if ($activeWhen >= $now)
 		{
 			return 'waiting';
 		}
 
-		return 'expired';
+		return 'active';
 	}
 }

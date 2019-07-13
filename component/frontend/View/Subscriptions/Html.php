@@ -105,7 +105,7 @@ class Html extends \FOF30\View\DataView\Html
 		$mySubsModel = $this->container->factory->model('MySubs', [
 			'items' => $this->items,
 			'user'  => $this->container->platform->getUser(),
-		])->tmpInstance();
+		]);
 
 		$this->displayInformation = $mySubsModel->getDisplayData();
 	}
