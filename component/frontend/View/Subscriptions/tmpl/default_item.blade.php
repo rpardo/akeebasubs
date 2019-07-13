@@ -146,6 +146,47 @@ $hasButtons = $hasRenew || $hasRecurringButtons || $hasReceipt || $hasLegacyInvo
 		</span>
 	</p>
 
+	@if(array_key_exists($sub->getId(), $this->renewalsSorting['downgrades']) && !is_null($this->renewalsSorting['downgrades'][$sub->getId()]))
+		<?php
+		/** @var \Akeeba\Subscriptions\Site\Model\Subscriptions $relatedSub */
+		$relatedSub = $this->items[$this->renewalsSorting['downgrades'][$sub->getId()]];
+		?>
+		<p class="akeeba-block--info">
+			@sprintf(
+				'COM_AKEEBASUBS_SUBSCRIPTIONS_ALREADYDOWNGRADED',
+				$relatedSub->getId(),
+				\Akeeba\Subscriptions\Admin\Helper\Format::date($relatedSub->publish_up),
+				\Akeeba\Subscriptions\Admin\Helper\Format::date($relatedSub->publish_down)
+			)
+		</p>
+	@elseif(array_key_exists($sub->getId(), $this->renewalsSorting['upgrades']) && !is_null($this->renewalsSorting['upgrades'][$sub->getId()]))
+		<?php
+		/** @var \Akeeba\Subscriptions\Site\Model\Subscriptions $relatedSub */
+		$relatedSub = $this->items[$this->renewalsSorting['upgrades'][$sub->getId()]];
+		?>
+		<p class="akeeba-block--info">
+			@sprintf(
+				'COM_AKEEBASUBS_SUBSCRIPTIONS_ALREADYUPGRADED',
+				$relatedSub->getId(),
+				\Akeeba\Subscriptions\Admin\Helper\Format::date($relatedSub->publish_up),
+				\Akeeba\Subscriptions\Admin\Helper\Format::date($relatedSub->publish_down)
+			)
+		</p>
+	@elseif(array_key_exists($sub->getId(), $this->renewalsSorting['renewals']) && !is_null($this->renewalsSorting['renewals'][$sub->getId()]))
+		<?php
+		/** @var \Akeeba\Subscriptions\Site\Model\Subscriptions $relatedSub */
+		$relatedSub = $this->items[$this->renewalsSorting['renewals'][$sub->getId()]];
+		?>
+		<p class="akeeba-block--info">
+			@sprintf(
+				'COM_AKEEBASUBS_SUBSCRIPTIONS_ALREADYRENEWED',
+				$relatedSub->getId(),
+				\Akeeba\Subscriptions\Admin\Helper\Format::date($relatedSub->publish_up),
+				\Akeeba\Subscriptions\Admin\Helper\Format::date($relatedSub->publish_down)
+			)
+		</p>
+	@endif
+
 	@if(($sub->getFieldValue('state') != 'P') && $hasButtons)
 		<hr/>
 
