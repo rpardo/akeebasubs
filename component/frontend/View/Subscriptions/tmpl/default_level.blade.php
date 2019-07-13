@@ -151,7 +151,7 @@ $formatCurrency = function(float $price) use ($currencyPosition, $currencySymbol
         @elseif (!is_null($pendingSub))
             <div class="akeeba-block--warning">
                 <h5>
-                    @lang('COM_AKEEBASUBS_SUBSCRIPTIONS_UNPAID_CONTAINED')
+                    @lang('COM_AKEEBASUBS_SUBSCRIPTIONS_PENDING_PAYMENT_CONTAINED')
                 </h5>
                 <a href="@route('index.php?option=com_akeebasubs&view=Message&subid=' . $pendingSub->getId())"
                    class="akeeba-btn--grey">
