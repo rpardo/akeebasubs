@@ -75,8 +75,8 @@ $hasReceipt = !empty($sub->receipt_url);
  * - The akeebasubs_invoice_id is of the 'akeebasubs' type (some older invoices use ccInvoices or other 3PD extensions)
  */
 $hasLegacyInvoice = !empty($sub->akeebasubs_invoice_id) && empty($sub->receipt_url)
-	&& array_key_exists($sub->akeebasubs_subscription_id, $this->invoices)
-	&& ($this->invoices[$sub->akeebasubs_subscription_id]->extension == 'akeebasubs');
+	&& !empty($sub->invoice)
+	&& ($sub->invoice->extension == 'akeebasubs');
 
 /**
  * A subscription can show the Pay Now link if:

@@ -9,36 +9,15 @@ namespace Akeeba\Subscriptions\Site\View\Subscriptions;
 
 use Akeeba\Subscriptions\Site\Model\Invoices;
 use Akeeba\Subscriptions\Site\Model\Levels;
+use Akeeba\Subscriptions\Site\Model\MySubs;
 use Akeeba\Subscriptions\Site\Model\Subscriptions;
-use JUri;
+use FOF30\Factory\Exception\ModelNotFound;
 
 defined('_JEXEC') or die;
 
 class Html extends \FOF30\View\DataView\Html
 {
 	public $returnURL = '';
-
-	public $activeLevels = [];
-
-	public $allLevels = [];
-
-	/**
-	 * Level ID ==> IDs of levels I am related to (my upgrades)
-	 *
-	 * @var   array
-	 * @since 7.0.0
-	 */
-	public $upgradeLevels = [];
-
-	/**
-	 * Level ID => IDs of levels that have me as related (my downgrades)
-	 *
-	 * @var   array
-	 * @since 7.0.0
-	 */
-	public $downgradeLevels = [];
-
-	public $subIDs = [];
 
 	public $invoices = [];
 
@@ -53,12 +32,16 @@ class Html extends \FOF30\View\DataView\Html
 
 	private $recurringSubsPerLevel = [];
 
+	public $displayInformation = [];
+
 	protected function onBeforeBrowse()
 	{
-		parent::onBeforeBrowse();
+		// Eager loading of relations
+		/** @var Subscriptions $model */
+		$model = $this->getModel();
+		$model->with(['level', 'invoice']);
 
-		// Get subscription levels information
-		$this->initLevelsInformation();
+		parent::onBeforeBrowse();
 
 		// Get the information on active recurring subscriptions per subscription level
 		$this->initRecurringPerLevel();
@@ -69,91 +52,62 @@ class Html extends \FOF30\View\DataView\Html
 		// Sort the renewals by type: renewals, upgrades, downgrades
 		$this->sortRenewals();
 
-		// Get legacy invoicing data
-		$this->initLegacyInvoices();
-	}
+		// Assemble the information we need to display subscriptions in the frontend
+		/**
+		 * Level object
+		 * Status: new, pending, waiting, active, expired, canceled
+		 * Latest enabled subscription
+		 * Recurring:
+		 *      Is it recurring?
+		 *      Update URL
+		 *      Cancel URL
+		 *      Can I upgrade to recurring?
+		 *          The level needs recurring info and upsell set to always or renewal
+		 *          We also need to have NO upgrades or downgrades already purchased
+		 *          IMPORTANT!! shows button ONLY IF "show renew" below is also true!
+		 * Upgrade/Downgrade status
+		 *      Status: n/a, upgraded, downgraded
+		 *      Replacement subscription: subscription object
+		 * Button options
+		 *      Show "Purchase again"?
+		 *          If it's forever: no!
+		 *          If it's fixed date AND level.fixed_date != sub.publish_down for any waiting or active sub:
+		 *              If upgrade.status != n/a: no!
+		 *              Otherwise: yes!
+		 *          If overall.status is not expired or canceled:
+		 *              no!
+		 *          If it's fixed date:
+		 *              If upgrade.status != n/a: no!
+		 *              Otherwise, yes, you can
+		 *
+		 *      Show "Renew"?
+		 *          If upgrade.status != n/a:
+		 *              no!
+		 *          If overall.status is pending, waiting, active:
+		 *              no!
+		 *          If it's forever or fixed_date:
+		 *              no! (the fixed_date exceptions are handled as "purchase again" above)
+		 *          Otherwise: yes!
+		 *
+		 *      Show Upgrade button (foreach upgrade level "levelup")?
+		 * Billing history: All subscriptions per level ordered chronologically by expiration date with metadata:
+		 *      Sub object
+		 *      Is it new, active, waiting, pending, expired or canceled
+		 *      Legacy invoices
+		 */
 
-	/**
-	 * Retrieve legacy invoicing data (invoices issued as early as mid-2012 and as late as mid-2019).
-	 *
-	 * @return  void
-	 *
-	 * @since   7.0.0
-	 */
-	protected function initLegacyInvoices(): void
-	{
-		$this->invoices = [];
-
-		/** @var Invoices $invoicesModel */
-		$invoicesModel = $this->container->factory->model('Invoices')->tmpInstance();
-
-		if (!empty($this->subIDs))
+		if (empty($this->items))
 		{
-			$rawInvoices = $invoicesModel
-				->subids($this->subIDs)
-				->get(true);
-
-			if ($rawInvoices->count())
-			{
-				/** @var Invoices $rawInvoice */
-				foreach ($rawInvoices as $rawInvoice)
-				{
-					$this->invoices[$rawInvoice->akeebasubs_subscription_id] = $rawInvoice;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Gets all subscription levels and all active levels
-	 *
-	 * @return  void
-	 *
-	 * @since   7.0.0
-	 */
-	private function initLevelsInformation(): void
-	{
-		/** @var Levels $levelsModel */
-		$levelsModel = $this->container->factory->model('Levels')->tmpInstance();
-
-		$rawActiveLevels = $levelsModel
-			->get(true);
-
-		$this->activeLevels = [];
-		$this->allLevels    = [];
-
-		// Let's get all the enabled plugins
-		if ($rawActiveLevels->count())
-		{
-			/** @var Levels $l */
-			foreach ($rawActiveLevels as $l)
-			{
-				$this->allLevels[$l->akeebasubs_level_id] = $l;
-
-				if ($l->enabled)
-				{
-					$this->activeLevels[] = $l->akeebasubs_level_id;
-				}
-			}
+			return;
 		}
 
-		$this->upgradeLevels   = $rawActiveLevels->lists('related_levels', 'akeebasubs_level_id');
-		$this->downgradeLevels = array_map(function ($v) {
-			return [];
-		}, $this->upgradeLevels);
+		/** @var MySubs $mySubsModel */
+		$mySubsModel = $this->container->factory->model('MySubs', [
+			'items' => $this->items,
+			'user'  => $this->container->platform->getUser(),
+		])->tmpInstance();
 
-		array_walk($this->upgradeLevels, function ($relatedLevels, $thisLevel) {
-			if (empty($relatedLevels))
-			{
-				return;
-			}
-
-			array_walk($relatedLevels, function ($aRelatedLevel) use ($thisLevel) {
-				$this->downgradeLevels[$aRelatedLevel][] = $thisLevel;
-			});
-		});
-
-		$this->downgradeLevels = array_map('array_unique', $this->downgradeLevels);
+		$this->displayInformation = $mySubsModel->getDisplayData();
 	}
 
 	/**
@@ -197,7 +151,7 @@ class Html extends \FOF30\View\DataView\Html
 	/**
 	 * Are there any *active* recurring subscriptions on the same level as $sub?
 	 *
-	 * @param   Subscriptions  $sub
+	 * @param Subscriptions $sub
 	 *
 	 * @return  bool
 	 *
@@ -229,7 +183,7 @@ class Html extends \FOF30\View\DataView\Html
 	/**
 	 * Is there another active, new or pending subscription on the same level as $sub?
 	 *
-	 * @param   Subscriptions  $sub  The subscription record to check
+	 * @param Subscriptions $sub The subscription record to check
 	 *
 	 * @return  bool
 	 */
@@ -276,45 +230,18 @@ class Html extends \FOF30\View\DataView\Html
 			'canceled' => [],
 		];
 
-		if ($this->items->count())
-		{
-			/** @var Subscriptions $sub */
-			foreach ($this->items as $sub)
-			{
-				$id             = $sub->akeebasubs_subscription_id;
-				$this->subIDs[] = $id;
-				$upDate         = $this->container->platform->getDate($sub->publish_up);
+		$this->subIDs = $this->items->modelKeys();
+		$this->items->each(function (Subscriptions $sub) {
+			$status = $sub->status;
 
-				if ($sub->state == 'N')
-				{
-					// Filter out new subscriptions without a payment_url; we can't do anything about them :)
-					if (!empty($sub->payment_url))
-					{
-						$this->sortTable['new'][] = $id;
-					}
-				}
-				elseif ($sub->state == 'P')
-				{
-					$this->sortTable['pending'][] = $id;
-				}
-				elseif ($sub->state == 'X')
-				{
-					$this->sortTable['canceled'][] = $id;
-				}
-				elseif ($sub->enabled)
-				{
-					$this->sortTable['active'][] = $id;
-				}
-				elseif (($sub->state == 'C') && ($upDate->toUnix() >= time()))
-				{
-					$this->sortTable['waiting'][] = $id;
-				}
-				else
-				{
-					$this->sortTable['expired'][] = $id;
-				}
+			// Filter out new subscriptions without a payment_url; we can't do anything about them :)
+			if (($status == 'new') && empty($sub->payment_url))
+			{
+				return;
 			}
-		}
+
+			$this->sortTable[$status][] = $sub->getId();
+		});
 
 
 	}
@@ -326,31 +253,32 @@ class Html extends \FOF30\View\DataView\Html
 	 */
 	private function sortRenewals()
 	{
-		if (empty($this->sortTable['active']) || empty($this->sortTable['waiting']))
-		{
-			return;
-		}
+		(clone $this->items)
+			// Get the active subscriptions
+			->filter(function (Subscriptions $sub) {
+				return $sub->status == 'active';
+			})
+			// Get the subscription's renewals, upgrades and downgrades
+			->each(function (Subscriptions $activeSub) {
+				$this->renewalsSorting['renewals'][$activeSub->getId()] =
+					$this->getLastRenewalSubInLevels([$activeSub->akeebasubs_level_id]);
 
-		foreach ($this->sortTable['active'] as $activeSubId)
-		{
-			/** @var Subscriptions $activeSub */
-			$activeSub = $this->items[$activeSubId];
+				$this->renewalsSorting['upgrades'][$activeSub->getId()] =
+					$this->getLastRenewalSubInLevels(
+						$activeSub->level->upgrades->modelKeys()
+					);
 
-			$this->renewalsSorting['renewals'][$activeSub->getId()]   =
-				$this->getLastRenewalSubInLevels([$activeSub->akeebasubs_level_id]);
-
-			$this->renewalsSorting['upgrades'][$activeSub->getId()]   =
-				$this->getLastRenewalSubInLevels($this->upgradeLevels[$activeSub->akeebasubs_level_id]);
-
-			$this->renewalsSorting['downgrades'][$activeSub->getId()] =
-				$this->getLastRenewalSubInLevels($this->downgradeLevels[$activeSub->akeebasubs_level_id]);
-		}
+				$this->renewalsSorting['downgrades'][$activeSub->getId()] =
+					$this->getLastRenewalSubInLevels(
+						$activeSub->level->downgrades->modelKeys()
+					);
+			});
 	}
 
 	/**
 	 * Get a list of all renewal subscription IDs in the given subscription levels
 	 *
-	 * @param   array  $levels  IDs of levels to look for
+	 * @param array $levels IDs of levels to look for
 	 *
 	 * @return  int
 	 *
@@ -384,7 +312,7 @@ class Html extends \FOF30\View\DataView\Html
 		}
 
 		$lastTimestamp = 0;
-		$subId = null;
+		$subId         = null;
 
 		foreach ($allSubs as $id => $timestamp)
 		{
@@ -394,7 +322,7 @@ class Html extends \FOF30\View\DataView\Html
 			}
 
 			$lastTimestamp = $timestamp;
-			$subId = $id;
+			$subId         = $id;
 		}
 
 		return $subId;

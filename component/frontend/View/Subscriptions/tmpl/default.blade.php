@@ -18,7 +18,7 @@ defined('_JEXEC') or die();
 
 	@include('site:com_akeebasubs/Subscriptions/tz_warning')
 
-	@if(empty($this->subIDs))
+	@if($this->getItems()->count() < 1)
 		<p>
 			@lang('COM_AKEEBASUBS_SUBSCRIPTIONS_NO_SUBSCRIPTIONS')
 		</p>
