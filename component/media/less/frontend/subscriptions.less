@@ -44,7 +44,9 @@ table.asfelist {
   }
 }
 
-
+div.akeebasubs-subscription-levels-subscriptions-details {
+  margin-bottom: 3em;
+}
 
 header.mysubs-level-header {
   display: flex;
@@ -65,22 +67,24 @@ header.mysubs-level-header {
   div.akeebasubs-subscription-info {
     align-self: center;
     text-align: right;
-    
+
     span {
       display: block;
     }
   }
 }
-@media(max-width:576px) {
+
+@media (max-width: 576px) {
   header.mysubs-level-header {
     flex-direction: column;
     flex-wrap: nowrap;
+
     div.akeebasubs-subscription-info {
       margin-top: .75em;
-      border-top: 1px solid rgba(255,255,255,.5);
-      padding-top:.75em;
+      border-top: 1px solid rgba(255, 255, 255, .5);
+      padding-top: .75em;
       align-self: stretch;
-      text-align:left;
+      text-align: left;
     }
   }
 }

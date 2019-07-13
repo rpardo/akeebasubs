@@ -68,12 +68,16 @@ class SubscriptionPaymentSucceeded extends PaymentSucceeded
 		// Did I have a paid trial period (e.g. a year at full price before recurring kicks in)?
 		$initial_price      = isset($subscription->params['override_initial_price']) ? $subscription->params['override_initial_price'] : null;
 		$is_initial_payment = isset($requestData['initial_payment']) && ($requestData['initial_payment'] == 1);
+		// The prediscount and discount amount are zero EXCEPT for the paid trial period
+		$prediscount_amount = 0.00;
+		$discount_amount    = 0.00;
 		// The discount amount is ONLY calculated for the paid trial period
-		$discount_amount = (!is_null($initial_price) && $is_initial_payment) ? $subscription->prediscount_amount - $net_amount : 0.00;
 
 		if (!is_null($initial_price) && $is_initial_payment)
 		{
-			$note = 'Initial payment with overridden initial price';
+			$prediscount_amount = $subscription->prediscount_amount;
+			$discount_amount    = $subscription->prediscount_amount - $net_amount;
+			$note               = 'Initial payment with overridden initial price';
 
 			if (isset($subscription->params['override_trial_days']) && !empty($subscription->params['override_trial_days']))
 			{
@@ -94,24 +98,25 @@ class SubscriptionPaymentSucceeded extends PaymentSucceeded
 		$jDate->add($plusOneDay);
 
 		$updates = [
-			'processor_key'   => $requestData['order_id'],
-			'state'           => 'C',
+			'processor_key'      => $requestData['order_id'],
+			'state'              => 'C',
 			// Yeah, enabled is 0. Upon saving it gets updated to 1 and triggers the plugins.
-			'enabled'         => 0,
-			'payment_method'  => $requestData['payment_method'],
+			'enabled'            => 0,
+			'payment_method'     => $requestData['payment_method'],
 			// This effectively marks the transaction as "don't let the user try to pay again"
-			'payment_url'     => '',
-			'receipt_url'     => $requestData['receipt_url'],
-			'gross_amount'    => $gross_amount,
-			'tax_amount'      => $tax_amount,
-			'net_amount'      => $net_amount,
-			'tax_percent'     => $tax_percent,
-			'discount_amount' => $discount_amount,
-			'fee_amount'      => $fee_amount,
-			'notes'           => $note,
-			'publish_up'      => gmdate('Y-m-d H:i:s'),
-			'publish_down'    => $jDate->format('Y-m-d H:i:s'),
-			'contact_flag'    => 3,
+			'payment_url'        => '',
+			'receipt_url'        => $requestData['receipt_url'],
+			'gross_amount'       => $gross_amount,
+			'tax_amount'         => $tax_amount,
+			'net_amount'         => $net_amount,
+			'tax_percent'        => $tax_percent,
+			'prediscount_amount' => $prediscount_amount,
+			'discount_amount'    => $discount_amount,
+			'fee_amount'         => $fee_amount,
+			'notes'              => $note,
+			'publish_up'         => gmdate('Y-m-d H:i:s'),
+			'publish_down'       => $jDate->format('Y-m-d H:i:s'),
+			'contact_flag'       => 3,
 		];
 
 		// Handle an automatic subscription update (n-th payment)

@@ -63,66 +63,70 @@ class MySubs extends Model
 				return $level->ordering;
 			})
 			->map(function (Levels $level) {
-			$isRecurring        = $this->isRecurring($level);
-			$latestRecurringSub = $this->getLastActiveRecurringSubscription($level);
-			$relatedSub         = $this->getRelatedSubscription($level);
-			$relatedType        = 'none';
+				$isRecurring        = $this->isRecurring($level);
+				$latestRecurringSub = $this->getLastActiveRecurringSubscription($level);
+				$relatedSub         = $this->getRelatedSubscription($level);
+				$relatedType        = 'none';
 
-			if (!is_null($relatedSub))
-			{
-				$relatedType = 'downgrade';
-
-				if (in_array($relatedSub->akeebasubs_level_id, $level->upgrades->lists('akeebasubs_level_id')))
+				if (!is_null($relatedSub))
 				{
-					$relatedType = 'upgrade';
-				}
-			}
+					$relatedType = 'downgrade';
 
-			$subsInThisLevel = (clone $this->items)
-				->filter(function (Subscriptions $subscription) use ($level) {
-					return $subscription->akeebasubs_level_id == $level->getId();
-				})->sortByDesc(function (Subscriptions $subscription) {
-					$this->container->platform->getDate($subscription->publish_down)->getTimestamp();
-				}, SORT_NUMERIC);
+					if (in_array($relatedSub->akeebasubs_level_id, $level->upgrades->lists('akeebasubs_level_id')))
+					{
+						$relatedType = 'upgrade';
+					}
+				}
+
+				$subsInThisLevel = (clone $this->items)
+					->filter(function (Subscriptions $subscription) use ($level) {
+						return $subscription->akeebasubs_level_id == $level->getId();
+					})->sortByDesc(function (Subscriptions $subscription) {
+						$this->container->platform->getDate($subscription->publish_down)->getTimestamp();
+					}, SORT_NUMERIC);
 
 				$levelStatus = $this->getLevelStatus($level);
 
 				return [
-				// Subscription level
-				'level'        => $level,
-				// Overall status (what the user perceives as their subscription status)
-				'status'       => $levelStatus,
-				// Latest subscription, by expiration date
-				'latest'       => $subsInThisLevel->first(),
-				// Recurring charges information
-				'recurring'    => [
-					// Has the client purchase a recurring subscription?
-					'is_recurring' => $isRecurring,
-					// Billing update URL
-					'update_url'   => $isRecurring ? $latestRecurringSub->update_url : null,
-					// Cancelation URL
-					'cancel_url'   => $isRecurring ? $latestRecurringSub->cancel_url : null,
-				],
-				// Information about subscription upgrades and downgrades
-				'related'      => [
-					// Has the client purchased upgrades/downgrades? Values: none, upgrade, downgrade
-					'status'      => $relatedType,
-					// The (latest) upgrade / downgrade subscription purchased by the client
-					'related_sub' => $relatedSub,
-				],
-				// Buttons to display at the bottom of the subscription level info
-				'buttons'      => [
-					// Let me repurchase a canceled / expired subscription?
-					'purchase' => ($relatedType == 'none') && in_array($levelStatus, ['expired', 'canceled']) && !$isRecurring,
-					// Let me renew this subscription?
-					'renew'    => ($relatedType == 'none') && ($levelStatus == 'active') && !$isRecurring,
-				],
-				// All transactions in chronological creation order
-				'transactions' => $subsInThisLevel->sortByDesc(function (Subscriptions $subscription) {
-					$this->container->platform->getDate($subscription->created_on)->getTimestamp();
-				}),
-			];
-		});
+					// Subscription level
+					'level'        => $level,
+					// Overall status (what the user perceives as their subscription status)
+					'status'       => $levelStatus,
+					// Latest subscription, by expiration date
+					'latest'       => $subsInThisLevel->first(),
+					// Recurring charges information
+					'recurring'    => [
+						// Has the client purchase a recurring subscription?
+						'is_recurring' => $isRecurring,
+						// Billing update URL
+						'update_url'   => $isRecurring ? $latestRecurringSub->update_url : null,
+						// Cancelation URL
+						'cancel_url'   => $isRecurring ? $latestRecurringSub->cancel_url : null,
+					],
+					// Information about subscription upgrades and downgrades
+					'related'      => [
+						// Has the client purchased upgrades/downgrades? Values: none, upgrade, downgrade
+						'status'      => $relatedType,
+						// The (latest) upgrade / downgrade subscription purchased by the client
+						'related_sub' => $relatedSub,
+					],
+					// Buttons to display at the bottom of the subscription level info
+					'buttons'      => [
+						// Let me repurchase a canceled / expired subscription?
+						'purchase' => ($relatedType == 'none') && in_array($levelStatus, [
+								'expired', 'canceled',
+							]) && !$isRecurring,
+						// Let me renew this subscription?
+						'renew'    => ($relatedType == 'none') && in_array($levelStatus, [
+								'active', 'waiting',
+							]) && !$isRecurring,
+					],
+					// All transactions in chronological creation order
+					'transactions' => $subsInThisLevel->sortByDesc(function (Subscriptions $subscription) {
+						$this->container->platform->getDate($subscription->created_on)->getTimestamp();
+					}),
+				];
+			});
 	}
 
 	/**
@@ -234,7 +238,7 @@ class MySubs extends Model
 		 */
 		if (in_array('waiting', $allStatuses))
 		{
-			return 'active';
+			return 'waiting';
 		}
 
 		/**

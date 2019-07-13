@@ -8,8 +8,20 @@
 defined('_JEXEC') or die();
 
 /** @var \Akeeba\Subscriptions\Site\View\Subscriptions\Html $this */
+
+$js = <<< JS
+function akeebasubs_toggle_div(id)
+{
+	var elDiv = document.getElementById(id);
+
+	elDiv.style.display = (elDiv.style.display === 'none') ? 'block' : 'none';
+}
+JS;
+
+
 ?>
 @include('site:com_akeebasubs/Level/paddlejs')
+@inlineJs($js)
 
 <div id="akeebasubs" class="subscriptions">
 	<h2 class="pageTitle">
