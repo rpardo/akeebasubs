@@ -601,4 +601,14 @@
     text-align: left;
   }
 }
+#akeebasubs h4.akeebasubs-subscriptions-billing-history-head {
+  display: flex;
+}
+#akeebasubs h4.akeebasubs-subscriptions-billing-history-head > span {
+  flex-grow: 1;
+}
+#akeebasubs h4.akeebasubs-subscriptions-billing-history-head > button {
+  align-self: center;
+  margin-bottom: 0.25em;
+}
 /*# sourceMappingURL=frontend.css.map */

@@ -126,6 +126,22 @@ class MySubs extends Model
 						$this->container->platform->getDate($subscription->created_on)->getTimestamp();
 					}),
 				];
+			})->sortBy(function (array $levelInfo) {
+				switch ($levelInfo['status'])
+				{
+					case 'active':
+						return 1;
+					case 'waiting':
+						return 2;
+					case 'pending':
+						return 3;
+					case 'new':
+						return 4;
+					case 'expired':
+						return 5;
+					case 'canceled':
+						return 6;
+				}
 			});
 	}
 
