@@ -160,20 +160,25 @@ class MySubs extends Model
 					}),
 				];
 			})->sortBy(function (array $levelInfo) {
+				if (!$levelInfo['level']->enabled)
+				{
+					return 600;
+				}
+
 				switch ($levelInfo['status'])
 				{
 					case 'active':
-						return 1;
+						return 100;
 					case 'waiting':
-						return 2;
+						return 200;
 					case 'pending':
-						return 3;
+						return 300;
 					case 'new':
-						return 4;
+						return 400;
 					case 'expired':
-						return 5;
+						return 500;
 					case 'canceled':
-						return 6;
+						return 1000;
 				}
 			});
 	}

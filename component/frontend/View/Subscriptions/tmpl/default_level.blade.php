@@ -59,11 +59,11 @@ $statusToColor = function(string $status): string {
 			break;
 
 		case 'expired':
-			return 'grey';
+			return 'info';
 			break;
 
 		case 'canceled':
-			return 'info';
+			return 'grey';
 			break;
 	}
 };
@@ -78,7 +78,7 @@ $formatCurrency = function(float $price) use ($currencyPosition, $currencySymbol
 
 ?>
 
-<div class="akeeba-panel--{{ $statusToColor($levelInfo['status']) }} akeebasubs-subscription-levels-subscriptions-details">
+<div class="akeeba-panel--{{ $level->enabled ? $statusToColor($levelInfo['status']) : 'grey' }} akeebasubs-subscription-levels-subscriptions-details">
     {{-- Header for the Level --}}
     <header class="akeeba-block-header mysubs-level-header">
         {{-- LEVEL IMAGE AND TITLE --}}
@@ -124,9 +124,23 @@ $formatCurrency = function(float $price) use ($currencyPosition, $currencySymbol
     </header>
 
     {{-- Main Contents for the Level --}}
+
+    {{-- LEVEL DESCRIPTION --}}
+    <div
+            class="akeebasubs-subscription-description akeebasubs-subscriptions-description-level"
+            id="akeebasubs-subscriptions-description-level-{{{ $level->getId() }}}">
+        {{ $level->description }}
+    </div>
+
+    {{-- RENEWAL / UPGRADE / DOWNGRADE INFO --}}
     <div>
+        {{-- SUBSCRIPTION LEVEL IS UNPUBLISHED --}}
+        @if (!$level->enabled)
+            <span class="akeeba-label--red">
+                @lang('COM_AKEEBASUBS_SUBSCRIPTIONS_LEVEL_UNPUBLISHED')
+            </span>
         {{-- SUBSCRIPTION HAS BEEN DOWNGRADED --}}
-        @if ($levelInfo['related']['status'] == 'downgrade')
+        @elseif ($levelInfo['related']['status'] == 'downgrade')
             <p class="akeeba-block--info">
                 @sprintf(
                     'COM_AKEEBASUBS_SUBSCRIPTIONS_ALREADYDOWNGRADED',
@@ -169,11 +183,14 @@ $formatCurrency = function(float $price) use ($currencyPosition, $currencySymbol
                     @lang('COM_AKEEBASUBS_SUBSCRIPTIONS_BTN_MORE_INFO')
                 </a>
             </div>
+        {{-- CAN BE UPGRADED --}}
         @elseif ($levelInfo['buttons']['renew'] || $levelInfo['buttons']['purchase'])
-            <a class="akeeba-btn--ghost"
-               href="@route('index.php?option=com_akeebasubs&view=Level&slug=' . $level->slug)">
-                @lang('COM_AKEEBASUBS_SUBSCRIPTIONS_ACTION_' . ($levelInfo['buttons']['renew']) ? 'RENEW' : 'REPURCHASE')
-            </a>
+            <div class="akeebasubs-subscription-level-renew-container">
+                <a class="akeeba-btn--primary"
+                  href="@route('index.php?option=com_akeebasubs&view=Level&slug=' . $level->slug)">
+                    @lang('COM_AKEEBASUBS_SUBSCRIPTIONS_ACTION_' . ($levelInfo['buttons']['renew'] ? 'RENEW' : 'REPURCHASE'))
+                </a>
+            </div>
         @endif
 
 

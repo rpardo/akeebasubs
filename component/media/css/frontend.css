@@ -611,4 +611,14 @@
   align-self: center;
   margin-bottom: 0.25em;
 }
+#akeebasubs div.akeebasubs-subscriptions-description-level > p:first-child {
+  display: none;
+}
+#akeebasubs div.akeebasubs-subscription-level-renew-container {
+  text-align: center;
+}
+#akeebasubs div.akeebasubs-subscription-level-renew-container a {
+  width: 100%;
+  max-width: 200px;
+}
 /*# sourceMappingURL=frontend.css.map */
