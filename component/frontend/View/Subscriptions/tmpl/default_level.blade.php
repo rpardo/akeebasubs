@@ -221,7 +221,11 @@ $formatCurrency = function(float $price) use ($currencyPosition, $currencySymbol
                     </span>
 
                     <span class="akeebasubs-subscription-purchase-date">
-                        {{ \Akeeba\Subscriptions\Admin\Helper\Format::date($lastSub->created_on) }}
+                        @if ((int)substr($lastSub->created_on, 0, 4) < 1)
+                            @lang('COM_AKEEBASUBS_SUBSCRIPTIONS_INVALIDCREATIONDATE')
+                        @else
+                            {{ \Akeeba\Subscriptions\Admin\Helper\Format::date($lastSub->created_on) }}
+                        @endif
                     </span>
 
                     {{-- TRANSACTION HEADER :: STATUS --}}
