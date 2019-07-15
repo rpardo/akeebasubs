@@ -64,6 +64,8 @@ class MySubs extends Model
 			})
 			->map(function (Levels $level) {
 				$isRecurring        = $this->isRecurring($level);
+				$isForever          = $level->forever;
+				$isFixedDate        = !empty($level->fixed_date) && ($level->fixed_date != $level->getDbo()->getNullDate());
 				$latestRecurringSub = $this->getLastActiveRecurringSubscription($level);
 				$relatedSub         = $this->getRelatedSubscription($level);
 				$relatedType        = 'none';
@@ -85,7 +87,38 @@ class MySubs extends Model
 						$this->container->platform->getDate($subscription->publish_down)->getTimestamp();
 					}, SORT_NUMERIC);
 
-				$levelStatus = $this->getLevelStatus($level);
+				/** @var Subscriptions $latestSubOnThisLevel */
+				$latestSubOnThisLevel = $subsInThisLevel->first();
+				$levelStatus          = $this->getLevelStatus($level);
+
+				/**
+				 * We allow fixed date subscription renewals if the level's fixed expiration date is in the future of
+				 * the latest subscription's expiration date. We allow a small drift of 1 day to take into account the
+				 * possibility of having accidentally stripped the time component of either the subscription's
+				 * expiration date or the level's fixed expiration date.
+				 */
+				if ($isFixedDate)
+				{
+					$now           = time();
+					$level_expires = $this->container->platform->getDate($level->fixed_date)->getTimestamp();
+					$publish_down  = $this->container->platform->getDate($latestSubOnThisLevel->publish_down)->getTimestamp();
+					/**
+					 * The level's expiration date must be in the future. There's no point renewing to an immediately
+					 * expired subscription!
+					 */
+					$inTheFuture = $level_expires - $now >= (24 * 3600);
+					/**
+					 * Then we have to make sure that the latest subscription expires BEFORE the subscription level's
+					 * expiration date. Otherwise we would allow people to subscribe again with the same expiration
+					 * date which is pointless.
+					 */
+					$levelExpiresAfterSubscriptionExpires = ($publish_down - $level_expires) >= (24 * 3600);
+					/**
+					 * If either condition is not met we consider this an un-renewable fixed date sub
+					 */
+					$isFixedDate                          = !$inTheFuture || !$levelExpiresAfterSubscriptionExpires;
+				}
+
 
 				return [
 					// Subscription level
@@ -93,7 +126,7 @@ class MySubs extends Model
 					// Overall status (what the user perceives as their subscription status)
 					'status'       => $levelStatus,
 					// Latest subscription, by expiration date
-					'latest'       => $subsInThisLevel->first(),
+					'latest'       => $latestSubOnThisLevel,
 					// Recurring charges information
 					'recurring'    => [
 						// Has the client purchase a recurring subscription?
@@ -115,11 +148,11 @@ class MySubs extends Model
 						// Let me repurchase a canceled / expired subscription?
 						'purchase' => ($relatedType == 'none') && in_array($levelStatus, [
 								'expired', 'canceled',
-							]) && !$isRecurring,
+							]) && !$isRecurring && !$isForever && !$isFixedDate && ($level->enabled),
 						// Let me renew this subscription?
 						'renew'    => ($relatedType == 'none') && in_array($levelStatus, [
 								'active', 'waiting',
-							]) && !$isRecurring,
+							]) && !$isRecurring && !$isForever && !$isFixedDate && ($level->enabled),
 					],
 					// All transactions in chronological creation order
 					'transactions' => $subsInThisLevel->sortByDesc(function (Subscriptions $subscription) {
