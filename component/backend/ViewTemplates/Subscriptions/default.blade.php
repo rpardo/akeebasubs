@@ -30,7 +30,16 @@ $discountOptions = [
 	'none'    => JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_DISCOUNT_NONE'),
 	'coupon'  => JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_DISCOUNT_COUPON'),
 	'upgrade' => JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_DISCOUNT_UPGRADE'),
-]
+];
+
+$paymentMethodOptions = [
+	'apple-pay'     => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_APPLE'),
+	'card'          => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_CARD'),
+	'free'          => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_FREE'),
+	'paypal'        => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_PAYPAL'),
+	'wire-transfer' => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_WIRE'),
+	'unknown'       => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_UNKNOWN'),
+];
 
 ?>
 @extends('admin:com_akeebasubs/Common/browse')
@@ -53,11 +62,11 @@ $discountOptions = [
     </div>
 
     <div class="akeeba-filter-element akeeba-form-group">
-        @selectfilter('processor', \Akeeba\Subscriptions\Admin\Helper\Select::getAllPaymentMethods())
+        @searchfilter('paykey', 'paykey', 'COM_AKEEBASUBS_SUBSCRIPTION_PROCESSOR_KEY')
     </div>
 
     <div class="akeeba-filter-element akeeba-form-group">
-        @searchfilter('paykey', 'paykey', 'COM_AKEEBASUBS_SUBSCRIPTION_PROCESSOR_KEY')
+        @selectfilter('payment_method', $paymentMethodOptions, 'COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_FIELDTITLE')
     </div>
 
     <div class="akeeba-filter-element akeeba-form-group">
@@ -136,6 +145,16 @@ $discountOptions = [
             {
 	            $trClass = 'pending-renewal';
             }
+        }
+
+        if ($row->getFieldValue('state') == 'N')
+        {
+            $trClass = 'new';
+        }
+
+        if ($row->getFieldValue('state') == 'X')
+        {
+            $trClass = 'canceled';
         }
         ?>
         <tr class="{{ $trClass }}">

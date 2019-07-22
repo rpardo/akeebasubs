@@ -21,8 +21,8 @@ $container = FOF30\Container\Container::getInstance('com_akeebasubs');
 
 // Load the language files
 $lang = JFactory::getLanguage();
-$lang->load('mod_aktaxcountry', JPATH_SITE, 'en-GB', true);
-$lang->load('mod_aktaxcountry', JPATH_SITE, null, true);
+$lang->load('mod_aksexpires', JPATH_SITE, 'en-GB', true);
+$lang->load('mod_aksexpires', JPATH_SITE, null, true);
 $lang->load('com_akeebasubs', JPATH_SITE, 'en-GB', true);
 $lang->load('com_akeebasubs', JPATH_SITE, null, true);
 
@@ -45,8 +45,6 @@ else
 
 		return;
 	}
-
-	JLoader::import('joomla.utilities.date');
 
 	$expires = 0;
 	$regex   = '/^\d{1,4}(\/|-)\d{1,2}(\/|-)\d{2,4}[[:space:]]{0,}(\d{1,2}:\d{1,2}(:\d{1,2}){0,1}){0,1}$/';

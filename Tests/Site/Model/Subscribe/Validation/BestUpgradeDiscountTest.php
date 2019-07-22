@@ -43,7 +43,7 @@ class BestUpgradeDiscountTest extends ValidatorWithSubsTestCase
 		$j370DaysAgo->sub(new \DateInterval('P370D'));
 
 		return [
-			[
+			'No upgrade' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [],
 				'state'    => [
@@ -56,7 +56,7 @@ class BestUpgradeDiscountTest extends ValidatorWithSubsTestCase
 				],
 				'message'  => 'No upgrade'
 			],
-			[
+			'DATACOMPLIANCE renewal – caught by expired subscription rule' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
@@ -69,14 +69,14 @@ class BestUpgradeDiscountTest extends ValidatorWithSubsTestCase
 					'id' => '1',
 				],
 				'expected' => [
-					'upgrade_id' => 4,
-					'value'      => 30.0
+					'upgrade_id' => 5,
+					'value'      => 10.0
 					,
 					'combine'    => false
 				],
-				'message'  => 'LEVEL1 renewal – caught by expired subscription rule'
+				'message'  => 'DATACOMPLIANCE renewal – caught by expired subscription rule'
 			],
-			[
+			'DATACOMPLIANCE renewal, first six months' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
@@ -89,54 +89,36 @@ class BestUpgradeDiscountTest extends ValidatorWithSubsTestCase
 				],
 				'expected' => [
 					'upgrade_id' => 1,
-					'value'      => 10.0,
-					'combine'    => false
-				],
-				'message'  => 'LEVEL1 renewal, first six months'
-			],
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [
-					[
-						'level' => 1,
-					    'publish_up' => $jLastHalfYear->toSql(),
-					]
-				],
-				'state'    => [
-					'id' => '1',
-				],
-				'expected' => [
-					'upgrade_id' => 3,
 					'value'      => 20.0,
 					'combine'    => false
 				],
-				'message'  => 'LEVEL1 renewal, last six months'
+				'message'  => 'DATACOMPLIANCE renewal, first six months'
 			],
-			[
+			'DATACOMPLIANCE renewal, last six months' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
 						'level' => 1,
 					    'publish_up' => $jLastHalfYear->toSql(),
-						'net_amount' => 80,
 					]
 				],
 				'state'    => [
 					'id' => '1',
 				],
 				'expected' => [
-					'upgrade_id' => 3,
-					'value'      => 16.0,
+					'upgrade_id' => 1,
+					'value'      => 20.0,
 					'combine'    => false
 				],
-				'message'  => 'LEVEL1 renewal, last six months, different price for lastpercent'
+				'message'  => 'DATACOMPLIANCE renewal, last six months'
 			],
-			[
+			'CONTACTUS renewal, last six months, different price for lastpercent' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
-						'level' => 1,
+						'level' => 2,
 					    'publish_up' => $jLastHalfYear->toSql(),
+						'net_amount' => 40,
 					]
 				],
 				'state'    => [
@@ -144,49 +126,17 @@ class BestUpgradeDiscountTest extends ValidatorWithSubsTestCase
 				],
 				'expected' => [
 					'upgrade_id' => 2,
-					'value'      => 5.00,
+					'value'      => 16.0,
 					'combine'    => false
 				],
-				'message'  => 'LEVEL1 to LEVEL2, fixed price'
+				'message'  => 'CONTACTUS renewal, last six months, different price for lastpercent'
 			],
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [],
-				'state'    => [
-					'id' => '2',
-				],
-				'expected' => [
-					'upgrade_id' => 0,
-					'value'      => 0.00,
-					'combine'    => false
-				],
-				'message'  => 'LEVEL1 to LEVEL2, no subscription (rule not applied)'
-			],
-			[
+			'DATACOMPLIANCE to LEVEL4, fixed price' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
 						'level' => 1,
-					    'publish_up' => $j370DaysAgo->toSql(),
-					    'enabled' => 0
-					]
-				],
-				'state'    => [
-					'id' => '2',
-				],
-				'expected' => [
-					'upgrade_id' => 5,
-					'value'      => 12.34,
-					'combine'    => false
-				],
-				'message'  => 'Expired LEVEL1 up to 10 days to LEVEL2, fixed value – rule validated by UpgradeExpiredDiscount'
-			],
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [
-					[
-						'level' => 1,
-						'publish_up' => $jLastHalfYear->toSql(),
+					    'publish_up' => $jLastYear->toSql(),
 					]
 				],
 				'state'    => [
@@ -194,74 +144,92 @@ class BestUpgradeDiscountTest extends ValidatorWithSubsTestCase
 				],
 				'expected' => [
 					'upgrade_id' => 6,
-					'value'      => 10.00,
-					'combine'    => true
+					'value'      => 5.00,
+					'combine'    => false
 				],
-				'message'  => 'LEVEL1 to FOREVER, 10%'
+				'message'  => 'DATACOMPLIANCE to BUNDLE, fixed price'
 			],
-			[
+			'DATACOMPLIANCE renewal, no subscription (rule not applied)' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [],
+				'state'    => [
+					'id' => '1',
+				],
+				'expected' => [
+					'upgrade_id' => 0,
+					'value'      => 0.00,
+					'combine'    => false
+				],
+				'message'  => 'DATACOMPLIANCE to BUNDLE, no subscription (rule not applied)'
+			],
+			'LEVEL4 to DATACOMPLIANCE, 10% (precondition for combined test)' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
-						'level' => 2,
+						'level' => 4,
 						'publish_up' => $jLastHalfYear->toSql(),
 					]
 				],
 				'state'    => [
-					'id' => '4',
+					'id' => '1',
 				],
 				'expected' => [
 					'upgrade_id' => 7,
-					'value'      => 10.00,
+					'value'      => 5.00,
 					'combine'    => true
 				],
-				'message'  => 'LEVEL2 to FOREVER, 10%'
+				'message'  => 'LEVEL4 to DATACOMPLIANCE, 10% (precondition for combined test)'
 			],
-			[
+			'FREE to DATACOMPLIANCE, 30% (precondition for combined test)' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
-						'level' => 1,
-						'publish_up' => $jLastHalfYear->toSql(),
-					],
-					[
-						'level' => 2,
+						'level' => 6,
 						'publish_up' => $jLastHalfYear->toSql(),
 					]
 				],
 				'state'    => [
-					'id' => '4',
+					'id' => '1',
+				],
+				'expected' => [
+					'upgrade_id' => 4,
+					'value'      => 15.00,
+					'combine'    => true
+				],
+				'message'  => 'FREE to DATACOMPLIANCE, 30% (precondition for combined test)'
+			],
+			'LEVEL4 and FREE to DATACOMPLIANCE, combined to 40% (only the last rule is reported as active)' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level' => 4,
+						'publish_up' => $jLastHalfYear->toSql(),
+					],
+					[
+						'level' => 6,
+						'publish_up' => $jLastHalfYear->toSql(),
+					]
+				],
+				'state'    => [
+					'id' => '1',
 				],
 				'expected' => [
 					'upgrade_id' => 7,
 					'value'      => 20.00,
 					'combine'    => true
 				],
-				'message'  => 'LEVEL1 and LEVEL2 to FOREVER, combined 10% each (the second rule is reported as active)'
+				'message'  => 'LEVEL4 and FREE to DATACOMPLIANCE, combined to 40% (only the last rule is reported as active)'
 			],
-			[
+			'Combine two expired subscription discounts – only validated by UpgradeExpiredDiscount' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
-						'level' => 3,
-						'publish_up' => $jLastHalfYear->toSql(),
+						'level' => 2,
+						'publish_up' => $jLastYear->toSql(),
+					    'enabled' => 0
 					],
-				],
-				'state'    => [
-					'id' => '5',
-				],
-				'expected' => [
-					'upgrade_id' => 8,
-					'value'      => 10.00,
-					'combine'    => true
-				],
-				'message'  => 'RECURRING to FIXED, active, combined 10%'
-			],
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [
 					[
-						'level' => 3,
+						'level' => 5,
 						'publish_up' => $jLastYear->toSql(),
 					    'enabled' => 0
 					],
@@ -274,18 +242,20 @@ class BestUpgradeDiscountTest extends ValidatorWithSubsTestCase
 					'value'      => 10.00,
 					'combine'    => true
 				],
-				'message'  => 'RECURRING to FIXED, expired, combined 10% – only validated by UpgradeExpiredDiscount'
+				'message'  => 'Combine two expired subscription discounts – only validated by UpgradeExpiredDiscount'
 			],
-			[
+
+			// Combine active and expired discounts
+			'Combine active and expired discounts' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
-						'level' => 3,
+						'level' => 4,
 						'publish_up' => $jLastHalfYear->toSql(),
 					    'enabled' => 1
 					],
 					[
-						'level' => 3,
+						'level' => 5,
 						'publish_up' => $jLastYear->toSql(),
 					    'enabled' => 0
 					],
@@ -294,13 +264,15 @@ class BestUpgradeDiscountTest extends ValidatorWithSubsTestCase
 					'id' => '5',
 				],
 				'expected' => [
-					'upgrade_id' => 8, // The UpgradeDiscount rule is reported, NOT the UpgradeExpiredDiscount
-					'value'      => 20.00,
+					'upgrade_id' => 10,
+					'value'      => 10.00,
 					'combine'    => true
 				],
-				'message'  => 'RECURRING to FIXED, active and expired, both combined, 2x10% – validated by both UpgradeDiscount and UpgradeExpiredDiscount'
+				'message'  => 'Combine active and expired discounts'
 			],
-			[
+
+			// Unpublished rule
+			'Unpublished rule' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
@@ -316,31 +288,33 @@ class BestUpgradeDiscountTest extends ValidatorWithSubsTestCase
 					'value'      => 0.00,
 					'combine'    => false
 				],
-				'message'  => 'FREE to FIXED: the rule is unpublished'
+				'message'  => 'Unpublished rule'
 			],
-			[
+
+			// One expired rule, one active rule, no combine, pick the best one
+			'One expired rule, one active rule, no combine, pick the best one' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
-						'level' => 2,
+						'level' => 1,
 						'publish_up' => $jLastHalfYear->toSql(),
 						'enabled' => 1
 					],
 					[
-						'level' => 2,
+						'level' => 1,
 						'publish_up' => $jLastYear->toSql(),
 						'enabled' => 0
 					],
 				],
 				'state'    => [
-					'id' => '1',
+					'id' => '5',
 				],
 				'expected' => [
-					'upgrade_id' => 11, // The UpgradeDiscount rule is validated
+					'upgrade_id' => 12,
 					'value'      => 15.00,
 					'combine'    => false
 				],
-				'message'  => 'LEVEL2 to LEVEL1, has both expired and active, no combine, the best discount is picked'
+				'message'  => 'One expired rule, one active rule, no combine, pick the best one'
 			],
 		];
 	}

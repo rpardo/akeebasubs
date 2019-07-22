@@ -7,17 +7,17 @@
 
 namespace Akeeba\Subscriptions\Admin\Helper;
 
+use Akeeba\ReleaseSystem\Site\Helper\Filter as Filter;
 use Akeeba\Subscriptions\Admin\Model\Levels;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
-use Akeeba\Subscriptions\Admin\Model\Users;
 use FOF30\Container\Container;
 use FOF30\Date\Date;
 use FOF30\Model\DataModel;
 use JFactory;
-use JLoader;
-use JText;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Router\Route;
 use Joomla\Registry\Registry as JRegistry;
-use Akeeba\ReleaseSystem\Site\Helper\Filter as Filter;
+use JText;
 
 defined('_JEXEC') or die;
 
@@ -54,27 +54,13 @@ abstract class Message
 	 *
 	 * @param   string         $text               The message to process
 	 * @param   Subscriptions  $sub                A subscription object
-	 * @param   bool           $businessInfoAware  If true and the user is not a business the business info will be left blank
 	 *
 	 * @return  string  The processed string
 	 */
-	public static function processSubscriptionTags($text, $sub, $extras = array(), $businessInfoAware = false)
+	public static function processSubscriptionTags($text, $sub, $extras = array())
 	{
 		// Get the user object for this subscription
 		$joomlaUser = self::getContainer()->platform->getUser($sub->user_id);
-
-		// Get the extra user parameters object for the subscription
-		/** @var Users $subsUser */
-		$subsUser = $sub->user;
-
-		if (
-			!is_object($subsUser)
-			||
-			(($sub->user instanceof Users) && ($sub->user->user_id != $sub->user_id))
-		)
-		{
-			$subsUser = Container::getInstance('com_akeebasubs')->factory->model('Users')->tmpInstance();
-		}
 
 		// Get the subscription level
 		/** @var Levels $level */
@@ -92,7 +78,7 @@ abstract class Message
 		}
 
 		// Merge the user objects
-		$userData = array_merge((array)$joomlaUser, (array)($subsUser->getData()));
+		$userData = (array)$joomlaUser;
 
 		// Create and replace merge tags for subscriptions. Format [SUB:KEYNAME]
 		if ($sub instanceof DataModel)
@@ -103,16 +89,6 @@ abstract class Message
 		{
 			// Why am I here?!
 			$subData = (array)$sub;
-		}
-
-		$currency_name = self::getContainer()->params->get('currency', 'EUR');
-		$currency_alt  = self::getContainer()->params->get('invoice_altcurrency', '');
-		$exchange_rate = 0;
-
-		// Let's get the exchange rate (rates are automatically updated)
-		if ($currency_alt)
-		{
-			$exchange_rate = Forex::exhangeRate($currency_name, $currency_alt, self::getContainer());
 		}
 
 		foreach ($subData as $k => $v)
@@ -138,15 +114,9 @@ abstract class Message
 				'net_amount',
 				'gross_amount',
 				'tax_amount',
+				'fee_amount',
 				'prediscount_amount',
 				'discount_amount',
-				'affiliate_comission',
-				'net_amount_alt',
-				'gross_amount_alt',
-				'tax_amount_alt',
-				'prediscount_amount_alt',
-				'discount_amount_alt',
-				'affiliate_comission_alt'
 			)))
 			{
 				$v = sprintf('%.2f', $v);
@@ -242,18 +212,7 @@ abstract class Message
 			}
 		}
 
-		// If this is not a business and the $businessInfoAware flag is set blank out the business name, occupation,
-		// VAT number and tax authority fields when processing the message.
-		$businessOnlyFields = [];
-
-		if ($businessInfoAware && !$userData['isbusiness'])
-		{
-			$businessOnlyFields = ['businessname', 'occupation', 'vatnumber', 'taxauthority'];
-		}
-
 		// Create and replace merge tags for user data. Format [USER:KEYNAME]
-		$EUCountryInfo = EUVATInfo::$EuropeanUnionVATInformation;
-
 		foreach ($userData as $k => $v)
 		{
 			if (is_object($v) || is_array($v))
@@ -269,21 +228,6 @@ abstract class Message
 			if ($k == 'akeebasubs_subscription_id')
 			{
 				$k = 'id';
-			}
-
-			if ($k == 'vatnumber')
-			{
-				$country = $userData['country'];
-
-				if (array_key_exists($country, $EUCountryInfo))
-				{
-					$v = $EUCountryInfo[$country][1] . $v;
-				}
-			}
-
-			if (in_array($k, $businessOnlyFields))
-			{
-				$v = '';
 			}
 
 			$tag  = '[USER:' . strtoupper($k) . ']';
@@ -344,7 +288,7 @@ abstract class Message
 		{
 			try
 			{
-				$couponData = Container::getInstance('com_akeebasubs')
+				$couponData = self::getContainer()
 					->factory->model('Coupons')->tmpInstance()
 					->findOrFail($sub->akeebasubs_coupon_id);
 
@@ -373,8 +317,7 @@ abstract class Message
 
 		if ($isCli)
 		{
-			JLoader::import('joomla.application.component.helper');
-			$baseURL    = \JComponentHelper::getParams('com_akeebasubs')->get('siteurl', 'http://www.example.com');
+			$baseURL    = self::getContainer()->params->get('siteurl', 'http://www.example.com');
 			$temp       = str_replace('http://', '', $baseURL);
 			$temp       = str_replace('https://', '', $temp);
 			$parts      = explode($temp, '/', 2);
@@ -431,16 +374,8 @@ abstract class Message
 		// Currency
 		$currency     = self::getContainer()->params->get('currency', 'EUR');
 		$symbol       = self::getContainer()->params->get('currencysymbol', 'EUR');
-		$alt_symbol   = '';
-		$currency_alt = self::getContainer()->params->get('invoice_altcurrency', '');
-
-		if ($currency_alt)
-		{
-			$alt_symbol = Forex::getCurrencySymbol($currency_alt);
-		}
 
 		// Dates
-		JLoader::import('joomla.utilities.date');
 		$jFrom = new Date($sub->publish_up);
 		$jTo   = new Date($sub->publish_down);
 
@@ -458,23 +393,34 @@ abstract class Message
 			$dlid = Filter::myDownloadID($sub->user_id);
 		}
 
-		// User's state, human readable
-		$formatted_state = '';
-		$state           = $subsUser->getFieldValue('state', 'N');
-
-		if (!empty($state))
+		// -- Message URL
+		if ($sub->juser->block && $sub->juser->activation)
 		{
-			$formatted_state = Select::formatState($state);
+			$urlAuth = 'activation=' . $sub->juser->activation;
+		}
+		else
+		{
+			$secret   = Factory::getConfig()->get('secret', '');
+			$authCode = md5($sub->getId() . $sub->user_id . $secret);
+			$urlAuth  = 'authorization=' . $authCode;
 		}
 
-		// User's country, human readable
-		$formatted_country = '';
-		$country           = $subsUser->country;
+		$messageUrl = self::route('index.php?option=com_akeebasubs&view=Message&subid=' . $sub->akeebasubs_subscription_id . '&' . $urlAuth);
 
-		if (!empty($country))
+		if (!$isAdmin && !$isCli)
 		{
-			$formatted_country = Select::formatCountry($country);
+			$messageUrl =
+				str_replace('&amp;', '&', Route::_($messageUrl));
 		}
+
+		$messageUrl = ltrim($url, '/');
+
+		if (substr($messageUrl, 0, strlen($subpathURL) + 1) == "$subpathURL/")
+		{
+			$messageUrl = substr($messageUrl, strlen($subpathURL) + 1);
+		}
+
+		$messageUrl = rtrim($baseURL, '/') . '/' . ltrim($messageUrl, '/');
 
 		// -- The actual replacement
 		$extras = array_merge(array(
@@ -490,6 +436,7 @@ abstract class Message
 			'[SLUG]'                   => $level->slug,
 			'[RENEWALURL]'             => $renewalURL,
 			'[RENEWALURL:]'            => $renewalURL, // Malformed tag without a coupon code...
+			'[MESSAGEURL]'             => $messageUrl,
 			'[ENABLED]'                => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_COMMON_' . ($sub->enabled ? 'ENABLED' :
 					'DISABLED')),
 			'[PAYSTATE]'               => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_STATE_' . $sub->getFieldValue('state', 'N')),
@@ -504,14 +451,9 @@ abstract class Message
 			'[MYSUBSURL]'              => $mysubsurl,
 			'[URL]'                    => $mysubsurl,
 			'[CURRENCY]'               => $currency,
-			'[CURRENCY_ALT]'           => $currency_alt,
 			'[$]'                      => $symbol,
-			'[$_ALT]'                  => $alt_symbol,
-			'[EXCHANGE_RATE]'          => $exchange_rate,
 			'[DLID]'                   => $dlid,
 			'[COUPONCODE]'             => $couponCode,
-			'[USER:STATE_FORMATTED]'   => $formatted_state,
-			'[USER:COUNTRY_FORMATTED]' => $formatted_country,
 			// Legacy keys
 			'[NAME]'                   => $firstname,
 			'[STATE]'                  => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_STATE_' . $sub->getFieldValue('state', 'N')),
@@ -566,7 +508,6 @@ abstract class Message
 
 					if (!is_object($params))
 					{
-						JLoader::import('joomla.registry.registry');
 						$params = new JRegistry($params);
 					}
 
@@ -639,17 +580,11 @@ abstract class Message
 	 *
 	 * @return  string  The text with the tag replaced with the proper URLs
 	 */
-	public static function substituteRenewalURLWithCoupon($text, $renewalURL)
+	public static function substituteRenewalURLWithCoupon(string $text, string $renewalURL): string
 	{
 		// Find where the tag starts
 		$nextPos      = 0;
 		$tagStartText = '[RENEWALURL:';
-
-		if (!class_exists('JUri', true))
-		{
-			JLoader::import('joomla.environment.uri');
-			JLoader::import('joomla.uri.uri');
-		}
 
 		$uri = new \JUri($renewalURL);
 
@@ -688,5 +623,63 @@ abstract class Message
 		while ($pos !== false);
 
 		return $text;
+	}
+
+	/**
+	 * Route a Joomla URL safely, even if the application cannot be initialized (e.g. CLI or system-under-test)
+	 *
+	 * @param string $url The URL to route
+	 *
+	 * @return  string  The routed URL
+	 */
+	public static function route($url): string
+	{
+		$useJRoute = true;
+
+		try
+		{
+			$app = JFactory::getApplication();
+
+			if (!$app->isClient('site'))
+			{
+				$useJRoute = false;
+			}
+		}
+		catch (\Exception $e)
+		{
+			$useJRoute = false;
+		}
+
+		if ($useJRoute)
+		{
+			return Route::_($url);
+		}
+
+		$container       = self::getContainer();
+		$siteUrl         = $container->params->get('siteurl');
+		$siteUri         = \JUri::getInstance($siteUrl);
+		$options['mode'] = $container->platform->getConfig()->get('sef');
+
+		if (!isset($_SERVER['HTTP_HOST']))
+		{
+			$_SERVER['HTTP_HOST'] = $siteUri->getHost();
+		}
+
+		try
+		{
+			$router = \JRouter::getInstance('site', $options);
+		}
+		catch (\Exception $e)
+		{
+			return rtrim($siteUrl, '/') . '/' . ltrim($url, '/');
+		}
+
+		$routedUri = $router->build($url);
+		$scheme    = ['path', 'query', 'fragment'];
+		$routedUrl = $routedUri->toString($scheme);
+		$routedUrl = preg_replace('/\s/u', '%20', $routedUrl);
+		$routedUrl = htmlspecialchars($routedUrl, ENT_COMPAT, 'UTF-8');
+
+		return $routedUrl;
 	}
 }

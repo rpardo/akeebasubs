@@ -43,3 +43,76 @@ table.asfelist {
     }
   }
 }
+
+div.akeebasubs-subscription-levels-subscriptions-details {
+  margin-bottom: 3em;
+}
+
+header.mysubs-level-header {
+  display: flex;
+  flex-wrap: wrap;
+
+  > h3 {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    margin-bottom: 0;
+
+    > img {
+      margin-right: 1em;
+    }
+  }
+
+  div.akeebasubs-subscription-info {
+    align-self: center;
+    text-align: right;
+
+    span {
+      display: block;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  header.mysubs-level-header {
+    flex-direction: column;
+    flex-wrap: nowrap;
+
+    div.akeebasubs-subscription-info {
+      margin-top: .75em;
+      border-top: 1px solid rgba(255, 255, 255, .5);
+      padding-top: .75em;
+      align-self: stretch;
+      text-align: left;
+    }
+  }
+}
+
+h4.akeebasubs-subscriptions-billing-history-head {
+  display: flex;
+
+  > span {
+    flex-grow: 1;
+  }
+
+  > button {
+    align-self: center;
+    margin-bottom: 0.25em;
+  }
+}
+
+div.akeebasubs-subscriptions-description-level {
+  > p:first-child {
+    display: none;
+  }
+}
+
+div.akeebasubs-subscription-level-renew-container {
+  text-align: center;
+
+  a {
+    width: 100%;
+    max-width: 200px;
+  }
+}

@@ -7,11 +7,8 @@
 
 namespace Akeeba\Subscriptions\Admin\Helper;
 
-use Akeeba\Subscriptions\Admin\Model\PaymentMethods;
-use Akeeba\Subscriptions\Admin\Model\States;
 use FOF30\Container\Container;
 use FOF30\Model\DataModel;
-use JFolder;
 use JHtml;
 use JLoader;
 use JText;
@@ -23,7 +20,6 @@ defined('_JEXEC') or die;
  */
 abstract class Select
 {
-
 	/**
 	 * Maps the two letter codes to country names (in English)
 	 *
@@ -283,60 +279,206 @@ abstract class Select
 	);
 
 	/**
-	 * Maps countries to state short codes and names
+	 * Returns a list of all countries including the empty option (no country)
 	 *
-	 * @var  array
-	 */
-	public static $states = array();
-
-	/**
-	 * Returns a list of all countries except the empty option (no country)
+	 * @param   bool  $includeEmpty  Should I include the empty option?
 	 *
 	 * @return  array
 	 */
-	public static function getCountriesForHeader()
+	public static function getCountries(bool $includeEmpty = true): array
 	{
-		static $countries = array();
-
-		if (empty($countries))
+		if ($includeEmpty)
 		{
-			$countries = self::$countries;
-			unset($countries['']);
+			return self::$countries;
 		}
+
+		$countries = self::$countries;
+
+		unset($countries['']);
 
 		return $countries;
 	}
 
 	/**
-	 * Returns a list of all countries including the empty option (no country)
+	 * Translate a two letter country code into the country name (in English). If the country is unknown the country
+	 * code itself is returned.
 	 *
-	 * @return  array
+	 * @param   string  $cCode  The country code
+	 *
+	 * @return  string  The name of the country or, of it's not known, the country code itself.
 	 */
-	public static function getCountries()
+	public static function decodeCountry(string $cCode): string
 	{
-		return self::$countries;
+		if (array_key_exists($cCode, self::$countries))
+		{
+			return self::$countries[ $cCode ];
+		}
+
+		return $cCode;
+	}
+	/**
+	 * Translate a two letter country code into the country name (in English). If the country is unknown three em-dashes
+	 * are returned. This is different to decode country which returns the country code in this case.
+	 *
+	 * @param   string  $cCode  The country code
+	 *
+	 * @return  string  The name of the country or, of it's not known, the country code itself.
+	 */
+	public static function formatCountry(string $cCode = ''): string
+	{
+		$name = self::decodeCountry($cCode);
+
+		if ($name == $cCode)
+		{
+			$name = '&mdash;';
+		}
+
+		return $name;
 	}
 
 	/**
-	 * Returns a list of all states
+	 * Converts an ISO country code to an emoji flag.
 	 *
-	 * @return  array
+	 * This is stupidly easy. An emoji flag is the country code using Unicode Regional Indicator Symbol Letter glyphs
+	 * instead of the regular ASCII characters. Thus US becomes \u1F1FA\u1F1F8 which is incidentally the emoji for the
+	 * US flag :)
+	 *
+	 * On really old browsers (pre-2015) this still renders as the country code since the Regional Indicator Symbol
+	 * Letter glyphs were added to Unicode in 2010. Now, if you have an even older browser -- what the heck, dude?!
+	 *
+	 * @param string $cCode
+	 *
+	 * @return string
+	 *
+	 * @since version
 	 */
-	public static function getStates()
+	public static function countryToEmoji(string $cCode = ''): string
 	{
-		static $states = array();
+		$name = self::decodeCountry($cCode);
 
-		if (empty($states))
+		if ($name == $cCode)
 		{
-			$states = array();
-
-			foreach (self::$states as $country => $s)
-			{
-				$states = array_merge($states, $s);
-			}
+			return '';
 		}
 
-		return $states;
+		$cCode = strtoupper($cCode);
+
+		// Uppercase letter to Unicode Regional Indicator Symbol Letter
+		$letterToRISL = [
+			'A' => "&#x1F1E6;",
+			'B' => "&#x1F1E7;",
+			'C' => "&#x1F1E8;",
+			'D' => "&#x1F1E9;",
+			'E' => "&#x1F1EA;",
+			'F' => "&#x1F1EB;",
+			'G' => "&#x1F1EC;",
+			'H' => "&#x1F1ED;",
+			'I' => "&#x1F1EE;",
+			'J' => "&#x1F1EF;",
+			'K' => "&#x1F1F0;",
+			'L' => "&#x1F1F1;",
+			'M' => "&#x1F1F2;",
+			'N' => "&#x1F1F3;",
+			'O' => "&#x1F1F4;",
+			'P' => "&#x1F1F5;",
+			'Q' => "&#x1F1F6;",
+			'R' => "&#x1F1F7;",
+			'S' => "&#x1F1F8;",
+			'T' => "&#x1F1F9;",
+			'U' => "&#x1F1FA;",
+			'V' => "&#x1F1FB;",
+			'W' => "&#x1F1FC;",
+			'X' => "&#x1F1FD;",
+			'Y' => "&#x1F1FE;",
+			'Z' => "&#x1F1FF;",
+		];
+
+		return $letterToRISL[substr($cCode, 0, 1)] . $letterToRISL[substr($cCode, 1, 1)];
+	}
+
+	/**
+	 * Returns a drop-down selection box for countries. Some special attributes:
+	 *
+	 * show     An array of country codes to display. Takes precedence over hide.
+	 * hide     An array of country codes to hide.
+	 *
+	 * @param   string  $selected  Selected country code
+	 * @param   string  $id        Field name and ID
+	 * @param   array   $attribs   Field attributes
+	 *
+	 * @return string
+	 */
+	public static function countries($selected = null, $id = 'country', $attribs = array())
+	{
+		// Get the raw list of countries
+		$options   = array();
+		$countries = self::$countries;
+		asort($countries);
+		// Parse show / hide options
+		// -- Initialisation
+		$show = array();
+		$hide = array();
+		// -- Parse the show attribute
+		if (isset($attribs['show']))
+		{
+			$show = trim($attribs['show']);
+			if (!empty($show))
+			{
+				$show = explode(',', $show);
+			}
+			else
+			{
+				$show = array();
+			}
+			unset($attribs['show']);
+		}
+		// -- Parse the hide attribute
+		if (isset($attribs['hide']))
+		{
+			$hide = trim($attribs['hide']);
+			if (!empty($hide))
+			{
+				$hide = explode(',', $hide);
+			}
+			else
+			{
+				$hide = array();
+			}
+			unset($attribs['hide']);
+		}
+		// -- If $show is not empty, filter the countries
+		if (count($show))
+		{
+			$temp = array();
+			foreach ($show as $key)
+			{
+				if (array_key_exists($key, $countries))
+				{
+					$temp[ $key ] = $countries[ $key ];
+				}
+			}
+			asort($temp);
+			$countries = $temp;
+		}
+		// -- If $show is empty but $hide is not, filter the countries
+		elseif (count($hide))
+		{
+			$temp = array();
+			foreach ($countries as $key => $v)
+			{
+				if (!in_array($key, $hide))
+				{
+					$temp[ $key ] = $v;
+				}
+			}
+			asort($temp);
+			$countries = $temp;
+		}
+		foreach ($countries as $code => $name)
+		{
+			$options[] = JHtml::_('select.option', $code, $name);
+		}
+		return self::genericlist($options, $id, $attribs, $selected, $id);
 	}
 
 	/**
@@ -365,69 +507,6 @@ abstract class Select
 		}
 
 		return $invoiceExtensions;
-	}
-
-	/**
-	 * Translate a two letter country code into the country name (in English). If the country is unknown the country
-	 * code itself is returned.
-	 *
-	 * @param   string  $cCode  The country code
-	 *
-	 * @return  string  The name of the country or, of it's not known, the country code itself.
-	 */
-	public static function decodeCountry($cCode)
-	{
-		if (array_key_exists($cCode, self::$countries))
-		{
-			return self::$countries[ $cCode ];
-		}
-		else
-		{
-			return $cCode;
-		}
-	}
-
-	/**
-	 * Translate a two letter country code into the country name (in English). If the country is unknown three em-dashes
-	 * are returned. This is different to decode country which returns the country code in this case.
-	 *
-	 * @param   string  $cCode  The country code
-	 *
-	 * @return  string  The name of the country or, of it's not known, the country code itself.
-	 */
-	public static function formatCountry($cCode = '')
-	{
-		$name = self::decodeCountry($cCode);
-
-		if ($name == $cCode)
-		{
-			$name = '&mdash;';
-		}
-
-		return $name;
-	}
-
-	/**
-	 * Translate the short state code into the full, human-readable state name. If the state is unknown three em-dashes
-	 * are returned instead.
-	 *
-	 * @param   string  $state  The state code
-	 *
-	 * @return  string  The human readable state name
-	 */
-	public static function formatState($state)
-	{
-		$name = '&mdash;';
-
-		foreach (self::$states as $country => $states)
-		{
-			if (array_key_exists($state, $states))
-			{
-				$name = $states[ $state ];
-			}
-		}
-
-		return $name;
 	}
 
 	/**
@@ -524,185 +603,6 @@ abstract class Select
 		return self::genericlist($options, $name, $attribs, $selected, $name);
 	}
 
-	public static function getFilteredCountries($force = false)
-	{
-		static $countries = null;
-
-		if (is_null($countries) || $force)
-		{
-			$countries = array_merge(self::$countries);
-		}
-
-		return $countries;
-	}
-
-	/**
-	 * Returns a drop-down selection box for countries. Some special attributes:
-	 *
-	 * show     An array of country codes to display. Takes precedence over hide.
-	 * hide     An array of country codes to hide.
-	 *
-	 * @param   string  $selected  Selected country code
-	 * @param   string  $id        Field name and ID
-	 * @param   array   $attribs   Field attributes
-	 *
-	 * @return string
-	 */
-	public static function countries($selected = null, $id = 'country', $attribs = array())
-	{
-		// Get the raw list of countries
-		$options   = array();
-		$countries = self::$countries;
-		asort($countries);
-
-		// Parse show / hide options
-
-		// -- Initialisation
-		$show = array();
-		$hide = array();
-
-		// -- Parse the show attribute
-		if (isset($attribs['show']))
-		{
-			$show = trim($attribs['show']);
-
-			if (!empty($show))
-			{
-				$show = explode(',', $show);
-			}
-			else
-			{
-				$show = array();
-			}
-
-			unset($attribs['show']);
-		}
-
-		// -- Parse the hide attribute
-		if (isset($attribs['hide']))
-		{
-			$hide = trim($attribs['hide']);
-
-			if (!empty($hide))
-			{
-				$hide = explode(',', $hide);
-			}
-			else
-			{
-				$hide = array();
-			}
-
-			unset($attribs['hide']);
-		}
-
-		// -- If $show is not empty, filter the countries
-		if (count($show))
-		{
-			$temp = array();
-
-			foreach ($show as $key)
-			{
-				if (array_key_exists($key, $countries))
-				{
-					$temp[ $key ] = $countries[ $key ];
-				}
-			}
-
-			asort($temp);
-			$countries = $temp;
-		}
-
-		// -- If $show is empty but $hide is not, filter the countries
-		elseif (count($hide))
-		{
-			$temp = array();
-
-			foreach ($countries as $key => $v)
-			{
-				if (!in_array($key, $hide))
-				{
-					$temp[ $key ] = $v;
-				}
-			}
-
-			asort($temp);
-			$countries = $temp;
-		}
-
-		foreach ($countries as $code => $name)
-		{
-			$options[] = JHtml::_('select.option', $code, $name);
-		}
-
-		return self::genericlist($options, $id, $attribs, $selected, $id);
-	}
-
-	/**
-	 * Returns a drop-down box of states grouped by country
-	 *
-	 * @param   string  $selected  Short code of the already selected state
-	 * @param   string  $id        Field name and ID
-	 * @param   array   $attribs   Attributes
-	 *
-	 * @return  string  The HTML of the drop-down list
-	 */
-	public static function states($selected = null, $id = 'state', $attribs = array())
-	{
-		$data = array();
-		$country = isset($attribs['country']) ? $attribs['country'] : null;
-
-		if (!is_null($country))
-		{
-			if (isset($attribs['country']))
-			{
-				unset($attribs['country']);
-			}
-
-			$countryName = self::decodeCountry($country);
-			$data[]      = JHtml::_('select.option', '', '– ' . JText::_('COM_AKEEBASUBS_LEVEL_FIELD_STATE') . ' –');
-
-			if (isset(self::$states[$countryName]))
-			{
-				foreach (self::$states[$countryName] as $code => $name)
-				{
-					$data[] = JHtml::_('select.option', $code, $name);
-				}
-			}
-			else
-			{
-				$data   = [];
-				$data[] = JHtml::_('select.option', '', 'N/A');
-			}
-
-			return JHtml::_('select.genericlist', $data, $id, [
-				'id' =>$id,
-				'list.attr' => $attribs,
-				'list.select' => $selected
-			]);
-		}
-
-		foreach (self::$states as $country => $states)
-		{
-			$data[$country] = [
-				'id' => \JApplicationHelper::stringURLSafe($country),
-				'text' => $country,
-				'items' => []
-			];
-
-			foreach ($states as $code => $name)
-			{
-				$data[$country]['items'][] = JHtml::_('select.option', $code, $name);
-			}
-		}
-
-		return JHtml::_('select.groupedlist', $data, $id, [
-			'id' =>$id,
-			'group.id' => 'id',
-			'list.attr' => $attribs,
-			'list.select' => $selected
-		]);
-	}
-
 	/**
 	 * Displays a list of the available user groups.
 	 *
@@ -747,7 +647,6 @@ abstract class Select
 	 */
 	public static function languages($selected = null, $id = 'language', $attribs = array())
 	{
-		JLoader::import('joomla.language.helper');
 		$languages = \JLanguageHelper::getLanguages('lang_code');
 		$options   = array();
 		$options[] = JHtml::_('select.option', '*', JText::_('JALL_LANGUAGE'));
@@ -910,196 +809,6 @@ abstract class Select
 	}
 
 	/**
-	 * Create a selection interface (drop-down list, image radios) for the payment method
-	 *
-	 * Some interesting attributes:
-	 *
-	 * level_id         int   Show payment methods applicable to this subscription level
-	 * always_dropdown  bool  Always render a drop-down list, never an image selection list
-	 * default_option   bool  Add a default option to unselect everything else
-	 * return_raw_list  bool  Return the raw payments processors array instead of HTML
-	 *
-	 * @param   string  $name      The field's name
-	 * @param   string  $selected  Pre-selected value
-	 * @param   array   $attribs   Field attributes
-	 *
-	 * @return  array|string
-	 */
-	public static function paymentmethods($name = 'paymentmethod', $selected = '', $attribs = array())
-	{
-		// Initialise parameters
-		$level_id        = isset($attribs['level_id']) ? $attribs['level_id'] : 0;
-		$always_dropdown = isset($attribs['always_dropdown']) ? 1 : 0;
-		$default_option  = isset($attribs['default_option']) ? 1 : 0;
-		$country		 = isset($attribs['country']) ? $attribs['country'] : '';
-
-        /** @var PaymentMethods $pluginsModel */
-        $pluginsModel = Container::getInstance('com_akeebasubs')->factory
-                            ->model('PaymentMethods')->tmpInstance();
-
-        $plugins = $pluginsModel->getPaymentPlugins($country);
-
-		// Per-level payment option filtering
-		if ($level_id > 0)
-		{
-			/** @var DataModel $levelsModel */
-			$levelsModel =  Container::getInstance('com_akeebasubs')->factory
-				->model('Levels')->tmpInstance();
-
-			try
-			{
-				$level           = $levelsModel->findOrFail($level_id);
-				$payment_plugins = $level->payment_plugins;
-
-				if (!empty($payment_plugins) && !is_array($payment_plugins))
-				{
-					$payment_plugins = explode(',', $payment_plugins);
-				}
-			}
-			catch (\Exception $e)
-			{
-				$payment_plugins = '';
-			}
-
-
-			if (is_array($payment_plugins) && !empty($payment_plugins))
-			{
-				$temp            = array();
-
-				foreach ($plugins as $plugin)
-				{
-					if (in_array($plugin->name, $payment_plugins))
-					{
-						$temp[] = $plugin;
-					}
-				}
-
-				if (!empty($temp))
-				{
-					$plugins = $temp;
-				}
-			}
-		}
-
-		$returnRawList = false;
-
-		if (isset($attribs['return_raw_list']))
-		{
-			$returnRawList = $attribs['return_raw_list'];
-			unset($attribs['return_raw_list']);
-		}
-
-		if ($returnRawList)
-		{
-			return $plugins;
-		}
-
-		// Determine how to render the payment method (drop-down or radio box)
-		if ((self::getContainer()->params->get('useppimages', 1) > 0) && !$always_dropdown)
-		{
-			// Show images instead of a drop-down
-			$options = array();
-
-			foreach ($plugins as $plugin)
-			{
-				if (!isset($plugin->image))
-				{
-					$plugin->image = '';
-				}
-				else
-				{
-					$plugin->image = trim($plugin->image);
-				}
-
-				if (empty($plugin->image))
-				{
-					$plugin->image = rtrim(\JURI::base(), '/') . '/media/com_akeebasubs/images/frontend/credit_card_logos.gif';
-				}
-
-				$innerHTML = '<img border="0" src="' . $plugin->image . '" alt="' . $plugin->title . '" /><span></span> ';
-
-				if (self::getContainer()->params->get('useppimages', 1) == 2)
-				{
-					$innerHTML .= $plugin->title;
-				}
-
-				$options[] = array(
-					'value' => $plugin->name,
-					'label' => $innerHTML,
-				);
-
-				// In case we don't have a default selection, select the first item on the list
-				if (empty($selected))
-				{
-					$selected = $plugin->name;
-				}
-			}
-
-			$html = '<div class="akeebasubs-paymentmethod-images">';
-
-			if (!empty($options))
-			{
-				foreach ($options as $o)
-				{
-					$html .= '<div class="radio"><label><input type="radio" name="' . $name . '" id="' .
-					         $name . $o['value'] . '" value="' . $o['value'] . '" ';
-
-					if ($o['value'] == $selected)
-					{
-						$html .= 'checked="checked"';
-					}
-
-					$html .= '/>' . $o['label'] . '</label></div>';
-				}
-			}
-
-			$html .= '</div>';
-
-			return $html;
-		}
-		else
-		{
-			// Show drop-down
-			$options = array();
-
-			if ($default_option)
-			{
-				$options[] = JHtml::_('select.option', '', JText::_('COM_AKEEBASUBS_LEVEL_FIELD_PAYMENT_PLUGINS_UNSELECT'));
-
-				if (!is_array($selected))
-				{
-					$selected  = explode(',', $selected);
-				}
-			}
-
-			foreach ($plugins as $plugin)
-			{
-				$options[] = JHtml::_('select.option', $plugin->name, $plugin->title);
-			}
-
-			return self::genericlist($options, $name, $attribs, $selected, $name);
-		}
-	}
-
-	/**
-	 * Drop-down lis of all payment processors. Alias to paymentmethods() always showing the default option and always
-	 * showing the list as a dropdown.
-	 *
-	 * @param   string  $selected  The key that is selected
-	 * @param   string  $id        The value of the HTML name attribute
-	 * @param   array   $attribs   Additional HTML attributes for the <select> tag
-	 *
-	 * @return  string  HTML for the list
-	 */
-	public static function processors($selected = null, $name = 'processor', $attribs = array())
-	{
-		$attribs['default_option'] = true;
-		$attribs['always_dropdown'] = true;
-
-		return self::paymentmethods($name, $selected, $attribs);
-	}
-
-	/**
 	 * Drop down list of discount modes
 	 *
 	 * @param   string  $name      The field's name
@@ -1137,38 +846,6 @@ abstract class Select
 		$options[] = JHtml::_('select.option', 'lastpercent', JText::_('COM_AKEEBASUBS_UPGRADE_TYPE_LASTPERCENT'));
 
 		return self::genericlist($options, $name, $attribs, $selected, $name);
-	}
-
-	/**
-	 * Drop down list of level groups
-	 *
-	 * @param   string  $selected  Pre-selected value
-	 * @param   string  $id        The field's name
-	 * @param   array   $attribs   Field attributes
-	 *
-	 * @return  string  The HTML of the drop-down
-	 */
-	public static function levelgroups($selected = null, $id = 'akeebasubs_levelgroup_id', $attribs = array())
-	{
-		/** @var DataModel $model */
-		$model = Container::getInstance('com_akeebasubs')->factory
-			->model('LevelGroups')->tmpInstance();
-
-		$items = $model->get(true);
-
-		$options = array();
-
-		if (count($items))
-		{
-			foreach ($items as $item)
-			{
-				$options[] = JHtml::_('select.option', $item->akeebasubs_levelgroup_id, $item->title);
-			}
-		}
-
-		array_unshift($options, JHtml::_('select.option', 0, JText::_('COM_AKEEBASUBS_SELECT_LEVELGROUP')));
-
-		return self::genericlist($options, $id, $attribs, $selected, $id);
 	}
 
 	/**
@@ -1317,78 +994,6 @@ abstract class Select
 	}
 
 	/**
-	 * Drop down list of invoice templates
-	 *
-	 * @param   string  $name      The field's name
-	 * @param   string  $selected  Pre-selected value
-	 * @param   array   $attribs   Field attributes
-	 * @param	bool	$enabled   Fetch only enabled templates?
-	 *
-	 * @return  string  The HTML of the drop-down
-	 */
-	public static function invoicetemplates($name, $selected = '', $attribs = array(), $enabled = true)
-	{
-		/** @var \Akeeba\Subscriptions\Admin\Model\InvoiceTemplates $model */
-		$model = Container::getInstance('com_akeebasubs')->factory
-			->model('InvoiceTemplates')->tmpInstance();
-
-		if($enabled)
-		{
-			$model->enabled(true);
-		}
-
-		/** @var \Akeeba\Subscriptions\Admin\Model\InvoiceTemplates[] $rows */
-		$rows = $model->filter_order('title')->filter_order_Dir('ASC')->get(true);
-
-		$options[] = JHtml::_('select.option', '', '- ' . JText::_('COM_AKEEBASUBS_COMMON_SELECT') . ' -');
-
-		foreach($rows as $row)
-		{
-			$options[] = JHtml::_('select.option', $row->akeebasubs_invoicetemplate_id, $row->title);
-		}
-
-		return self::genericlist($options, $name, $attribs, $selected, $name);
-	}
-
-	/**
-	 * Drop down list of VIES registration flag
-	 *
-	 * @param   string  $name      The field's name
-	 * @param   int     $selected  Pre-selected value
-	 * @param   array   $attribs   Field attributes
-	 *
-	 * @return  string  The HTML of the drop-down
-	 */
-	public static function viesregistered($name = 'viesregistered', $selected = 0, $attribs = array())
-	{
-		$options   = array();
-		$options[] = JHtml::_('select.option', '0', JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_USER_VIESREGISTERED_NO'));
-		$options[] = JHtml::_('select.option', '1', JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_USER_VIESREGISTERED_YES'));
-		$options[] = JHtml::_('select.option', '2', JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_USER_VIESREGISTERED_FORCEYES'));
-
-		return self::genericlist($options, $name, $attribs, $selected, $name);
-	}
-
-	/**
-	 * Drop down list of Is Business preference for invoice templates
-	 *
-	 * @param   string  $name      The field's name
-	 * @param   int     $selected  Pre-selected value
-	 * @param   array   $attribs   Field attributes
-	 *
-	 * @return  string  The HTML of the drop-down
-	 */
-	public static function invoicetemplateisbusines($name = 'isbusiness', $selected = - 1, $attribs = array())
-	{
-		$options   = array();
-		$options[] = JHtml::_('select.option', '-1', JText::_('COM_AKEEBASUBS_INVOICETEMPLATES_FIELD_ISBUSINESS_INDIFFERENT'));
-		$options[] = JHtml::_('select.option', '0', JText::_('COM_AKEEBASUBS_INVOICETEMPLATES_FIELD_ISBUSINESS_PERSONAL'));
-		$options[] = JHtml::_('select.option', '1', JText::_('COM_AKEEBASUBS_INVOICETEMPLATES_FIELD_ISBUSINESS_BUSINESS'));
-
-		return self::genericlist($options, $name, $attribs, $selected, $name);
-	}
-
-	/**
 	 * Drop down list of CSV delimiter preference
 	 *
 	 * @param   string  $name      The field's name
@@ -1409,7 +1014,7 @@ abstract class Select
 	}
 
 	/**
-	 * Drop down list of API coupon limits preferences
+	 * Drop down list of payment method types
 	 *
 	 * @param   string  $name      The field's name
 	 * @param   string  $selected  Pre-selected value
@@ -1417,32 +1022,18 @@ abstract class Select
 	 *
 	 * @return  string  The HTML of the drop-down
 	 */
-	public static function apicouponLimits($name, $selected, $attribs = array())
+	public static function paymentMethods($name = 'flex_uom', $selected = 'rules', $attribs = array())
 	{
 		$options   = array();
-		$options[] = JHtml::_('select.option', '1', JText::_('COM_AKEEBASUBS_APICOUPONS_FIELD_CREATION_LIMIT'));
-		$options[] = JHtml::_('select.option', '2', JText::_('COM_AKEEBASUBS_APICOUPONS_FIELD_SUBSCRIPTION_LIMIT'));
-		$options[] = JHtml::_('select.option', '3', JText::_('COM_AKEEBASUBS_APICOUPONS_FIELD_VALUE_LIMIT'));
+		$options[] = JHtml::_('select.option', '', '- ' . JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_FIELDTITLE') . ' -');
+		$options[] = JHtml::_('select.option', 'apple', JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_APPLE'));
+		$options[] = JHtml::_('select.option', 'card', JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_CARD'));
+		$options[] = JHtml::_('select.option', 'free', JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_FREE'));
+		$options[] = JHtml::_('select.option', 'paypal', JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_PAYPAL'));
+		$options[] = JHtml::_('select.option', 'wire', JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_WIRE'));
+		$options[] = JHtml::_('select.option', 'unknown', JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_UNKNOWN'));
 
 		return self::genericlist($options, $name, $attribs, $selected, $name);
-	}
-
-	public static function getAllPaymentMethods()
-	{
-		/** @var PaymentMethods $pluginsModel */
-		$pluginsModel = Container::getInstance('com_akeebasubs')->factory
-			->model('PaymentMethods')->tmpInstance();
-
-		$plugins = $pluginsModel->getPaymentPlugins();
-
-		$ret = [];
-
-		foreach ($plugins as $plugin)
-		{
-			$ret[$plugin->name ] = $plugin->title;
-		}
-
-		return $ret;
 	}
 
 	/**
@@ -1461,56 +1052,5 @@ abstract class Select
 
 		return $container;
 	}
-}
 
-// Load the states from the database
-if(!function_exists('akeebasubsHelperSelect_init'))
-{
-	function akeebasubsHelperSelect_init()
-	{
-		/** @var States $model */
-		$model                = Container::getInstance('com_akeebasubs')->factory->model('States')->tmpInstance();
-		$rawstates            = $model->enabled(1)->orderByLabels(1)->get(true);
-		$states               = array();
-		$current_country      = '';
-		$current_country_name = 'N/A';
-		$current_states       = array('' => 'N/A');
-
-		/** @var States $rawstate */
-		foreach ($rawstates as $rawstate)
-		{
-			// Note: you can't use $rawstate->state, it gets the model state
-			$rawstate_state = $rawstate->getFieldValue('state', null);
-
-			if ($rawstate->country != $current_country)
-			{
-				if (!empty($current_country_name))
-				{
-					$states[ $current_country_name ] = $current_states;
-					$current_states                  = array();
-					$current_country                 = '';
-					$current_country_name            = '';
-				}
-
-				if (empty($rawstate->country) || empty($rawstate_state) || empty($rawstate->label))
-				{
-					continue;
-				}
-
-				$current_country      = $rawstate->country;
-				$current_country_name = Select::$countries[ $current_country ];
-			}
-
-			$current_states[ $rawstate_state ] = $rawstate->label;
-		}
-
-		if (!empty($current_country_name))
-		{
-			$states[ $current_country_name ] = $current_states;
-		}
-
-		Select::$states = $states;
-	}
-
-	akeebasubsHelperSelect_init();
 }

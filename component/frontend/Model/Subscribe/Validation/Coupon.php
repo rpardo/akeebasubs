@@ -26,9 +26,9 @@ class Coupon extends Base
 	protected function getValidationResult()
 	{
 		$ret = [
-			'valid' => false,
+			'valid'       => false,
 			'couponFound' => false,
-			'coupon' => null
+			'coupon'      => null,
 		];
 
 		$couponCode = trim($this->state->coupon);
@@ -68,7 +68,7 @@ class Coupon extends Base
 
 		// Coupon found
 		$ret['couponFound'] = true;
-		$ret['coupon'] = $coupon;
+		$ret['coupon']      = $coupon;
 
 		// The coupon is invalid unless it's enabled, we've definitely found a match and all coupon conditions apply
 		$valid = false;
@@ -77,8 +77,8 @@ class Coupon extends Base
 		{
 			// Check validity period
 			$jFrom = $this->container->platform->getDate($coupon->publish_up);
-			$jTo = $this->container->platform->getDate($coupon->publish_down);
-			$jNow = $this->container->platform->getDate();
+			$jTo   = $this->container->platform->getDate($coupon->publish_down);
+			$jNow  = $this->container->platform->getDate();
 
 			$valid = ($jNow->toUnix() >= $jFrom->toUnix()) && ($jNow->toUnix() <= $jTo->toUnix());
 
@@ -99,7 +99,7 @@ class Coupon extends Base
 			if ($valid && $coupon->user)
 			{
 				$user_id = $this->jUser->id;
-				$valid = $user_id == $coupon->user;
+				$valid   = $user_id == $coupon->user;
 			}
 
 			// Check email
@@ -119,7 +119,7 @@ class Coupon extends Base
 				}
 
 				$ugroups = $this->jUser->getAuthorisedGroups();
-				$valid = 0;
+				$valid   = 0;
 
 				foreach ($ugroups as $ugroup)
 				{
@@ -150,7 +150,7 @@ class Coupon extends Base
 
 				if (($coupon->hits != $hits) || ($hits >= $coupon->hitslimit))
 				{
-					$coupon->hits = $hits;
+					$coupon->hits    = $hits;
 					$coupon->enabled = $hits < $coupon->hitslimit;
 					$coupon->store();
 				}

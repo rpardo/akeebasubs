@@ -9,8 +9,6 @@ use FOF30\Container\Container;
 
 defined('_JEXEC') or die();
 
-JLoader::import('joomla.plugin.plugin');
-
 class plgSystemAsuserregredir extends JPlugin
 {
 	/**
@@ -31,8 +29,6 @@ class plgSystemAsuserregredir extends JPlugin
 		}
 
 		// Do not run if Akeeba Subscriptions is not enabled
-		JLoader::import('joomla.application.component.helper');
-
 		if (!JComponentHelper::isEnabled('com_akeebasubs'))
 		{
 			$this->enabled = false;
@@ -40,7 +36,6 @@ class plgSystemAsuserregredir extends JPlugin
 
 		if (!is_object($config['params']))
 		{
-			JLoader::import('joomla.registry.registry');
 			$config['params'] = new JRegistry($config['params']);
 		}
 

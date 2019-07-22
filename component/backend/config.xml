@@ -4,7 +4,7 @@
   ~ @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
   ~ @license   GNU General Public License version 3, or later
   -->
-<config addfieldpath="administrator/components/com_akeebasubs/assets/elements">
+<config>
 	<fieldset name="currency" label="COM_AKEEBASUBS_CONFIG_CURRENCY_TITLE">
 		<field type="text"
 			   name="currency"
@@ -58,8 +58,6 @@
 			<option value="2">COM_AKEEBASUBS_CONFIG_BACKEND_LOAD_FEF_BACKEND</option>
 			<option value="3">COM_AKEEBASUBS_CONFIG_BACKEND_LOAD_FEF_BOTH</option>
 		</field>
-
-		<field name="wizardstep" type="hidden" default="1"/>
 	</fieldset>
 
 	<fieldset name="frontend" label="COM_AKEEBASUBS_CONFIG_FRONTEND_TITLE">
@@ -69,19 +67,6 @@
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_SECRET"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_SECRET_DESC"
 		/>
-		<field name="includesignup" type="list" default="2"
-			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDESIGNUP"
-			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDESIGNUP_DESC">
-			<option value="0">COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDESIGNUP_NEVER</option>
-			<option value="1">COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDESIGNUP_INPRICE</option>
-			<option value="2">COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDESIGNUP_SEPARATE</option>
-		</field>
-		<field name="includediscount" type="radio" class="switcher btn-group" default="0"
-			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDEDISCOUNT"
-			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_INCLUDEDISCOUNT_DESC">
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
-		</field>
 
 		<field name="showrenew" type="radio" class="switcher btn-group" default="1"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWRENEW_LABEL"
@@ -89,57 +74,21 @@
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
-		<field name="noneuvat" type="radio" class="switcher btn-group" default="0"
-			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_NONEUVAT_LABEL"
-			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_NONEUVAT_DESC">
-			<option value="0">JNo</option>
-			<option value="1">JYes</option>
-		</field>
-		<field name="hidelonepaymentoption" type="radio" class="switcher btn-group" default="1"
-			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_HIDELONEPAYMENTOPTION_LABEL"
-			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_HIDELONEPAYMENTOPTION_DESC">
-			<option value="0">JNo</option>
-			<option value="1">JYes</option>
-		</field>
-		<field name="useppimages" type="list" default="1"
-			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_USEPPIMAGES_LABEL"
-			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_USEPPIMAGES_DESC">
-			<option value="0">COM_AKEEBASUBS_CONFIG_FRONTEND_USEPPIMAGES_OPT_DROPDOWN</option>
-			<option value="1">COM_AKEEBASUBS_CONFIG_FRONTEND_USEPPIMAGES_OPT_IMAGEONLY</option>
-			<option value="2">COM_AKEEBASUBS_CONFIG_FRONTEND_USEPPIMAGES_OPT_IMAGEANDTEXT</option>
-		</field>
+
 		<field name="dateformat" type="text"
 			   default="Y-m-d H:i"
 			   size="30"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_DATEFORMAT_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_DATEFORMAT_DESC"
 		/>
-		<field name="showvat" type="radio" class="switcher btn-group"
-			   default="0"
-			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWVAT_LABEL"
-			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWVAT_DESC">
-			<option value="0">JNo</option>
-			<option value="1">JYes</option>
-		</field>
-		<field name="showlocalprices" type="radio" class="switcher btn-group"
-			   default="1"
-			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWLOCALPRICES_LABEL"
-			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWLOCALPRICES_DESC">
-			<option value="0">JNo</option>
-			<option value="1">JYes</option>
-		</field>
-		<field name="reqcoupon" type="radio" class="switcher btn-group" default="0"
-			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_REQCOUPON_LABEL"
-			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_REQCOUPON_DESC">
-			<option value="0">JNo</option>
-			<option value="1">JYes</option>
-		</field>
+
 		<field name="confirmfree" type="radio" class="switcher btn-group" default="0"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_CONFIRMFREE_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_CONFIRMFREE_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
+
 		<field name="renderasfree" type="radio" class="switcher btn-group" default="0"
 			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_RENDERASFREE_LABEL"
 			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_RENDERASFREE_DESC">
@@ -147,9 +96,16 @@
 			<option value="1">JYes</option>
 		</field>
 
-		<field name="warndnt" type="radio" class="switcher btn-group" default="1"
-			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_WARNDNT_LABEL"
-			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_WARNDNT_DESC">
+		<field name="localisePrice" type="radio" class="switcher btn-group" default="1"
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_LOCALISEPRICE_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_LOCALISEPRICE_DESC">
+			<option value="0">JNo</option>
+			<option value="1">JYes</option>
+		</field>
+
+		<field name="showEstimatedTax" type="radio" class="switcher btn-group" default="1"
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWESTIMATEDTAX_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_SHOWESTIMATEDTAX_DESC">
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
@@ -171,150 +127,87 @@
 			<option value="1">JYes</option>
 		</field>
 
+		<field name="tos_url" type="text"
+			   default="tos.html"
+			   size="30"
+			   label="COM_AKEEBASUBS_CONFIG_TOS_URL_TITLE"
+			   description="COM_AKEEBASUBS_CONFIG_TOS_URL_DESC"
+		/>
+
+		<field name="privacy_url" type="text"
+			   default="privacy.html"
+			   size="30"
+			   label="COM_AKEEBASUBS_CONFIG_PRIVACY_URL_TITLE"
+			   description="COM_AKEEBASUBS_CONFIG_PRIVACY_URL_DESC"
+		/>
+
 		<field name="siteurl" type="hidden" default=""/>
 	</fieldset>
 
-	<fieldset name="invoice"
-			  label="COM_AKEEBASUBS_CONFIG_INVOICING_TITLE"
-			  description="COM_AKEEBASUBS_CONFIG_INVOICING_DESC"
-	>
-		<field name="invoice_number_format" type="text"
-			   default="[N:5]"
-			   size="30"
-			   label="COM_AKEEBASUBS_CONFIG_INVOICE_NUMBER_FORMAT_TITLE"
-			   description="COM_AKEEBASUBS_CONFIG_INVOICE_NUMBER_FORMAT_DESC"
-		/>
-		<field name="invoice_autosend" type="radio" class="switcher btn-group" default="1"
-			   label="COM_AKEEBASUBS_CONFIG_INVOICE_AUTOSEND_TITLE"
-			   description="COM_AKEEBASUBS_CONFIG_INVOICE_AUTOSEND_DESC">
-			<option value="0">JNo</option>
-			<option value="1">JYes</option>
-		</field>
-		<field name="invoice_override" type="text"
+	<fieldset name="paddle" label="COM_AKEEBASUBS_CONFIG_PADDLE_TITLE" description="COM_AKEEBASUBS_CONFIG_PADDLE_DESC">
+		<field name="demo_payment"
+			   type="radio" class="switcher btn-group"
 			   default="0"
-			   size="6"
-			   label="COM_AKEEBASUBS_CONFIG_INVOICE_OVERRIDE_TITLE"
-			   description="COM_AKEEBASUBS_CONFIG_INVOICE_OVERRIDE_DESC"
-		/>
-
-		<field name="creditnote_autosend" type="radio" class="switcher btn-group" default="0"
-			   label="COM_AKEEBASUBS_CONFIG_CREDITNOTE_AUTOSEND_TITLE"
-			   description="COM_AKEEBASUBS_CONFIG_CREDITNOTE_AUTOSEND_DESC">
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_DEMO_PAYMENT_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_DEMO_PAYMENT_DESC"
+		>
 			<option value="0">JNo</option>
 			<option value="1">JYes</option>
 		</field>
 
-		<field name="creditnote_override" type="text"
+		<field name="vendor_id"
+			   type="text"
 			   default="0"
-			   size="6"
-			   label="COM_AKEEBASUBS_CONFIG_CREDITNOTE_OVERRIDE_TITLE"
-			   description="COM_AKEEBASUBS_CONFIG_CREDITNOTE_OVERRIDE_DESC"
-		/>
+			   label="COM_AKEEBASUBS_CONFIG_PADDLE_VENDOR_ID_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_PADDLE_VENDOR_ID_DESC" />
 
-		<field name="invoice_altcurrency" type="akeebasubscurrencies"
+		<field name="vendor_auth_code"
+			   type="text"
+			   default="0"
+			   label="COM_AKEEBASUBS_CONFIG_PADDLE_VENDOR_AUTH_CODE_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_PADDLE_VENDOR_AUTH_CODE_DESC" />
+
+		<field name="public_key"
+			   type="textarea" cols="60" rows="14"
 			   default=""
-			   label="COM_AKEEBASUBS_CONFIG_INVOICE_ALTCURRENCY_TITLE"
-			   description="COM_AKEEBASUBS_CONFIG_INVOICE_ALTCURRENCY_DESC"
-		/>
+			   label="COM_AKEEBASUBS_CONFIG_PADDLE_PUBLIC_KEY_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_PADDLE_PUBLIC_KEY_DESC" />
 
-		<field name="invoice_vatnote" type="text"
-			   default="VAT liability is transferred to the recipient, pursuant EU Directive nr 2006/112/EC and local tax laws implementing this directive."
-			   size="50"
-			   label="COM_AKEEBASUBS_CONFIG_INVOICE_VATNOTE_TITLE"
-			   description="COM_AKEEBASUBS_CONFIG_INVOICE_VATNOTE_DESC"
-		/>
-		<field name="invoice_certificatefile" type="text"
-			   default="certificate.cer"
-			   size="30"
-			   label="COM_AKEEBASUBS_CONFIG_INVOICE_CERTIFICATEFILE_TITLE"
-			   description="COM_AKEEBASUBS_CONFIG_INVOICE_CERTIFICATEFILE_DESC"
-		/>
-		<field name="invoice_secretkeyfile" type="text"
-			   default="secret.cer"
-			   size="30"
-			   label="COM_AKEEBASUBS_CONFIG_INVOICE_SECRETKEYFILE_TITLE"
-			   description="COM_AKEEBASUBS_CONFIG_INVOICE_SECRETKEYFILE_DESC"
-		/>
-		<field name="invoice_secretkeypass" type="password"
-			   default=""
-			   size="20"
-			   label="COM_AKEEBASUBS_CONFIG_INVOICE_SECRETKEYPASS_TITLE"
-			   description="COM_AKEEBASUBS_CONFIG_INVOICE_SECRETKEYPASS_DESC"
-		/>
-		<field name="invoice_extracert" type="text"
-			   default="extra.cer"
-			   size="30"
-			   label="COM_AKEEBASUBS_CONFIG_INVOICE_EXTRACERT_TITLE"
-			   description="COM_AKEEBASUBS_CONFIG_INVOICE_EXTRACERT_DESC"
-		/>
-		<field name="invoice_country" type="hidden" default=""/>
-
-		<field name="s3access" type="text" default="" label="COM_AKEEBASUBS_CONFIG_S3_ACCESSKEY_LABEL"
-			   description="COM_AKEEBASUBS_CONFIG_S3_ACCESSKEY_DESC" size="50" filter="raw"/>
-
-		<field name="s3secret" type="password" default="" label="COM_AKEEBASUBS_CONFIG_S3_SECRETKEY_LABEL"
-			   description="COM_AKEEBASUBS_CONFIG_S3_SECRETKEY_DESC" size="50" filter="raw"/>
-
-		<field name="s3bucket" type="text" default="" label="COM_AKEEBASUBS_CONFIG_S3_BUCKET_LABEL"
-			   description="COM_AKEEBASUBS_CONFIG_S3_BUCKET_LABEL"/>
-
-		<field name="s3dir" type="text" default="" label="COM_AKEEBASUBS_CONFIG_S3_DIR_LABEL"
-			   description="COM_AKEEBASUBS_CONFIG_S3_DIR_DESC"/>
-
-		<field name="s3method" type="list" default="v4" label="COM_AKEEBASUBS_CONFIG_S3_METHOD_LABEL"
-			   description="COM_AKEEBASUBS_CONFIG_S3_METHOD_DESC">
-			<option value="v2">COM_AKEEBASUBS_CONFIG_S3_SIGNATURE_V2</option>
-			<option value="v4">COM_AKEEBASUBS_CONFIG_S3_SIGNATURE_V4</option>
+		<field name="log_callbacks"
+			   type="radio" class="switcher btn-group"
+			   default="0"
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_LOG_CALLBACKS_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_LOG_CALLBACKS_DESC"
+		>
+			<option value="0">JNo</option>
+			<option value="1">JYes</option>
 		</field>
 
-		<field name="s3region" type="list" default="us-east-1"
-			   label="COM_AKEEBASUBS_CONFIG_S3_REGION_LABEL"
-			   description="COM_AKEEBASUBS_CONFIG_S3_REGION_DESC">
-			<option value="">COM_AKEEBASUBS_CONFIG_S3_REGION_NONE</option>
-            <option value="us-east-2">COM_AKEEBASUBS_CONFIG_S3_REGION_USEAST2</option>
-            <option value="us-east-1">COM_AKEEBASUBS_CONFIG_S3_REGION_USEAST1</option>
-			<option value="us-west-2">COM_AKEEBASUBS_CONFIG_S3_REGION_USWEST2</option>
-			<option value="us-west-1">COM_AKEEBASUBS_CONFIG_S3_REGION_USWEST1</option>
-			<option value="ca-central-1">COM_AKEEBASUBS_CONFIG_S3_REGION_CACENTRAL1</option>
-			<option value="ap-south-1">COM_AKEEBASUBS_CONFIG_S3_REGION_APSOUTH1</option>
-            <option value="ap-northeast-1">COM_AKEEBASUBS_CONFIG_S3_REGION_APNORTHEAST1</option>
-            <option value="ap-northeast-2">COM_AKEEBASUBS_CONFIG_S3_REGION_APNORTHEAST2</option>
-            <option value="ap-northeast-3">COM_AKEEBASUBS_CONFIG_S3_REGION_APNORTHEAST3</option>
-            <option value="ap-southeast-1">COM_AKEEBASUBS_CONFIG_S3_REGION_APSOUTHEAST1</option>
-            <option value="ap-southeast-2">COM_AKEEBASUBS_CONFIG_S3_REGION_APSOUTHEAST2</option>
-            <option value="cn-north-1">COM_AKEEBASUBS_CONFIG_S3_REGION_CNNORTH1</option>
-            <option value="cn-northwest-2">COM_AKEEBASUBS_CONFIG_S3_REGION_CNNORTHWEST1</option>
-            <option value="eu-central-1">COM_AKEEBASUBS_CONFIG_S3_REGION_EUCENTRAL1</option>
-            <option value="eu-west-1">COM_AKEEBASUBS_CONFIG_S3_REGION_EUWEST1</option>
-            <option value="eu-west-2">COM_AKEEBASUBS_CONFIG_S3_REGION_EUWEST2</option>
-            <option value="eu-west-3">COM_AKEEBASUBS_CONFIG_S3_REGION_EUWEST3</option>
-			<option value="sa-east-1">COM_AKEEBASUBS_CONFIG_S3_REGION_SAEAST1</option>
-		</field>
-	</fieldset>
-
-	<fieldset name="updates" label="CONFIG_UPDATES_LABEL">
-
-		<field name="autoupdateCli" type="list" default="1"
-			   label="CONFIG_AUTOUPDATE_SETTINGS_LABEL"
-			   description="CONFIG_AUTOUPDATE_SETTINGS_DESC">
-			<option value="1">CONFIG_AUTOUPDATE_NOTIFY_UPDATE</option>
-			<option value="2">CONFIG_AUTOUPDATE_NOTIFY</option>
-			<option value="3">CONFIG_AUTOUPDATE_UPDATE</option>
+		<field name="verify_callbacks"
+			   type="radio" class="switcher btn-group"
+			   default="1"
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_VERIFY_CALLBACKS_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_VERIFY_CALLBACKS_DESC"
+		>
+			<option value="0">JNo</option>
+			<option value="1">JYes</option>
 		</field>
 
-		<field name="notificationFreq" type="text" default="1"
-			   label="CONFIG_NOTIFICATION_FREQ_LABEL"/>
+		<field name="payment_recovery_lifetime"
+			   type="text"
+			   default="7"
+			   label="COM_AKEEBASUBS_CONFIG_PADDLE_PAYMENT_RECOVERY_LIFETIME_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_PADDLE_PAYMENT_RECOVERY_LIFETIME_DESC" />
 
-		<field name="notificationTime" type="list" default="day"
-			   label="CONFIG_NOTIFICATION_TIME_LABEL">
-			<option value="min">CONFIG_NOTIFICATION_TIME_MIN</option>
-			<option value="hour">CONFIG_NOTIFICATION_TIME_HOUR</option>
-			<option value="day">CONFIG_NOTIFICATION_TIME_DAY</option>
+		<field name="on_past_due_pending"
+			   type="radio" class="switcher btn-group"
+			   default="1"
+			   label="COM_AKEEBASUBS_CONFIG_FRONTEND_ON_PAST_DUE_PENDING_LABEL"
+			   description="COM_AKEEBASUBS_CONFIG_FRONTEND_ON_PAST_DUE_PENDING_DESC"
+		>
+			<option value="0">COM_AKEEBASUBS_CONFIG_FRONTEND_ON_PAST_DUE_PENDING_EXTEND</option>
+			<option value="1">COM_AKEEBASUBS_CONFIG_FRONTEND_ON_PAST_DUE_PENDING_SUSPEND</option>
 		</field>
-
-		<field name="notificationEmail" type="text" default=""
-			   label="CONFIG_NOTIFICATION_EMAIL_LABEL"
-			   description="CONFIG_NOTIFICATION_EMAIL_DESC"/>
 	</fieldset>
 
 	<fieldset

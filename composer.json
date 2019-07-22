@@ -14,19 +14,12 @@
       "role": "Developer"
     }
   ],
-  "config": {
-    "vendor-dir": "component/backend/vendor"
-  },
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/akeeba/s3"
-    }
-  ],
   "require": {
     "php": "^7.2",
-    "akeeba/s3": "dev-master",
     "ext-soap": "*",
-    "ext-json": "*"
+    "ext-json": "*",
+    "ext-curl": "*",
+    "ext-openssl": "*",
+    "phpunit/phpunit": "^7.0"
   }
 }

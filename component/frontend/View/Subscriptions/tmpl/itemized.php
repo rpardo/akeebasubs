@@ -11,7 +11,6 @@ defined('_JEXEC') or die();
 
 $subs = array();
 $expired = array();
-JLoader::import('joomla.utilities.date');
 $jNow = new Date();
 
 if ($this->items->count())

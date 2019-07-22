@@ -7,8 +7,6 @@
 
 defined('_JEXEC') or die();
 
-JLoader::import('joomla.plugin.plugin');
-
 use FOF30\Container\Container;
 use Akeeba\Subscriptions\Admin\Model\Levels;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
@@ -34,8 +32,6 @@ class plgSystemAsfixrenewalsflag extends JPlugin
 		}
 
 		// Do not run if Akeeba Subscriptions is not enabled
-		JLoader::import('joomla.application.component.helper');
-
 		if (!JComponentHelper::isEnabled('com_akeebasubs'))
 		{
 			$this->enabled = false;
@@ -43,7 +39,6 @@ class plgSystemAsfixrenewalsflag extends JPlugin
 
 		if (!is_object($config['params']))
 		{
-			JLoader::import('joomla.registry.registry');
 			$config['params'] = new JRegistry($config['params']);
 		}
 
@@ -222,7 +217,6 @@ class plgSystemAsfixrenewalsflag extends JPlugin
 	 */
 	private function getComponentParameters()
 	{
-		JLoader::import('joomla.registry.registry');
 		$component = JComponentHelper::getComponent('com_akeebasubs');
 
 		if ($component->params instanceof JRegistry)

@@ -129,6 +129,74 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeebasubs/View/wrongphp.php',
 			'administrator/components/com_akeebasubs/View/Invoices/Form.php',
 			'administrator/components/com_akeebasubs/View/CreditNotes/Form.php',
+
+            // Akeeba Subscriptions 7 - Only support MoR integrations
+			'administrator/components/com_akeebasubs/Controller/Import.php',
+			'administrator/components/com_akeebasubs/Controller/User.php',
+
+            'administrator/components/com_akeebasubs/Form/Field/APICouponLimits.php',
+
+            'administrator/components/com_akeebasubs/Helper/EUVATInfo.php',
+            'administrator/components/com_akeebasubs/Helper/Forex.php',
+
+			'administrator/components/com_akeebasubs/Model/APICoupons.php',
+			'administrator/components/com_akeebasubs/Model/CreditNoteTemplates.php',
+			'administrator/components/com_akeebasubs/Model/Import.php',
+			'administrator/components/com_akeebasubs/Model/InvoiceTemplates.php',
+			'administrator/components/com_akeebasubs/Model/PaymentMethods.php',
+			'administrator/components/com_akeebasubs/Model/States.php',
+			'administrator/components/com_akeebasubs/Model/TaxHelper.php',
+			'administrator/components/com_akeebasubs/Model/TaxRules.php',
+			'administrator/components/com_akeebasubs/Model/Users.php',
+
+            'administrator/components/com_akeebasubs/PluginAbstracts/AkpaymentsBase.php',
+
+            'administrator/components/com_akeebasubs/ViewTemplates/ControlPanel/wizard.blade.php',
+            'administrator/components/com_akeebasubs/ViewTemplates/Subscriptions/form_customparams.blade.php',
+            'administrator/components/com_akeebasubs/ViewTemplates/Common/EntryPaymentPlugins.php',
+
+			'components/com_akeebasubs/Controller/APICoupons.php',
+			'components/com_akeebasubs/Controller/TaxConfig.php',
+			'components/com_akeebasubs/Controller/UserInfo.php',
+
+            'components/com_akeebasubs/Model/APICoupons.php',
+            'components/com_akeebasubs/Model/InvoiceTemplates.php',
+            'components/com_akeebasubs/Model/LevelGroups.php',
+            'components/com_akeebasubs/Model/PaymentMethods.php',
+			'components/com_akeebasubs/Model/States.php',
+			'components/com_akeebasubs/Model/Subscribe/Validation/Business.php',
+			'components/com_akeebasubs/Model/Subscribe/Validation/Country.php',
+			'components/com_akeebasubs/Model/Subscribe/Validation/CustomFields.php',
+			'components/com_akeebasubs/Model/Subscribe/Validation/PaymentMethod.php',
+			'components/com_akeebasubs/Model/Subscribe/Validation/State.php',
+			'components/com_akeebasubs/Model/Subscribe/Validation/SubscriptionCustomFields.php',
+			'components/com_akeebasubs/Model/TaxConfig.php',
+			'components/com_akeebasubs/Model/TaxHelper.php',
+			'components/com_akeebasubs/Model/TaxRules.php',
+			'components/com_akeebasubs/Model/Users.php',
+
+			'components/com_akeebasubs/View/Level/tmpl/default_donottrack.blade.php',
+			'components/com_akeebasubs/View/Validate/tmpl/statelist.php',
+			'components/com_akeebasubs/View/Level/tmpl/default_fields.blade.php',
+			'components/com_akeebasubs/View/Level/tmpl/default_level.blade.php',
+			'components/com_akeebasubs/View/Level/tmpl/default_persubscription.blade.php',
+			'components/com_akeebasubs/View/Level/tmpl/default_prepayment.blade.php',
+			'components/com_akeebasubs/View/Level/tmpl/default_summary.blade.php',
+			'components/com_akeebasubs/View/Levels/tmpl/awesome.php',
+			'components/com_akeebasubs/View/Levels/tmpl/default.php',
+			'components/com_akeebasubs/View/Levels/tmpl/strappy.php',
+			'components/com_akeebasubs/View/Subscriptions/tmpl/default.php',
+
+            'components/com_akeebasubs/views/Levels/tmpl/awesome.xml',
+            'components/com_akeebasubs/views/Levels/tmpl/strappy.xml',
+
+			'media/com_akeebasubs/images/couponicons.png',
+			'media/com_akeebasubs/images/dollaricons.png',
+			'media/com_akeebasubs/images/export.png',
+			'media/com_akeebasubs/images/sort_asc.png',
+			'media/com_akeebasubs/images/sort_desc.png',
+			'media/com_akeebasubs/images/subrefresh.png',
+			'media/com_akeebasubs/js/autosubmit.js',
 		],
 		'folders' => [
 			'administrator/components/com_akeebasubs/commands',
@@ -179,6 +247,43 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			// I no longer need precompiled tempaltes
 			'administrator/components/com_akeebasubs/PrecompiledTemplates',
 			'components/com_akeebasubs/PrecompiledTemplates',
+
+			// Akeeba Subscriptions 7 - Only support MoR integrations
+			'media/com_akeebasubs/tcpdf',
+
+            'administrator/components/com_akeebasubs/assets',
+			'administrator/components/com_akeebasubs/creditnotes',
+			'administrator/components/com_akeebasubs/invoices',
+
+			'administrator/components/com_akeebasubs/Form',
+
+			'administrator/components/com_akeebasubs/View/Subscriptions',
+
+			'administrator/components/com_akeebasubs/ViewTemplates/APICoupons',
+			'administrator/components/com_akeebasubs/ViewTemplates/CreditNoteTemplates',
+			'administrator/components/com_akeebasubs/ViewTemplates/Import',
+			'administrator/components/com_akeebasubs/ViewTemplates/InvoiceTemplates',
+			'administrator/components/com_akeebasubs/ViewTemplates/LevelGroups',
+			'administrator/components/com_akeebasubs/ViewTemplates/States',
+			'administrator/components/com_akeebasubs/ViewTemplates/TaxConfig',
+			'administrator/components/com_akeebasubs/ViewTemplates/TaxRules',
+			'administrator/components/com_akeebasubs/ViewTemplates/Users',
+
+            'components/com_akeebasubs/View/APICoupons',
+            'components/com_akeebasubs/View/Validate',
+			'components/com_akeebasubs/View/Subscribe',
+			'components/com_akeebasubs/View/Messages',
+
+			'components/com_akeebasubs/Model/Subscribe/Validation/ValidationTrait',
+
+			'components/com_akeebasubs/views/UserInfo',
+
+			'media/com_akeebasubs/images/dashboard',
+			'media/com_akeebasubs/images/frontend',
+			'media/com_akeebasubs/invoices',
+
+			// Akeeba Subscriptions 7 - We no longer need any Composer dependencies
+            'administrator/components/com_akeebasubs/vendor',
 		]
 	];
 
@@ -191,44 +296,85 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 		// modules => { (folder) => { (module) }* }*
 		'modules' => array(
 			'admin' => [],
-			'site'  => []
+			'site'  => [
+				'aktaxcountry',
+			],
 		),
 		// plugins => { (folder) => { (element) }* }*
 		'plugins' => [
 			'akeebasubs' => [
 				'acymailing',
+				'ageverification',
+				'agreetoeu',
+				'agreetotos',
 				'atscreditslegacy',
 				'autocity',
 				'canalyticscommerce',
 				'customfields',
+				'gacommerce',
+				'invoices',
+				'iplogger',
 				'iproperty',
+				'jce',
 				'joomlaprofilesync',
 				'kunena',
+				'needslogout',
 				'recaptcha',
+				'reseller',
+				'samplefields',
 				'slavesubs',
 				'sql',
 				'subscriptionemailsdebug',
+				'userdelete',
 			],
-		]
+			'akpayment'  => [
+				'2checkout',
+				'2conew',
+				'none',
+				'offline',
+				'paymill',
+				'paymilldss3',
+				'paypal',
+				'paypalpaymentspro',
+				'paypalproexpress',
+				'skrill',
+				'stripe',
+				'viva',
+			],
+			'system'     => [
+				'as2cocollation',
+				'aslogoutuser',
+				'aspaypalcollation',
+			],
+			'user'       => [
+				'aslogoutuser',
+				'asresetform',
+			],
+		],
 	];
 
 
 	public function postflight($type, $parent)
 	{
+		/**
+		 * Migrate country information out of #__akeebasubs_users into Joomla's user profile information
+         *
+		 * Why put it above the parent::postflight call? Because parent::postflight will run database schema updates
+		 * which will eventually involve killing off the #__akeebasubs_users table. We need to run the migration before
+         * that.
+		 */
+		$this->migrateCountryData();
+
 		// Call the parent method
 		parent::postflight($type, $parent);
 
 		// Add ourselves to the list of extensions depending on Akeeba FEF
 		$this->addDependency('file_fef', $this->componentName);
-	}
 
-	public function uninstall($parent)
-	{
 		// Remove the update sites for this component on installation. The update sites are now handled at the package
 		// level.
 		$this->removeObsoleteUpdateSites($parent);
 
-		parent::uninstall($parent);
 	}
 
 	/**
@@ -244,7 +390,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 		<img src="../media/com_akeebasubs/images/akeebasubs-48.png" width="48" height="48" alt="Akeeba Subscriptions"
 			 align="left"/>
 		<h2 style="font-size: 14pt; font-weight: bold; padding: 0; margin: 0 0 0.5em;">Welcome to Akeeba Subscriptions!</h2>
-		<span>The easiest way to sell subscriptions on your Joomla! site</span>
+		<span>The easiest Paddle integration for Joomla!.</span>
 
 		<?php
 	}
@@ -319,7 +465,7 @@ HTML;
 	 *
 	 * @param   JInstallerAdapterComponent  $parent  The parent installer
 	 */
-	protected function removeObsoleteUpdateSites($parent)
+	private function removeObsoleteUpdateSites($parent)
 	{
 		$db = $parent->getParent()->getDBO();
 
@@ -366,4 +512,57 @@ HTML;
 			}
 		}
 	}
+
+	/**
+	 * Migrate country information from the #__akeebasubs_users table into Joomla's profile fields.
+     *
+     * @return  void
+     *
+     * @since   7.0.0
+	 */
+	private function migrateCountryData()
+    {
+	    /**
+	     * In case you're wondering why use a hardcoded query instead of going through JDatabaseQuery: I am doing an
+	     * INSERT from SELECT query which is superbly efficient and does not use any PHP memory. The alternative
+	     * involves loading N records to PHP memory and executing N to 2N queries to see if the data already exists and
+	     * decide whether to do an INSERT. Try that with 70,000 records and tell me how that worked for you ;)
+	     */
+        $db = JFactory::getDbo();
+        $sql = <<< SQL
+INSERT INTO
+    `#__user_profiles`
+SELECT
+       `user_id`,
+       "akeebasubs.country" AS `profile_key`,
+       `country` AS `profile_value`,
+       0 as `ordering`
+FROM
+     `#__akeebasubs_users`
+WHERE
+      `user_id` NOT IN (
+              SELECT
+                     `user_id`
+              FROM
+                     `#__user_profiles`
+              WHERE
+                    `profile_key` = 'akeebasubs.country'
+              AND NOT
+                  (profile_value = "" OR profile_value = "XX")
+       )
+SQL;
+	    /**
+	     * Why the try-catch with no action? Well, country information is nice to have, not necessary to have. Moreover,
+	     * in the not-so-distant future we're going to kill the #__akeebasubs_users table which means this query will
+	     * fail.
+	     */
+        try
+        {
+	        $db->setQuery($sql)->execute();
+        }
+        catch (Exception $e)
+        {
+            // No sweat.
+        }
+    }
 }

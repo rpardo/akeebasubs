@@ -11,7 +11,6 @@ use DateTimeZone;
 use FOF30\Container\Container;
 use FOF30\Date\Date;
 use FOF30\Model\DataModel;
-use JLoader;
 use Joomla\CMS\Factory;
 use JText;
 
@@ -94,7 +93,6 @@ abstract class Format
 	 */
 	public static function checkDateFormat($date)
 	{
-		JLoader::import('joomla.utilities.date');
 		$regex = '/^\d{1,4}(\/|-)\d{1,2}(\/|-)\d{2,4}[[:space:]]{0,}(\d{1,2}:\d{1,2}(:\d{1,2}){0,1}){0,1}$/';
 
 		if (!preg_match($regex, $date))
@@ -145,50 +143,6 @@ abstract class Format
 		else
 		{
 			return '&mdash;&mdash;&mdash;';
-		}
-	}
-
-	/**
-	 * Returns the human readable subscription level group title based on the numeric subscription level group ID given
-	 * in $id.
-	 *
-	 * @param   int  $id  The subscription level ID
-	 *
-	 * @return  string  The subscription level title, or three em-dashes if it's unknown
-	 */
-	public static function formatLevelgroup($id)
-	{
-		static $levelGroupsMap;
-
-		if (empty($levelGroupsMap))
-		{
-			/** @var DataModel $levelsModel */
-			$levelGroupsModel = Container::getInstance('com_akeebasubs')->factory
-				->model('LevelGroups')->tmpInstance();
-
-			$levelGroupsList = $levelGroupsModel
-				->get(true);
-
-			if (!empty($levelGroupsList))
-			{
-				foreach ($levelGroupsList as $levelGroup)
-				{
-					$levelGroupsMap[ $levelGroup->akeebasubs_levelgroup_id ] = $levelGroup->title;
-				}
-			}
-			else
-			{
-				$levelGroupsMap = array();
-			}
-		}
-
-		if (array_key_exists($id, $levelGroupsMap))
-		{
-			return $levelGroupsMap[ $id ];
-		}
-		else
-		{
-			return JText::_('COM_AKEEBASUBS_SELECT_LEVELGROUP');
 		}
 	}
 

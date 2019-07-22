@@ -56,7 +56,7 @@ class CouponDiscount extends Base
 
 		// Get the base price of the subscription
 		$basePriceStructure = $this->factory->getValidator('BasePrice')->execute();
-		$basePrice = $basePriceStructure['basePrice'];
+		$basePrice = $basePriceStructure['levelNet'];
 
 		// Initialise the coupon discount value
 		$ret['value'] = 0.0;

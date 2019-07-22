@@ -12,7 +12,7 @@
 /Tests/config.php
 
 # Composer dependencies
-/component/backend/vendor
+/vendor
 
 # Precompiled Blade templates
 /component/frontend/PrecompiledTemplates

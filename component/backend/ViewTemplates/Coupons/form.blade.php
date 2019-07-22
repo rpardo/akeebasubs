@@ -61,19 +61,17 @@ $item = $this->getItem();
             </div>
 
             <div class="akeeba-form-group">
+                <label for="recurring_access">
+                    @fieldtitle('recurring_access')
+                </label>
+                @jhtml('FEFHelper.select.booleanswitch', 'recurring_access', $item->recurring_access)
+            </div>
+
+            <div class="akeeba-form-group">
                 <label for="enabled">
                     @lang('JPUBLISHED')
                 </label>
                 @jhtml('FEFHelper.select.booleanswitch', 'enabled', $item->enabled)
-            </div>
-
-            <div class="akeeba-form-group">
-                <label for="akeebasubs_apicoupon_id">
-                    @lang('COM_AKEEBASUBS_COUPON_FIELD_API')
-                </label>
-				<?php echo BrowseView::modelSelect('akeebasubs_apicoupon_id', 'APICoupons', $item->akeebasubs_apicoupon_id, [
-					'fof.autosubmit' => false, 'translate' => false, 'none' => '&mdash;&mdash;&mdash;'
-				]) ?>
             </div>
 
             <div class="akeeba-form-group">

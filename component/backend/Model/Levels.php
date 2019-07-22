@@ -25,18 +25,19 @@ use JFactory;
  * @property  string    $description
  * @property  int       $duration
  * @property  float     $price
- * @property  float     $signupfee
+ * @property  string    $product_url
+ * @property  array     $related_levels
+ * @property  string    $paddle_product_id
+ * @property  string    $paddle_secret
+ * @property  string    $upsell
+ * @property  string    $paddle_plan_id
+ * @property  string    $paddle_plan_secret
  * @property  string    $ordertext
- * @property  string    $orderurl
- * @property  string    $canceltext
- * @property  string    $cancelurl
  * @property  bool      $only_once
  * @property  bool      $recurring
  * @property  bool      $forever
- * @property  int       $akeebasubs_levelgroup_id
  * @property  int       $access
  * @property  string    $fixed_date
- * @property  string[]  $payment_plugins
  * @property  string    $renew_url
  * @property  string    $content_url
  * @property  array     $params
@@ -53,18 +54,17 @@ use JFactory;
  * @method  $this  description()               description(string $v)
  * @method  $this  duration()                  duration(int $v)
  * @method  $this  price()                     price(float $v)
- * @method  $this  signupfee()                 signupfee(float $v)
+ * @method  $this  paddle_product_id()         paddle_product_id(string $v)
+ * @method  $this  paddle_secret()             paddle_secret(string $v)
+ * @method  $this  upsell()                    upsell(string $v)
+ * @method  $this  paddle_plan_id()            paddle_plan_id(string $v)
+ * @method  $this  paddle_plan_secret()        paddle_plan_secret(string $v)
  * @method  $this  ordertext()                 ordertext(string $v)
- * @method  $this  orderurl()                  orderurl(string $v)
- * @method  $this  canceltext()                canceltext(string $v)
- * @method  $this  cancelurl()                 cancelurl(string $v)
  * @method  $this  only_once()                 only_once(bool $v)
  * @method  $this  recurring()                 recurring(bool $v)
  * @method  $this  forever()                   forever(bool $v)
- * @method  $this  akeebasubs_levelgroup_id()  akeebasubs_levelgroup_id(int $v)
  * @method  $this  access()                    access(int $v)
  * @method  $this  fixed_date()                fixed_date(string $v)
- * @method  $this  payment_plugins()           payment_plugins(string $v)
  * @method  $this  renew_url()                 renew_url(string $v)
  * @method  $this  content_url()               content_url(string $v)
  * @method  $this  enabled()                   enabled(bool $v)
@@ -78,7 +78,6 @@ use JFactory;
  * @method  $this  notify1()                   notify1(int $v)
  * @method  $this  notify2()                   notify2(int $v)
  * @method  $this  notifyafter()               notifyafter(int $v)
- * @method  $this  levelgroup()                levelgroup(int $v)
  * @method  $this  access_user_id()            access_user_id(int $v)
  * @method  $this  id()                        id(mixed $v)
  *
@@ -235,13 +234,6 @@ class Levels extends DataModel
 			$query->where($db->qn('akeebasubs_level_id') . ' IN (' . $ids . ')');
 		}
 
-		$levelgroup = $this->getState('levelgroup', null, 'int');
-
-		if (is_numeric($levelgroup))
-		{
-			$query->where($db->qn('akeebasubs_levelgroup_id') . ' = ' . (int) $levelgroup);
-		}
-
 		$order = $this->getState('filter_order', 'akeebasubs_level_id', 'cmd');
 
 		if (!in_array($order, array_keys($this->getData())))
@@ -364,30 +356,13 @@ class Levels extends DataModel
 		{
 			$this->assert($this->duration >= 1, 'COM_AKEEBASUBS_LEVEL_ERR_LENGTH');
 		}
-	}
 
-	/**
-	 * Converts the loaded comma-separated list of payment plugins into an array
-	 *
-	 * @param   string  $value  The comma-separated list
-	 *
-	 * @return  array  The exploded array
-	 */
-	protected function getPaymentPluginsAttribute($value)
-	{
-		return $this->getAttributeForImplodedArray($value);
-	}
-
-	/**
-	 * Converts the array of payment plugins into a comma separated list
-	 *
-	 * @param   array  $value  The array of values
-	 *
-	 * @return  string  The imploded comma-separated list
-	 */
-	protected function setPaymentPluginsAttribute($value)
-	{
-		return $this->setAttributeForImplodedArray($value);
+		// Disable upsell for recurring and forever subscriptions (it does not make sense!)
+		$isFixedDate = !empty($this->fixed_date) && !($this->fixed_date == $nullDate);
+		if ($this->forever || $isFixedDate)
+		{
+			$this->upsell = 'never';
+		}
 	}
 
 	/**
@@ -412,6 +387,30 @@ class Levels extends DataModel
 	protected function setParamsAttribute($value)
 	{
 		return $this->setAttributeForJson($value);
+	}
+
+	/**
+	 * Converts the loaded string of related levels into an array
+	 *
+	 * @param   string  $value  The string
+	 *
+	 * @return  array  The array of levels
+	 */
+	protected function getRelatedLevelsAttribute($value)
+	{
+		return $this->getAttributeForImplodedArray($value);
+	}
+
+	/**
+	 * Converts the array of related levels into a string
+	 *
+	 * @param   array  $value  The array of values
+	 *
+	 * @return  string  The string
+	 */
+	protected function setRelatedLevelsAttribute($value)
+	{
+		return $this->setAttributeForImplodedArray($value);
 	}
 
 	/**

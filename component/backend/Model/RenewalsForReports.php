@@ -109,8 +109,6 @@ class RenewalsForReports extends DataModel
 				' LIKE ' . $db->q($search) . ') OR ' .
 				'(' . $db->qn('tbl') . '.' . $db->qn('city') .
 				' LIKE ' . $db->q($search) . ') OR ' .
-				'(' . $db->qn('tbl') . '.' . $db->qn('state') .
-				' LIKE ' . $db->q($search) . ') OR ' .
 				'(' . $db->qn('tbl') . '.' . $db->qn('zip') .
 				' LIKE ' . $db->q($search) . ')'
 				. ')'

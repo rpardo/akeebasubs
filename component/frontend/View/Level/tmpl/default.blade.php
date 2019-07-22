@@ -7,23 +7,18 @@
 
 defined('_JEXEC') or die();
 
-use Akeeba\Subscriptions\Admin\Helper\Select;
-
 /** @var \Akeeba\Subscriptions\Site\View\Level\Html $this */
 
-$script = <<<JS
-
-akeebasubs_level_id = {$this->item->akeebasubs_level_id};
-
-JS;
-$this->addJavascriptInline($script);
-$layout = $this->input->getCmd('layout', 'default');
 ?>
+{{-- Include Paddle JavaScript --}}
+@include('site:com_akeebasubs/Level/paddlejs')
+
+@if ($this->blockingSubscriptions->count())
+	@include('site:com_akeebasubs/Level/default_blocking')
+	<?php return; ?>
+@endif
 
 <div id="akeebasubs">
-
-	{{-- "Do Not Track" warning --}}
-	@include('site:com_akeebasubs/Level/default_donottrack')
 
 	{{-- Module position 'akeebasubscriptionsheader' --}}
 	@modules('akeebasubscriptionsheader')
@@ -39,7 +34,7 @@ $layout = $this->input->getCmd('layout', 'default');
 			</h4>
 			<p>@lang('COM_AKEEBASUBS_LEVEL_ERR_NOJS_BODY')</p>
 			<p>
-				<a href="http://enable-javascript.com" class="akeeba-btn--primary" target="_blank">
+				<a href="https://www.enable-javascript.com" class="akeeba-btn--primary" target="_blank">
 					<span class="akion-information-circled"></span>
 					@lang('COM_AKEEBASUBS_LEVEL_ERR_NOJS_MOREINFO')
 				</a>
@@ -48,61 +43,72 @@ $layout = $this->input->getCmd('layout', 'default');
 	</noscript>
 
 	<form
-		action="@route('index.php?option=com_akeebasubs&view=Subscribe&layout='.$layout.'&slug=' . $this->input->getString('slug', ''))"
+		action="@route('index.php?option=com_akeebasubs&view=Subscribe&slug=' . $this->input->getString('slug', ''))"
 		method="post"
 		id="signupForm" class="akeeba-form--horizontal">
 		<input type="hidden" name="@token()" value="1"/>
 
-		<div class="akeeba-container--50-50">
-			{{-- ACCOUNT COLUMN --}}
-			<div id="akeebasubs-panel-account" class="akeeba-panel--info">
-				<header class="akeeba-block-header">
-					<h3>
-						@lang('COM_AKEEBASUBS_LEVEL_LBL_ACCOUNTHEADER')
-					</h3>
-				</header>
-				@include('site:com_akeebasubs/Level/default_fields')
-			</div>
+		{{-- PRODUCT SUMMARY --}}
+		@include('site:com_akeebasubs/Level/default_product')
 
-			{{-- ORDER COLUMN --}}
-			<div id="akeebasubs-panel-order" class="akeeba-panel--primary">
-				<header class="akeeba-block-header">
-					<h3>
-						@lang('COM_AKEEBASUBS_LEVEL_LBL_YOURORDER')
-					</h3>
-				</header>
-				@include('site:com_akeebasubs/Level/default_summary')
+		{{-- UPSELL TO RELATED LEVELS --}}
+		@if (!empty($this->upsellLevels))
+			@include('site:com_akeebasubs/Level/default_related')
+		@endif
+
+		{{-- DOWNGRADE WARNING --}}
+		@if ($this->warnSubscriptions->count())
+			@include('site:com_akeebasubs/Level/default_downgrade')
+		@endif
+
+		{{-- MAIN FIELDS --}}
+		<div id="akeebasubs-page-level" class="akeeba-container--66-33">
+			<div id="akeebasubs-page-level-orderfields">
+				{{-- USER ACCOUNT--}}
+				@include('site:com_akeebasubs/Level/default_account')
+			</div>
+			<div id="akeebasubs-page-level-pricing">
+				{{-- PRICING INFORMATION--}}
+				@include('site:com_akeebasubs/Level/default_pricing')
 			</div>
 		</div>
+
+		{{-- UPSELL TO RECURRING --}}
+		@include('site:com_akeebasubs/Level/default_recurring')
+
+		{{-- TOS ACCEPTANCE--}}
+		@include('site:com_akeebasubs/Level/default_tos')
+
+		{{-- SUBSCRIBE BUTTON --}}
+		@include('site:com_akeebasubs/Level/default_subscribe')
 	</form>
+
+	<div class="clearfix"></div>
 
 	{{-- Module position 'akeebasubscriptionsfooter' --}}
 	@modules('akeebasubscriptionsfooter')
+
+	<div class="clearfix"></div>
 </div>
 
-<?php
-$aks_msg_error_overall = JText::_('COM_AKEEBASUBS_LEVEL_ERR_JSVALIDATIONOVERALL', true);
-$script                = <<<JS
+@if (($this->cparams->localisePrice && !($this->validation->price->discount > 0.009)) || !empty($this->upsellPlanId))
+	<hr />
+@endif
 
-akeebasubs_apply_validation = {$this->apply_validation};
+@if ($this->cparams->localisePrice && !($this->validation->price->discount > 0.009))
+	<p class="akeeba-help-text">
+		@sprintf('COM_AKEEBASUBS_LEVEL_LBL_PRICEINFO_LOCALISED_SUBSCRIBEPAGE', $this->container->params->get('currency', '€'), $this->container->params->get('currencysymbol', '€'))
+	</p>
 
-akeeba.jQuery(document).ready(function(){
-	validatePassword();
-	validateName();
-	validateEmail();
-	validateAddress();
-	validateBusiness();
-	validateForm();
-});
+	@if ($this->cparams->isTaxAllowed)
+		<p class="akeeba-help-text">
+			* @lang('COM_AKEEBASUBS_LEVEL_LBL_PRICEINFO_ESTIMATETAX')
+		</p>
+	@endif
+@endif
 
-function onSignupFormSubmit()
-{
-	if (akeebasubs_valid_form == false) {
-		alert('$aks_msg_error_overall');
-	}
-
-	return akeebasubs_valid_form;
-}
-
-JS;
-$this->addJavascriptInline($script);
+@unless(empty($this->validation->recurring['recurringId']))
+	<p class="akeeba-help-text" id="akeebasubs-optin-recurring-info" style="display: none">
+		@lang('COM_AKEEBASUBS_LEVEL_LBL_OPTIN_RECURRING_INFO')
+	</p>
+@endunless

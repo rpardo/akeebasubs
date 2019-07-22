@@ -25,10 +25,11 @@ class Name extends Base
 			return false;
 		}
 
-		// The name must contain AT LEAST two parts (name/surname) separated by a space
-		$nameParts = explode(" ", $name);
-
-		return count($nameParts) >= 2;
+		/**
+		 * As of Akeeba Subscriptions 7, we only use the Name field for the Joomla user account, not for invoicing. As
+		 * a result we no longer need to check that it consists of at least two words.
+		 */
+		return true;
 	}
 
 }

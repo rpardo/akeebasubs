@@ -40,6 +40,9 @@ class SubscriptionRelationDiscountTest extends ValidatorWithSubsTestCase
 		$jNextYear = clone $jNow;
 		$jNextYear->add(new \DateInterval('P1Y1D'));
 
+		$jNextHalfYear = clone $jNextYear;
+		$jNextHalfYear->add(new \DateInterval('P365D'));
+
 		$jLastHalfYear = clone($jNow);
 		$jLastHalfYear->sub(new \DateInterval('P181D'));
 
@@ -56,7 +59,7 @@ class SubscriptionRelationDiscountTest extends ValidatorWithSubsTestCase
 		$j370DaysAgo->sub(new \DateInterval('P370D'));
 
 		return [
-			[
+			'Not logged in, no relation' => [
 				'loggedIn' => 'guest',
 				'subs'     => [
 					[
@@ -73,9 +76,9 @@ class SubscriptionRelationDiscountTest extends ValidatorWithSubsTestCase
 					'oldsub'   => null,
 					'allsubs'  => [],
 				],
-				'message'  => 'Not logged in, no SLL'
+				'message'  => 'Not logged in, no relation'
 			],
-			[
+			'No relation' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [],
 				'state'    => [
@@ -87,32 +90,13 @@ class SubscriptionRelationDiscountTest extends ValidatorWithSubsTestCase
 					'oldsub'   => null,
 					'allsubs'  => [],
 				],
-				'message'  => 'No SLL'
+				'message'  => 'No relation'
 			],
-			[
+			'Relation with upgrade rules, replace' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
-						'level'      => 1,
-						'publish_up' => $jNow->toSql()
-					]
-				],
-				'state'    => [
-					'id' => '1',
-				],
-				'expected' => [
-					'discount' => 10.0,
-					'relation' => 1,
-					'oldsub'   => 'S1',
-					'allsubs'  => ['S1'],
-				],
-				'message'  => 'SLL with upgrade rules, replace'
-			],
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [
-					[
-						'level'      => 1,
+						'level'      => 2,
 						'publish_up' => $jNow->toSql()
 					]
 				],
@@ -120,18 +104,76 @@ class SubscriptionRelationDiscountTest extends ValidatorWithSubsTestCase
 					'id' => '2',
 				],
 				'expected' => [
-					'discount' => 5.0,
-					'relation' => 2,
+					'discount' => 40.0,
+					'relation' => 5,
 					'oldsub'   => 'S1',
 					'allsubs'  => ['S1'],
 				],
-				'message'  => 'SLL with upgrade rules, extend'
+				'message'  => 'Relation with upgrade rules, replace'
 			],
-			[
+			'Relation with upgrade rules, extend' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
-						'level'      => 2,
+						'level'      => 4,
+						'publish_up' => $jNow->toSql()
+					]
+				],
+				'state'    => [
+					'id' => '5',
+				],
+				'expected' => [
+					'discount' => 5.0,
+					'relation' => 6,
+					'oldsub'   => 'S1',
+					'allsubs'  => ['S1'],
+				],
+				'message'  => 'Relation with upgrade rules, extend'
+			],
+			'Relation with upgrade rules, overlap' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'      => 1,
+						'publish_up' => $jNow->toSql()
+					]
+				],
+				'state'    => [
+					'id' => '5',
+				],
+				'expected' => [
+					'discount' => 15.0,
+					'relation' => 7,
+					'oldsub'   => 'S1',
+					'allsubs'  => ['S1'],
+				],
+				'message'  => 'Relation with upgrade rules, overlap'
+			],
+			'Relation with fixed discount, value' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'      => 6,
+						'publish_up' => $jNow->toSql()
+					]
+				],
+				'state'    => [
+					'id' => '5',
+				],
+				'expected' => [
+					'discount' => 19.66,
+					'relation' => 8,
+					'oldsub'   => 'S1',
+					'allsubs'  => ['S1'],
+				],
+				// FREEWITHSIGNUP to LEVEL1
+				'message'  => 'Relation with fixed discount, value'
+			],
+			'Relation with fixed discount, percent' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'      => 4,
 						'publish_up' => $jNow->toSql()
 					]
 				],
@@ -139,280 +181,256 @@ class SubscriptionRelationDiscountTest extends ValidatorWithSubsTestCase
 					'id' => '4',
 				],
 				'expected' => [
-					'discount' => 10.0,
-					'relation' => 3,
+					'discount' => 2.50,
+					'relation' => 9,
 					'oldsub'   => 'S1',
 					'allsubs'  => ['S1'],
 				],
-				'message'  => 'SLL with upgrade rules, overlap'
+				'message'  => 'Relation with fixed discount, percent'
 			],
-			[
+			'Relation with flexible discount, value, round down – high threshold' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
-						'level'      => 7,
-						'publish_up' => $jNow->toSql()
-					]
-				],
-				'state'    => [
-					'id' => '1',
-				],
-				'expected' => [
-					'discount' => 5.0,
-					'relation' => 4,
-					'oldsub'   => 'S1',
-					'allsubs'  => ['S1'],
-				],
-				// FREEWITHSIGNUP to LEVEL1
-				'message'  => 'SLL with fixed discount, value'
-			],
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [
-					[
-						'level'      => 7,
-						'publish_up' => $jNow->toSql()
-					]
-				],
-				'state'    => [
-					'id' => '2',
-				],
-				'expected' => [
-					'discount' => 10.0,
-					'relation' => 5,
-					'oldsub'   => 'S1',
-					'allsubs'  => ['S1'],
-				],
-				// FREEWITHSIGNUP to LEVEL2
-				'message'  => 'SLL with fixed discount, percent'
-			],
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [
-					[
-						'level'      => 6,
+						'level'      => 1,
 						'publish_up' => $jNow->toSql()
 					],
 					[
-						'level'      => 6,
+						'level'      => 1,
 						'publish_up' => $jNextYear->toSql(),
 					    'enabled'    => 0
 					]
 				],
 				'state'    => [
-					'id' => '1',
+					'id' => '3',
 				],
 				'expected' => [
-					'discount' => 12, // High threshold
-					'relation' => 6,
+					'discount' => 37.5, // High threshold
+					'relation' => 1,
 					'oldsub'   => 'S1',
 					'allsubs'  => ['S1', 'S2'],
 				],
 				// FREE to LEVEL1
-				'message'  => 'SLL with flexible discount, value, round down – high threshold'
+				'message'  => 'Relation with flexible discount, value, round down – high threshold'
 			],
-			[
+			'Relation with flexible discount, value, round down – during flexible period' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
-						'level'      => 6,
+						'level'      => 1,
 						'publish_up' => $jLastHalfYear->toSql()
-					],
-					[
-						'level'      => 6,
-						'publish_up' => $jNextYear->toSql(),
-						'enabled'    => 0
-					]
-				],
-				'state'    => [
-					'id' => '1',
-				],
-				'expected' => [
-					'discount' => 6, // 6 months x 1 per month
-					'relation' => 6,
-					'oldsub'   => 'S1',
-					'allsubs'  => ['S1', 'S2'],
-				],
-				// FREE to LEVEL1
-				'message'  => 'SLL with flexible discount, value, round down – flexible period'
-			],
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [
-					[
-						'level'      => 6,
-						'publish_up' => $jElevenMonthsAgo->toSql()
-					],
-					[
-						'level'      => 6,
-						'publish_up' => $jNextYear->toSql(),
-						'enabled'    => 0
-					]
-				],
-				'state'    => [
-					'id' => '1',
-				],
-				'expected' => [
-					'discount' => 2, // low threshold
-					'relation' => 6,
-					'oldsub'   => 'S1',
-					'allsubs'  => ['S1', 'S2'],
-				],
-				// FREE to LEVEL1
-				'message'  => 'SLL with flexible discount, value, round down – low threshold'
-			],
-
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [
-					[
-						'level'      => 6,
-						'publish_up' => $j13MonthsAgo->toSql(),
-					    'enabled'    => 0,
-					],
-					[
-						'level'      => 6,
-						'publish_up' => $jElevenMonthsAgo->toSql(),
-					]
-				],
-				'state'    => [
-					'id' => '2',
-				],
-				'expected' => [
-					'discount' => 2, // low threshold
-					'relation' => 7,
-					'oldsub'   => 'S2',
-					'allsubs'  => ['S2'],
-				],
-				// FREE to LEVEL2
-				'message'  => 'SLL with flexible discount, include renewals, value, round down – low threshold'
-			],
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [
-					[
-						'level'      => 6,
-						'publish_up' => $jNow->toSql()
-					],
-					[
-						'level'      => 6,
-						'publish_up' => $jLastYear->toSql(),
-						'enabled'    => 0
-					]
-				],
-				'state'    => [
-					'id' => '2',
-				],
-				'expected' => [
-					'discount' => 12, // mid range
-					'relation' => 7,
-					'oldsub'   => 'S1',
-					'allsubs'  => ['S1'], // S2 is out of range (expired)
-				],
-				// FREE to LEVEL2
-				'message'  => 'SLL with flexible discount, include renewals, value, round down – mid range'
-			],
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [
-					[
-						'level'      => 6,
-						'publish_up' => $jNow->toSql()
-					],
-					[
-						'level'      => 6,
-						'publish_up' => $jNextYear->toSql(),
-						'enabled'    => 0
-					]
-				],
-				'state'    => [
-					'id' => '2',
-				],
-				'expected' => [
-					'discount' => 22, // high threshold
-					'relation' => 7,
-					'oldsub'   => 'S1',
-					'allsubs'  => ['S1', 'S2'],
-				],
-				// FREE to LEVEL2
-				'message'  => 'SLL with flexible discount, include renewals, value, round down – high threshold'
-			],
-
-			[
-				'loggedIn' => 'guineapig',
-				'subs'     => [
-					[
-						'level'      => 1,
-						'publish_up' => $jNow->toSql()
-					],
-					[
-						'level'      => 2,
-						'publish_up' => $jLastYear->toSql(),
-					    'enabled'    => 0
 					]
 				],
 				'state'    => [
 					'id' => '3',
 				],
 				'expected' => [
-					'discount' => 10,
-					'relation' => 8,
+					'discount' => 18,
+					'relation' => 1,
 					'oldsub'   => 'S1',
 					'allsubs'  => ['S1'],
 				],
-				// LEVEL1 to RECURRING
-				'message'  => 'SLL with fixed discount, combine, value – first combined rule active'
+				// FREE to LEVEL1
+				'message'  => 'Relation with flexible discount, value, round down – during flexible period'
 			],
-			[
+			'Relation with flexible discount, value, round down – low threshold' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
 						'level'      => 1,
-						'publish_up' => $jLastYear->toSql(),
-						'enabled'    => 0
-					],
-					[
-						'level'      => 2,
-						'publish_up' => $jNow->toSql(),
+						'publish_up' => $jElevenMonthsAgo->toSql()
 					]
 				],
 				'state'    => [
 					'id' => '3',
 				],
 				'expected' => [
-					'discount' => 15,
-					'relation' => 9,
+					'discount' => 5, // low threshold
+					'relation' => 1,
+					'oldsub'   => 'S1',
+					'allsubs'  => ['S1'],
+				],
+				// FREE to LEVEL1
+				'message'  => 'Relation with flexible discount, value, round down – low threshold'
+			],
+			'Relation with flexible discount, include renewals, value, round down – hitting high threshold' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'      => 1,
+						'publish_up' => $jElevenMonthsAgo->toSql(),
+					    'enabled'    => 1,
+					],
+					[
+						'level'      => 1,
+						'publish_up' => $jNextYear->toSql(),
+					]
+				],
+				'state'    => [
+					'id' => '3',
+				],
+				'expected' => [
+					'discount' => 37.5, // low threshold
+					'relation' => 1,
+					'oldsub'   => 'S1',
+					'allsubs'  => ['S1','S2'],
+				],
+				'message'  => 'Relation with flexible discount, include renewals, value, round down – hitting high threshold'
+			],
+			'Combined flexi relation, high threshold for both' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'      => 1,
+						'publish_up' => $jLastMonth->toSql(),
+					    'enabled'    => 1,
+					],
+					[
+						'level'      => 2,
+						'publish_up' => $jLastMonth->toSql(),
+						'enabled'    => 1,
+					]
+				],
+				'state'    => [
+					'id' => '3',
+				],
+				'expected' => [
+					'discount' => 75,
+					'relation' => 2,
 					'oldsub'   => 'S2',
-					'allsubs'  => ['S2'],
+					'allsubs'  => ['S1','S2'],
 				],
-				// LEVEL2 to RECURRING
-				'message'  => 'SLL with fixed discount, combine, value – second combined rule active'
+				'message'  => 'Combined flexi relation, high threshold for both'
 			],
-			[
+			'Combined flexi relation, low threshold for both' => [
 				'loggedIn' => 'guineapig',
 				'subs'     => [
 					[
 						'level'      => 1,
-						'publish_up' => $jNow->toSql(),
+						'publish_up' => $jElevenMonthsAgo->toSql(),
+					    'enabled'    => 1,
 					],
 					[
 						'level'      => 2,
-						'publish_up' => $jNow->toSql(),
+						'publish_up' => $jElevenMonthsAgo->toSql(),
+						'enabled'    => 1,
 					]
 				],
 				'state'    => [
 					'id' => '3',
 				],
 				'expected' => [
-					'discount' => 25,
-					'relation' => 9,
+					'discount' => 10, // low threshold
+					'relation' => 2,
+					'oldsub'   => 'S2',
+					'allsubs'  => ['S1','S2'],
+				],
+				'message'  => 'Combined flexi relation, low threshold for both'
+			],
+			'Combined flexi relation, in the middle for both' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'      => 1,
+						'publish_up' => $jThreeMonthsAgo->toSql(),
+					    'enabled'    => 1,
+					],
+					[
+						'level'      => 2,
+						'publish_up' => $jThreeMonthsAgo->toSql(),
+						'enabled'    => 1,
+					]
+				],
+				'state'    => [
+					'id' => '3',
+				],
+				'expected' => [
+					'discount' => 54, // low threshold
+					'relation' => 2,
+					'oldsub'   => 'S2',
+					'allsubs'  => ['S1','S2'],
+				],
+				'message'  => 'Combined flexi relation, in the middle for both'
+			],
+			'Combined flexi relation, middle and low' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'      => 1,
+						'publish_up' => $jThreeMonthsAgo->toSql(),
+					    'enabled'    => 1,
+					],
+					[
+						'level'      => 2,
+						'publish_up' => $jElevenMonthsAgo->toSql(),
+						'enabled'    => 1,
+					]
+				],
+				'state'    => [
+					'id' => '3',
+				],
+				'expected' => [
+					'discount' => 32,
+					'relation' => 2,
+					'oldsub'   => 'S2',
+					'allsubs'  => ['S1','S2'],
+				],
+				'message'  => 'Combined flexi relation, middle and low'
+			],
+			'Combined flexi relation, middle and high' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'      => 1,
+						'publish_up' => $jNow->toSql(),
+					    'enabled'    => 1,
+					],
+					[
+						'level'      => 2,
+						'publish_up' => $jElevenMonthsAgo->toSql(),
+						'enabled'    => 1,
+					]
+				],
+				'state'    => [
+					'id' => '3',
+				],
+				'expected' => [
+					'discount' => 42.5,
+					'relation' => 2,
+					'oldsub'   => 'S2',
+					'allsubs'  => ['S1','S2'],
+				],
+				'message'  => 'Combined flexi relation, middle and high'
+			],
+			/**
+			// This test will always fail. I cannot make a reasonable way to handle this automatically. Clients need to contact me and have me take manual action.
+			'Insanity: flexi relation, current and renewal on level 1, upgrading to level 3 [ALWAYS FAILING -- CANNOT REASONABLY MAKE IT WORK]' => [
+				'loggedIn' => 'guineapig',
+				'subs'     => [
+					[
+						'level'        => 1,
+						'publish_up'   => $jLastHalfYear->toSql(),
+						'publish_down' => $jNextHalfYear->toSql(),
+						'enabled'      => 1,
+					],
+					[
+						'level'      => 1,
+						'publish_up' => $jNextHalfYear->toSql(),
+						'enabled'    => 0,
+					],
+				],
+				'state'    => [
+					'id' => '3',
+				],
+				'expected' => [
+					'discount' => 2 * 37.5,
+					'relation' => 2,
 					'oldsub'   => 'S2',
 					'allsubs'  => ['S1', 'S2'],
 				],
-				// LEVEL2 to RECURRING
-				'message'  => 'SLL with fixed discount, combine, value – both combined rules active'
+				'message'  => 'Combined flexi relation, middle and high',
 			],
-
+			/**/
 		];
 	}
 

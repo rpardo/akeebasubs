@@ -7,9 +7,8 @@
 
 namespace Akeeba\Subscriptions\Admin\Toolbar;
 
-use FOF30\Inflector\Inflector;
-use JToolbarHelper;
 use JText;
+use JToolbarHelper;
 
 defined('_JEXEC') or die;
 
@@ -22,36 +21,23 @@ class Toolbar extends \FOF30\Toolbar\Toolbar
 	 */
 	public function renderSubmenu()
 	{
-		$views = array(
+		$views = [
 			'ControlPanel',
-			'COM_AKEEBASUBS_MAINMENU_SETUP'    => array(
+			'COM_AKEEBASUBS_MAINMENU_SETUP'    => [
 				'Levels',
-				'LevelGroups',
 				'Relations',
 				'Upgrades',
-				'TaxConfig',
-				'TaxRules',
-				'States',
 				'EmailTemplates',
 				'BlockRules',
-			),
+			],
 			'Subscriptions',
-			'COM_AKEEBASUBS_MAINMENU_COUPONS'  => array(
-				'Coupons',
-				'APICoupons'
-			),
-			'COM_AKEEBASUBS_MAINMENU_TOOLS'    => array(
-				'Import',
-				'Users'
-			),
-			'Reports',
-			'COM_AKEEBASUBS_MAINMENU_INVOICES' => array(
+			'Coupons',
+			'COM_AKEEBASUBS_MAINMENU_LEGACY' => [
+				'Reports',
 				'Invoices',
 				'CreditNotes',
-				'InvoiceTemplates',
-				'CreditNoteTemplates',
-			),
-		);
+			],
+		];
 
 		if (!$this->container->platform->getUser()->authorise('com_akeebasubs.pii', 'com_akeebasubs'))
 		{
@@ -136,50 +122,7 @@ class Toolbar extends \FOF30\Toolbar\Toolbar
 		}
 	}
 
-	public function onImportsDefault()
-	{
-		$this->renderSubmenu();
-
-		$option = $this->container->componentName;
-		$view = 'Import';
-
-		$subtitle_key = $option . '_TITLE_' . $view;
-		JToolBarHelper::title(JText::_($option).' &ndash; <small>' .
-		                      JText::_($subtitle_key) .
-		                      '</small>',
-			str_replace('com_', '', $option));
-
-		JToolBarHelper::custom('import', 'download', 'download', 'COM_AKEEBASUBS_IMPORT', false);
-		JToolbarHelper::divider();
-
-		JToolBarHelper::back('JTOOLBAR_BACK', 'index.php?option=com_akeebasubs&view=ControlPanel');
-	}
-
-	public function onTaxconfigsMain()
-	{
-		$this->renderSubmenu();
-
-		$option = $this->container->componentName;
-		$view = 'TaxConfigs';
-
-		$subtitle_key = $option . '_TITLE_' . $view;
-		JToolBarHelper::title(JText::_($option).' &ndash; <small>' .
-			JText::_($subtitle_key) .
-			'</small>',
-			str_replace('com_', '', $option));
-
-		JToolBarHelper::back('JTOOLBAR_BACK', 'index.php?option=com_akeebasubs&view=TaxRules');
-	}
-
 	public function onLevelsBrowse()
-	{
-		$this->onBrowse();
-
-		JToolBarHelper::divider();
-		JToolBarHelper::custom('copy', 'copy.png', 'copy_f2.png', 'JLIB_HTML_BATCH_COPY', false);
-	}
-
-	public function onInvoiceTemplatesBrowse()
 	{
 		$this->onBrowse();
 

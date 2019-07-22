@@ -23,13 +23,17 @@ defined('_JEXEC') or die;
 
 ?>
 @if($item->akeebasubs_coupon_id)
+    <span class="akeeba-label--green">
+        <span class="akion-pricetag"></span>
+    </span>
     <span class="akeebasubs-subscription-discount-coupon" title="@lang('COM_AKEEBASUBS_SUBSCRIPTIONS_DISCOUNT_COUPON')">
-	<span class="discount-icon"></span>
 	    {{{ $item->coupon->title or '&mdash;&mdash;&mdash;' }}}
     </span>
 @elseif($item->akeebasubs_upgrade_id)
+    <span class="akeeba-label--orange">
+        <span class="akion-bowtie"></span>
+    </span>
     <span class="akeebasubs-subscription-discount-upgrade" title="@lang('COM_AKEEBASUBS_SUBSCRIPTIONS_DISCOUNT_UPGRADE')">
-	<span class="discount-icon"></span>
 	    {{{ $item->upgrade->title or '&mdash;&mdash;&mdash;' }}}
     </span>
 @else

@@ -22,7 +22,6 @@ class plgAkeebasubsAdminemails extends plgAkeebasubsSubscriptionemails
 	{
 		if (!is_object($config['params']))
 		{
-			JLoader::import('joomla.registry.registry');
 			$config['params'] = new JRegistry($config['params']);
 		}
 

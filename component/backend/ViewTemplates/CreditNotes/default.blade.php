@@ -12,13 +12,11 @@
 defined('_JEXEC') or die();
 
 use Akeeba\Subscriptions\Admin\Model\CreditNotes;
-use Akeeba\Subscriptions\Admin\Model\CreditNoteTemplates;
 
 $model = $this->getModel();
 $nullDate = $this->container->db->getNullDate();
 /** @var \Akeeba\Subscriptions\Admin\Model\Invoices $invoiceModel */
 $invoiceModel = $this->getModel()->getContainer()->factory->model('Invoices')->tmpInstance();
-$invoicetemplates = $invoiceModel->getInvoiceTemplateNames();
 ?>
 
 @jhtml('behavior.modal', 'a.akeebaSubsModal')
@@ -32,10 +30,6 @@ $invoicetemplates = $invoiceModel->getInvoiceTemplateNames();
 
     <div class="akeeba-filter-element akeeba-form-group">
         @searchfilter('user', 'user', 'COM_AKEEBASUBS_SUBSCRIPTIONS_USER')
-    </div>
-
-    <div class="akeeba-filter-element akeeba-form-group">
-        @searchfilter('business', 'business', 'COM_AKEEBASUBS_USERS_FIELD_BUSINESSNAME')
     </div>
 
     <div class="akeeba-filter-element akeeba-form-group">
@@ -87,10 +81,6 @@ $invoicetemplates = $invoiceModel->getInvoiceTemplateNames();
                 @endunless
             </td>
             <td>
-                <span class="akeeba-label--teal">
-                    {{{ $invoicetemplates[$row->invoice->akeebasubs_invoicetemplate_id]->title }}}
-                </span>
-
                 <span class="akeeba-label">
 
                 @unless(empty($row->display_number))
@@ -110,16 +100,6 @@ $invoicetemplates = $invoiceModel->getInvoiceTemplateNames();
                    title="@lang('COM_AKEEBASUBS_INVOICES_ACTION_PREVIEW')">
                     <span class="akion-document-text"></span>
                 </a>
-                <a href="@route('index.php?option=com_akeebasubs&view=CreditNotes&task=download&tmpl=component&id=' . $row->akeebasubs_invoice_id)"
-                   class="akeeba-btn--grey--small"
-                   title="@lang('COM_AKEEBASUBS_INVOICES_ACTION_DOWNLOAD')">
-                    <span class="akion-android-download"></span>
-                </a>
-                <a href="@route('index.php?option=com_akeebasubs&view=CreditNotes&task=send&tmpl=component&id=' . $row->akeebasubs_invoice_id)"
-                   class="akeeba-btn--green--small"
-                   title="@lang('COM_AKEEBASUBS_INVOICES_ACTION_RESEND')">
-                    <span class="akion-android-mail"></span>
-                </a>
                 @if (empty($row->sent_on) || ($row->sent_on == $nullDate))
                     <span class="akeeba-label--warning">
                             @lang('COM_AKEEBASUBS_INVOICES_LBL_NOTSENT')
@@ -129,11 +109,6 @@ $invoicetemplates = $invoiceModel->getInvoiceTemplateNames();
                             @lang('COM_AKEEBASUBS_INVOICES_LBL_SENT')
                         </span>
                 @endif
-                <a href="@route('index.php?option=com_akeebasubs&view=CreditNotes&task=generate&tmpl=component&id=' . $row->akeebasubs_subscription_id)"
-                   class="akeeba-btn--orange--small"
-                   title="@lang('COM_AKEEBASUBS_INVOICES_ACTION_REGENERATE')">
-                    <span class="akion-refresh"></span>
-                </a>
             </td>
         </tr>
     @endforeach

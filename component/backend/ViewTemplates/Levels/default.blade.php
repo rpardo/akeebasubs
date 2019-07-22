@@ -34,10 +34,6 @@ $model = $this->getModel();
     <th>
         @searchfilter('title')
     </th>
-    {{-- Level Group --}}
-    <th width="8%">
-        {{ BrowseView::modelFilter('akeebasubs_levelgroup_id', 'title', 'LevelGroups', 'COM_AKEEBASUBS_LEVELS_FIELD_LEVELGROUP')  }}
-    </th>
     {{-- Duration --}}
     <th></th>
     {{-- Recurring --}}
@@ -74,10 +70,6 @@ $model = $this->getModel();
     {{-- Title --}}
     <th>
         @sortgrid('title')
-    </th>
-    {{-- Level Group --}}
-    <th>
-        @sortgrid('akeebasubs_levelgroup_id', 'COM_AKEEBASUBS_LEVELS_FIELD_LEVELGROUP')
     </th>
     {{-- Duration --}}
     <th>
@@ -128,10 +120,6 @@ $model = $this->getModel();
             <a href="@route(BrowseView::parseFieldTags('index.php?option=com_akeebasubs&view=Levels&task=edit&id=[ITEM:ID]', $row))">
                 {{{ $row->title }}}
             </a>
-        </td>
-        {{-- Level Group --}}
-        <td>
-            {{{  BrowseView::modelOptionName($row->akeebasubs_levelgroup_id, 'LevelGroups') }}}
         </td>
         {{-- Duration --}}
         <td>

@@ -67,7 +67,6 @@ class EmailTemplate extends DataController
 		$sub->net_amount                 = 1234.56;
 		$sub->tax_amount                 = 123.456;
 		$sub->gross_amount               = 1358.016;
-		$sub->recurring_amount           = 0;
 		$sub->tax_percent                = 10;
 		$sub->created_on                 = date('Y-m-d H:i:s');
 

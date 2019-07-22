@@ -45,6 +45,17 @@ defined('_JEXEC') or die();
 
 
 <div class="akeeba-form-group">
+    <label for="slug">
+        @lang('COM_AKEEBASUBS_LEVEL_FIELD_PRODUCT_URL')
+    </label>
+    <input type="text" name="product_url" id="product_url" value="{{{ $item->product_url }}}">
+    <p class="akeeba-help-text">
+        @lang('COM_AKEEBASUBS_LEVEL_FIELD_PRODUCT_URL_HELP')
+    </p>
+</div>
+
+
+<div class="akeeba-form-group">
     <label for="enabled">
         @lang('JPUBLISHED')
     </label>

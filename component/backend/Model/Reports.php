@@ -31,7 +31,7 @@ class Reports extends Model
 				'akuser.isbusiness', 'akuser.businessname', 'akuser.occupation',
 				'akuser.vatnumber',
 				'akuser.viesregistered', 'akuser.address1', 'akuser.address2',
-				'akuser.city', 'akuser.state', 'akuser.zip', 'akuser.country',
+				'akuser.city', 'akuser.zip', 'akuser.country',
 				'aksub.processor', 'aksub.processor_key', 'usr.id', 'usr.name',
 				'usr.username', 'usr.email'
 			))
@@ -90,13 +90,6 @@ class Reports extends Model
 			$query->order($db->qn('akuser') . '.' . $db->qn('country') . ' ASC');
 		}
 
-		if ($params['template_id'])
-		{
-			$template_ids = (array)$params['template_id'];
-			$template_ids = array_map(array($db, 'quote'), $template_ids);
-			$query->where($db->qn('akeebasubs_invoicetemplate_id').' IN('.implode(',', $template_ids).')');
-		}
-
 		$db->setQuery($query);
 		$records = $db->loadObjectList();
 
@@ -105,7 +98,6 @@ class Reports extends Model
 
 	public function getInvoiceListParameters()
 	{
-		JLoader::import('joomla.utilities.date');
 		$jNow = new Date();
 
 		$month = $this->input->getInt('month', 0);

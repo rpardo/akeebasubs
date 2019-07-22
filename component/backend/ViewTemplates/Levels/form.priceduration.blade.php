@@ -19,13 +19,6 @@ defined('_JEXEC') or die();
 </div>
 
 <div class="akeeba-form-group">
-    <label for="signupfee">
-        @lang('COM_AKEEBASUBS_LEVEL_FIELD_SIGNUPFEE')
-    </label>
-    @include('admin:com_akeebasubs/Common/EntryPrice', ['field' => 'signupfee', 'item' => $item])
-</div>
-
-<div class="akeeba-form-group">
     <label for="duration">
         @lang('COM_AKEEBASUBS_LEVEL_FIELD_DURATION')
     </label>
@@ -50,23 +43,66 @@ defined('_JEXEC') or die();
 </div>
 
 <div class="akeeba-form-group">
-    <label for="payment_plugins">
-        @lang('COM_AKEEBASUBS_LEVEL_FIELD_PAYMENT_PLUGINS')
+    <label for="related_levels">
+        @lang('COM_AKEEBASUBS_LEVEL_FIELD_RELATED_LEVELS')
     </label>
-    @include('admin:com_akeebasubs/Common/EntryPaymentPlugins', ['field' => 'payment_plugins', 'item' => $item])
+    {{ \Akeeba\Subscriptions\Admin\Helper\Select::levels('related_levels', $item->related_levels, ['include_none' => true, 'multiple' => 'multiple']) }}
+    <p class="akeeba-help-text">
+        @lang('COM_AKEEBASUBS_LEVEL_FIELD_RELATED_LEVELS_HELP')
+    </p>
+</div>
+
+<h4>@lang('COM_AKEEBASUBS_LEVEL_HEADER_PADDLE')</h4>
+
+<div class="akeeba-form-group">
+    <label for="paddle_product_id">
+        @lang('COM_AKEEBASUBS_LEVEL_FIELD_PADDLE_PRODUCT_ID')
+    </label>
+    <input type="text" name="paddle_product_id" id="paddle_product_id" value="{{{ $item->getFieldValue('paddle_product_id', '') }}}" />
 </div>
 
 <div class="akeeba-form-group">
-    <label for="akeebasubs_levelgroup_id">
-        @lang('COM_AKEEBASUBS_LEVELS_FIELD_LEVELGROUP')
+    <label for="paddle_secret">
+        @lang('COM_AKEEBASUBS_LEVEL_FIELD_PADDLE_SECRET')
     </label>
-    <?php echo \FOF30\Utils\FEFHelper\BrowseView::modelSelect('akeebasubs_levelgroup_id', 'LevelGroups',
-		$item->akeebasubs_levelgroup_id, [
-			'translate'      => false,
-			'apply_access'   => false,
-			'key_field'      => "akeebasubs_levelgroup_id",
-			'value_field'    => "title",
-			'none'           => "COM_AKEEBASUBS_SELECT_LEVELGROUP",
-			'fof.autosubmit' => false
-		]) ?>
+    <input type="text" name="paddle_secret" id="paddle_secret" value="{{{ $item->getFieldValue('paddle_secret', '') }}}" />
+</div>
+
+<div class="akeeba-form-group">
+    <label >
+        @lang('COM_AKEEBASUBS_LEVEL_FIELD_UPSELL')
+    </label>
+    <div class="akeeba-toggle">
+        <input id="upsell-never" type="radio" name="upsell" value="never"
+                {{ ($item->getFieldValue('upsell', 'never') == 'never') ? 'checked' : '' }}
+        />
+        <label for="upsell-never" class="green">Never</label>
+
+        <input id="upsell-renewal" type="radio" name="upsell" value="renewal"
+                {{ ($item->getFieldValue('upsell', 'never') == 'renewal') ? 'checked' : '' }}
+        />
+        <label for="upsell-renewal" class="orange">Renewal</label>
+
+        <input id="upsell-always" type="radio" name="upsell" value="always"
+                {{ ($item->getFieldValue('upsell', 'never') == 'always') ? 'checked' : '' }}
+        />
+        <label for="upsell-always" class="red">Always</label>
+    </div>
+    <p class="akeeba-help-text">
+        @lang('COM_AKEEBASUBS_LEVEL_FIELD_UPSELL_HELP')
+    </p>
+</div>
+
+<div class="akeeba-form-group">
+    <label for="paddle_plan_id">
+        @lang('COM_AKEEBASUBS_LEVEL_FIELD_PADDLE_PLAN_ID')
+    </label>
+    <input type="text" name="paddle_plan_id" id="paddle_plan_id" value="{{{ $item->getFieldValue('paddle_plan_id', '') }}}" />
+</div>
+
+<div class="akeeba-form-group">
+    <label for="paddle_plan_secret">
+        @lang('COM_AKEEBASUBS_LEVEL_FIELD_PADDLE_PLAN_SECRET')
+    </label>
+    <input type="text" name="paddle_plan_secret" id="paddle_plan_secret" value="{{{ $item->getFieldValue('paddle_plan_secret', '') }}}" />
 </div>

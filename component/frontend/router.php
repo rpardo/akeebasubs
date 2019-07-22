@@ -9,8 +9,6 @@ defined('_JEXEC') or die();
 
 include_once JPATH_LIBRARIES . '/fof30/include.php';
 
-use \FOF30\Inflector\Inflector;
-
 function AkeebasubsBuildRoute(&$query)
 {
 	$segments = array();
@@ -49,21 +47,10 @@ function AkeebasubsBuildRoute(&$query)
 	}
 	elseif ($newView == 'Message')
 	{
-		if (!array_key_exists('layout', $query))
-		{
-			$query['layout'] = 'order';
-		}
-
-		if ($query['layout'] == 'order')
-		{
-			$newView = 'ThankYou';
-		}
-		else
-		{
-			$newView = 'Cancelled';
-		}
+		$newView = 'ThankYou';
 
 		unset($query['layout']);
+		unset($query['task']);
 	}
 	elseif (($newView == 'Userinfo') || ($newView == 'UserInfo'))
 	{
@@ -95,6 +82,13 @@ function AkeebasubsBuildRoute(&$query)
 		}
 	}
 
+	// Add the subscription ID
+	if (($newView == 'ThankYou') && isset($query['subid']))
+	{
+		$segments[] = $query['subid'];
+		unset($query['subid']);
+	}
+
 	return $segments;
 }
 
@@ -105,7 +99,6 @@ function AkeebasubsParseRoute($segments)
 
 	// accepted layouts:
 	$layoutsAccepted = array(
-		'Messages' => array('order', 'cancel'),
 		'Invoice' => array('item')
 	);
 
@@ -123,7 +116,7 @@ function AkeebasubsParseRoute($segments)
 	// if there's no view, but the menu item has view info, we use that
 	if (count($segments))
 	{
-		if (!in_array($segments[0], $views))
+		if (!in_array(strtolower($segments[0]), $views))
 		{
 			$vars['view'] = array_key_exists('view', $menu) ? $menu['view'] : $default;
 		}
@@ -157,15 +150,7 @@ function AkeebasubsParseRoute($segments)
 			case 'Thankyou':
 			case 'ThankYou':
 				$vars['view'] = 'Messages';
-				$vars['task'] = 'thankyou';
-				$vars['layout'] = 'order';
-				break;
-
-			case 'cancelled':
-			case 'Cancelled':
-				$vars['view'] = 'Messages';
-				$vars['task'] = 'cancel';
-				$vars['layout'] = 'cancel';
+				$vars['task'] = 'show';
 				break;
 
 			case 'userinfo':
@@ -208,6 +193,11 @@ function AkeebasubsParseRoute($segments)
 			{
 				$vars['slug'] = array_shift($segments);
 			}
+		}
+
+		if (($vars['view'] == 'Messages') && !empty($segments))
+		{
+			$vars['subid'] = array_shift($segments);
 		}
 	}
 

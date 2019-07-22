@@ -9,11 +9,8 @@ namespace Akeeba\Subscriptions\Admin\PluginAbstracts;
 
 use Akeeba\Subscriptions\Admin\Model\Levels;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
-use Akeeba\Subscriptions\Admin\Model\Users;
 use FOF30\Container\Container;
 use JFactory;
-use JFile;
-use JLoader;
 use JPlugin;
 use JRegistry;
 use JText;

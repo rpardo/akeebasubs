@@ -5,6 +5,8 @@
  * @license   GNU General Public License version 3, or later
  */
 
+use FOF30\Autoloader\Autoloader as FOFAutoloader;
+
 define('_JEXEC', 1);
 
 // Maximise error reporting.
@@ -62,7 +64,7 @@ $config = JFactory::getConfig(JPATH_SITE . '/configuration.php');
 // Load FOF's autoloader
 require_once JPATH_LIBRARIES . '/fof30/include.php';
 
-\FOF30\Autoloader\Autoloader::getInstance()->addMap('Akeeba\\Subscriptions\\Tests\\', __DIR__);
+FOFAutoloader::getInstance()->addMap('Akeeba\\Subscriptions\\Tests\\', __DIR__);
 
 // Work around Joomla! 3.7's Session package being utterly borked
 $session    = JFactory::getSession();

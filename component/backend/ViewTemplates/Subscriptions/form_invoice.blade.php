@@ -14,17 +14,13 @@ defined('_JEXEC') or die();
 \JHtml::_('behavior.modal');
 
 $invoice = $model->invoice;
-$needsInvoice = is_null($invoice) || !($invoice instanceof Invoices) || empty($invoice->display_number);
 $returnURL = 'index.php?option=com_akeebasubs&view=Subscriptions&task=edit&id=' . $model->akeebasubs_subscription_id;
+
 ?>
 
-@if ($needsInvoice)
-    <a class="akeeba-btn--large---primary"
-       href="@route('index.php?option=com_akeebasubs&view=Invoices&task=generateForSubscription&id=' . (int) $model->akeebasubs_subscription_id . '&returnurl=' . base64_encode($returnURL))">
-        <span class="akion-refresh"></span>
-        @lang('COM_AKEEBASUBS_INVOICES_ACTION_REGENERATE')
-    </a>
-@else
+@if(!empty($invoice))
+
+    {{-- Legacy invoicing --}}
     <h5>
         <a href="@route('index.php?option=com_akeebasubs&view=Invoices&akeebasubs_subscription_id=' . (int) $model->akeebasubs_subscription_id)"
            target="_blank">
@@ -36,13 +32,48 @@ $returnURL = 'index.php?option=com_akeebasubs&view=Subscriptions&task=edit&id=' 
        href="@route('index.php?option=com_akeebasubs&view=Invoices&task=read&id=' . (int) $model->akeebasubs_subscription_id . '&tmpl=component')"
        rel="{handler: 'iframe', size: {x: 800, y: 500}}">
         <span class="akion-document-text"></span>
-		@lang('COM_AKEEBASUBS_INVOICES_ACTION_PREVIEW')
+        @lang('COM_AKEEBASUBS_INVOICES_ACTION_PREVIEW')
     </a>
 
-    <a class="akeeba-btn--teal"
-            href="@route('index.php?option=com_akeebasubs&view=Invoices&task=download&id=' . (int) $model->akeebasubs_subscription_id)">
-        <span class="akion-android-download"></span>
-		@lang('COM_AKEEBASUBS_INVOICES_ACTION_DOWNLOAD')
+@else
+    @unless(empty($model->receipt_url))
+    {{-- Paddle receipt --}}
+    <a class="akeeba-btn--grey modal"
+       href="{{ $model->receipt_url }}"
+       target="_blank">
+        <span class="akion-document-text"></span>
+        @lang('COM_AKEEBASUBS_INVOICES_ACTION_PREVIEW')
     </a>
+    @else
+    {{-- No invoice available --}}
+    <div class="akeeba-block--warning">
+        @lang('COM_AKEEBASUBS_SUBSCRIPTION_NO_RECEIPT')
+    </div>
 
+    @endif
+
+    {{-- Allow editing of the receipt URL --}}
+    <div class="akeeba-form-group">
+        <label for="receipt_url">
+            @fieldtitle('receipt_url')
+        </label>
+        <input type="text" name="receipt_url" id="receipt_url" value="{{{ $model->receipt_url }}}" />
+    </div>
+
+    <h3>@lang('COM_AKEEBASUBS_SUBSCRIPTION_HEAD_RECURRING')</h3>
+
+    {{-- Allow editing of the Update / Billing Info URL --}}
+    <div class="akeeba-form-group">
+        <label for="update_url">
+            @fieldtitle('update_url')
+        </label>
+        <input type="text" name="update_url" id="update_url" value="{{{ $model->update_url }}}" />
+    </div>
+    {{-- Allow editing of the Cancelation URL --}}
+    <div class="akeeba-form-group">
+        <label for="cancel_url">
+            @fieldtitle('cancel_url')
+        </label>
+        <input type="text" name="cancel_url" id="cancel_url" value="{{{ $model->cancel_url }}}" />
+    </div>
 @endif

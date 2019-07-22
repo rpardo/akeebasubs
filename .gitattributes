@@ -30,3 +30,7 @@ RELEASENOTES text eol=lf
 *.jpg binary
 *.z binary
 *.gif binary
+*.eot binary
+*.ttf binary
+*.woff binary
+*.woff2 binary

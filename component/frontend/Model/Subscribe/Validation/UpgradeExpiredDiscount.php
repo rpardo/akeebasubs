@@ -106,9 +106,17 @@ class UpgradeExpiredDiscount extends Base
 			}
 		}
 
+		// Get a list of susbcription levels with active subscriptions
+		$activeSubs = $subscriptionsModel
+			->user_id($user_id)
+			->enabled(1)
+			->paystate('C')
+			->get(true);
+		$activeLevels = $activeSubs->lists('akeebasubs_level_id');
+
 		// Get the current subscription level's price
 		$basePriceStructure = $this->factory->getValidator('BasePrice')->execute();
-		$basePrice = $basePriceStructure['basePrice'];
+		$basePrice = $basePriceStructure['levelNet'];
 
 		if ($basePrice <= 0.001)
 		{
@@ -125,7 +133,7 @@ class UpgradeExpiredDiscount extends Base
 				|| ($subs[$rule->from_id] < ($rule->min_presence * 86400))
 				|| ($subs[$rule->from_id] > ($rule->max_presence * 86400))
 				// If From and To levels are different, make sure there is no active subscription in the To level yet
-				|| ($rule->to_id != $rule->from_id && array_key_exists($rule->to_id, $subs))
+				|| (($rule->to_id != $rule->from_id) && in_array($rule->to_id, $activeLevels))
 			)
 			{
 				unset($autoRules[$i]);

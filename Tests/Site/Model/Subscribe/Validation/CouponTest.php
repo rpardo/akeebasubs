@@ -28,7 +28,7 @@ class CouponTest extends ValidatorTestCase
 	public function getTestData()
 	{
 		return [
-			[
+			'No coupon: invalid' => [
 				'loggedIn' => 'user1',
 				'state'    => [
 					'id' => '1',
@@ -42,7 +42,7 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'No coupon: invalid'
 			],
-			[
+			'Non-existent coupon code (IAMNOTTHERE): invalid' => [
 				'loggedIn' => 'user1',
 				'state'    => [
 					'id' => '1',
@@ -56,7 +56,7 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'Non-existent coupon code (IAMNOTTHERE): invalid'
 			],
-			[
+			'Valid coupon code, all caps (VALIDALL): valid' => [
 				'loggedIn' => 'user1',
 				'state'    => [
 					'id' => '1',
@@ -70,7 +70,7 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'Valid coupon code, all caps (VALIDALL): valid'
 			],
-			[
+			'Valid coupon code, all lowercase (validall): valid' => [
 				'loggedIn' => 'user1',
 				'state'    => [
 					'id' => '1',
@@ -84,7 +84,7 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'Valid coupon code, all lowercase (validall): valid'
 			],
-			[
+			'Valid coupon code, mixed case (ValidALL): valid' => [
 				'loggedIn' => 'user1',
 				'state'    => [
 					'id' => '1',
@@ -98,7 +98,7 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'Valid coupon code, mixed case (ValidALL): valid'
 			],
-			[
+			'Valid coupon code, spaces before (VALIDALL): valid' => [
 				'loggedIn' => 'user1',
 				'state'    => [
 					'id' => '1',
@@ -112,7 +112,7 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'Valid coupon code, spaces before (VALIDALL): valid'
 			],
-			[
+			'Valid coupon code, spaces after (VALIDALL): valid' => [
 				'loggedIn' => 'user1',
 				'state'    => [
 					'id' => '1',
@@ -126,7 +126,7 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'Valid coupon code, spaces after (VALIDALL): valid'
 			],
-			[
+			'Valid coupon code, newline after (VALIDALL): valid' => [
 				'loggedIn' => 'user1',
 				'state'    => [
 					'id' => '1',
@@ -140,7 +140,7 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'Valid coupon code, newline after (VALIDALL): valid'
 			],
-			[
+			'Valid coupon code, spaces around (VALIDALL): valid' => [
 				'loggedIn' => 'user1',
 				'state'    => [
 					'id' => '1',
@@ -154,7 +154,7 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'Valid coupon code, spaces around (VALIDALL): valid'
 			],
-			[
+			'Valid coupon code, not yet active (NOTYETACTIVE): invalid' => [
 				'loggedIn' => 'user1',
 				'state'    => [
 					'id' => '1',
@@ -168,7 +168,7 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'Valid coupon code, not yet active (NOTYETACTIVE): invalid'
 			],
-			[
+			'Valid coupon code, expired (ALREADYEXPIRED): invalid' => [
 				'loggedIn' => 'user1',
 				'state'    => [
 					'id' => '1',
@@ -182,7 +182,7 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'Valid coupon code, expired (ALREADYEXPIRED): invalid'
 			],
-			[
+			'Valid coupon code, inside the date range (INSIDEDATERANGE): valid' => [
 				'loggedIn' => 'user1',
 				'state'    => [
 					'id' => '1',
@@ -196,7 +196,7 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'Valid coupon code, inside the date range (INSIDEDATERANGE): valid'
 			],
-			[
+			'Valid coupon code, limited to this subscription level (FORLEVEL1): valid' => [
 				'loggedIn' => 'user1',
 				'state'    => [
 					'id' => '1',
@@ -210,7 +210,7 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'Valid coupon code, limited to this subscription level (FORLEVEL1): valid'
 			],
-			[
+			'Valid coupon code, limited to other subscription level (FORLEVEL2): invalid' => [
 				'loggedIn' => 'user1',
 				'state'    => [
 					'id' => '1',
@@ -224,7 +224,7 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'Valid coupon code, limited to other subscription level (FORLEVEL2): invalid'
 			],
-			[
+			'Valid coupon code, limited to our user (FORUSER1): valid' => [
 				'loggedIn' => 'user1',
 				'state'    => [
 					'id' => '1',
@@ -238,7 +238,7 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'Valid coupon code, limited to our user (FORUSER1): valid'
 			],
-			[
+			'Valid coupon code, limited to other user (FORUSER2): invalid' => [
 				'loggedIn' => 'user1',
 				'state'    => [
 					'id' => '1',
@@ -252,7 +252,7 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'Valid coupon code, limited to other user (FORUSER2): invalid'
 			],
-			[
+			'Valid coupon code, limited to our email address (FORUSER1EMAIL): valid' => [
 				'loggedIn' => 'user1',
 				'state'    => [
 					'id' => '1',
@@ -266,7 +266,7 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'Valid coupon code, limited to our email address (FORUSER1EMAIL): valid'
 			],
-			[
+			'Valid coupon code, limited to other email address (FORUSER2EMAIL): invalid' => [
 				'loggedIn' => 'user1',
 				'state'    => [
 					'id' => '1',
@@ -280,7 +280,7 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'Valid coupon code, limited to other email address (FORUSER2EMAIL): invalid'
 			],
-			[
+			'Valid coupon code, limited to our user group (FORSUBSCRIBERS): valid' => [
 				'loggedIn' => 'user1',
 				'state'    => [
 					'id' => '1',
@@ -294,7 +294,7 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'Valid coupon code, limited to our user group (FORSUBSCRIBERS): valid'
 			],
-			[
+			'Valid coupon code, limited to other user group (FORSUPERUSERS): invalid' => [
 				'loggedIn' => 'user1',
 				'state'    => [
 					'id' => '1',
@@ -308,7 +308,7 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'Valid coupon code, limited to other user group (FORSUPERUSERS): invalid'
 			],
-			[
+			'Valid coupon code, hits limit not reached (TENHITS): valid' => [
 				'loggedIn' => 'user1',
 				'state'    => [
 					'id' => '1',
@@ -322,7 +322,7 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'Valid coupon code, hits limit not reached (TENHITS): valid'
 			],
-			[
+			'Valid coupon code, hits limit already reached (ONEHIT): invalid' => [
 				'loggedIn' => 'user1',
 				'state'    => [
 					'id' => '1',
@@ -336,8 +336,8 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'Valid coupon code, hits limit already reached (ONEHIT): invalid'
 			],
-			[
-				'loggedIn' => 'user1',
+			'Valid coupon code, logged in, user hits limit not reached (TENUSERHITS): valid' => [
+				'loggedIn' => 'user4',
 				'state'    => [
 					'id' => '1',
 					'email' => 'user1@test.web',
@@ -350,8 +350,8 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'Valid coupon code, logged in, user hits limit not reached (TENUSERHITS): valid'
 			],
-			[
-				'loggedIn' => 'user1',
+			'Valid coupon code, logged in, user hits limit already reached (ONEUSERHIT): invalid' => [
+				'loggedIn' => 'user4',
 				'state'    => [
 					'id' => '1',
 					'email' => 'user1@test.web',
@@ -364,21 +364,21 @@ class CouponTest extends ValidatorTestCase
 				],
 				'message'  => 'Valid coupon code, logged in, user hits limit already reached (ONEUSERHIT): invalid'
 			],
-			[
+			'Valid coupon code, logged in, user hits limit already reached for a different user (ONEUSERHIT): valid' => [
 				'loggedIn' => 'user1',
 				'state'    => [
 					'id' => '1',
 					'email' => 'user1@test.web',
-					'coupon' => 'TWOUSERHITS',
+					'coupon' => 'ONEUSERHIT',
 				],
 				'expected' => [
 					'valid' => true,
 					'couponFound' => true,
-					'coupon' => 'TWOUSERHITS'
+					'coupon' => 'ONEUSERHIT'
 				],
-				'message'  => 'Valid coupon code, logged in, user hits limit already reached for a different user (TWOUSERHITS): valid'
+				'message'  => 'Valid coupon code, logged in, user hits limit already reached for a different user (ONEUSERHIT): valid'
 			],
-			[
+			'Valid coupon code, guest, user hits limit (TENUSERHITS): valid' => [
 				'loggedIn' => 'guest',
 				'state'    => [
 					'id' => '1',

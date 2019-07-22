@@ -32,76 +32,75 @@ button.akeebasubs-btn-big
   padding: 1em;
 }
 
-#REMOVE_OLD_RULES {
-  label {
-    font-weight: normal;
+.akeebasubs-level-login-button {
+  margin: 0.5em 0;
+}
+
+#akeebasubs-panel-yourorder
+{
+  padding: 0;
+  border: thin solid @grey;
+
+  > div {
+    padding: 2em;
+    text-align: center;
   }
 
-  #akeebasubs-panel-order {
-    hr {
-      margin: 1.5em 0;
-      border-bottom: double darken(@light-grey, 10%);
-    }
-  }
+  .akeebasubs-subscription-level {
+    background-color: @grey;
+    color: lighten(@teal, 10%);
+    height: 100%;
 
-  #akeebasubs-level-login {
-    padding-bottom: 1em;
-  }
+    div.akeebasubs-subscription-level-inner-container {
+      margin-top: 50%;
+      margin-bottom: 50%;
 
-  #akeebasubs-sum-container {
-    font-size: 120%;
-    margin: 0.8em 0;
-  }
-
-  #akeebasubs-sum-price {
-    font-size: 140%;
-  }
-
-  #akeebasubs-sum-discount-container {
-    color: darken(@light-grey, 10%);
-  }
-
-  #akeebasubs-sum-original-container {
-    color: darken(@light-grey, 10%);
-  }
-
-  #akeebasubs-vat-container {
-    color: @grey;
-  }
-
-  input.coupon-valid {
-    color: @green;
-    font-weight: bold;
-    text-transform: uppercase;
-  }
-
-  input.coupon-invalid {
-    color: @red;
-    font-weight: bold;
-    font-style: italic;
-  }
-
-  div.akeebasubs-paymentmethod-images {
-    div.radio {
-      border: thin solid darken(@light-grey, 10%);
-      -webkit-border-radius: 10px;
-      -moz-border-radius: 10px;
-      border-radius: 10px;
-      background: lighten(@light-grey, 10%);
-      padding: 1em;
-      margin: 1em 0;
-      label {
-        width: 100%;
-      }
-      img {
-        display: block;
-        clear: both;
-        margin-bottom: 0.3em;
+      h5 {
+        color: @white;
+        font-weight: bold;
+        font-size: 11pt;
       }
     }
   }
+}
 
-  label.checkbox {
-    padding-left: 20px;
+#akeebasubs-coupon-code-outer-container {
+  margin-top: 6pt;
+}
+
+#akeebasubs-panel-yourorder-info {
+  margin: 1em 0;
+  color: @grey;
+  text-align: center;
+}
+
+#akeebasubs-panel-yourorder-info::before {
+  content: '';
+}
+
+#akeebasubs-sum-original-field,
+#akeebasubs-sum-discount-field,
+#akeebasubs-sum-net-field,
+#akeebasubs-sum-tax-field {
+  text-align: right;
+}
+
+#akeebasubs-sum-label {
+  text-align: center;
+  margin: 1em 0 0.5em;
+}
+
+#akeebasubs-sum-price {
+  font-size: 300%;
+  font-weight: bold;
+  text-align: center;
+}
+
+.akeebasubs-level-footer {
+  text-align: center;
+
+  .akeebasubs-payment-methods {
+    color: #333333;
+    font-size: 18pt;
   }
 }

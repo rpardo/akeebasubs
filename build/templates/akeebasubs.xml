@@ -33,10 +33,9 @@
     <!-- Media files -->
     <media destination="com_akeebasubs" folder="media">
         <folder>css</folder>
+        <folder>fonts</folder>
         <folder>images</folder>
-        <folder>invoices</folder>
         <folder>js</folder>
-        <folder>tcpdf</folder>
     </media>
 
     <!-- Administrator back-end section -->
@@ -51,18 +50,13 @@
             <filename>fof.xml</filename>
             <filename>version.php</filename>
 
-            <folder>assets</folder>
             <folder>Controller</folder>
-            <folder>creditnotes</folder>
             <folder>Dispatcher</folder>
-            <folder>Form</folder>
             <folder>Helper</folder>
-            <folder>invoices</folder>
             <folder>Model</folder>
             <folder>PluginAbstracts</folder>
             <folder>sql</folder>
             <folder>Toolbar</folder>
-            <folder>vendor</folder>
             <folder>View</folder>
             <folder>ViewTemplates</folder>
         </files>

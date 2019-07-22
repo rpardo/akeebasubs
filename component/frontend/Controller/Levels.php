@@ -9,17 +9,12 @@ namespace Akeeba\Subscriptions\Site\Controller;
 
 defined('_JEXEC') or die;
 
-use Akeeba\Subscriptions\Admin\Controller\Mixin;
 use Akeeba\Subscriptions\Site\Model\Subscribe as SubscribeModel;
-use Akeeba\Subscriptions\Site\Model\TaxHelper;
-use Akeeba\Subscriptions\Site\Model\Users;
 use FOF30\Container\Container;
 use FOF30\Controller\DataController;
 
 class Levels extends DataController
 {
-	use Mixin\PredefinedTaskList;
-
 	/**
 	 * Overridden. Limit the tasks we're allowed to execute.
 	 *
@@ -28,9 +23,10 @@ class Levels extends DataController
 	 */
 	public function __construct(Container $container, array $config = array())
 	{
-		parent::__construct($container, $config);
+		// We can't cache anything since level prices may be user-specific and modified by session settings
+		$config['cacheableTasks'] = [];
 
-		$this->predefinedTaskList = ['browse', 'read'];
+		parent::__construct($container, $config);
 
 		if ($this->input->getBool('caching', true))
 		{
@@ -78,14 +74,8 @@ class Levels extends DataController
 			$appInput->set('_x_userid', $this->container->platform->getUser()->id);
 		}
 
-		/** @var TaxHelper $taxHelper */
-		$taxHelper = $this->getModel('TaxHelper');
-		$taxParameters = $taxHelper->getTaxDefiningParameters();
-		$appInput->set('_akeebasubs_taxParameters', $taxParameters);
-
 		$this->registerUrlParams(array(
 			'ids'                       => 'ARRAY',
-			'_akeebasubs_taxParameters' => 'ARRAY',
 			'no_clear'                  => 'BOOL',
 			'_x_userid'                 => 'INT',
 			'coupon'                    => 'STRING'
@@ -236,18 +226,11 @@ class Levels extends DataController
         /** @var \Akeeba\Subscriptions\Site\View\Level\Html $view */
 		$view = $this->getView();
 
-		// Get the user model and load the user data
-		/** @var Users $usersModel */
-		$usersModel = $this->getModel('Users');
-		$userparams = $usersModel
-			->getMergedData($this->container->platform->getUser()->id);
-
-		$view->userparams = $userparams;
-
 		// Load any cached user supplied information
 		/** @var SubscribeModel $vModel */
 		$vModel = $this->getModel('Subscribe');
-		$vModel->slug($slug)->id($id);
+		$vModel->slug($slug);
+		$vModel->setState('id', $id);
 
 		// Should we use the coupon code saved in the session?
 		$sessionCoupon = $this->container->platform->getSessionVar('coupon', null, 'com_akeebasubs');
@@ -259,24 +242,25 @@ class Levels extends DataController
 			$this->container->platform->setSessionVar('coupon', null, 'com_akeebasubs');
 		}
 
-		$cache = (array)($vModel->getData());
-
-		if ($cache['firstrun'])
-		{
-			foreach ($cache as $k => $v)
-			{
-				if (empty($v))
-				{
-					if (property_exists($userparams, $k))
-					{
-						$cache[$k] = $userparams->$k;
-					}
-				}
-			}
-		}
+		/**
+		 * Force the State Variables to re-initialize because we might have already changed the subscription level and
+		 * coupon in the code above.
+		 */
+		$cache = (array)($vModel->getStateVariables(true));
+		// Do the same for the validation. Otherwise the client ends up buying the WRONG SUSBCRIPTION LEVEL!
+		$vModel->getValidation(true);
 
 		$view->cache = (array)$cache;
 		$view->validation = $vModel->getValidation();
+
+		/**
+		 * If this was a POST request (because someone pressed the APPLY button next to the Coupon field) do NOT apply
+		 * the validation results.
+		 */
+		if ($this->input->getMethod() == 'POST')
+		{
+			$this->container->platform->setSessionVar('apply_validation.' . $id, 0, 'com_akeebasubs');
+		}
 
 		return true;
 	}

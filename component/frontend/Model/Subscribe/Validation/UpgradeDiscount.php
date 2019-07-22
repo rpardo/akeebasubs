@@ -45,7 +45,7 @@ class UpgradeDiscount extends Base
 
 		// Get the current subscription base price
 		$basePriceStructure = $this->factory->getValidator('BasePrice')->execute();
-		$basePrice = $basePriceStructure['basePrice'];
+		$basePrice = $basePriceStructure['levelNet'];
 
 		// If this is a free subscription we don't have a discount.
 		if ($basePrice <= 0.001)

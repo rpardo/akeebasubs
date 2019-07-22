@@ -7,6 +7,7 @@
 
 namespace Akeeba\Subscriptions\Tests\Site\Model\Subscribe\Validation;
 
+use Akeeba\Subscriptions\Site\Model\Subscriptions;
 use Akeeba\Subscriptions\Tests\Stubs\ValidatorTestCase;
 
 /**
@@ -24,127 +25,95 @@ class BasePriceTest extends ValidatorTestCase
 		// Create the base objects
 		parent::setUpBeforeClass();
 
-		// Fake the EU VAT checks
-		$reflector     = new \ReflectionClass('Akeeba\Subscriptions\Admin\Helper\EUVATInfo');
-		$propReflector = $reflector->getProperty('cache');
-		$propReflector->setAccessible(true);
-		$propReflector->setValue([
-			'vat' => [
-				'EL123456789' => false,
-				'EL070298898' => true,
-				'EL666666666' => false,
-				'CY123456789' => false,
-				'CY999999999' => true,
-			]
-		]);
+		// Modify subscription #3 (user5, active sub for level 3) to have publish_up/down dates within a year
+		/** @var Subscriptions $sub */
+		$sub = self::$container->factory->model('Subscriptions')->tmpInstance();
+		$sub->findOrFail(3);
+		$sub->publish_up = self::$container->platform->getDate('@' . (time() - 180 * 24 * 3600));
+		$sub->publish_down = self::$container->platform->getDate('@' . (time() + 180 * 24 * 3600));
+		$sub->created_on = $sub->publish_up;
+		$sub->save();
 	}
 
 	public function getTestData()
 	{
 		return [
-			[
+			'Invalid level ID' => [
 				'loggedIn'        => 'guest',
 				'state'           => [
 					'id' => 99999999
 				],
 				'expected'        => [
 					'levelNet'    => 0.0,
-					'basePrice'   => 0.0, // Base price, including sign-up and surcharges
-					'signUp'      => 0.0, // Sign-up fee applied
 					'isRecurring' => false
 				],
 				'message'         => 'Invalid level ID'
 			],
-			[
+			'Guest user, single product' => [
 				'loggedIn'        => 'guest',
 				'state'           => [
 					'id' => 1
 				],
 				'expected'        => [
-					'levelNet'    => 100.0,
-					'basePrice'   => 110.0, // Base price, including sign-up and surcharges
-					'signUp'      => 10.0, // Sign-up fee applied
+					'levelNet'    => 50.0,
 					'isRecurring' => false
 				],
-				'message'         => 'Level with sign-up, guest user'
+				'message'         => 'Guest user'
 			],
-			[
-				'loggedIn'        => 'forcedvat',
-				'state'           => [
-					'id' => 1
-				],
-				'expected'        => [
-					'levelNet'    => 100.0,
-					'basePrice'   => 110.0, // Base price, including sign-up and surcharges
-					'signUp'      => 10.0, // Sign-up fee applied
-					'isRecurring' => false
-				],
-				'message'         => 'Level with sign-up, user without subscription'
-			],
-			[
-				'loggedIn'        => 'user1',
-				'state'           => [
-					'id' => 1
-				],
-				'expected'        => [
-					'levelNet'    => 100.0,
-					'basePrice'   => 100.0, // Base price, including sign-up and surcharges
-					'signUp'      => 0.0, // Sign-up fee applied
-					'isRecurring' => false
-				],
-				'message'         => 'Level with sign-up, user with expired subscription'
-			],
-			[
-				'loggedIn'        => 'business',
-				'state'           => [
-					'id' => 1
-				],
-				'expected'        => [
-					'levelNet'    => 100.0,
-					'basePrice'   => 100.0, // Base price, including sign-up and surcharges
-					'signUp'      => 0.0, // Sign-up fee applied
-					'isRecurring' => false
-				],
-				'message'         => 'Level with sign-up, user with active subscription'
-			],
-			[
+			'Guest user, bundle product' => [
 				'loggedIn'        => 'guest',
 				'state'           => [
 					'id' => 3
 				],
 				'expected'        => [
-					'levelNet'    => 100.0,
-					'basePrice'   => 110.0, // Base price, including sign-up and surcharges
-					'signUp'      => 10.0, // Sign-up fee applied
-					'isRecurring' => true
+					'levelNet'    => 75.0,
+					'isRecurring' => false
 				],
-				'message'         => 'Recurring subscription with signup fee'
+				'message'         => 'Guest user'
 			],
-			[
+			'User without subscription' => [
+				'loggedIn'        => 'user4',
+				'state'           => [
+					'id' => 1
+				],
+				'expected'        => [
+					'levelNet'    => 50.0,
+					'isRecurring' => false
+				],
+				'message'         => 'User without subscription'
+			],
+			'User with expired subscription' => [
+				'loggedIn'        => 'user1',
+				'state'           => [
+					'id' => 1
+				],
+				'expected'        => [
+					'levelNet'    => 50.0,
+					'isRecurring' => false
+				],
+				'message'         => 'User with expired subscription'
+			],
+			'User with active subscription' => [
+				'loggedIn'        => 'user5',
+				'state'           => [
+					'id' => 1
+				],
+				'expected'        => [
+					'levelNet'    => 50.0,
+					'isRecurring' => false
+				],
+				'message'         => 'User with active subscription'
+			],
+			'Free subscription' => [
 				'loggedIn'        => 'guest',
 				'state'           => [
 					'id' => 6
 				],
 				'expected'        => [
 					'levelNet'    => 0.0,
-					'basePrice'   => 0.0, // Base price, including sign-up and surcharges
-					'signUp'      => 0.0, // Sign-up fee applied
 					'isRecurring' => false
 				],
-				'message'         => 'Free subscription without signup fee'
-			],
-			[
-				'loggedIn'        => 'guest',
-				'state'           => [
-					'id' => 7
-				],
-				'expected'        => [
-					'levelNet'    => 0.0,
-					'basePrice'   => 10.0, // Base price, including sign-up and surcharges
-					'signUp'      => 10.0, // Sign-up fee applied
-					'isRecurring' => false
-				],
-				'message'         => 'Free subscription with signup fee'
+				'message'         => 'Free subscription'
 			]
 		];
 	}

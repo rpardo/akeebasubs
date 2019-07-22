@@ -6,28 +6,39 @@
  */
 
 use FOF30\Utils\FEFHelper\BrowseView;
+use Joomla\CMS\Language\Text;
 
 defined('_JEXEC') or die();
 
 /** @var  FOF30\View\DataView\Html  $this */
 
 $stateOptions = [
-	'N' => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_STATE_N'),
-	'P' => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_STATE_P'),
-	'C' => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_STATE_C'),
-	'X' => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_STATE_X'),
+	'N' => Text::_('COM_AKEEBASUBS_SUBSCRIPTION_STATE_N'),
+	'P' => Text::_('COM_AKEEBASUBS_SUBSCRIPTION_STATE_P'),
+	'C' => Text::_('COM_AKEEBASUBS_SUBSCRIPTION_STATE_C'),
+	'X' => Text::_('COM_AKEEBASUBS_SUBSCRIPTION_STATE_X'),
+];
+
+$cancellationReasonOptions = [
+		'refund'   => Text::_('COM_AKEEBASUBS_SUBSCRIPTION_CANCELLATION_REASON_REFUND'),
+		'risk'     => Text::_('COM_AKEEBASUBS_SUBSCRIPTION_CANCELLATION_REASON_RISK'),
+		'past_due' => Text::_('COM_AKEEBASUBS_SUBSCRIPTION_CANCELLATION_REASON_PAST_DUE'),
+		'user'     => Text::_('COM_AKEEBASUBS_SUBSCRIPTION_CANCELLATION_REASON_USER'),
+		'upgrade'  => Text::_('COM_AKEEBASUBS_SUBSCRIPTION_CANCELLATION_REASON_UPGRADE'),
+		'tos'      => Text::_('COM_AKEEBASUBS_SUBSCRIPTION_CANCELLATION_REASON_TOS'),
+		'other'    => Text::_('COM_AKEEBASUBS_SUBSCRIPTION_CANCELLATION_REASON_OTHER')
 ];
 
 $discountOptions = [
-	'none'    => JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_DISCOUNT_NONE'),
-	'coupon'  => JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_DISCOUNT_COUPON'),
-	'upgrade' => JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_DISCOUNT_UPGRADE'),
+	'none'    => Text::_('COM_AKEEBASUBS_SUBSCRIPTIONS_DISCOUNT_NONE'),
+	'coupon'  => Text::_('COM_AKEEBASUBS_SUBSCRIPTIONS_DISCOUNT_COUPON'),
+	'upgrade' => Text::_('COM_AKEEBASUBS_SUBSCRIPTIONS_DISCOUNT_UPGRADE'),
 ];
 
 
 /** @var \Akeeba\Subscriptions\Admin\Model\Subscriptions $item */
 $item = $this->getItem();
-$user = is_object($item->user) ? $item->user : JFactory::getUser(0);
+$user = JFactory::getUser($item->user_id ?? 0);
 ?>
 @extends('admin:com_akeebasubs/Common/edit')
 
@@ -117,6 +128,13 @@ $user = is_object($item->user) ? $item->user : JFactory::getUser(0);
 		</div>
 
 		<div class="akeeba-form-group">
+			<label for="cancellation_reason">
+				@fieldtitle('cancellation_reason')
+			</label>
+			@jhtml('FEFHelper.select.genericlist', $cancellationReasonOptions, 'cancellation_reason', ['list.select' => $item->getFieldValue('cancellation_reason')])
+		</div>
+
+		<div class="akeeba-form-group">
 			<label for="prediscount_amount">
 				@fieldtitle('prediscount_amount')
 			</label>
@@ -162,6 +180,13 @@ $user = is_object($item->user) ? $item->user : JFactory::getUser(0);
 		</div>
 
 		<div class="akeeba-form-group">
+			<label for="fee_amount">
+				@fieldtitle('fee_amount')
+			</label>
+			@include('admin:com_akeebasubs/Common/EntryPrice', ['item' => $item, 'field' => 'fee_amount'])
+		</div>
+
+		<div class="akeeba-form-group">
 			<label for="created_on">
 				@fieldtitle('created_on')
 			</label>
@@ -174,21 +199,53 @@ $user = is_object($item->user) ? $item->user : JFactory::getUser(0);
 
 <div class="akeeba-container--50-50">
 
-	<div class="akeeba-panel--info" id="akeebasubs-customparams">
-		<header class="akeeba-block-header">
-			<h3>@lang('COM_AKEEBASUBS_SUBSCRIPTION_CUSTOMPARAMS_TITLE')</h3>
-		</header>
-
-		@include('admin:com_akeebasubs/Subscriptions/form_customparams', ['model' => $item])
-
-	</div>
-
 	<div class="akeeba-panel--orange akeebasubs-panel-force-top-margin" id="akeebasubs-invoices">
 		<header class="akeeba-block-header">
 			<h3>@lang('COM_AKEEBASUBS_MAINMENU_INVOICES')</h3>
 		</header>
 
 		@include('admin:com_akeebasubs/Subscriptions/form_invoice', ['model' => $item])
+	</div>
+
+	<div class="akeeba-panel--red akeebasubs-panel-force-top-margin" id="akeebasubs-paddle">
+		<header class="akeeba-block-header">
+			<h3>@lang('COM_AKEEBASUBS_SUBSCRIPTION_LBL_PADDLE')</h3>
+		</header>
+
+		@if (isset($item->params['checkout_id']))
+			<p>
+				@sprintf('COM_AKEEBASUBS_SUBSCRIPTION_LBL_PADDLE_CHECKOUT_ID', $item->params['checkout_id'])
+			</p>
+		@endif
+
+		@if (isset($item->params['subscription_id']))
+			<p>
+				@sprintf('COM_AKEEBASUBS_SUBSCRIPTION_LBL_PADDLE_SUBSCRIPTION_ID', $item->params['subscription_id'])
+			</p>
+		@endif
+
+		@if ($item->update_url)
+			<p>
+				<a href="{{ $item->update_url }}">@lang('COM_AKEEBASUBS_SUBSCRIPTION_LBL_PADDLE_UPDATE_URL')</a>
+			</p>
+		@endif
+
+		@if ($item->cancel_url)
+			<p>
+				<a href="{{ $item->cancel_url }}">@lang('COM_AKEEBASUBS_SUBSCRIPTION_LBL_PADDLE_CANCEL_URL')</a>
+			</p>
+		@endif
+
+		<?php $country = is_null($item->juser) ? null : $item->juser->getProfileField('akeebasubs.country') ?>
+		@if (!empty($country))
+			<p>
+				<span class="akeeba-label--teal">
+					{{ $country }}
+				</span>
+				{{ \Akeeba\Subscriptions\Admin\Helper\Select::countryToEmoji($country) }}
+				{{ \Akeeba\Subscriptions\Admin\Helper\Select::formatCountry($country) }}
+			</p>
+		@endif
 	</div>
 
 </div>

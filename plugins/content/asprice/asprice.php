@@ -7,42 +7,45 @@
 
 defined('_JEXEC') or die();
 
-JLoader::import('joomla.plugin.plugin');
-
 use FOF30\Container\Container;
 use Akeeba\Subscriptions\Admin\Model\Levels;
-use Akeeba\Subscriptions\Admin\Helper\Price;
+use FOF30\Utils\Ip;
+use Joomla\CMS\Cache\Controller\CallbackController;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Crypt\Crypt;
+use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Http\HttpFactory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\String\StringHelper;
 
-class plgContentAsprice extends JPlugin
+class plgContentAsprice extends CMSPlugin
 {
 	/**
-	 * Should this plugin be allowed to run? True if FOF can be loaded and the Akeeba Subscriptions component is enabled
+	 * List of subscription level titles to subscription level IDs
 	 *
-	 * @var  bool
-	 */
-	private $enabled = true;
-
-	/**
-	 * List of currently enabled subscription levels
-	 *
-	 * @var   Levels[]
+	 * @var   array
 	 */
 	protected static $levels = null;
 
 	/**
-	 * Maps subscription level titles to slugs
+	 * List of UPPERCASE slugs to subscription level IDs
 	 *
-	 * @var   array
-	 */
-	protected static $slugs = null;
-
-	/**
-	 * Maps subscription level titles to UPPERCASE slugs
-	 *
-	 * @var   array
+	 * @var   string[]
 	 */
 	protected static $upperSlugs = null;
+
+	/**
+	 * List of levelID to an array ['product_id' => 1234, 'plan_id' => 5678] where
+	 * -- product_id  is the one-off Paddle product's ID
+	 * -- plan_id     is the recurring Paddle subscription plan's ID
+	 * If either is not set it will contain NULL instead of an integer.
+	 *
+	 * @var   array
+	 * @since 7.0.0
+	 */
+	protected static $levelIdToProductIds = null;
 
 	/**
 	 * Maps subscription level IDs to pricing information
@@ -51,22 +54,346 @@ class plgContentAsprice extends JPlugin
 	 */
 	protected static $prices = null;
 
+	/**
+	 * Should this plugin be allowed to run? True if FOF can be loaded and the Akeeba Subscriptions component is enabled
+	 *
+	 * @var  bool
+	 */
+	private $enabled = true;
+
+	/**
+	 * Plugin constructor
+	 *
+	 * @param   object  &$subject  Used by the parent constructor
+	 * @param   array   $config    Used by the parent constructor
+	 *
+	 * @return  void
+	 */
 	public function __construct(&$subject, $config = array())
 	{
+		// Make sure FOF is loaded
 		if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/include.php'))
 		{
 			$this->enabled = false;
 		}
 
 		// Do not run if Akeeba Subscriptions is not enabled
-		JLoader::import('joomla.application.component.helper');
-
-		if (!JComponentHelper::isEnabled('com_akeebasubs'))
+		if (!ComponentHelper::isEnabled('com_akeebasubs'))
 		{
 			$this->enabled = false;
 		}
 
+		$this->loadLanguage('plg_content_asprice');
+
 		parent::__construct($subject, $config);
+	}
+
+	/**
+	 * Initializes all the level information. It's not part of the constructor to allow for deferred initialization
+	 * right before we first need it.
+	 *
+	 * @return  void
+	 *
+	 * @since   7.0.0
+	 */
+	private static function initializeLevelInformation(): void
+	{
+		$container = Container::getInstance('com_akeebasubs');
+
+		/** @var Levels $levelsModel */
+		$levelsModel = $container
+			->factory
+			->model('Levels')
+			->tmpInstance();
+
+		self::$levels               = [];
+		self::$upperSlugs           = [];
+		self::$levelIdToProductIds  = [];
+		$productIDs                 = [];
+
+		$list = $levelsModel->get(true);
+
+		if (!count($list))
+		{
+			return;
+		}
+
+		/** @var Levels $level */
+		foreach ($list as $level)
+		{
+			$thisTitle                                  = strtoupper($level->title);
+			self::$levels[$thisTitle]                   = $level->akeebasubs_level_id;
+			self::$upperSlugs[strtoupper($level->slug)] = $level->akeebasubs_level_id;
+
+			$productRecord = [
+				'product_id' => null,
+				'plan_id'    => null,
+			];
+
+			if ($level->paddle_product_id)
+			{
+				$productIDs[]                = $level->paddle_product_id;
+				$productRecord['product_id'] = $level->paddle_product_id;
+			}
+
+			if ($level->paddle_plan_id)
+			{
+				$productIDs[]             = $level->paddle_plan_id;
+				$productRecord['plan_id'] = $level->paddle_plan_id;
+			}
+
+			self::$levelIdToProductIds[$level->akeebasubs_level_id] = $productRecord;
+		}
+	}
+
+	/**
+	 * Process the {asprice LEVELTITLE} markup. Used with preg_replace_callback.
+	 *
+	 * @param   array  $match  A match to the {asprice} plugin tag
+	 *
+	 * @return  string  The processed result
+	 */
+	private static function processPrice($match): string
+	{
+		// Fetch a list of subscription levels if we haven't done so already
+		if (is_null(self::$levels))
+		{
+			self::initializeLevelInformation();
+		}
+
+		$levelId = self::getId($match[1]);
+
+		if ($levelId <= 0)
+		{
+			return '';
+		}
+
+		$pricingInfo = self::getPrice($levelId);
+
+		$js = $pricingInfo['js']['oneoff'];
+
+		if (!empty($js))
+		{
+			$js        = "\nwindow.jQuery(document).ready(function($) {" . $js . "});\n";
+			$container = Container::getInstance('com_akeebasubs');
+			$container->template->addJSInline($js);
+		}
+
+		return $pricingInfo['oneoff'];
+	}
+
+	/**
+	 * Process the {aspricerecurring LEVELTITLE} markup. Used with preg_replace_callback.
+	 *
+	 * @param   array  $match  A match to the {asprice} plugin tag
+	 *
+	 * @return  string  The processed result
+	 */
+	private static function processPriceRecurring($match): string
+	{
+		// Fetch a list of subscription levels if we haven't done so already
+		if (is_null(self::$levels))
+		{
+			self::initializeLevelInformation();
+		}
+
+		$levelId = self::getId($match[1]);
+
+		if ($levelId <= 0)
+		{
+			return '';
+		}
+
+		$pricingInfo = self::getPrice($levelId);
+
+		$js = $pricingInfo['js']['recurring'];
+
+		if (!empty($js))
+		{
+			$js        = "\nwindow.jQuery(document).ready(function($) {" . $js . "});\n";
+			$container = Container::getInstance('com_akeebasubs');
+			$container->template->addJSInline($js);
+		}
+
+		return $pricingInfo['recurring'];
+	}
+
+	/**
+	 * Gets the numeric level ID given a level title, slug or level ID in $title.
+	 *
+	 * @param   string  $title  The subscription level title, slug or ID
+	 *
+	 * @return  int  The subscription level ID or slug, or -1 if not found
+	 */
+	private static function getId(string $title): int
+	{
+		// Don't process invalid titles
+		if (empty($title))
+		{
+			return -1;
+		}
+
+		$title = strtoupper($title);
+
+		if (array_key_exists($title, self::$levels))
+		{
+			return self::$levels[$title];
+		}
+
+		if (array_key_exists($title, self::$upperSlugs))
+		{
+			return self::$upperSlugs[$title];
+		}
+
+		if (!is_numeric($title))
+		{
+			return -1;
+		}
+
+		$id    = (int) $title;
+
+		if (in_array($id, self::$levels))
+		{
+			return $id;
+		}
+
+		// No match!
+		return -1;
+	}
+
+	/**
+	 * Get the formatted net price in the default currency from the subscription level information.
+	 *
+	 * @param   int  $levelId  The level ID
+	 *
+	 * @return  string  The formatted price
+	 *
+	 * @since   7.0.0
+	 */
+	private static function getPriceFromLevel(int $levelId): string
+	{
+		$container = Container::getInstance('com_akeebasubs', [], 'site');
+
+		/** @var \Akeeba\Subscriptions\Site\Model\Levels $level */
+		$level = $container->factory->model('Levels');
+		$level->load($levelId);
+
+		$price = '';
+
+		if (($level->price < 0.01) && $container->params->get('renderasfree', 0))
+		{
+			return Text::_('COM_AKEEBASUBS_LEVEL_LBL_FREE');
+		}
+
+		if ($container->params->get('currencypos', 'before') == 'before')
+		{
+			$price .= $container->params->get('currencysymbol', '€');
+		}
+
+		$price .= sprintf('%1.02F', $level->price);
+
+		if ($container->params->get('currencypos', 'before') == 'after')
+		{
+			$price .= $container->params->get('currencysymbol', '€');
+		}
+
+		return $price;
+	}
+
+	/**
+	 * Get pricing information for a level. Each time you call this you will get different results because the HTML IDs
+	 * generated are meant to be unique.
+	 *
+	 * @param   int  $levelId  The subscription level ID
+	 *
+	 * @return  array  Pricing information
+	 *
+	 * @since   7.0.0
+	 */
+	private static function getPrice(int $levelId): array
+	{
+		static $loadedJs = false;
+
+		// Intialization
+		$ret = [
+			'oneoff'    => self::getPriceFromLevel($levelId),
+			'recurring' => '',
+			'js'        => [
+				'oneoff'    => null,
+				'recurring' => null,
+			],
+		];
+
+		// Get the Paddle product information
+		$productIDInfo = self::$levelIdToProductIds[$levelId];
+		$product_id    = $productIDInfo['product_id'];
+		$plan_id       = $productIDInfo['plan_id'];
+
+		// Load the Paddle JS if necessary
+		if ((!empty($product_id) || !empty($plan_id)) && !$loadedJs)
+		{
+			// Make sure jQuery is actually loaded
+			HTMLHelper::_('jquery.framework');
+
+			$loadedJs  = true;
+			$container = Container::getInstance('com_akeebasubs');
+			$vendor    = $container->params->get('vendor_id');
+			$setupJS   = <<< JS
+window.jQuery('document').ready(function(){
+	Paddle.Setup({
+		vendor: $vendor
+	});
+});
+
+JS;
+			$container->template->addJS('https://cdn.paddle.com/paddle/paddle.js', false, false, $container->mediaVersion);
+			$container->template->addJS('media://com_akeebasubs/js/signup.js', false, false, $container->mediaVersion);
+			$container->template->addJSInline($setupJS);
+
+			$langStrings = [
+				'COM_AKEEBASUBS_LEVEL_LBL_OPTIN_RECURRING_PERIOD_ONE_DAY',
+				'COM_AKEEBASUBS_LEVEL_LBL_OPTIN_RECURRING_PERIOD_DAY',
+				'COM_AKEEBASUBS_LEVEL_LBL_OPTIN_RECURRING_PERIOD_ONE_WEEK',
+				'COM_AKEEBASUBS_LEVEL_LBL_OPTIN_RECURRING_PERIOD_WEEK',
+				'COM_AKEEBASUBS_LEVEL_LBL_OPTIN_RECURRING_PERIOD_ONE_MONTH',
+				'COM_AKEEBASUBS_LEVEL_LBL_OPTIN_RECURRING_PERIOD_MONTH',
+				'COM_AKEEBASUBS_LEVEL_LBL_OPTIN_RECURRING_PERIOD_ONE_YEAR',
+				'COM_AKEEBASUBS_LEVEL_LBL_OPTIN_RECURRING_PERIOD_YEAR',
+			];
+			array_walk($langStrings, [\Joomla\CMS\Language\Text::class, 'script']);
+		}
+
+		// Add localised one-off pricing
+		if (!is_null($product_id))
+		{
+			$htmlId              = 'akeebasubs-plg-price-' . $product_id . '-' . self::uuid_v4();
+			$ret['js']['oneoff'] = <<< JS
+akeebasubsLocalisePrice('$product_id', false, null, null, '$htmlId', null, null);
+
+JS;
+			$ret['oneoff']       = <<< HTML
+<span id="$htmlId">{$ret['oneoff']}</span>
+HTML;
+		}
+
+		// Add localised recurring pricing
+		if (!is_null($plan_id))
+		{
+			$priceContainerId       = 'akeebasubs-plg-price-' . $plan_id . '-' . self::uuid_v4();
+			$frequencyContainerId   = 'akeebasubs-plg-price-frequency-' . $plan_id . '-' . self::uuid_v4();
+			$ret['js']['recurring'] = <<< JS
+akeebasubsLocaliseRecurringPriceOnly('$plan_id', false, '$priceContainerId', '$frequencyContainerId');
+
+JS;
+			$loading                = Text::_('PLG_CONTENT_ASPRICE_LBL_LOADING');
+			$every                  = Text::_('PLG_CONTENT_ASPRICE_LBL_EVERY');
+			$ret['recurring']       = <<< HTML
+<span id="$priceContainerId">$loading</span> $every <span id="$frequencyContainerId">$loading</span> 
+HTML;
+
+		}
+
+		return $ret;
 	}
 
 	/**
@@ -77,9 +404,9 @@ class plgContentAsprice extends JPlugin
 	 * @param   mixed     $params      Unused in this plugin.
 	 * @param   int       $limitstart  Unused in this plugin.
 	 *
-	 * @return bool
+	 * @return  bool
 	 */
-	public function onContentPrepare($context, &$article, &$params, $limitstart = 0)
+	public function onContentPrepare($context, &$article, &$params, $limitstart = 0): bool
 	{
 		if (!$this->enabled)
 		{
@@ -87,9 +414,7 @@ class plgContentAsprice extends JPlugin
 		}
 
 		$accceptableActions = [
-			'ifashasdiscount', 'ifashassignupfee',
-			'asprice', 'asfancyprice', 'asfancydiscount', 'asfancysignup',
-		    'asforexnotice', 'asdiscountnotice'
+			'asprice',
 		];
 
 		$mustProcess = false;
@@ -110,565 +435,32 @@ class plgContentAsprice extends JPlugin
 			return true;
 		}
 
-		// {ifashasdiscount MYLEVEL}something{/ifashasdiscount} ==> Only show something if MYLEVEL's price is discounted
-		$regex = "#{ifashasdiscount (.*?)}(.*){/ifashasdiscount}#s";
-		$article->text = preg_replace_callback($regex, array('self', 'processIfHasDiscount'), $article->text);
-
-		// {ifashassignupfee MYLEVEL}something{/ifashassignupfee} ==> Only show something if MYLEVEL's price includes a signup fee
-		$regex = "#{ifashassignupfee(.*?)}(.*){/ifashassignupfee}#s";
-		$article->text = preg_replace_callback($regex, array('self', 'processIfIncludesSignup'), $article->text);
-
 		// {asprice MYLEVEL} ==> 10.00€
-		$regex = "#{asprice (.*?)}#s";
-		$article->text = preg_replace_callback($regex, array('self', 'processPrice'), $article->text);
+		$regex         = "#{asprice (.*?)}#s";
+		$article->text = preg_replace_callback($regex, ['self', 'processPrice'], $article->text);
 
-		// {asfancyprice MYLEVEL} ==> HTML block based on the Strappy layout with just the display price
-		$regex = "#{asfancyprice (.*?)}#s";
-		$article->text = preg_replace_callback($regex, array('self', 'processFancyPrice'), $article->text);
+		// {aspricerecurring MYLEVEL} ==> 10.00€ for 365 days, then 0.56€ / 3 months
+		$regex = "#{aspricerecurring (.*?)}#s";
+		$article->text = preg_replace_callback($regex, array('self', 'processPriceRecurring'), $article->text);
 
-		// {asfancydiscount MYLEVEL} ==> HTML block based on the Strappy layout with the discount price
-		$regex = "#{asfancydiscount (.*?)}#s";
-		$article->text = preg_replace_callback($regex, array('self', 'processFancyDiscount'), $article->text);
-
-		// {asfancysignup MYLEVEL} ==> HTML block based on the Strappy layout with the signup price
-		$regex = "#{asfancysignup (.*?)}#s";
-		$article->text = preg_replace_callback($regex, array('self', 'processFancySignup'), $article->text);
-
-		// {asforexnotice} ==> Foreign exchange rate notice
-		$regex = "#{asforexnotice(.*?)}#s";
-		$article->text = preg_replace_callback($regex, array('self', 'processForexNotice'), $article->text);
-
-		// {asdiscountnotice} ==> Discount is included notice
-		$regex = "#{asdiscountnotice(.*?)}#s";
-		$article->text = preg_replace_callback($regex, array('self', 'processDiscountNotice'), $article->text);
+		return true;
 	}
 
 	/**
-	 * Gets the level ID out of a level title. If an ID was passed, it simply returns the ID.
-	 * If a non-existent subscription level is passed, it returns -1.
+	 * Generate a UUID v4
 	 *
-	 * @param   string|int $title The subscription level title or ID
+	 * @return  string
 	 *
-	 * @return  int  The subscription level ID
+	 * @since   7.0.0
 	 */
-	private static function getId($title, $slug = false)
+	private static function uuid_v4(): string
 	{
-		// Don't process invalid titles
-		if (empty($title))
-		{
-			return -1;
-		}
+		$data    = Crypt::genRandomBytes(16);
 
-		// Fetch a list of subscription levels if we haven't done so already
-		if (is_null(self::$levels))
-		{
-			/** @var Levels $levelsModel */
-			$levelsModel      = Container::getInstance('com_akeebasubs', [], 'site')->factory->model('Levels')
-			                                                                                 ->tmpInstance();
-			self::$levels     = array();
-			self::$slugs      = array();
-			self::$upperSlugs = array();
-			$list             = $levelsModel->get(true);
+		$data[6] = chr(ord($data[6]) & 0x0f | 0x40); // set version to 0100
+		$data[8] = chr(ord($data[8]) & 0x3f | 0x80); // set bits 6-7 to 10
 
-			if (count($list))
-			{
-				/** @var Levels $level */
-				foreach ($list as $level)
-				{
-					$thisTitle                                  = strtoupper($level->title);
-					self::$levels[$thisTitle]                   = $level->akeebasubs_level_id;
-					self::$slugs[$thisTitle]                    = $level->slug;
-					self::$upperSlugs[strtoupper($level->slug)] = $level->slug;
-				}
-			}
-		}
-
-		$title = strtoupper($title);
-
-		if (array_key_exists($title, self::$levels))
-		{
-			// Mapping found
-			return $slug ? self::$slugs[$title] : self::$levels[$title];
-		}
-		elseif (array_key_exists($title, self::$upperSlugs))
-		{
-			$mySlug = self::$upperSlugs[$title];
-
-			if ($slug)
-			{
-				return $mySlug;
-			}
-			else
-			{
-				foreach (self::$slugs as $t => $s)
-				{
-					if ($s = $mySlug)
-					{
-						return self::$levels[$t];
-					}
-				}
-
-				return -1;
-			}
-		}
-		elseif ((int) $title == $title)
-		{
-			$id    = (int) $title;
-			$title = '';
-
-			// Find the title from the ID
-			foreach (self::$levels as $t => $lid)
-			{
-				if ($lid == $id)
-				{
-					$title = $t;
-
-					break;
-				}
-			}
-
-			if (empty($title))
-			{
-				return $slug ? '' : -1;
-			}
-			else
-			{
-				return $slug ? self::$slugs[$title] : self::$levels[$title];
-			}
-		}
-		else
-		{
-			// No match!
-			return $slug ? '' : -1;
-		}
+		return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
 	}
 
-	/**
-	 * Callback to preg_replace_callback in the onContentPrepare event handler of this plugin.
-	 *
-	 * @param   array  $match  A match to the {ifashasdiscount} plugin tag
-	 *
-	 * @return  string  The processed result
-	 */
-	private static function processIfHasDiscount($match)
-	{
-		$levelId   = self::getId($match[1], false);
-		$container = Container::getInstance('com_akeebasubs');
-		$params    = Price::getPricingParameters();
-		/** @var \Akeeba\Subscriptions\Site\Model\Levels $level */
-		$level = $container->factory->model('Levels')->tmpInstance();
-
-		if (!$params->includeDiscount)
-		{
-			return '';
-		}
-
-		if ($levelId <= 0)
-		{
-			return '';
-		}
-
-		try
-		{
-			$level->findOrFail($levelId);
-		}
-		catch (Exception $e)
-		{
-			return '';
-		}
-
-		$priceInfo = Price::getLevelPriceInformation($level);
-		$ret       = '';
-
-		if ((abs($priceInfo->discount) >= 0.01) && (abs($priceInfo->prediscount) >= 0.01))
-		{
-			$ret = $match[2];
-		}
-
-		return $ret;
-	}
-
-
-	/**
-	 * Callback to preg_replace_callback in the onContentPrepare event handler of this plugin.
-	 *
-	 * @param   array  $match  A match to the {ifashassignupfee} plugin tag
-	 *
-	 * @return  string  The processed result
-	 */
-	private static function processIfIncludesSignup($match)
-	{
-		$levelId   = self::getId($match[1], false);
-		$container = Container::getInstance('com_akeebasubs');
-		$params    = Price::getPricingParameters();
-		/** @var \Akeeba\Subscriptions\Site\Model\Levels $level */
-		$level = $container->factory->model('Levels')->tmpInstance();
-
-		if ($params->includeSignup !== 2)
-		{
-			return '';
-		}
-
-		if ($levelId <= 0)
-		{
-			return '';
-		}
-
-		try
-		{
-			$level->findOrFail($levelId);
-		}
-		catch (Exception $e)
-		{
-			return '';
-		}
-
-		$priceInfo = Price::getLevelPriceInformation($level);
-		$ret       = '';
-
-		if (abs($priceInfo->signupFee))
-		{
-			$ret = $match[2];
-		}
-
-		return $ret;
-	}
-
-	/**
-	 * Callback to preg_replace_callback in the onContentPrepare event handler of this plugin.
-	 *
-	 * @param   array  $match  A match to the {asprice} plugin tag
-	 *
-	 * @return  string  The processed result
-	 */
-	private static function processPrice($match)
-	{
-		$ret = '';
-
-		$levelId = self::getId($match[1], false);
-
-		if ($levelId <= 0)
-		{
-			return $ret;
-		}
-
-		$ret = self::getPrice($levelId);
-
-		return $ret;
-	}
-
-	/**
-	 * Callback to preg_replace_callback in the onContentPrepare event handler of this plugin.
-	 *
-	 * @param   array  $match  A match to the {asfancyprice} plugin tag
-	 *
-	 * @return  string  The processed result
-	 */
-	private static function processFancyPrice($match)
-	{
-		$levelId   = self::getId($match[1], false);
-		$container = Container::getInstance('com_akeebasubs');
-		$params    = Price::getPricingParameters();
-		/** @var \Akeeba\Subscriptions\Site\Model\Levels $level */
-		$level     = $container->factory->model('Levels')->tmpInstance();
-
-		if ($levelId <= 0)
-		{
-			return '';
-		}
-
-		try
-		{
-			$level->findOrFail($levelId);
-		}
-		catch (Exception $e)
-		{
-			return '';
-		}
-
-		$priceInfo = Price::getLevelPriceInformation($level);
-
-		if ($params->renderAsFree && ($priceInfo->levelPrice < 0.01))
-		{
-			return JText::_('COM_AKEEBASUBS_LEVEL_LBL_FREE');
-		}
-
-		$ret = '';
-
-		// Do I need to show the currency symbol BEFORE the price?
-		if ($params->currencyPosition == 'before')
-		{
-			$ret .= '<span class="akeebasubs-asprice-price-currency">' . $params->currencySymbol . '</span>';
-		}
-
-		// Show INTEGER PART of price
-		$ret .= '<span class="akeebasubs-asprice-price-integer">' . $priceInfo->priceInteger . '</span>';
-
-		// Show DECIMAL PART of price
-		if ( (int)$priceInfo->priceFractional > 0)
-		{
-			$ret .= '<span class="akeebasubs-asprice-price-separator">.</span>';
-			$ret .= '<span class="akeebasubs-asprice-price-decimal">' . $priceInfo->priceFractional . '</span>';
-		}
-
-		// Do I need to show the currency symbol AFTER the price?
-		if ($params->currencyPosition == 'after')
-		{
-			$ret .= '<span class="akeebasubs-asprice-price-currency">' . $params->currencySymbol . '</span>';
-		}
-
-		// Local (currency converted) price notice
-		if ($params->showLocalPrices)
-		{
-			$ret .= '<div class="akeebasubs-asprice-forexrate">';
-			$ret .= JText::sprintf('COM_AKEEBASUBS_LEVELS_FOREXNOTICE_LBL', Price::toLocalCurrency((float)$priceInfo->priceForFormatting));
-			$ret .= '</div>';
-		}
-
-		// VAT notice
-		if (((float)$priceInfo->vatRule->taxrate > 0.01) && ($priceInfo->levelPrice > 0.01))
-		{
-			$ret .= '<div class="akeebasubs-asprice-taxnotice">';
-			$ret .= JText::sprintf('COM_AKEEBASUBS_LEVELS_INCLUDESVAT', (float)$priceInfo->vatRule->taxrate);
-			$ret .= '</div>';
-		}
-
-		return $ret;
-	}
-
-	/**
-	 * Callback to preg_replace_callback in the onContentPrepare event handler of this plugin.
-	 *
-	 * @param   array  $match  A match to the {asfancydiscount} plugin tag
-	 *
-	 * @return  string  The processed result
-	 */
-	private static function processFancyDiscount($match)
-	{
-		$levelId   = self::getId($match[1], false);
-		$container = Container::getInstance('com_akeebasubs');
-		$params    = Price::getPricingParameters();
-		/** @var \Akeeba\Subscriptions\Site\Model\Levels $level */
-		$level     = $container->factory->model('Levels')->tmpInstance();
-
-		if ($levelId <= 0)
-		{
-			return '';
-		}
-
-		try
-		{
-			$level->findOrFail($levelId);
-		}
-		catch (Exception $e)
-		{
-			return '';
-		}
-
-		$priceInfo = Price::getLevelPriceInformation($level);
-
-		if (!((abs($priceInfo->discount) >= 0.01) && (abs($priceInfo->prediscount) >= 0.01)))
-		{
-			return '';
-		}
-
-		$ret = '';
-
-		// Prefix
-		$ret .= '<span class="akeebasubs-asprice-prediscount-label">' . JText::_('COM_AKEEBASUBS_LEVEL_FIELD_PREDISCOUNT') . '</span>';
-
-		$ret .= '<s>';
-
-		// Do I need to show the currency symbol BEFORE the price?
-		if ($params->currencyPosition == 'before')
-		{
-			$ret .= '<span class="akeebasubs-asprice-price-currency">' . $params->currencySymbol . '</span>';
-		}
-
-		// Show INTEGER PART of price
-		$ret .= '<span class="akeebasubs-asprice-price-integer">' . $priceInfo->prediscountInteger . '</span>';
-
-		// Show DECIMAL PART of price
-		if ( (int)$priceInfo->prediscountFractional > 0)
-		{
-			$ret .= '<span class="akeebasubs-asprice-price-separator">.</span>';
-			$ret .= '<span class="akeebasubs-asprice-price-decimal">' . $priceInfo->prediscountFractional . '</span>';
-		}
-
-		// Do I need to show the currency symbol AFTER the price?
-		if ($params->currencyPosition == 'after')
-		{
-			$ret .= '<span class="akeebasubs-asprice-price-currency">' . $params->currencySymbol . '</span>';
-		}
-
-		$ret .= '</s>';
-
-		// Local (currency converted) price notice
-		if ($params->showLocalPrices)
-		{
-			$ret .= '<div class="akeebasubs-asprice-forexrate-discount">';
-			$ret .= JText::sprintf('COM_AKEEBASUBS_LEVELS_FOREXNOTICE_LBL', Price::toLocalCurrency((float)$priceInfo->prediscount));
-			$ret .= '</div>';
-		}
-
-		return $ret;
-	}
-
-	/**
-	 * Callback to preg_replace_callback in the onContentPrepare event handler of this plugin.
-	 *
-	 * @param   array  $match  A match to the {asfancysignup} plugin tag
-	 *
-	 * @return  string  The processed result
-	 */
-	private static function processFancySignup($match)
-	{
-		$levelId   = self::getId($match[1], false);
-		$container = Container::getInstance('com_akeebasubs');
-		$params    = Price::getPricingParameters();
-		/** @var \Akeeba\Subscriptions\Site\Model\Levels $level */
-		$level     = $container->factory->model('Levels')->tmpInstance();
-
-		if ($levelId <= 0)
-		{
-			return '';
-		}
-
-		try
-		{
-			$level->findOrFail($levelId);
-		}
-		catch (Exception $e)
-		{
-			return '';
-		}
-
-		$priceInfo = Price::getLevelPriceInformation($level);
-
-		if (!(abs($priceInfo->signupFee) >= 0.01))
-		{
-			return '';
-		}
-
-		$ret = '';
-
-		// Prefix
-		$ret .= JText::_('COM_AKEEBASUBS_LEVEL_FIELD_SIGNUPFEE_LIST');
-
-		// Do I need to show the currency symbol BEFORE the price?
-		if ($params->currencyPosition == 'before')
-		{
-			$ret .= '<span class="akeebasubs-asprice-price-currency">' . $params->currencySymbol . '</span>';
-		}
-
-		// Show INTEGER PART of price
-		$ret .= '<span class="akeebasubs-asprice-price-integer">' . $priceInfo->signupInteger . '</span>';
-
-		// Show DECIMAL PART of price
-		if ( (int)$priceInfo->prediscountFractional > 0)
-		{
-			$ret .= '<span class="akeebasubs-asprice-price-separator">.</span>';
-			$ret .= '<span class="akeebasubs-asprice-price-decimal">' . $priceInfo->signupInteger . '</span>';
-		}
-
-		// Do I need to show the currency symbol AFTER the price?
-		if ($params->currencyPosition == 'after')
-		{
-			$ret .= '<span class="akeebasubs-asprice-price-currency">' . $params->currencySymbol . '</span>';
-		}
-
-		// Local (currency converted) price notice
-		if ($params->showLocalPrices)
-		{
-			$ret .= '<div class="akeebasubs-asprice-forexrate-signup">';
-			$ret .= JText::sprintf('COM_AKEEBASUBS_LEVELS_FOREXNOTICE_LBL', Price::toLocalCurrency((float)$priceInfo->signupFee));
-			$ret .= '</div>';
-		}
-
-		return $ret;
-	}
-
-	/**
-	 * Callback to preg_replace_callback in the onContentPrepare event handler of this plugin.
-	 *
-	 * @param   array  $match  A match to the {asforexnotice} plugin tag
-	 *
-	 * @return  string  The processed result
-	 */
-	private static function processForexNotice($match)
-	{
-		$ret = '';
-		$params = Price::getPricingParameters();
-
-		if ($params->showLocalPrices)
-		{
-			$ret = JText::sprintf('COM_AKEEBASUBS_LEVELS_FOREXNOTICE',
-				$params->localCurrency, $params->localSymbol, $params->currency, $params->exchangeRate);
-		}
-
-		return $ret;
-	}
-
-	/**
-	 * Callback to preg_replace_callback in the onContentPrepare event handler of this plugin.
-	 *
-	 * @param   array  $match  A match to the {asdiscountnotice} plugin tag
-	 *
-	 * @return  string  The processed result
-	 */
-	private static function processDiscountNotice($match)
-	{
-		$ret = '';
-		$params = Price::getPricingParameters();
-
-		if ($params->includeDiscount)
-		{
-			$ret = JText::_('COM_AKEEBASUBS_LEVELS_PREDISCOUNT_NOTE');
-		}
-
-		return $ret;
-	}
-
-	private static function getPrice($levelId)
-	{
-		static $prices = [];
-
-		if (!array_key_exists($levelId, $prices))
-		{
-			$container = Container::getInstance('com_akeebasubs', [], 'site');
-			/** @var \Akeeba\Subscriptions\Site\Model\Levels $level */
-			$level = $container->factory->model('Levels');
-			$level->load($levelId);
-
-			/** @var Akeeba\Subscriptions\Site\View\Levels\Html $view */
-			$view = $container->factory->view('Levels', 'html');
-			$view->applyViewConfiguration();
-			$priceInfo = $view->getLevelPriceInformation($level);
-
-			$price = '';
-
-			if ($view->renderAsFree && ($priceInfo->levelPrice < 0.01))
-			{
-				$price = JText::_('COM_AKEEBASUBS_LEVEL_LBL_FREE');
-			}
-			else
-			{
-				if ($container->params->get('currencypos','before') == 'before')
-				{
-					$price .= $container->params->get('currencysymbol','€');
-				}
-
-				$price .= $priceInfo->formattedPrice;
-
-				if ($container->params->get('currencypos','before') == 'after')
-				{
-					$price .= $container->params->get('currencysymbol','€');
-				}
-			}
-
-			$prices[$levelId] = $price;
-		}
-
-		return $prices[$levelId];
-	}
 }

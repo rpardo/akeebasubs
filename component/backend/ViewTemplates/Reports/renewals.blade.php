@@ -27,13 +27,13 @@ $renewalsOptions = [
 
 @section('browse-filters')
     <div class="akeeba-filter-element akeeba-form-group">
-        @searchfilter('username', 'username', 'COM_UNITE_JUSER_USERNAME')
+        @searchfilter('username', 'username', 'COM_AKEEBASUBS_JUSER_USERNAME')
     </div>
     <div class="akeeba-filter-element akeeba-form-group">
-        @searchfilter('name', 'name', 'COM_UNITE_JUSER_NAME')
+        @searchfilter('name', 'name', 'COM_AKEEBASUBS_JUSER_NAME')
     </div>
     <div class="akeeba-filter-element akeeba-form-group">
-        @searchfilter('email', 'email', 'COM_UNITE_JUSER_EMAIL')
+        @searchfilter('email', 'email', 'COM_AKEEBASUBS_JUSER_EMAIL')
     </div>
     <div class="akeeba-filter-element akeeba-form-group">
         {{ BrowseView::modelFilter('levelid', 'title', 'Levels', 'COM_AKEEBASUBS_TITLE_LEVELS')  }}

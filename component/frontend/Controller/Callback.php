@@ -33,7 +33,7 @@ class Callback extends Controller
 
 		parent::__construct($container, $config);
 
-		$this->predefinedTaskList = ['callback', 'cancel'];
+		$this->predefinedTaskList = ['callback'];
 
 		$this->cacheableTasks = [];
 	}
@@ -47,62 +47,12 @@ class Callback extends Controller
 		\JFactory::getApplication()->setHeader('X-Cache-Control', 'False', true);
 
 		/** @var Subscribe $model */
-		$model = $this->getModel();
+		$model = $this->getModel()->tmpInstance();
 
-		$result = $model
-			->paymentmethod($this->input->getCmd('paymentmethod', 'none'))
-			->runCallback();
+		$result = $model->runCallback();
 
-		echo $result ? 'OK' : 'FAILED';
+		header('HTTP/1.1 ' . $result);
 
-		$this->container->platform->closeApplication();
-	}
-
-	/**
-	 * Process a recurring subscription cancellation
-	 */
-	public function cancel()
-	{
-		// Makes sure SiteGround's SuperCache doesn't cache the subscription page
-		\JFactory::getApplication()->setHeader('X-Cache-Control', 'False', true);
-
-		$msg = null;
-		$type = null;
-
-		$subid = $this->input->getInt('sid');
-
-		// No subscription id? Let's stop here
-		if (!$subid)
-		{
-			$url = 'index.php';
-			$msg = \JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_FAILED_CANCELLING');
-			$type = 'error';
-		}
-		else
-		{
-			/** @var Subscribe $model */
-			$model = $this->getModel();
-
-			/** @var Subscriptions $sub */
-			$sub = $this->getModel('Subscriptions');
-
-			$sub->find($subid);
-
-			$level = $sub->level;
-
-			$url = \JRoute::_('index.php?option=com_akeebasubs&view=message&slug=' . $level->slug . '&layout=cancel&subid=' . $subid);
-
-			$result = $model
-				->paymentmethod($this->input->getCmd('paymentmethod', 'none'))
-				->runCancelRecurring();
-
-			if (!$result)
-			{
-				$msg = \JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_FAILED_CANCELLING');
-				$type = 'error';
-			}
-		}
-
-		$this->setRedirect($url, $msg, $type);
+		$this->container->platform->closeApplication($result);
 	}
 }

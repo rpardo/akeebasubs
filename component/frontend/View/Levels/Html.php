@@ -9,11 +9,8 @@ namespace Akeeba\Subscriptions\Site\View\Levels;
 
 defined('_JEXEC') or die;
 
-use Akeeba\Subscriptions\Admin\Helper\Forex;
 use Akeeba\Subscriptions\Admin\Helper\Price;
 use Akeeba\Subscriptions\Site\Model\Levels;
-use Akeeba\Subscriptions\Site\Model\Subscriptions;
-use Akeeba\Subscriptions\Site\Model\TaxHelper;
 
 class Html extends \FOF30\View\DataView\Html
 {
@@ -25,88 +22,34 @@ class Html extends \FOF30\View\DataView\Html
 	public $subIDs = [];
 
 	/**
-	 * Should I include VAT in the front-end display?
-	 *
-	 * @var  bool
-	 */
-	public $showVat = false;
-
-	/**
-	 * The tax helper model
-	 *
-	 * @var  TaxHelper
-	 */
-	public $taxModel;
-
-	/**
-	 * Tax defining parameters, fetched from the tax helper model
-	 *
-	 * @var  array
-	 */
-	public $taxParams = [];
-
-	/**
-	 * Should I include sign-up fees in the displayed prices?
-	 *
-	 * @var  int
-	 */
-	public $includeSignup = 0;
-
-	/**
-	 * Should I include discounts in the displayed prices?
-	 *
-	 * @var  bool
-	 */
-	public $includeDiscount = false;
-
-	/**
 	 * Should I render prices of 0 as "FREE"?
 	 *
-	 * @var  bool
+	 * @var   bool
 	 */
 	public $renderAsFree = false;
 
 	/**
-	 * Should I display price conversions when the user's selected country's currency is other than the shop's currency?
-	 *
-	 * @var bool
-	 */
-	public $showLocalPrices = false;
-
-	/**
-	 * Exchange rate in use
-	 *
-	 * @var float
-	 */
-	public $exchangeRate = 1.00;
-
-	/**
-	 * Local currency code, e.g. EUR
-	 *
-	 * @var string
-	 */
-	public $localCurrency = '';
-
-	/**
-	 * Local currency symbol, e.g. €
-	 *
-	 * @var string
-	 */
-	public $localSymbol = '';
-
-	/**
-	 * Country used for foreign currency display
-	 *
-	 * @var string
-	 */
-	public $country = '';
-
-	/**
 	 * Should I display notices about
 	 *
-	 * @var bool
+	 * @var   bool
 	 */
 	public $showNotices = true;
+
+	/**
+	 * Should I localise prices?
+	 *
+	 * @var   bool
+	 * @since 7.0.0
+	 */
+	public $localisePrice = true;
+
+	/**
+	 * Should I include tax in localised prices?
+	 *
+	 * @var   bool
+	 * @since 7.0.0
+	 */
+	public $isTaxAllowed = true;
 
 	/**
 	 * Cache of pricing information per subscription level, required to cut down on queries in the Strappy layout.
@@ -121,17 +64,10 @@ class Html extends \FOF30\View\DataView\Html
 		$params = Price::getPricingParameters();
 
 		$this->subIDs          = Price::getSubIDs();
-		$this->showVat         = $params->showVat;
-		$this->taxModel        = $params->taxModel;
-		$this->taxParams       = $params->taxParams;
-		$this->includeSignup   = $params->includeSignup;
-		$this->includeDiscount = $params->includeDiscount;
 		$this->renderAsFree    = $params->renderAsFree;
-		$this->showLocalPrices = $params->showLocalPrices;
-		$this->country         = $params->country;
-		$this->exchangeRate    = $params->exchangeRate;
-		$this->localCurrency   = $params->localCurrency;
-		$this->localSymbol     = $params->localSymbol;
+
+		$this->localisePrice    = $this->container->params->get('localisePrice', 1);
+		$this->isTaxAllowed     = $this->localisePrice && $this->container->params->get('showEstimatedTax', 1);
 	}
 
 	/**
@@ -139,6 +75,7 @@ class Html extends \FOF30\View\DataView\Html
 	 */
 	protected function onBeforeBrowse()
 	{
+		$this->setLayout('default');
 		$this->applyViewConfiguration();
 
 		parent::onBeforeBrowse();
@@ -154,17 +91,5 @@ class Html extends \FOF30\View\DataView\Html
 	public function getLevelPriceInformation(Levels $level)
 	{
 		return Price::getLevelPriceInformation($level);
-	}
-
-	/**
-	 * Format the price with the currency symbol
-	 *
-	 * @param   float  $rawPrice  The raw price
-	 *
-	 * @return  string
-	 */
-	public function toLocalCurrency($rawPrice)
-	{
-		return Price::toLocalCurrency($rawPrice);
 	}
 }

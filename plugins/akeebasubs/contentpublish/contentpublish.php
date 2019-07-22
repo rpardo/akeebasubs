@@ -115,8 +115,6 @@ class plgAkeebasubsContentpublish extends \Akeeba\Subscriptions\Admin\PluginAbst
 			$params['contentpublish_unpublishzoo'] = false;
 		}
 
-		JLoader::import('joomla.filesystem.folder');
-
 		if (JFolder::exists(JPATH_ADMINISTRATOR . '/components/com_zoo'))
 		{
 			$db = $this->container->db;
@@ -173,8 +171,6 @@ class plgAkeebasubsContentpublish extends \Akeeba\Subscriptions\Admin\PluginAbst
 
 		if (is_null($hasZoo) || is_null($hasK2) || is_null($hasSobipro))
 		{
-			JLoader::import('joomla.filesystem.folder');
-
 			$hasZoo = JFolder::exists(JPATH_ADMINISTRATOR . '/components/com_zoo');
 			$hasK2 = JFolder::exists(JPATH_ADMINISTRATOR . '/components/com_k2');
 			$hasSobipro = JFolder::exists(JPATH_ADMINISTRATOR . '/components/com_sobipro');

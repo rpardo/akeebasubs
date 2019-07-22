@@ -12,8 +12,8 @@ defined('_JEXEC') or die;
 use Akeeba\Subscriptions\Admin\Model\Updates;
 use FOF30\Container\Container;
 use FOF30\Controller\Controller;
-use JUri;
 use JText;
+use JUri;
 
 class ControlPanel extends Controller
 {
@@ -23,7 +23,7 @@ class ControlPanel extends Controller
 	{
 		parent::__construct($container, $config);
 
-		$this->predefinedTaskList = ['main', 'wizardstep', 'updateinfo', 'updategeoip'];
+		$this->predefinedTaskList = ['main', 'updateinfo', 'updategeoip'];
 	}
 
 	/**
@@ -40,34 +40,6 @@ class ControlPanel extends Controller
 		/** @var \Akeeba\Subscriptions\Admin\Model\Updates $updatesModel */
 		$updatesModel = $this->getModel('Updates');
 		$updatesModel->refreshUpdateSite();
-	}
-
-	/**
-	 * Set the current configuration wizard step
-	 */
-	public function wizardstep()
-	{
-		$wizardstep = (int)$this->input->getInt('wizardstep', 0);
-
-		/** @var \Akeeba\Subscriptions\Admin\Model\ControlPanel $model */
-		$model = $this->getModel();
-		$model->setComponentParameter('wizardstep', $wizardstep);
-
-		// Redirect back to the control panel
-		$url = '';
-		$returnurl = $this->input->getBase64('returnurl', '');
-
-		if (!empty($returnurl))
-		{
-			$url = base64_decode($returnurl);
-		}
-
-		if (empty($url))
-		{
-			$url = JUri::base().'index.php?option=com_akeebasubs';
-		}
-
-		$this->setRedirect($url);
 	}
 
 	/**

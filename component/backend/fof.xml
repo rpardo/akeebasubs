@@ -16,12 +16,6 @@
         </container>
     </common>
 
-    <backend>
-        <model name="LevelGroups">
-            <behaviors>Filters</behaviors>
-        </model>
-    </backend>
-
     <frontend>
         <container>
             <option name="factoryClass">FOF30\Factory\BasicFactory</option>

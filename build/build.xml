@@ -22,7 +22,6 @@
 		<exclude name="backend/invoices/*.pdf" />
 		<exclude name="backend/invoices/20*-*/**" />
 		<exclude name="backend/creditnotes/*.pdf" />
-		<exclude name="backend/assets/tcpdf/certificates/*.cer" />
 		<exclude name="backend/secretkey.php" />
 	</fileset>
 

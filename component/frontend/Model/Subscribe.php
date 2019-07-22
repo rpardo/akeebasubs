@@ -7,19 +7,30 @@
 
 namespace Akeeba\Subscriptions\Site\Model;
 
-use Akeeba\Subscriptions\Admin\Helper\Forex;
-use Akeeba\Subscriptions\Admin\PluginAbstracts\AkpaymentBase;
+use Akeeba\Subscriptions\Site\Model\Subscribe\CallbackInterface;
+use Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits\FixSubscriptionDate;
 use Akeeba\Subscriptions\Site\Model\Subscribe\StateData;
 use Akeeba\Subscriptions\Site\Model\Subscribe\Validation;
 use Akeeba\Subscriptions\Site\Model\Subscribe\ValidatorFactory;
+use Exception;
 use FOF30\Container\Container;
+use FOF30\Input\Input;
+use FOF30\Model\DataModel\Collection;
+use FOF30\Model\DataModel\Exception\NoItemsFound;
+use FOF30\Model\DataModel\Exception\RecordNotLoaded;
 use FOF30\Model\Model;
 use FOF30\Utils\Ip;
-use JBrowser;
-use JFactory;
-use JLoader;
-use JLog;
-use JUser;
+use Joomla\CMS\Environment\Browser as JBrowser;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Filesystem\Folder;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log as JLog;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\User\User;
+use Joomla\CMS\User\User as JUser;
+use JUserHelper;
+use RuntimeException;
 
 defined('_JEXEC') or die;
 
@@ -28,29 +39,19 @@ defined('_JEXEC') or die;
  *
  * @method $this slug() slug(string $v)
  * @method $this id() id(int $v)
- * @method $this paymentmethod() paymentmethod(string $v)
  * @method $this username() username(string $v)
  * @method $this password() password(string $v)
  * @method $this password2() password2(string $v)
  * @method $this name() name(string $v)
  * @method $this email() email(string $v)
  * @method $this email2() email2(string $v)
- * @method $this address1() address1(string $v)
- * @method $this address2() address2(string $v)
  * @method $this country() country(string $v)
- * @method $this state() state(string $v)
- * @method $this city() city(string $v)
- * @method $this zip() zip(string $v)
- * @method $this isbusiness() isbusiness(int $v)
- * @method $this businessname() businessname(string $v)
- * @method $this vatnumber() vatnumber(string $v)
  * @method $this coupon() coupon(string $v)
- * @method $this occupation() occupation(string $v)
- * @method $this custom() custom(array $v)
- * @method $this subcustom() subcustom(array $v)
  */
 class Subscribe extends Model
 {
+	use FixSubscriptionDate;
+
 	/**
 	 * Raw HTML source of the payment form, as returned by the payment plugin
 	 *
@@ -130,63 +131,21 @@ class Subscribe extends Model
 			case 'username':
 				$response->validation = (object)[
 					'username' => $this->getValidator('username')->execute(),
-					'password' => $this->getValidator('password')->execute()
+					'password' => $this->getValidator('password')->execute(),
 				];
-				break;
-
-			// Perform validations on plugins only
-			case 'plugins':
-				$response = $this->pluginValidation();
 				break;
 
 			default:
 				$response->validation = (object)$this->getValidator('PersonalInformation')->execute();
 				$response->validation->username = $this->getValidator('username')->execute();
 				$response->validation->password = $this->getValidator('password')->execute();
-				$response->validation->paymentmethod = $this->getValidator('PaymentMethod')->execute();
+				$response->recurring = $this->getValidator('recurring')->execute();
 				$response->price = (object)$this->getValidator('Price')->execute();
-
-				$pluginResponse = $this->pluginValidation();
-				$response->custom_validation = $pluginResponse->custom_validation;
-				$response->custom_valid = $pluginResponse->custom_valid;
-				$response->subscription_custom_validation = $pluginResponse->subscription_custom_validation;
-				$response->subscription_custom_valid = $pluginResponse->subscription_custom_valid;
 
 				break;
 		}
 
 		return $response;
-	}
-
-	/**
-	 * Executes per user and per subscription custom field validation using the plugins.
-	 *
-	 * The return object contains the following keys:
-	 * custom_validation				array
-	 * custom_valid						bool
-	 * subscription_custom_validation	array
-	 * subscription_custom_valid		bool
-	 *
-	 * @return   object  See above
-	 */
-	private function pluginValidation()
-	{
-		$ret = [
-			'custom_validation' => [],
-			'custom_valid' => false,
-			'subscription_custom_validation' => [],
-			'subscription_custom_valid' => false
-		];
-
-		$customResponse = $this->getValidator('CustomFields')->execute();
-		$ret['custom_validation'] = $customResponse->custom_validation;
-		$ret['custom_valid'] = $customResponse->custom_valid;
-
-		$subcustomResponse = $this->getValidator('SubscriptionCustomFields')->execute();
-		$ret['subscription_custom_validation'] = $subcustomResponse->subscription_custom_validation;
-		$ret['subscription_custom_valid'] = $subcustomResponse->subscription_custom_valid;
-
-		return (object)$ret;
 	}
 
 	/**
@@ -201,8 +160,6 @@ class Subscribe extends Model
 		$validation = $this->getValidation();
 		$state = $this->getStateVariables();
 
-		$requireCoupon = $this->container->params->get('reqcoupon', 0) ? true : false;
-
 		// Iterate the core validation rules
 		$isValid = true;
 
@@ -214,26 +171,8 @@ class Subscribe extends Model
 				continue;
 			}
 
-			// An invalid (not VIES registered) VAT number is not a fatal error
-			if ($key == 'vatnumber')
-			{
-				continue;
-			}
-
 			// A wrong coupon code is not a fatal error, unless we require a coupon code
-			if (!$requireCoupon && ($key == 'coupon'))
-			{
-				continue;
-			}
-
-			// A missing business occupation is not a fatal error either
-			if ($key == 'occupation')
-			{
-				continue;
-			}
-
-			// This is a dummy key which must be ignored
-			if ($key == 'novatrequired')
+			if ($key == 'coupon')
 			{
 				continue;
 			}
@@ -272,9 +211,6 @@ class Subscribe extends Model
 				break;
 			}
 		}
-
-		// Make sure custom fields also validate
-		$isValid = $isValid && $validation->custom_valid && $validation->subscription_custom_valid;
 
 		return $isValid;
 	}
@@ -401,13 +337,12 @@ class Subscribe extends Model
 				'username'  => $state->username,
 				'email'     => $state->email,
 				'password'  => $state->password,
-				'password2' => $state->password2
+				'password2' => $state->password2,
 			);
 
-			// We have to use JUser directly instead of JFactory getUser
+			// We have to use JUser directly instead of Factory getUser
 			$user = new JUser(0);
 
-			JLoader::import('joomla.application.component.helper');
 			$usersConfig = \JComponentHelper::getParams('com_users');
 			$newUsertype = $usersConfig->get('new_usertype');
 
@@ -423,17 +358,15 @@ class Subscribe extends Model
 
 			// Set the user's default language to whatever the site's current language is
 			$params['params'] = array(
-				'language' => $this->container->platform->getConfig()->get('language')
+				'language' => $this->container->platform->getConfig()->get('language'),
 			);
 
 			// We always block the user, so that only a successful payment or
 			// clicking on the email link activates his account. This is to
 			// prevent spam registrations when the subscription form is abused.
-			JLoader::import('joomla.user.helper');
-			JLoader::import('cms.application.helper');
 			$params['block'] = 1;
 
-			$randomString = \JUserHelper::genRandomPassword();
+			$randomString = JUserHelper::genRandomPassword();
 			$hash = \JApplicationHelper::getHash($randomString);
 			$params['activation'] = $hash;
 
@@ -443,31 +376,70 @@ class Subscribe extends Model
 		else
 		{
 			// UPDATE EXISTING USER
+			if (!($user instanceof User))
+			{
+				$user = $this->container->platform->getUser($user->id);
+			}
 
-			// Update existing user's details
-			/** @var JoomlaUsers $userRecord */
-			$userRecord = $this->container->factory->model('JoomlaUsers')->tmpInstance();
-			$userRecord->find($user->id);
+			$user->name  = $state->name;
+			$user->email = $state->email;
+			$userIsSaved = $user->save();
+		}
 
-			$updates = array(
-				'name'  => $state->name,
-				'email' => $state->email
+		/**
+		 * Save the Agree to ToS into Joomla's Privacy Consent table
+		 */
+		if ($userIsSaved)
+		{
+			try
+			{
+				// Delete an existing record
+				$db = $this->container->db;
+				$query = $db->getQuery(true)
+					->delete($db->quoteName('#__user_profiles'))
+					->where($db->quoteName('user_id') . ' = ' . (int)($user->id))
+					->where($db->quoteName('profile_key') . ' = ' . $db->q('privacyconsent.privacy'));
+				$db->setQuery($query);
+				$db->execute();
+
+				// Insert a new record
+				$o = (object) [
+					'user_id' => $user->id,
+					'profile_key' => 'privacyconsent.privacy',
+					'profile_value' => 1,
+				];
+				$db->insertObject('#__user_profiles', $o);
+			}
+			catch (Exception $e)
+			{
+				// No problem if it fails.
+			}
+		}
+
+		/**
+		 * Save a Joomla! com_privacy user note if the System - Privacy Consent plugin is enabled and loaded
+		 */
+		if ($userIsSaved && PluginHelper::isEnabled('system', 'privacyconsent') && class_exists('PlgSystemPrivacyconsent'))
+		{
+			$ip = Ip::getIp();
+			$userAgent = $this->input->server->get('HTTP_USER_AGENT', '', 'string');
+
+			// Create the user note
+			$userNote = (object) array(
+				'user_id' => $user->id,
+				'subject' => 'PLG_SYSTEM_PRIVACYCONSENT_SUBJECT',
+				'body'    => Text::sprintf('PLG_SYSTEM_PRIVACYCONSENT_BODY', $ip, $userAgent),
+				'created' => Factory::getDate()->toSql(),
 			);
 
-			if (!empty($state->password) && ($state->password == $state->password2))
+			try
 			{
-				JLoader::import('joomla.user.helper');
-				$salt = \JUserHelper::genRandomPassword(32);
-				$pass = \JUserHelper::getCryptedPassword($state->password, $salt);
-				$updates['password'] = $pass . ':' . $salt;
+				$this->container->db->insertObject('#__privacy_consents', $userNote);
 			}
-
-			if (!empty($state->username))
+			catch (Exception $e)
 			{
-				$updates['username'] = $state->username;
+				// Do nothing if the save fails
 			}
-
-			$userIsSaved = $userRecord->save($updates);
 		}
 
 		// Send activation email for free subscriptions if confirmfree is enabled
@@ -499,97 +471,13 @@ class Subscribe extends Model
 	}
 
 	/**
-	 * Saves the custom fields of a user record
-	 *
-	 * @return bool
-	 */
-	public function saveCustomFields()
-	{
-		$state = $this->getStateVariables();
-		$validation = $this->getValidation();
-
-		$user = $this->container->platform->getUser();
-		$user = $this->getState('user', $user);
-
-		// Find an existing record
-		/** @var Users $subsUsersModel */
-		$subsUsersModel = $this->container->factory->model('Users')->tmpInstance();
-
-		$thisUser = $subsUsersModel
-			->user_id($user->id)
-			->firstOrNew();
-		$id = $thisUser->akeebasubs_user_id;
-
-		$data = array(
-			'akeebasubs_user_id' => $id,
-			'user_id'            => $user->id,
-			'isbusiness'         => $state->isbusiness ? 1 : 0,
-			'businessname'       => $state->businessname,
-			'occupation'         => $state->occupation,
-			'vatnumber'          => $state->vatnumber,
-			'viesregistered'     => $validation->validation->vatnumber,
-			// The tax authority doesn't make sense, it's a Greek thing only... Left here just in case.
-			'taxauthority'       => '',
-			'address1'           => $state->address1,
-			'address2'           => $state->address2,
-			'city'               => $state->city,
-			'state'              => $state->state,
-			'zip'                => $state->zip,
-			'country'            => $state->country,
-			'params'             => $state->custom
-		);
-
-		// Allow plugins to post-process the fields
-		$this->container->platform->importPlugin('akeebasubs');
-		$jResponse = $this->container->platform->runPlugins('onAKSignupUserSave', array((object)$data));
-
-		if (is_array($jResponse) && !empty($jResponse))
-		{
-			foreach ($jResponse as $pResponse)
-			{
-				if (!is_array($pResponse))
-				{
-					continue;
-				}
-
-				if (empty($pResponse))
-				{
-					continue;
-				}
-
-				if (array_key_exists('params', $pResponse))
-				{
-					if (!empty($pResponse['params']))
-					{
-						foreach ($pResponse['params'] as $k => $v)
-						{
-							$data['params'][$k] = $v;
-						}
-					}
-
-					unset($pResponse['params']);
-				}
-
-				$data = array_merge($data, $pResponse);
-			}
-		}
-
-		try
-		{
-			$thisUser->save($data);
-
-			return true;
-		}
-		catch (\Exception $e)
-		{
-			return false;
-		}
-	}
-
-	/**
 	 * Processes the form data and creates a new subscription
+	 *
+	 * @return  ?Subscriptions
+	 *
+	 * @throws \Exception
 	 */
-	public function createNewSubscription()
+	public function createNewSubscription(): ?Subscriptions
 	{
 		// Fetch state and validation variables
 		$this->setState('opt', '');
@@ -607,7 +495,7 @@ class Subscribe extends Model
 		{
 			$this->logSubscriptionCreationFailure('Validation failure');
 
-			return false;
+			throw new RuntimeException('Validation failure');
 		}
 
 		// Step #1.b. Check that the subscription level is allowed
@@ -641,43 +529,22 @@ class Subscribe extends Model
 		{
 			$this->logSubscriptionCreationFailure('Subscription level has the Only Once flag but the user has already a subscription in it.');
 
-			return false;
+			throw new RuntimeException('Subscription level has the Only Once flag but the user has already a subscription in it.');
 		}
 
+		// Step #1.c. Handle recurring subscription support
+		// ----------------------------------------------------------------------
+		$recurringId = ($state->use_recurring && $validation->recurring['recurringId']) ? $validation->recurring['recurringId'] : null;
+
+		// Step #1.d. Preparation
+		// ----------------------------------------------------------------------
 		// Fetch the level's object, used later on
 		$level = $levelsModel->getClone()->find($state->id);
-
-		// Step #2. Check that the payment plugin exists or return false
-		// ----------------------------------------------------------------------
-		/** @var PaymentMethods $paymentMethodsModel */
-		$paymentMethodsModel = $this->container->factory->model('PaymentMethods')->tmpInstance();
-		$plugins = $paymentMethodsModel->getPaymentPlugins();
-
-		$found = false;
-
-		if (!empty($plugins))
-		{
-			foreach ($plugins as $plugin)
-			{
-				if ($plugin->name == $state->paymentmethod)
-				{
-					$found = true;
-					break;
-				}
-			}
-		}
-
-		if (!$found)
-		{
-			$this->logSubscriptionCreationFailure(sprintf('Cannot find payment method ‘%s’', htmlentities($state->paymentmethod)));
-
-			return false;
-		}
 
 		// Reset the session flag, so that future registrations will not merge data stored in the database
 		$this->container->platform->setSessionVar('firstrun', false, 'com_akeebasubs');
 
-		// Step #2.b. Apply block rules
+		// Step #2. Apply block rules
 		// ----------------------------------------------------------------------
 		/** @var BlockRules $blockRulesModel */
 		$blockRulesModel = $this->container->factory->model('BlockRules')->tmpInstance();
@@ -697,7 +564,7 @@ class Subscribe extends Model
 		{
 			$this->logSubscriptionCreationFailure(sprintf('Cannot update user information for user ID %d', $user->id));
 
-			return false;
+			throw new RuntimeException(sprintf('Cannot update user information for user ID %d', $user->id));
 		}
 
 		$user = $this->getState('user', $user);
@@ -705,77 +572,46 @@ class Subscribe extends Model
 		// Store the user's ID in the session
 		$this->container->platform->setSessionVar('subscribes.user_id', $user->id, 'com_akeebasubs');
 
-		// Remove new subscriptions which are not yet paid for this user
-		// !! Removed because it was causing problems with users retrying to pay for the same subscription
-		// $this->removeNotYetPaidSubscriptions($user);
-
-		// Step #4. Create or add user extra fields
+		// Step #3.b. Look for an existing unpaid subscription for the same level and user
 		// ----------------------------------------------------------------------
-		// Find an existing record
-		$this->saveCustomFields();
+		$existingSubscription = $this->findExistingUnpaidSubscription($user->id, $level->getId());
+		$useExistingSubscription = false;
 
-		// Step #5. Check for existing subscription records and calculate the subscription expiration date
+		/**
+		 * If I have a subscription AND the recurringId (upsell to recurring subscription) matches I'll return it,
+		 * allowing the user to continue paying for a subscription he never finished paying for.
+		 */
+		if (!is_null($existingSubscription))
+		{
+			// Get the recurring plan ID from the subscription parameters
+			$params          = $existingSubscription->params;
+			$recurringPlanId = isset($params['recurring_plan_id']) ? $params['recurring_plan_id'] : null;
+			// Both null: the subscription is an one-off product and we are meant to sell an one-off product
+			$bothNull        = is_null($recurringId) && is_null($recurringPlanId);
+			// Matching plans: the subscription record is for a recurring subscription and the plan ID matches $recurringId
+			$matchingPlans   = $recurringId == $recurringPlanId;
+
+			// If we have matching characteristics return the old subscription record without update
+			if ($bothNull || $matchingPlans)
+			{
+				return $existingSubscription;
+			}
+
+			// Otherwise, notify our code we have to update an existing subscription
+			$useExistingSubscription = true;
+		}
+
+		// Step #4. Check for existing subscription records and calculate the subscription expiration date
 		// ----------------------------------------------------------------------
-		// @todo Refactor the entire step #5 into a validator class
-		// First, the question: is this level part of a group?
-		$haveLevelGroup = false;
+		// Get subscriptions on the same level.
+		/** @var Subscriptions $subscriptionsModel */
+		$subscriptionsModel = $this->container->factory->model('Subscriptions')->tmpInstance();
 
-		if ($level->akeebasubs_levelgroup_id > 0)
-		{
-			// Is the level group published?
-			/** @var LevelGroups $levelGroupModel */
-			$levelGroupModel = $this->container->factory->model('LevelGroups')->tmpInstance();
-			$levelGroup = $levelGroupModel->find($level->akeebasubs_levelgroup_id);
-
-			if ($levelGroup->getId())
-			{
-				$haveLevelGroup = $levelGroup->enabled;
-			}
-		}
-
-		if ($haveLevelGroup)
-		{
-			// We have a level group. Get all subscriptions for all levels in
-			// the group.
-			$subscriptions = array();
-
-			/** @var Levels $levelsModel */
-			$levelsModel = $this->container->factory->model('Levels')->tmpInstance();
-			$levelsInGroup = $levelsModel
-				->levelgroup($level->akeebasubs_levelgroup_id)
-				->get(true);
-
-			if ($levelsInGroup->count())
-			{
-				$groupList = [];
-
-				foreach ($levelsInGroup as $l)
-				{
-					$groupList[] = $l->akeebasubs_level_id;
-				}
-
-				/** @var Subscriptions $subscriptionsModel */
-				$subscriptionsModel = $this->container->factory->model('Subscriptions')->tmpInstance();
-
-				$subscriptions = $subscriptionsModel
-					->user_id($user->id)
-					->level($groupList)
-					->paystate('C')
-					->get(true);
-			}
-		}
-		else
-		{
-			// No level group found. Get subscriptions on the same level.
-			/** @var Subscriptions $subscriptionsModel */
-			$subscriptionsModel = $this->container->factory->model('Subscriptions')->tmpInstance();
-
-			$subscriptions = $subscriptionsModel
-				->user_id($user->id)
-				->level($state->id)
-				->paystate('C')
-				->get(true);
-		}
+		$subscriptions = $subscriptionsModel
+			->user_id($user->id)
+			->level($state->id)
+			->paystate('C')
+			->get(true);
 
 		$now = time();
 		$mNow = $this->container->platform->getDate()->toSql();
@@ -822,7 +658,7 @@ class Subscribe extends Model
 				 * want to remind them of the expiring subscriptions. That's why the information for no-contact
 				 * subscriptions is passed to the payment plugin which stores it as custom parameters to the
 				 * subscription record. It will then apply the no-contact information when the payment is finalized, by
-				 * the AkpaymentBase::fixSubscriptionDates() method.
+				 * the fixSubscriptionDates() method.
 				 */
 				$noContact[] = $row->akeebasubs_subscription_id;
 			}
@@ -882,13 +718,12 @@ class Subscribe extends Model
 		$mStartDate = $jStartDate->toSql();
 		$mEndDate = $this->container->platform->getDate($endDate)->toSql();
 
-		// Step #6. Create a new subscription record
+		// Step #5. Create a new subscription record
 		// ----------------------------------------------------------------------
-		// @todo Get the start ($mStartDate) and end ($mEndDate) dates and the $noContact array from the validator plugin which replaces step 5
 
 		// Store the price validation's "oldsub" and "expiration" keys in
 		// the subscriptions subcustom array
-		$subcustom = $state->subcustom;
+		$subcustom = [];
 
 		if (empty($subcustom))
 		{
@@ -926,10 +761,34 @@ class Subscribe extends Model
 		}
 
 		// Get the User Agent string
-		JLoader::import('joomla.environment.browser');
 		$browser = new JBrowser();
 		$ua      = $browser->getAgentString();
 		$mobile  = $browser->isMobile();
+
+		// Update subscription parameters based on whether I have a $recurringId
+		if (is_null($recurringId))
+		{
+			if (isset($subcustom['recurring_plan_id']))
+			{
+				unset($subcustom['recurring_plan_id']);
+			}
+
+			if (isset($subcustom['override_trial_days']))
+			{
+				unset($subcustom['override_trial_days']);
+			}
+
+			if (isset($subcustom['override_initial_price']))
+			{
+				unset($subcustom['override_initial_price']);
+			}
+		}
+		else
+		{
+			$subcustom['recurring_plan_id'] = $recurringId;
+			$subcustom['override_trial_days'] = $validation->recurring['trial_days'];
+			$subcustom['override_initial_price'] = $validation->recurring['initial_price'];
+		}
 
 		// Setup the new subscription
 		$data = array(
@@ -940,13 +799,12 @@ class Subscribe extends Model
 			'publish_down'               => $mEndDate,
 			'notes'                      => '',
 			'enabled'                    => ($validation->price->gross < 0.01) ? 1 : 0,
-			'processor'                  => ($validation->price->gross < 0.01) ? 'none' : $state->paymentmethod,
+			'processor'                  => ($validation->price->gross < 0.01) ? 'none' : 'paddle',
 			'processor_key'              => ($validation->price->gross < 0.01) ? $this->_uuid(true) : '',
 			'state'                      => ($validation->price->gross < 0.01) ? 'C' : 'N',
 			'net_amount'                 => $validation->price->net - $validation->price->discount,
 			'tax_amount'                 => $validation->price->tax,
 			'gross_amount'               => $validation->price->gross,
-			'recurring_amount'           => $validation->price->recurring,
 			'tax_percent'                => $validation->price->taxrate,
 			'created_on'                 => $mNow,
 			'params'                     => $subcustom,
@@ -959,33 +817,25 @@ class Subscribe extends Model
 			'discount_amount'            => $validation->price->discount,
 			'first_contact'              => '0000-00-00 00:00:00',
 			'second_contact'             => '0000-00-00 00:00:00',
-			'akeebasubs_affiliate_id'    => 0,
-			'affiliate_comission'        => 0,
 			'ua'                         => $ua,
 			'mobile'                     => $mobile ? 1 : 0,
 			// Flags
 			'_dontCheckPaymentID'        => true,
 		);
 
-		// If I have an alternate currenct, let's convert some values and store them
-		$currency_alt  = $this->container->params->get('invoice_altcurrency', '');
-
-		if($currency_alt)
+		// If step 3.b found a level to replace I will need to update the record, not create a new one.
+		if ($useExistingSubscription)
 		{
-			$currency = $this->container->params->get('currency', 'EUR');
-
-			Forex::updateRates(false, $this->container);
-
-			$data['net_amount_alt'] 		= Forex::convertCurrency($currency, $currency_alt, $data['net_amount']);
-			$data['tax_amount_alt'] 		= Forex::convertCurrency($currency, $currency_alt, $data['tax_amount']);
-			$data['gross_amount_alt'] 		= Forex::convertCurrency($currency, $currency_alt, $data['gross_amount']);
-			$data['prediscount_amount_alt'] = Forex::convertCurrency($currency, $currency_alt, $data['prediscount_amount']);
-			$data['discount_amount_alt']	= Forex::convertCurrency($currency, $currency_alt, $data['discount_amount']);
+			$subscription = $existingSubscription->save($data);
+		}
+		else
+		{
+			/** @var Subscriptions $subscription */
+			$subscription = $this->container->factory->model('Subscriptions')->tmpInstance();
+			$subscription->reset(true, true)->save($data);
 		}
 
-		/** @var Subscriptions $subscription */
-		$subscription = $this->container->factory->model('Subscriptions')->tmpInstance();
-		$this->_item = $subscription->reset(true, true)->save($data);
+		$this->_item = $subscription;
 
 		// Step #7. Hit the coupon code, if a coupon is indeed used
 		// ----------------------------------------------------------------------
@@ -1002,166 +852,91 @@ class Subscribe extends Model
 		// ----------------------------------------------------------------------
 		$this->container->platform->setSessionVar('apply_validation.' . $state->id, null, 'com_akeebasubs');
 
-		// Step #9. Call the specific plugin's onAKPaymentNew() method and get the redirection URL,
-		//          or redirect immediately on auto-activated subscriptions
+		// Step #9. Immediately activate free subscriptions
 		// ----------------------------------------------------------------------
-		if ($subscription->gross_amount != 0)
+		if ($subscription->gross_amount < 0.01)
 		{
-			// Non-zero charges; use the plugins
-			$jResponse = $this->container->platform->runPlugins('onAKPaymentNew', array(
-				$state->paymentmethod,
-				$user,
-				$level,
-				$subscription
-			));
-
-			if (empty($jResponse))
-			{
-				$this->logSubscriptionCreationFailure(sprintf('Calling onAKPaymentNew for ‘%s’ resulted in an empty response', htmlentities($state->paymentmethod)));
-
-				return false;
-			}
-
-			foreach ($jResponse as $response)
-			{
-				if ($response === false)
-				{
-					continue;
-				}
-
-				$this->paymentForm = $response;
-			}
-		}
-		else
-		{
-			// Zero charges. First apply subscription replacement
-			$updates = array();
-			AkpaymentBase::fixSubscriptionDates($subscription, $updates);
+			// Zero charges. Apply subscription replacement.
+			$updates = $this->fixSubscriptionDates($subscription, []);
 
 			if (!empty($updates))
 			{
 				$subscription->save($updates);
 				$this->_item = $subscription;
 			}
-
-			// and then just redirect
-			$this->container->platform->redirect(str_replace('&amp;', '&', \JRoute::_('index.php?option=com_akeebasubs&layout=default&view=message&slug=' . $level->slug . '&layout=order&subid=' . $subscription->akeebasubs_subscription_id)));
-
-			$this->removeSubscriptionCreationFailureLog($level);
-
-			return false;
 		}
 
 		// Return true
 		// ----------------------------------------------------------------------
 		$this->removeSubscriptionCreationFailureLog($level);
 
-		return true;
-	}
-
-	public function runCancelRecurring()
-	{
-		$state = $this->getStateVariables();
-
-		$data = $this->input->getData();
-
-		// Some plugins result in an empty Itemid being added to the request
-		// data, screwing up the payment callback validation in some cases (e.g.
-		// PayPal).
-		if (array_key_exists('Itemid', $data))
-		{
-			if (empty($data['Itemid']))
-			{
-				unset($data['Itemid']);
-			}
-		}
-
-		/** @var PaymentMethods $paymentMethodsModel */
-		$paymentMethodsModel = $this->container->factory->model('PaymentMethods')->tmpInstance();
-		$paymentMethodsModel->getPaymentPlugins();
-
-		$app = JFactory::getApplication();
-		$jResponse = $app->triggerEvent('onAKPaymentCancelRecurring', array(
-			$state->paymentmethod,
-			$data
-		));
-
-		if (empty($jResponse))
-		{
-			return false;
-		}
-
-		$status = false;
-
-		foreach ($jResponse as $response)
-		{
-			$status = $status || $response;
-		}
-
-		return $status;
+		return $subscription;
 	}
 
 	/**
 	 * Runs a payment callback
+	 *
+	 * @return  int  The HTTP status, default 200 (OK)
 	 */
-	public function runCallback()
+	public function runCallback(): int
 	{
 		// Debug log
 		JLog::addLogger(['text_file' => "akeebasubs_payment.php"], JLog::ALL, ['akeebasubs.payment']);
 
 		$data = $this->input->getData();
 
-		// Some plugins result in an empty Itemid being added to the request
-		// data, screwing up the payment callback validation in some cases (e.g.
-		// PayPal).
-		if (array_key_exists('Itemid', $data))
+		// Scrub option, view, task and Itemid from the request data to prevent accidental validation failures
+		foreach (['option', 'view', 'task', 'Itemid'] as $k)
 		{
-			if (empty($data['Itemid']))
+			if (isset($data[$k]))
 			{
-				unset($data['Itemid']);
+				unset($data[$k]);
 			}
 		}
 
-		/** @var PaymentMethods $paymentMethodsModel */
-		$paymentMethodsModel = $this->container->factory->model('PaymentMethods')->tmpInstance();
-		$paymentMethodsModel->getPaymentPlugins();
+		// Let's find out which callback handler we should be using
+		$demoPayment = $this->container->params->get('demo_payment', 0);
+		$method      = $this->input->getMethod();
+		$alertName   = $this->input->getCmd('alert_name', null);
+		$handler     = 'Paddle';
 
-		$paymentMethod = $this->input->getCmd('paymentmethod', 'none');
-
-		JLog::add("Got payment callback for “{$paymentMethod}”.", JLog::INFO, 'akeebasubs.payment');
-
-		$jResponse     = $this->container->platform->runPlugins('onAKPaymentCallback', [
-			$paymentMethod,
-			$data,
-		]);
-
-		if (empty($jResponse))
+		// POST requests get special treatment
+		if ($method == 'POST')
 		{
-			JLog::add("No response from plugins: FAILED.", JLog::ERROR, 'akeebasubs.payment');
-
-			return false;
+			$input = new Input('POST');
+			$data = $input->getData();
 		}
 
-		JLog::add(sprintf("Raw response array: %s", json_encode($jResponse)), JLog::DEBUG, 'akeebasubs.payment');
-
-		$status = false;
-
-		foreach ($jResponse as $response)
+		if ($demoPayment && ($method == 'GET') && ($alertName == 'akeebasubs_none'))
 		{
-			$status = $status || $response;
+			$handler = 'None';
 		}
 
-		JLog::add(sprintf("Final decision: %s", $status ? 'OK' : 'FAILED'), JLog::DEBUG, 'akeebasubs.payment');
+		/** @var  CallbackInterface $callbackHandler */
+		$className       = 'Akeeba\Subscriptions\Site\Model\Subscribe\\' . $handler . '\\CallbackHandler';
+		$callbackHandler = new $className($this->container);
 
-		return $status;
-	}
+		try
+		{
+			$response = $callbackHandler->handleCallback($method, $data);
+		}
+		catch (\RuntimeException $e)
+		{
+			JLog::add("Callback response: FAILED [{$e->getCode()} :: {$e->getMessage()}].", JLog::ERROR, 'akeebasubs.payment');
 
-	/**
-	 * Get the form set by the active payment plugin
-	 */
-	public function getPaymentForm()
-	{
-		return $this->paymentForm;
+			echo $e->getMessage();
+
+			return $e->getCode();
+		}
+
+		JLog::add("Callback response: SUCCESS.", JLog::INFO, 'akeebasubs.payment');
+
+		if (!empty($response))
+		{
+			echo $response;
+		}
+
+		return 200;
 	}
 
 	/**
@@ -1251,22 +1026,22 @@ class Subscribe extends Model
 	 */
 	private function sendActivationEmail($user, array $indata = [])
 	{
-		$app = JFactory::getApplication();
+		$app    = Factory::getApplication();
 		$config = $this->container->platform->getConfig();
-		$db = $this->container->db;
+		$db     = $this->container->db;
 		$params = \JComponentHelper::getParams('com_users');
 
-		$data = array_merge((array)$user->getProperties(), $indata);
+		$data = array_merge((array) $user->getProperties(), $indata);
 
 		$useractivation = $params->get('useractivation');
-		$sendpassword = $params->get('sendpassword', 1);
+		$sendpassword   = $params->get('sendpassword', 1);
 
 		// Check if the user needs to activate their account.
 		if (($useractivation == 1) || ($useractivation == 2))
 		{
-			$user->activation = \JApplicationHelper::getHash(\JUserHelper::genRandomPassword());
-			$user->block = 1;
-			$user->lastvisitDate = JFactory::getDbo()->getNullDate();
+			$user->activation    = \JApplicationHelper::getHash(JUserHelper::genRandomPassword());
+			$user->block         = 1;
+			$user->lastvisitDate = Factory::getDbo()->getNullDate();
 		}
 		else
 		{
@@ -1283,15 +1058,15 @@ class Subscribe extends Model
 		}
 
 		// Compile the notification mail values.
-		$data = $user->getProperties();
+		$data                   = $user->getProperties();
 		$data['password_clear'] = $indata['password2'];
-		$data['fromname'] = $config->get('fromname');
-		$data['mailfrom'] = $config->get('mailfrom');
-		$data['sitename'] = $config->get('sitename');
-		$data['siteurl'] = \JUri::root();
+		$data['fromname']       = $config->get('fromname');
+		$data['mailfrom']       = $config->get('mailfrom');
+		$data['sitename']       = $config->get('sitename');
+		$data['siteurl']        = $this->getContainer()->params->get('siteurl') ?? \JUri::root();
 
 		// Load com_users translation files
-		$jlang = JFactory::getLanguage();
+		$jlang = Factory::getLanguage();
 		$jlang->load('com_users', JPATH_SITE, 'en-GB', true); // Load English (British)
 		$jlang->load('com_users', JPATH_SITE, $jlang->getDefault(), true); // Load the site's default language
 		$jlang->load('com_users', JPATH_SITE, null, true); // Load the currently selected language
@@ -1299,8 +1074,8 @@ class Subscribe extends Model
 		// Handle account activation/confirmation emails.
 		if ($useractivation == 2)
 		{
-			$uri = \JURI::getInstance();
-			$base = $uri->toString(array('scheme', 'user', 'pass', 'host', 'port'));
+			$uri              = \JURI::getInstance();
+			$base             = $uri->toString(['scheme', 'user', 'pass', 'host', 'port']);
 			$data['activate'] = $base . \JRoute::_('index.php?option=com_users&task=registration.activate&token=' . $data['activation'], false);
 
 			$emailSubject = \JText::sprintf(
@@ -1336,8 +1111,8 @@ class Subscribe extends Model
 		elseif ($useractivation == 1)
 		{
 			// Set the link to activate the user account.
-			$uri = \JUri::getInstance();
-			$base = $uri->toString(array('scheme', 'user', 'pass', 'host', 'port'));
+			$uri              = \JUri::getInstance();
+			$base             = $uri->toString(['scheme', 'user', 'pass', 'host', 'port']);
 			$data['activate'] = $base . \JRoute::_('index.php?option=com_users&task=registration.activate&token=' . $data['activation'], false);
 
 			$emailSubject = \JText::sprintf(
@@ -1404,7 +1179,7 @@ class Subscribe extends Model
 		// Send the registration email.
 		try
 		{
-			$return = JFactory::getMailer()->sendMail($data['mailfrom'], $data['fromname'], $data['email'], $emailSubject, $emailBody);
+			$return = Factory::getMailer()->sendMail($data['mailfrom'], $data['fromname'], $data['email'], $emailSubject, $emailBody);
 		}
 		catch (\Exception $e)
 		{
@@ -1430,7 +1205,7 @@ class Subscribe extends Model
 
 			// get all admin users
 			$query = $db->getQuery(true);
-			$query->select($db->quoteName(array('name', 'email', 'sendEmail', 'id')))
+			$query->select($db->quoteName(['name', 'email', 'sendEmail', 'id']))
 				->from($db->quoteName('#__users'))
 				->where($db->quoteName('sendEmail') . ' = ' . 1);
 
@@ -1450,7 +1225,7 @@ class Subscribe extends Model
 			{
 				try
 				{
-					$return = JFactory::getMailer()->sendMail($data['mailfrom'], $data['fromname'], $row->email, $emailSubject, $emailBodyAdmin);
+					$return = Factory::getMailer()->sendMail($data['mailfrom'], $data['fromname'], $row->email, $emailSubject, $emailBodyAdmin);
 				}
 				catch (\Exception $e)
 				{
@@ -1461,36 +1236,6 @@ class Subscribe extends Model
 		}
 
 		return $return;
-	}
-
-	/**
-	 * Remove new (unpaid) subscriptions for this user
-	 *
-	 * @param   JUser  $user  The user we are removing subscriptions for
-	 *
-	 * @return  void
-	 */
-	private function removeNotYetPaidSubscriptions(JUser $user)
-	{
-		// Remove unpaid subscriptions on the same level for this user
-		/** @var Subscriptions $subscriptionsModel */
-		$subscriptionsModel = $this->container->factory->model('Subscriptions')->tmpInstance();
-
-		$unpaidSubs = $subscriptionsModel
-			->user_id($user->id)
-			->paystate('N')
-			->get(true);
-
-		if (!count($unpaidSubs))
-		{
-			return;
-		}
-
-		/** @var Subscriptions $unpaidSub */
-		foreach ($unpaidSubs as $unpaidSub)
-		{
-			$unpaidSub->delete($unpaidSub->akeebasubs_subscription_id);
-		}
 	}
 
 	/**
@@ -1514,11 +1259,11 @@ class Subscribe extends Model
 		$state             = $this->getStateVariables();
 		$level             = $levelsModel->getClone()->find($state->id);
 		$logFilepath       = $this->getLogFilename($level);
-		$application       = JFactory::getApplication();
+		$application       = Factory::getApplication();
 		$sessionName       = $application->getSession()->getName();
 		$sessionId         = $application->getSession()->getId();
 		$subscriptionLevel = $level->getId();
-		$user              = JFactory::getUser();
+		$user              = Factory::getUser();
 		$txtValidation     = print_r($validation, true);
 		$txtState          = print_r($state, true);
 		$txtGET            = print_r($application->input->get->getArray(), true);
@@ -1587,7 +1332,7 @@ Important note:
 
 TEXT;
 
-		\JFile::write($logFilepath, $text);
+		File::write($logFilepath, $text);
 	}
 
 	/**
@@ -1622,8 +1367,6 @@ TEXT;
 	 * @since   5.2.6
 	 *
 	 * @see     logSubscriptionCreationFailure()
-	 *
-	 * @throws \Exception
 	 */
 	public function getLogFilename(Levels $level = null)
 	{
@@ -1635,18 +1378,345 @@ TEXT;
 			$level       = $levelsModel->getClone()->find($state->id);
 		}
 
-		$application       = JFactory::getApplication();
+		try
+		{
+			$application       = Factory::getApplication();
+		}
+		catch (\Exception $e)
+		{
+			return JPATH_ADMINISTRATOR . '/logs';
+		}
+
 		$sessionId         = $application->getSession()->getId();
-		$userId            = JFactory::getUser()->id ?: 'guest';
+		$userId            = Factory::getUser()->id ?: 'guest';
 		$subscriptionLevel = $level->getId();
 		$logPath           = $application->get('log_path') . '/akeebasubs_failed';
 		$logFilepath       = $logPath . '/' . $sessionId . '_' . $userId . '_' . $subscriptionLevel . '.php';
 
-		if (!\JFolder::exists($logPath))
+		if (!Folder::exists($logPath))
 		{
-			\JFolder::create($logPath);
+			try
+			{
+				Folder::create($logPath);
+			}
+			catch (\Exception $e)
+			{
+				// Oh, well, no log will be created.
+			}
 		}
 
 		return $logFilepath;
+	}
+
+	/**
+	 * Finds an existing unpaid subscription by the same user and for the same subscription level. If it has a
+	 * non-empty payment_url it is returned. In any other case null is returned.
+	 *
+	 * @param   int  $user_id              The user ID the subscription record must be for
+	 * @param   int  $akeebasubs_level_id  The level ID the subscription record must be for
+	 *
+	 * @return  Subscriptions|null  The old subscription record, null if no appropriate record was found
+	 *
+	 * @since   7.0.0
+	 */
+	private function findExistingUnpaidSubscription(int $user_id, int $akeebasubs_level_id): ?Subscriptions
+	{
+		/** @var Subscriptions $subscriptionsModel */
+		$subscriptionsModel = $this->container->factory->model('Subscriptions')->tmpInstance();
+
+		try
+		{
+			$subscription = $subscriptionsModel
+				->user_id($user_id)
+				->level($akeebasubs_level_id)
+				->paystate('N')
+				->firstOrFail();
+
+			if (empty($subscription->payment_url))
+			{
+				return null;
+			}
+
+			return $subscription;
+		}
+		catch (NoItemsFound $e)
+		{
+			return null;
+		}
+	}
+
+	/**
+	 * Get upsell information for every related level
+	 *
+	 * @return array
+	 *
+	 * @since version
+	 */
+	public function getRelatedLevelUpsells(): array
+	{
+		$ret = [];
+
+		// Can I upsell?
+		/** @var Levels $level */
+		$state = $this->getStateVariables(false);
+		$level = $this->container->factory->model('Levels')->tmpInstance()->find($state->id);
+		$user  = $this->container->platform->getUser();
+
+		if (!$this->canUpsell($level, $user))
+		{
+			return $ret;
+		}
+
+		$myValidation = $this->getValidation();
+
+		// Go through each related level and calculate the upsell information
+		foreach ($level->related_levels as $level_id)
+		{
+			// Get the related level and set its slug in the Subscribe model object's state
+			/** @var Levels $newLevel */
+			$newLevel = $this->container->factory->model('Levels')->tmpInstance();
+			try
+			{
+				$newLevel->findOrFail($level_id);
+			}
+			catch (RecordNotLoaded $e)
+			{
+				// Obviously, if the related level does not exist anymore I cannot upsell the user to it.
+				continue;
+			}
+
+			// If the level is no longer published I cannot upsell to it.
+			if (!$level->enabled)
+			{
+				continue;
+			}
+
+			$newSubscribe = $this->getClone()->savestate(false)->setIgnoreRequest(true);
+			$newSubscribe->setState('slug', $level->slug);
+			$newSubscribe->setState('id', $level->getId());
+			$validation = $newSubscribe->getValidation(true);
+
+			// Construct the return information for this level
+			$ret[] = [
+				'level_id'    => $level_id,
+				'slug'        => $newLevel->slug,
+				'title'       => $newLevel->title,
+				'product_id'  => $newLevel->paddle_product_id,
+				'price'       => $validation->price->gross,
+				'price_diff'  => $validation->price->gross - $myValidation->price->gross,
+				'canLocalise' => $validation->price->discount < 0.01,
+				'info_url'    => $newLevel->product_url ?? '',
+			];
+		}
+
+		return $ret;
+	}
+
+	/**
+	 * Can I upsell a user to the level's Related Levels?
+	 *
+	 * If it's a guest user I can always upsell.
+	 *
+	 * If it's a logged in user I check to see if they have any subscriptions with a payment state Completed or Pending
+	 * in any of the Related Levels. Yes, that includes expired subscriptions *on purpose*. If someone had bought an
+	 * expensive bundle and decided to downgrade to a cheaper subscription I don't want to try to upsell them to what
+	 * they are clearly no longer interested in; that would probably backfire.
+	 *
+	 * @param   Levels  $level
+	 * @param   JUser   $user
+	 *
+	 * @return  bool
+	 *
+	 * @since   7.0.0
+	 */
+	protected function canUpsell(Levels $level, User $user): bool
+	{
+		// We can never upsell if there are no related levels
+		if (empty($level->related_levels))
+		{
+			return false;
+		}
+
+		// We can always upsell to Guest users
+		if ($user->guest)
+		{
+			return true;
+		}
+
+		// Get all of the paid and pending subscriptions of a logged in user
+		/** @var Subscriptions $subsModel */
+		$subsModel = $this->container->factory->model('Subscriptions')->tmpInstance();
+		$subscriptions = $subsModel
+			->user_id($user->id)
+			->level($level->related_levels)
+			->paystate(['C', 'P'])
+			->get(true);
+
+		// We can only upsell if no subscription was found.
+		return $subscriptions->count() == 0;
+	}
+
+	protected function getAllRelatedLevels(Levels $toThisLevel): Collection
+	{
+		/** @var Levels $levelModel */
+		$levelModel = $this->container->factory->model('Levels')->tmpInstance();
+		$allLevels = $levelModel->enabled(1)->get(true);
+
+		$ret = new Collection();
+		$toThisLevelId = $toThisLevel->getId();
+
+		/** @var Levels $level */
+		foreach ($allLevels as $level)
+		{
+			// Skip over ourselves
+			if ($level->getId() == $toThisLevelId)
+			{
+				continue;
+			}
+
+			if (is_array($level->related_levels))
+			{
+				if (in_array($toThisLevel, $level->related_levels))
+				{
+					$ret->add($level);
+				}
+			}
+		}
+
+		return $ret;
+	}
+
+	/**
+	 * Gets all subscriptions related to the currently selected subscription level.
+	 *
+	 * There are two distinct cases.
+	 *
+	 * -- Case A. Recurring subscriptions ($recurring = true).
+	 *
+	 *    I want to prevent subscription to the currently selected subscription level if there is any paid-for, active
+	 *    subscription EITHER in one of my related levels (can't do a one-off downgrade without canceling the recurring,
+	 *    higher-priced subscription) OR in a lower level that has me as a related level (can't do a one-off upgrade
+	 *    without canceling the recurring, lower-priced subscription) OR in the same level (can't purchase an one-off
+	 *    renewal to a recurring, automatically paid for subscription).
+	 *
+	 * -- Case B. Non-recurring subscriptions ($recurring = false)
+	 *
+	 *    I want to warn about a downgrade when there is an active one-off subscription in a higher level. In this case
+	 *    the lower level subscription will be active in parallel with the higher level, i.e. the subscriber will lose
+	 *    subscription time. This is why I am only looking into my level's related_levels.
+	 *
+	 * @param   bool  $recurring  Should I be looking for recurring subscriptions only (true) or for one-off only
+	 *                            (false)?  Read above for information.
+	 *
+	 * @return  Collection  The subscriptions that block the purchase (A) or I should warn about (B).
+	 *
+	 * @since   7.0.0
+	 */
+	public function getRelatedSubscriptions($recurring = true): Collection
+	{
+		// Get the user I am interested in
+		/** @var User $user */
+		$user = $this->container->platform->getUser();
+		$user = $this->getState('user', $user);
+
+		// A guest user cannot have subscriptions so let's exit early
+		if ($user->guest)
+		{
+			return new Collection();
+		}
+
+		// Get the subscription level the user has chose to subscribe to
+		/** @var Levels $levelsModel */
+		$levelsModel = $this->container->factory->model('Levels')->tmpInstance();
+		$state       = $this->getStateVariables();
+		$level       = $levelsModel->find($state->id);
+
+		/**
+		 * Case A. Recurring subscriptions.
+		 *
+		 * I forbid subscription to my related levels and levels that have me as a related level.
+		 *
+		 * Explanation. We have the following setup of related levels:
+		 * -- AKEEBABAKUP   --> ESSENTIALS, JOOMLADELUXE
+		 * -- ADMINTOOLS    --> ESSENTIALS, JOOMLADELUXE
+		 * -- AKEEBATICKETS --> JOOMLADELUXE
+		 * -- ESSENTIALS    --> JOOMLADELUXE
+		 * -- JOOMLADELUXE  --> (none)
+		 *
+		 * If I try to buy Essentials and I have a recurring...
+		 *
+		 * -- AKEEBATICKETS. No problem, unrelated to this level.
+		 * -- ESSENTIALS. This is my level. Can't have auto-recurring and one-off subscription on the same level.
+		 * -- JOOMLADELUXE. It is in my related_levels. Can't have an one-off downgrade without canceling JOOMLADELUXE.
+		 * -- AKEEBABAKUP. This is a level that has me as a related level. Can't have an one-off upgrade without
+		 *    canceling the single product subscription I am called to replace!
+		 */
+		if ($recurring)
+		{
+			// Get all related levels to/from it and also add ourselves
+			$relatedLevels = $this->getAllRelatedLevels($level);
+			$relatedLevels->add($level);
+
+			$levelIDsToCheck = $relatedLevels->map(function(Levels $item)
+			{
+				return $item->getId();
+			})->toArray();
+
+			if (is_array($level->related_levels) && !empty($level->related_levels))
+			{
+				$levelIDsToCheck = array_unique(array_merge($levelIDsToCheck, $level->related_levels));
+			}
+		}
+		/**
+		 * Case B. One-off subscriptions.
+		 *
+		 * I need to warn about downgrades.
+		 *
+		 * In the same setup as above, if I try to buy Essentials and I have an one-off...
+		 *
+		 * -- AKEEBATICKETS. Unrelated to this level. No problem.
+		 * -- ESSENTIALS. This is my level. It's a renewal. No problem.
+		 * -- JOOMLADELUXE. It is in my related_levels. Warn about the downgrade (you'll lose subscription time)!
+		 * -- AKEEBABAKUP. This is a level that has me as a related level. It's a subscription upgrade. No problem.
+		 */
+		else
+		{
+			$levelIDsToCheck = $level->related_levels;
+		}
+
+		// No levels to check? Bye-bye!
+		if (empty($levelIDsToCheck))
+		{
+			return new Collection();
+		}
+
+		// Find all paid-for, active subscriptions on those levels
+		/** @var Subscriptions $subscriptionsModel */
+		$subscriptionsModel = $this->container->factory->model('Subscriptions')->tmpInstance();
+		$subscriptionsModel
+			->user_id($user->id)
+			->level($levelIDsToCheck)
+			->paystate(['C'])
+			->expires_from($this->container->platform->getDate()->toSql());
+
+		if ($recurring)
+		{
+			$subscriptionsModel->enabled(1);
+		}
+
+		$allSubs = $subscriptionsModel->get(true, 0, 0);
+
+		// Can't filter an empty set, now, can I?
+		if ($allSubs->isEmpty())
+		{
+			return $allSubs;
+		}
+
+		// Filter out one-off or recurring subscriptions
+		return $allSubs->filter(function (Subscriptions $item) use ($recurring) {
+			$isRecurring = !empty($item->cancel_url) && !empty($item->update_url);
+
+			return ($recurring == $isRecurring);
+		});
 	}
 }

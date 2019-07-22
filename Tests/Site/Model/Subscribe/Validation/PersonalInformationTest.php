@@ -23,771 +23,175 @@ class PersonalInformationTest extends ValidatorTestCase
 
 		// Create the base objects
 		parent::setUpBeforeClass();
-
-		// Only enable the USA, Greece and Spain states
-		$db = \JFactory::getDbo();
-		$query = $db->getQuery(true)
-		            ->update($db->qn('#__akeebasubs_states'))
-		            ->set($db->qn('enabled') . ' = ' . $db->q(0))
-		            ->where($db->qn('country') . ' != ' . $db->q('US'));
-		$db->setQuery($query)->execute();
-		$query = $db->getQuery(true)
-		            ->update($db->qn('#__akeebasubs_states'))
-		            ->set($db->qn('enabled') . ' = ' . $db->q(1))
-		            ->where($db->qn('country') . ' = ' . $db->q('US'));
-		$db->setQuery($query)->execute();
-		$query = $db->getQuery(true)
-		            ->update($db->qn('#__akeebasubs_states'))
-		            ->set($db->qn('enabled') . ' = ' . $db->q(1))
-		            ->where($db->qn('country') . ' = ' . $db->q('GR'));
-		$db->setQuery($query)->execute();
-		$query = $db->getQuery(true)
-		            ->update($db->qn('#__akeebasubs_states'))
-		            ->set($db->qn('enabled') . ' = ' . $db->q(1))
-		            ->where($db->qn('country') . ' = ' . $db->q('ES'));
-		$db->setQuery($query)->execute();
-
-		\Akeeba\Subscriptions\Admin\Helper\akeebasubsHelperSelect_init();
-
-		// Fake the EU VAT checks
-		$reflector     = new \ReflectionClass('Akeeba\Subscriptions\Admin\Helper\EUVATInfo');
-		$propReflector = $reflector->getProperty('cache');
-		$propReflector->setAccessible(true);
-		$propReflector->setValue([
-			'vat' => [
-				'EL123456789' => false,
-				'EL070298898' => true,
-				'EL666666666' => false,
-				'CY123456789' => false,
-				'CY999999999' => true,
-			]
-		]);
 	}
 
 	public function getTestData()
 	{
 		return [
-			[
+			'All information empty, guest' => [
 				'componentParams' => [
-					'reqcoupon'    => 0,
 				],
 				'loggedIn'        => 'guest',
 				'state'           => [
 					'name'         => '',
 					'email'        => '',
 					'email2'       => '',
-					'address1'     => '',
-					'country'      => '',
-					'state'        => '',
-					'city'         => '',
-					'zip'          => '',
-					'isbusiness'   => 1,
-					'businessname' => '',
-					'occupation'   => '',
-					'vatnumber'    => '',
-					'coupon'       => ''
+					'coupon'       => '',
+					'accept_terms' => 0,
 				],
 				'expected'        => [
-					'name'          => false,
-					'email'         => false,
-					'email2'        => false,
-					'address1'      => false,
-					'country'       => false,
-					'state'         => false,
-					'city'          => false,
-					'zip'           => false,
-					'businessname'  => false,
-					'occupation'    => false,
-					'vatnumber'     => false,
-					'novatrequired' => true,
-					'coupon'        => true,
+					'name'   => false,
+					'email'  => false,
+					'email2' => false,
+					'coupon' => false,
+					'tos'    => false,
 				],
-				'message'         => 'Collect personal information; all empty'
+				'message'         => 'All information empty, guest',
 			],
-
-			[
+			/**
+			 * We no longer pre-fill the personal information of logged in users if they submit no data.
+			 */
+			'All information empty, user1' => [
 				'componentParams' => [
-					'reqcoupon'    => 0,
 				],
-				'loggedIn'        => 'guest',
+				'loggedIn'        => 'user1',
 				'state'           => [
-					'name'         => 'Foobar',
+					'name'         => '',
 					'email'        => '',
 					'email2'       => '',
-					'address1'     => '',
-					'country'      => '',
-					'state'        => '',
-					'city'         => '',
-					'zip'          => '',
-					'isbusiness'   => 1,
-					'businessname' => '',
-					'occupation'   => '',
-					'vatnumber'    => '',
-					'coupon'       => ''
+					'coupon'       => '',
+					'accept_terms' => 0,
 				],
 				'expected'        => [
-					'name'          => false,
-					'email'         => false,
-					'email2'        => false,
-					'address1'      => false,
-					'country'       => false,
-					'state'         => false,
-					'city'          => false,
-					'zip'           => false,
-					'businessname'  => false,
-					'occupation'    => false,
-					'vatnumber'     => false,
-					'novatrequired' => true,
-					'coupon'        => true,
+					'name'   => false,
+					'email'  => false,
+					'email2' => false,
+					'coupon' => false,
+					'tos'    => false,
 				],
-				'message'         => 'Collect personal information; one word name (invalid)'
+				'message'         => 'All information empty, user1',
 			],
-
-			[
+			'Everything valid'             => [
 				'componentParams' => [
-					'reqcoupon'    => 0,
 				],
 				'loggedIn'        => 'guest',
 				'state'           => [
 					'name'         => 'Foo Bar',
-					'email'        => '',
-					'email2'       => '',
-					'address1'     => '',
-					'country'      => '',
-					'state'        => '',
-					'city'         => '',
-					'zip'          => '',
-					'isbusiness'   => 1,
-					'businessname' => '',
-					'occupation'   => '',
-					'vatnumber'    => '',
-					'coupon'       => ''
+					'email'        => 'foobar@example.com',
+					'email2'       => 'foobar@example.com',
+					'coupon'       => 'VALIDALL',
+					'accept_terms' => 1,
 				],
 				'expected'        => [
-					'name'          => true,
-					'email'         => false,
-					'email2'        => false,
-					'address1'      => false,
-					'country'       => false,
-					'state'         => false,
-					'city'          => false,
-					'zip'           => false,
-					'businessname'  => false,
-					'occupation'    => false,
-					'vatnumber'     => false,
-					'novatrequired' => true,
-					'coupon'        => true,
+					'name'   => true,
+					'email'  => true,
+					'email2' => true,
+					'coupon' => true,
+					'tos'    => true,
 				],
-				'message'         => 'Collect personal information; two word name (valid)'
+				'message'         => 'Everything valid',
 			],
-
-			[
+			'Valid except name'             => [
 				'componentParams' => [
-					'reqcoupon'    => 0,
 				],
 				'loggedIn'        => 'guest',
 				'state'           => [
-					'name'         => 'Foo Bar',
-					'email'        => 'newuser@test.web',
-					'email2'       => '',
-					'address1'     => '',
-					'country'      => '',
-					'state'        => '',
-					'city'         => '',
-					'zip'          => '',
-					'isbusiness'   => 1,
-					'businessname' => '',
-					'occupation'   => '',
-					'vatnumber'    => '',
-					'coupon'       => ''
+					'name'         => '',
+					'email'        => 'foobar@example.com',
+					'email2'       => 'foobar@example.com',
+					'coupon'       => 'VALIDALL',
+					'accept_terms' => 1,
 				],
 				'expected'        => [
-					'name'          => true,
-					'email'         => true,
-					'email2'        => false,
-					'address1'      => false,
-					'country'       => false,
-					'state'         => false,
-					'city'          => false,
-					'zip'           => false,
-					'businessname'  => false,
-					'occupation'    => false,
-					'vatnumber'     => false,
-					'novatrequired' => true,
-					'coupon'        => true,
+					'name'   => false,
+					'email'  => true,
+					'email2' => true,
+					'coupon' => true,
+					'tos'    => true,
 				],
-				'message'         => 'Collect personal information; email1 but not email2'
+				'message'         => 'Valid except name',
 			],
-
-			[
+			'Valid except email'             => [
 				'componentParams' => [
-					'reqcoupon'    => 0,
 				],
 				'loggedIn'        => 'guest',
 				'state'           => [
 					'name'         => 'Foo Bar',
 					'email'        => '',
-					'email2'       => 'newuser@test.web',
-					'address1'     => '',
-					'country'      => '',
-					'state'        => '',
-					'city'         => '',
-					'zip'          => '',
-					'isbusiness'   => 1,
-					'businessname' => '',
-					'occupation'   => '',
-					'vatnumber'    => '',
-					'coupon'       => ''
+					'email2'       => 'barghfargh@example.net',
+					'coupon'       => 'VALIDALL',
+					'accept_terms' => 1,
 				],
 				'expected'        => [
-					'name'          => true,
-					'email'         => false,
-					'email2'        => false,
-					'address1'      => false,
-					'country'       => false,
-					'state'         => false,
-					'city'          => false,
-					'zip'           => false,
-					'businessname'  => false,
-					'occupation'    => false,
-					'vatnumber'     => false,
-					'novatrequired' => true,
-					'coupon'        => true,
+					'name'   => true,
+					'email'  => false,
+					'email2' => false,
+					'coupon' => true,
+					'tos'    => true,
 				],
-				'message'         => 'Collect personal information; email2 but not email1'
+				'message'         => 'Valid except email',
 			],
-
-			[
+			'Valid except mismatching email'             => [
 				'componentParams' => [
-					'reqcoupon'    => 0,
 				],
 				'loggedIn'        => 'guest',
 				'state'           => [
 					'name'         => 'Foo Bar',
-					'email'        => 'newuser@test.web',
-					'email2'       => 'newuser_NOTREALLY@test.web',
-					'address1'     => '',
-					'country'      => '',
-					'state'        => '',
-					'city'         => '',
-					'zip'          => '',
-					'isbusiness'   => 1,
-					'businessname' => '',
-					'occupation'   => '',
-					'vatnumber'    => '',
-					'coupon'       => ''
+					'email'        => 'foobar@example.com',
+					'email2'       => 'barghfargh@example.net',
+					'coupon'       => 'VALIDALL',
+					'accept_terms' => 1,
 				],
 				'expected'        => [
-					'name'          => true,
-					'email'         => true,
-					'email2'        => false,
-					'address1'      => false,
-					'country'       => false,
-					'state'         => false,
-					'city'          => false,
-					'zip'           => false,
-					'businessname'  => false,
-					'occupation'    => false,
-					'vatnumber'     => false,
-					'novatrequired' => true,
-					'coupon'        => true,
+					'name'   => true,
+					'email'  => true,
+					'email2' => false,
+					'coupon' => true,
+					'tos'    => true,
 				],
-				'message'         => 'Collect personal information; email and mismatching email2'
+				'message'         => 'Valid except mismatching email',
 			],
-
-			[
+			'Valid except coupon'             => [
 				'componentParams' => [
-					'reqcoupon'    => 0,
 				],
 				'loggedIn'        => 'guest',
 				'state'           => [
 					'name'         => 'Foo Bar',
-					'email'        => 'newuser@test.web',
-					'email2'       => 'newuser@test.web',
-					'address1'     => '',
-					'country'      => '',
-					'state'        => '',
-					'city'         => '',
-					'zip'          => '',
-					'isbusiness'   => 1,
-					'businessname' => '',
-					'occupation'   => '',
-					'vatnumber'    => '',
-					'coupon'       => ''
+					'email'        => 'foobar@example.com',
+					'email2'       => 'foobar@example.com',
+					'coupon'       => 'IDONOTEXIST',
+					'accept_terms' => 1,
 				],
 				'expected'        => [
-					'name'          => true,
-					'email'         => true,
-					'email2'        => true,
-					'address1'      => false,
-					'country'       => false,
-					'state'         => false,
-					'city'          => false,
-					'zip'           => false,
-					'businessname'  => false,
-					'occupation'    => false,
-					'vatnumber'     => false,
-					'novatrequired' => true,
-					'coupon'        => true,
+					'name'   => true,
+					'email'  => true,
+					'email2' => true,
+					'coupon' => false,
+					'tos'    => true,
 				],
-				'message'         => 'Collect personal information; email and matching email2'
+				'message'         => 'Valid except coupon',
 			],
-
-			[
+			'Valid except ToS'             => [
 				'componentParams' => [
-					'reqcoupon'    => 0,
 				],
 				'loggedIn'        => 'guest',
 				'state'           => [
 					'name'         => 'Foo Bar',
-					'email'        => 'newuser@test.web',
-					'email2'       => 'newuser@test.web',
-					'address1'     => '123 Someplace Drive',
-					'country'      => '',
-					'state'        => '',
-					'city'         => '',
-					'zip'          => '',
-					'isbusiness'   => 1,
-					'businessname' => '',
-					'occupation'   => '',
-					'vatnumber'    => '',
-					'coupon'       => ''
+					'email'        => 'foobar@example.com',
+					'email2'       => 'foobar@example.com',
+					'coupon'       => 'VALIDALL',
+					'accept_terms' => 0,
 				],
 				'expected'        => [
-					'name'          => true,
-					'email'         => true,
-					'email2'        => true,
-					'address1'      => true,
-					'country'       => false,
-					'state'         => false,
-					'city'          => false,
-					'zip'           => false,
-					'businessname'  => false,
-					'occupation'    => false,
-					'vatnumber'     => false,
-					'novatrequired' => true,
-					'coupon'        => true,
+					'name'   => true,
+					'email'  => true,
+					'email2' => true,
+					'coupon' => true,
+					'tos'    => false,
 				],
-				'message'         => 'Collect personal information; address1'
-			],
-
-			[
-				'componentParams' => [
-					'reqcoupon'    => 0,
-				],
-				'loggedIn'        => 'guest',
-				'state'           => [
-					'name'         => 'Foo Bar',
-					'email'        => 'newuser@test.web',
-					'email2'       => 'newuser@test.web',
-					'address1'     => '123 Someplace Drive',
-					'country'      => 'US',
-					'state'        => '',
-					'city'         => '',
-					'zip'          => '',
-					'isbusiness'   => 1,
-					'businessname' => '',
-					'occupation'   => '',
-					'vatnumber'    => '',
-					'coupon'       => ''
-				],
-				'expected'        => [
-					'name'          => true,
-					'email'         => true,
-					'email2'        => true,
-					'address1'      => true,
-					'country'       => true,
-					'state'         => false,
-					'city'          => false,
-					'zip'           => false,
-					'businessname'  => false,
-					'occupation'    => false,
-					'vatnumber'     => false,
-					'novatrequired' => true,
-					'coupon'        => true,
-				],
-				'message'         => 'Collect personal information; country'
-			],
-
-			[
-				'componentParams' => [
-					'reqcoupon'    => 0,
-				],
-				'loggedIn'        => 'guest',
-				'state'           => [
-					'name'         => 'Foo Bar',
-					'email'        => 'newuser@test.web',
-					'email2'       => 'newuser@test.web',
-					'address1'     => '123 Someplace Drive',
-					'country'      => 'US',
-					'state'        => 'AL',
-					'city'         => '',
-					'zip'          => '',
-					'isbusiness'   => 1,
-					'businessname' => '',
-					'occupation'   => '',
-					'vatnumber'    => '',
-					'coupon'       => ''
-				],
-				'expected'        => [
-					'name'          => true,
-					'email'         => true,
-					'email2'        => true,
-					'address1'      => true,
-					'country'       => true,
-					'state'         => true,
-					'city'          => false,
-					'zip'           => false,
-					'businessname'  => false,
-					'occupation'    => false,
-					'vatnumber'     => false,
-					'novatrequired' => true,
-					'coupon'        => true,
-				],
-				'message'         => 'Collect personal information; state'
-			],
-
-			[
-				'componentParams' => [
-					'reqcoupon'    => 0,
-				],
-				'loggedIn'        => 'guest',
-				'state'           => [
-					'name'         => 'Foo Bar',
-					'email'        => 'newuser@test.web',
-					'email2'       => 'newuser@test.web',
-					'address1'     => '123 Someplace Drive',
-					'country'      => 'GR',
-					'state'        => 'GR-ATT',
-					'city'         => 'Αθήνα',
-					'zip'          => '',
-					'isbusiness'   => 1,
-					'businessname' => '',
-					'occupation'   => '',
-					'vatnumber'    => '',
-					'coupon'       => ''
-				],
-				'expected'        => [
-					'name'          => true,
-					'email'         => true,
-					'email2'        => true,
-					'address1'      => true,
-					'country'       => true,
-					'state'         => true,
-					'city'          => true,
-					'zip'           => false,
-					'businessname'  => false,
-					'occupation'    => false,
-					'vatnumber'     => false,
-					'novatrequired' => false,
-					'coupon'        => true,
-				],
-				'message'         => 'Collect personal information; city'
-			],
-
-			[
-				'componentParams' => [
-					'reqcoupon'    => 0,
-				],
-				'loggedIn'        => 'guest',
-				'state'           => [
-					'name'         => 'Foo Bar',
-					'email'        => 'newuser@test.web',
-					'email2'       => 'newuser@test.web',
-					'address1'     => '123 Someplace Drive',
-					'country'      => 'GR',
-					'state'        => 'GR-ATT',
-					'city'         => 'Αθήνα',
-					'zip'          => '123 45',
-					'isbusiness'   => 1,
-					'businessname' => '',
-					'occupation'   => '',
-					'vatnumber'    => '',
-					'coupon'       => ''
-				],
-				'expected'        => [
-					'name'          => true,
-					'email'         => true,
-					'email2'        => true,
-					'address1'      => true,
-					'country'       => true,
-					'state'         => true,
-					'city'          => true,
-					'zip'           => true,
-					'businessname'  => false,
-					'occupation'    => false,
-					'vatnumber'     => false,
-					'novatrequired' => false,
-					'coupon'        => true,
-				],
-				'message'         => 'Collect personal information; zip'
-			],
-
-			[
-				'componentParams' => [
-					'reqcoupon'    => 0,
-				],
-				'loggedIn'        => 'guest',
-				'state'           => [
-					'name'         => 'Foo Bar',
-					'email'        => 'newuser@test.web',
-					'email2'       => 'newuser@test.web',
-					'address1'     => '123 Someplace Drive',
-					'country'      => 'GR',
-					'state'        => 'GR-ATT',
-					'city'         => 'Αθήνα',
-					'zip'          => '123 45',
-					'isbusiness'   => 1,
-					'businessname' => 'Τρία Κιλά Κώδικα ΑΕ',
-					'occupation'   => 'Εμπορία λογισμικού',
-					'vatnumber'    => '070298898',
-					'coupon'       => ''
-				],
-				'expected'        => [
-					'name'          => true,
-					'email'         => true,
-					'email2'        => true,
-					'address1'      => true,
-					'country'       => true,
-					'state'         => true,
-					'city'          => true,
-					'zip'           => true,
-					'businessname'  => true,
-					'occupation'    => true,
-					'vatnumber'     => true,
-					'novatrequired' => false,
-					'coupon'        => true,
-				],
-				'message'         => 'Collect personal information; business info'
-			],
-
-			[
-				'componentParams' => [
-					'reqcoupon'    => 1,
-				],
-				'loggedIn'        => 'guest',
-				'state'           => [
-					'name'         => 'Foo Bar',
-					'email'        => 'newuser@test.web',
-					'email2'       => 'newuser@test.web',
-					'address1'     => '123 Someplace Drive',
-					'country'      => 'GR',
-					'state'        => 'GR-ATT',
-					'city'         => 'Αθήνα',
-					'zip'          => '123 45',
-					'isbusiness'   => 1,
-					'businessname' => 'Τρία Κιλά Κώδικα ΑΕ',
-					'occupation'   => 'Εμπορία λογισμικού',
-					'vatnumber'    => '070298898',
-					'coupon'       => ''
-				],
-				'expected'        => [
-					'name'          => true,
-					'email'         => true,
-					'email2'        => true,
-					'address1'      => true,
-					'country'       => true,
-					'state'         => true,
-					'city'          => true,
-					'zip'           => true,
-					'businessname'  => true,
-					'occupation'    => true,
-					'vatnumber'     => true,
-					'novatrequired' => false,
-					'coupon'        => false,
-				],
-				'message'         => 'Collect personal information; no coupon but coupon required'
-			],
-
-			[
-				'componentParams' => [
-					'reqcoupon'    => 1,
-				],
-				'loggedIn'        => 'guest',
-				'state'           => [
-					'name'         => 'Foo Bar',
-					'email'        => 'newuser@test.web',
-					'email2'       => 'newuser@test.web',
-					'address1'     => '123 Someplace Drive',
-					'country'      => 'GR',
-					'state'        => 'GR-ATT',
-					'city'         => 'Αθήνα',
-					'zip'          => '123 45',
-					'isbusiness'   => 1,
-					'businessname' => 'Τρία Κιλά Κώδικα ΑΕ',
-					'occupation'   => 'Εμπορία λογισμικού',
-					'vatnumber'    => '070298898',
-					'coupon'       => 'IAMNOTTHERE'
-				],
-				'expected'        => [
-					'name'          => true,
-					'email'         => true,
-					'email2'        => true,
-					'address1'      => true,
-					'country'       => true,
-					'state'         => true,
-					'city'          => true,
-					'zip'           => true,
-					'businessname'  => true,
-					'occupation'    => true,
-					'vatnumber'     => true,
-					'novatrequired' => false,
-					'coupon'        => false,
-				],
-				'message'         => 'Collect personal information; invalid coupon; coupon required'
-			],
-
-			[
-				'componentParams' => [
-					'reqcoupon'    => 0,
-				],
-				'loggedIn'        => 'guest',
-				'state'           => [
-					'name'         => 'Foo Bar',
-					'email'        => 'newuser@test.web',
-					'email2'       => 'newuser@test.web',
-					'address1'     => '123 Someplace Drive',
-					'country'      => 'GR',
-					'state'        => 'GR-ATT',
-					'city'         => 'Αθήνα',
-					'zip'          => '123 45',
-					'isbusiness'   => 1,
-					'businessname' => 'Τρία Κιλά Κώδικα ΑΕ',
-					'occupation'   => 'Εμπορία λογισμικού',
-					'vatnumber'    => '070298898',
-					'coupon'       => 'IAMNOTTHERE'
-				],
-				'expected'        => [
-					'name'          => true,
-					'email'         => true,
-					'email2'        => true,
-					'address1'      => true,
-					'country'       => true,
-					'state'         => true,
-					'city'          => true,
-					'zip'           => true,
-					'businessname'  => true,
-					'occupation'    => true,
-					'vatnumber'     => true,
-					'novatrequired' => false,
-					'coupon'        => true,
-				],
-				'message'         => 'Collect personal information; invalid coupon; coupon NOT required'
-			],
-
-			[
-				'componentParams' => [
-					'reqcoupon'    => 1,
-				],
-				'loggedIn'        => 'guest',
-				'state'           => [
-					'name'         => 'Foo Bar',
-					'email'        => 'newuser@test.web',
-					'email2'       => 'newuser@test.web',
-					'address1'     => '123 Someplace Drive',
-					'country'      => 'GR',
-					'state'        => 'GR-ATT',
-					'city'         => 'Αθήνα',
-					'zip'          => '123 45',
-					'isbusiness'   => 1,
-					'businessname' => 'Τρία Κιλά Κώδικα ΑΕ',
-					'occupation'   => 'Εμπορία λογισμικού',
-					'vatnumber'    => '070298898',
-					'coupon'       => 'ALREADYEXPIRED'
-				],
-				'expected'        => [
-					'name'          => true,
-					'email'         => true,
-					'email2'        => true,
-					'address1'      => true,
-					'country'       => true,
-					'state'         => true,
-					'city'          => true,
-					'zip'           => true,
-					'businessname'  => true,
-					'occupation'    => true,
-					'vatnumber'     => true,
-					'novatrequired' => false,
-					'coupon'        => false,
-				],
-				'message'         => 'Collect personal information; expired coupon; coupon required'
-			],
-
-			[
-				'componentParams' => [
-					'reqcoupon'    => 0,
-				],
-				'loggedIn'        => 'guest',
-				'state'           => [
-					'name'         => 'Foo Bar',
-					'email'        => 'newuser@test.web',
-					'email2'       => 'newuser@test.web',
-					'address1'     => '123 Someplace Drive',
-					'country'      => 'GR',
-					'state'        => 'GR-ATT',
-					'city'         => 'Αθήνα',
-					'zip'          => '123 45',
-					'isbusiness'   => 1,
-					'businessname' => 'Τρία Κιλά Κώδικα ΑΕ',
-					'occupation'   => 'Εμπορία λογισμικού',
-					'vatnumber'    => '070298898',
-					'coupon'       => 'ALREADYEXPIRED'
-				],
-				'expected'        => [
-					'name'          => true,
-					'email'         => true,
-					'email2'        => true,
-					'address1'      => true,
-					'country'       => true,
-					'state'         => true,
-					'city'          => true,
-					'zip'           => true,
-					'businessname'  => true,
-					'occupation'    => true,
-					'vatnumber'     => true,
-					'novatrequired' => false,
-					'coupon'        => false,
-				],
-				'message'         => 'Collect personal information; expired coupon; coupon NOT required'
-			],
-
-			[
-				'componentParams' => [
-					'reqcoupon'    => 1,
-				],
-				'loggedIn'        => 'guest',
-				'state'           => [
-					'name'         => 'Foo Bar',
-					'email'        => 'newuser@test.web',
-					'email2'       => 'newuser@test.web',
-					'address1'     => '123 Someplace Drive',
-					'country'      => 'GR',
-					'state'        => 'GR-ATT',
-					'city'         => 'Αθήνα',
-					'zip'          => '123 45',
-					'isbusiness'   => 1,
-					'businessname' => 'Τρία Κιλά Κώδικα ΑΕ',
-					'occupation'   => 'Εμπορία λογισμικού',
-					'vatnumber'    => '070298898',
-					'coupon'       => 'VALIDALL'
-				],
-				'expected'        => [
-					'name'          => true,
-					'email'         => true,
-					'email2'        => true,
-					'address1'      => true,
-					'country'       => true,
-					'state'         => true,
-					'city'          => true,
-					'zip'           => true,
-					'businessname'  => true,
-					'occupation'    => true,
-					'vatnumber'     => true,
-					'novatrequired' => false,
-					'coupon'        => true,
-				],
-				'message'         => 'Collect personal information; valid coupon; coupon required'
+				'message'         => 'Valid except ToS',
 			]
+
 		];
 	}
 
@@ -807,7 +211,7 @@ class PersonalInformationTest extends ValidatorTestCase
 			}
 		}
 
-		self::$jUser = self::$users[ $loggedIn ];
+		self::$jUser = self::$users[$loggedIn];
 		static::$factory->reset();
 
 		parent::testGetValidationResult($state, $expected, $message);
@@ -816,7 +220,7 @@ class PersonalInformationTest extends ValidatorTestCase
 	public function performAssertion($expected, $actual, $message)
 	{
 		$expected = array_merge($expected, [
-			'rawDataForDebug' => (array)self::$state
+			'rawDataForDebug' => (array) self::$state,
 		]);
 
 		parent::performAssertion($expected, $actual, $message); // TODO: Change the autogenerated stub

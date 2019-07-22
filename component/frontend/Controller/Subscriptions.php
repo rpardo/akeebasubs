@@ -27,11 +27,12 @@ class Subscriptions extends DataController
 	 */
 	public function __construct(Container $container, array $config = array())
 	{
+		// The user settings are very likely to be modified so let's NOT cache anything.
+		$config['cacheableTasks'] = [''];
+
 		parent::__construct($container, $config);
 
 		$this->predefinedTaskList = ['browse', 'read', 'save', 'apply'];
-
-		$this->cacheableTasks = ['read', 'browse'];
 	}
 
 	/**
@@ -66,20 +67,18 @@ class Subscriptions extends DataController
 		else
 		{
 			$subsModel->user_id($user->id);
+			$subsModel->limit(0);
+			$subsModel->limitstart(0);
 		}
 
 		$paystateFilter = $this->input->getString('state', '');
-		if ($this->input->getInt('allStates', 0) && $isAdmin)
-		{
-			$subsModel->paystate(null);
-		}
-		elseif (!empty($paystateFilter) && $isAdmin)
+		if (!empty($paystateFilter) && $isAdmin)
 		{
 			$subsModel->paystate($paystateFilter);
 		}
 		else
 		{
-			$subsModel->paystate(['C', 'P']);
+			$subsModel->paystate(null);
 		}
 
 		if ($this->input->getInt('noInvoice', 0) && $isAdmin)

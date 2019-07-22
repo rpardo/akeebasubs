@@ -12,7 +12,6 @@ defined('_JEXEC') or die;
 use FOF30\Container\Container;
 use FOF30\Date\Date;
 use FOF30\Model\DataModel;
-use JLoader;
 
 /**
  * The model for the subscription records
@@ -31,19 +30,25 @@ use JLoader;
  * @property  string		$processor					Payments processor
  * @property  string		$processor_key				Unique key for the payments processor
  * @property  string		$state						Payment state (N new, P pending, C completed, X cancelled)
+ * @property  string        $cancellation_reason        Reason for cancellation: 'refund', 'risk', 'past_due', 'user', 'upgrade', 'tos', 'other'
  * @property  float			$net_amount					Payable amount without tax
  * @property  float			$tax_amount					Tax portion of payable amount
  * @property  float			$gross_amount				Total payable amount
- * @property  float			$recurring_amount			Total payable amount for further recurring subscriptions
  * @property  float			$tax_percent				% of tax (tax_amount / net_amount)
+ * @property  float			$fee_amount                 The fee kept by the payment processor.
  * @property  string		$created_on					Date/time when this subscription was created
  * @property  array 		$params						Parameters, used by custom fields and plugins
  * @property  string		$ip							IP address of the user who created this subscription
  * @property  string		$ip_country					Country of the user who created this subscription, based on IP geolocation
+ * @property  string        $ua                         User agent
+ * @property  int           $mobile                     Is this subscription originating from a mobile device?
+ * @property  string        $receipt_url                Paddle receipt URL
+ * @property  string        $update_url                 Subscription update URL
+ * @property  string        $cancel_url                 Subscription cancellation URL
+ * @property  string        $payment_url                URL used to pay for the subscription
+ * @property  string        $payment_method             Payment method: 'apple-pay', 'card', 'free', 'paypal', 'wire-transfer', 'unknown'
  * @property  int			$akeebasubs_coupon_id		Coupon code used. FK to coupon relation.
  * @property  int			$akeebasubs_upgrade_id		Upgrade rule used. FK to upgrade relation
- * @property  int			$akeebasubs_affiliate_id	NO LONGER USED IN CORE. Store an affiliate ID (plugin specific)
- * @property  float			$affiliate_comission		NO LONGER USED IN CORE. Store the commission amount of you affiliate (plugin specific)
  * @property  int			$akeebasubs_invoice_id		Invoice issues. FK to invoice relation.
  * @property  float			$prediscount_amount			Total amount, before taxes and before any discount was applied.
  * @property  float			$discount_amount			Discount amount (before taxes), applied over the prediscount_amount
@@ -61,21 +66,22 @@ use JLoader;
  * @method  $this  net_amount()                  net_amount(float $v)
  * @method  $this  tax_amount()                  tax_amount(float $v)
  * @method  $this  gross_amount()                gross_amount(float $v)
- * @method  $this  recurring_amount()            recurring_amount(float $v)
  * @method  $this  tax_percent()                 tax_percent(float $v)
  * @method  $this  created_on()                  created_on(string $v)
  * @method  $this  akeebasubs_coupon_id()        akeebasubs_coupon_id(int $v)
  * @method  $this  akeebasubs_upgrade_id()       akeebasubs_upgrade_id(int $v)
- * @method  $this  akeebasubs_affiliate_id()     akeebasubs_affiliate_id(int $v)
- * @method  $this  affiliate_comission()         affiliate_comission(float $v)
  * @method  $this  akeebasubs_invoice_id()       akeebasubs_invoice_id(int|array $v)
  * @method  $this  prediscount_amount()          prediscount_amount(float $v)
+ * @method  $this  payment_method()              payment_method(string $v)
+ * @method  $this  cancellation_reason()         cancellation_reason(string $v)
  * @method  $this  discount_amount()             discount_amount(float $v)
  * @method  $this  contact_flag()                contact_flag(bool $v)
  * @method  $this  first_contact()               first_contact(string $v)
  * @method  $this  second_contact()              second_contact(string $v)
  * @method  $this  after_contact()               after_contact(string $v)
- * @method  $this _noemail()                     _noemail(bool $v)          	    Do not send email on save when true (resets after successful save)
+ * @method  $this  _noemail()                    _noemail(bool $v)          	    Do not send email on save when true (resets after successful save)
+ * @method  $this  _dontNotify()                 _dontNotify(bool $v)
+ * @method  $this  _dontCheckPaymentID()         _dontCheckPaymentID(bool $v)
  * @method  $this refresh()  					 refresh(int $v)            	    Set to 1 to ignore filters, used for running integrations on all subscriptions
  * @method  $this filter_discountmode() 		 filter_discountmode(string $v)     Discount filter mode (none, coupon, upgrade)
  * @method  $this filter_discountcode() 		 filter_discountcode(string $v)     Discount code search (coupon code/title or upgrade title)
@@ -101,7 +107,6 @@ use JLoader;
  *
  * Relations:
  *
- * @property-read  Users	 	$user		The Akeeba Subscriptions user record for the subscription user
  * @property-read  JoomlaUsers	$juser		The Joomla! user record for the subscription user
  * @property-read  Levels	 	$level		The subscription level. Note: the method is a filter, the property is a relation!
  * @property-read  Coupons		$coupon		The coupon used (if akeebasubs_coupon_id is not empty)
@@ -134,7 +139,6 @@ class Subscriptions extends DataModel
 		]);
 
 		// Set up relations
-		$this->hasOne('user', 'Users', 'user_id', 'user_id');
 		$this->hasOne('juser', 'JoomlaUsers', 'user_id', 'id');
 		$this->hasOne('level', 'Levels', 'akeebasubs_level_id', 'akeebasubs_level_id');
 		$this->hasOne('coupon', 'Coupons', 'akeebasubs_coupon_id', 'akeebasubs_coupon_id');
@@ -166,6 +170,16 @@ class Subscriptions extends DataModel
 		if (!$this->getState('_dontCheckPaymentID', false))
 		{
 			$this->assertNotEmpty($this->processor, 'COM_AKEEBASUBS_SUBSCRIPTION_ERR_PROCESSOR_KEY');
+		}
+
+		if (!in_array($this->payment_method, ['apple-pay', 'card', 'free', 'paypal', 'wire-transfer', 'unknown']))
+		{
+			$this->payment_method = 'unknown';
+		}
+
+		if (!in_array($this->cancellation_reason, ['refund', 'risk', 'past_due', 'user', 'upgrade', 'tos', 'other']))
+		{
+			$this->payment_method = 'other';
 		}
 
 		// If the _noemail state variable is set we have to modify contact_flag
@@ -307,17 +321,6 @@ class Subscriptions extends DataModel
 
 				return;
 			}
-
-			// Otherwise we have to do a relation filter against the user relation, filtering by business name or VAT number
-			$this->whereHas('user', function (\JDatabaseQuery $q) use($search) {
-				$q->where(
-					'(' .
-					'(' . $q->qn('businessname') . ' LIKE ' . $q->q("%$search%") . ')' .
-					' OR ' .
-					'(' . $q->qn('vatnumber') . ' LIKE ' . $q->q("%$search%") . ')' .
-					')'
-				);
-			});
 		}
 	}
 
@@ -486,17 +489,19 @@ class Subscriptions extends DataModel
 		$tableAlias = $this->getBehaviorParam('tableAlias', null);
 		$tableAlias = !empty($tableAlias) ? ($db->qn($tableAlias) . '.') : '';
 
-		\JLoader::import('joomla.utilities.date');
-		$publish_up   = $this->getState('publish_up', null, 'string');
-		$publish_upto = $this->getState('publish_upto', null, 'string');
-		$publish_down = $this->getState('publish_down', null, 'string');
+		$publish_up        = $this->getState('publish_up', null, 'string');
+		$publish_upto      = $this->getState('publish_upto', null, 'string');
+		$publish_down      = $this->getState('publish_down', null, 'string');
+		$publish_downafter = $this->getState('publish_downafter', null, 'string');
 
 		$regex = '/^\d{1,4}(\/|-)\d{1,2}(\/|-)\d{2,4}[[:space:]]{0,}(\d{1,2}:\d{1,2}(:\d{1,2}){0,1}){0,1}$/';
 
 		// Filter the dates
-		$from    = trim($publish_up);
-		$fromAlt = trim($publish_upto);
-		$useUpTo = false;
+		$from         = trim($publish_up);
+		$fromAlt      = trim($publish_upto);
+		$toAlt        = trim($publish_downafter);
+		$useUpTo      = false;
+		$useDownAfter = false;
 
 		if (!empty($fromAlt))
 		{
@@ -533,7 +538,15 @@ class Subscriptions extends DataModel
 			$useUpTo = false;
 		}
 
-		$to = trim($publish_down);
+		if (!empty($toAlt))
+		{
+			$to           = trim($toAlt);
+			$useDownAfter = true;
+		}
+		else
+		{
+			$to = trim($publish_down);
+		}
 
 		if (empty($to) || ($to == '0000-00-00') || ($to == '0000-00-00 00:00:00'))
 		{
@@ -559,11 +572,23 @@ class Subscriptions extends DataModel
 			}
 		}
 
+		if (empty($to))
+		{
+			$useDownAfter = false;
+		}
+
 		if (!empty($from) && $useUpTo)
 		{
 			// Filter before date
 			$query->where(
 				$tableAlias . $db->qn('publish_up') . ' <= ' . $db->q($from)
+			);
+		}
+		elseif (!empty($to) && $useDownAfter)
+		{
+			// Filter before date
+			$query->where(
+				$tableAlias . $db->qn('publish_down') . ' >= ' . $db->q($to)
 			);
 		}
 		elseif (!empty($from) && !empty($to))
@@ -606,7 +631,6 @@ class Subscriptions extends DataModel
 		$tableAlias = $this->getBehaviorParam('tableAlias', null);
 		$tableAlias = !empty($tableAlias) ? ($db->qn($tableAlias) . '.') : '';
 
-		\JLoader::import('joomla.utilities.date');
 		$since = $this->getState('since', null, 'string');
 		$until = $this->getState('until', null, 'string');
 
@@ -690,7 +714,6 @@ class Subscriptions extends DataModel
 		$tableAlias = $this->getBehaviorParam('tableAlias', null);
 		$tableAlias = !empty($tableAlias) ? ($db->qn($tableAlias) . '.') : '';
 
-		\JLoader::import('joomla.utilities.date');
 		$expires_from = $this->getState('expires_from', null, 'string');
 		$expires_to = $this->getState('expires_to', null, 'string');
 
@@ -823,11 +846,15 @@ class Subscriptions extends DataModel
 			return;
 		}
 
-		JLoader::import('joomla.utilities.date');
 		$jNow = new Date();
 		$uNow = $jNow->toUnix();
 
 		$alreadyRunning = true;
+
+		// Get the payment recovery cutoff date; unpaid subscriptions created before that date are non-recoverable.
+		$recoveryDays      = $this->container->params->get('payment_recovery_lifetime', 7);
+		$recoveryThreshold = time() - $recoveryDays * 24 * 3600;
+		$deletedIndices = [];
 
 		foreach ($resultArray as $index => &$row)
 		{
@@ -841,6 +868,26 @@ class Subscriptions extends DataModel
 			if (is_null($row->params) || empty($row->params))
 			{
 				$row->params = [];
+			}
+
+			/**
+			 * Special handling for New (unpaid) subscriptions with a payment_url.
+			 *
+			 * If the are more than payment_recovery_lifetime days old we get to delete them.
+			 *
+			 * Why? The payment_url contains a fixed price which was valid for the user when they tried to subscribe. If
+			 * they made use of any discount (coupon code, automatic discount, tried to buy the subscription before its
+			 * price changed) that discount may no longer be valid. You can say that if they called dibs they deserve to
+			 * get the nice price for a few more days – but not after months or years have passed!
+			 */
+			$jDate = new Date($row->created_on);
+
+			if (($row->getFieldValue('state', 'N') == 'N') && ($jDate->getTimestamp() < $recoveryThreshold))
+			{
+				$deletedIndices[] = $index;
+				$row->delete($row->getId());
+
+				continue;
 			}
 
 			/**
@@ -915,6 +962,17 @@ class Subscriptions extends DataModel
 			}
 		}
 
+		// Remove all the records I just deleted
+		if (!empty($deletedIndices))
+		{
+			foreach ($deletedIndices as $idx)
+			{
+				unset($resultArray[$idx]);
+			}
+
+
+		}
+
 		$alreadyRunning = false;
 	}
 
@@ -946,7 +1004,6 @@ class Subscriptions extends DataModel
 		// Handle the fake payment_state field
 		if (isset($data['payment_state']))
 		{
-			//$this->setFieldValue('state', $data['payment_state']);
 			$data['state'] = $data['payment_state'];
 
 			unset($data['payment_state']);
@@ -1046,7 +1103,6 @@ class Subscriptions extends DataModel
 	 */
 	protected function normaliseEnabled()
 	{
-		JLoader::import('joomla.utilities.date');
 		$jNow  = new Date();
 		$uNow  = $jNow->toUnix();
 		$jDown = new Date($this->publish_down);
@@ -1209,13 +1265,10 @@ class Subscriptions extends DataModel
 			'net_amount',
 			'tax_amount',
 			'gross_amount',
-			'recurring_amount',
 			'tax_percent',
 			'params',
 			'akeebasubs_coupon_id',
 			'akeebasubs_upgrade_id',
-			'akeebasubs_affiliate_id',
-			'affiliate_comission',
 			'akeebasubs_invoice_id',
 			'prediscount_amount',
 			'discount_amount',
