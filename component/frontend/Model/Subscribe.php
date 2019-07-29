@@ -591,10 +591,41 @@ class Subscribe extends Model
 			// Matching plans: the subscription record is for a recurring subscription and the plan ID matches $recurringId
 			$matchingPlans   = $recurringId == $recurringPlanId;
 
-			// If we have matching characteristics return the old subscription record without update
+			// If we have matching characteristics conditionally return the old subscription record without update
 			if ($bothNull || $matchingPlans)
 			{
-				return $existingSubscription;
+				/**
+				 * Only return the old record if the full price in the record the same as the one from the validation.
+				 *
+				 * This check prevents two cases where the user would be paying a different price than the one presented
+				 * to them.
+				 *
+				 * A. You started a payment which included a time-limited discount, canceled the payment popup and came
+				 * back a few days (less than 7) later when the time-limited discount does not apply. In this case you
+				 * would be told that you need to pay the full price but since we're using the already saved payment ID
+				 * Paddle would ask you to pay the discounted price. This is not right. You lost your chance, you need
+				 * to pay full price.
+				 *
+				 * Important note: we do not need to check explicitly for the 7 days mentioned above. The Subscriptions
+				 * model automatically removes records with state=N (unpaid subs) older than 7 days. Since we go through
+				 * this model in findExistingUnpaidSubscription() we are automatically enforcing this time limit.
+				 *
+				 * B. You forgot to apply a a coupon code. In this case you correctly cancel the payment and retry
+				 * subscribing with the coupon code. You are shown the correct (discounted) price. HOWEVER, because of
+				 * this code above we'd be reusing the previous payment ID which causes Paddle to ask you to pay full
+				 * price again. This is not right, you entered a coupon code, it has to be honored. (This problem did
+				 * actually happen in production).
+				 *
+				 * By checking the price of the validation vs the price of the stored record we can decide if the stored
+				 * payment ID can be reused or not.
+				 */
+				$returnSame = abs($existingSubscription->gross_amount - $validation->price->gross) <= 0.001;
+
+				// Should I return the existing record?
+				if ($returnSame)
+				{
+					return $existingSubscription;
+				}
 			}
 
 			// Otherwise, notify our code we have to update an existing subscription

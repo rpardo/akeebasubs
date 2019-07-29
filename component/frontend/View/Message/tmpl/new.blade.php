@@ -99,6 +99,11 @@ JS;
 		<p>
 			@lang('COM_AKEEBASUBS_MESSAGE_NEW_HELP_COUPON_BODY_P1')
 		</p>
+		<a class="akeeba-btn--ghost--small"
+		   href="@route('index.php?option=com_akeebasubs&view=Subscribe&task=cancel_unpaid&id=' . $this->subscription->getId())">
+			<span class="akion-android-cancel"></span>
+			@lang('COM_AKEEBASUBS_SUBSCRIPTIONS_BTN_CANCEL_UNPAID')
+		</a>
 	</div>
 
 	<h5>
@@ -117,12 +122,12 @@ JS;
 
 	<h5>
 		<a href="javascript:akeebasubsToggleHelp('changedmymind')">
-			I changed my mind
+			@lang('COM_AKEEBASUBS_MESSAGE_NEW_MSG_CHANGEDMYMIND_HEAD')
 		</a>
 	</h5>
 	<div id="changedmymind" style="display: none;">
 		<p>
-			We are sorry to hear that! If you want to cancel your pending payment and not be reminded about it in the future please click the button below. Thank you!
+			@lang('COM_AKEEBASUBS_MESSAGE_NEW_MSG_CHANGEDMYMIND_BODY')
 		</p>
 		<a class="akeeba-btn--ghost--small"
 		   href="@route('index.php?option=com_akeebasubs&view=Subscribe&task=cancel_unpaid&id=' . $this->subscription->getId())">
