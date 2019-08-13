@@ -28,6 +28,11 @@ $relatedSub = $levelInfo['related']['related_sub'];
 /** @var \FOF30\Model\DataModel\Collection $allSubs */
 $allSubs = $levelInfo['transactions'];
 
+if ($allSubs->isEmpty())
+{
+    return;
+}
+
 /** @var Subscriptions|null $unpaidSub */
 $unpaidSub = (clone $allSubs)->filter(function (Subscriptions $sub) {
 	return $sub->status == 'new';
