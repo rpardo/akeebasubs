@@ -5,6 +5,7 @@
 * Cannot apply a coupon code for seven days since I last closed the payment dialog for the same subscription level
 * Wrong language string for canceled subscriptions
 * Wrong display in My Subscriptions page when you have not subscribed yet
+* Users were linking to a view that no longer exists. Now they point to their J! user profile.
 
 # 7.0.0
 

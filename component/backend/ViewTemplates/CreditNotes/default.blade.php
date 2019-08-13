@@ -77,7 +77,7 @@ $invoiceModel = $this->getModel()->getContainer()->factory->model('Invoices')->t
             </td>
             <td>
                 @unless(is_null($row->invoice) || is_null($row->invoice->subscription))
-                    @include('admin:com_akeebasubs/Common/ShowUser', ['item' => $row->invoice->subscription, 'field' => 'user_id', 'link_url' => 'index.php?option=com_akeebasubs&view=Users&task=edit&user_id=' . (int) $row->invoice->subscription->user_id])
+                    @include('admin:com_akeebasubs/Common/ShowUser', ['item' => $row->invoice->subscription, 'field' => 'user_id', 'link_url' => 'index.php?option=com_users&task=user.edit&id=' . (int) $row->invoice->subscription->user_id])
                 @endunless
             </td>
             <td>

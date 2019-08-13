@@ -115,7 +115,7 @@ $returnUrl = base64_encode('index.php?option=com_akeebasubs&view=Invoices');
             </td>
             <td>
                 @unless(is_null($row->subscription))
-                    @include('admin:com_akeebasubs/Common/ShowUser', ['item' => $row->subscription, 'field' => 'user_id', 'link_url' => 'index.php?option=com_akeebasubs&view=Users&task=edit&user_id=' . (int) $row->subscription->user_id])
+                    @include('admin:com_akeebasubs/Common/ShowUser', ['item' => $row->subscription, 'field' => 'user_id', 'link_url' => 'index.php?option=com_users&task=user.edit&id=' . (int) $row->subscription->user_id])
                 @endunless
             </td>
             <td>
