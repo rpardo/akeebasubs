@@ -1,5 +1,9 @@
 # 7.0.1
 
+**Remove features**
+
+* Removed Joomla extension update support
+
 **Bug fixes**
 
 * Cannot apply a coupon code for seven days since I last closed the payment dialog for the same subscription level

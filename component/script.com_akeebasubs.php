@@ -132,6 +132,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 
             // Akeeba Subscriptions 7 - Only support MoR integrations
 			'administrator/components/com_akeebasubs/Controller/Import.php',
+			'administrator/components/com_akeebasubs/Controller/Updates.php',
 			'administrator/components/com_akeebasubs/Controller/User.php',
 
             'administrator/components/com_akeebasubs/Form/Field/APICouponLimits.php',
@@ -152,6 +153,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
             'administrator/components/com_akeebasubs/PluginAbstracts/AkpaymentsBase.php',
 
             'administrator/components/com_akeebasubs/ViewTemplates/ControlPanel/wizard.blade.php',
+            'administrator/components/com_akeebasubs/ViewTemplates/ControlPanel/quickicons.blade.php',
             'administrator/components/com_akeebasubs/ViewTemplates/Subscriptions/form_customparams.blade.php',
             'administrator/components/com_akeebasubs/ViewTemplates/Common/EntryPaymentPlugins.php',
 
