@@ -1,5 +1,9 @@
 # 7.0.1
 
+**Miscellaneous changes**
+
+* Bump minimum PHP version to 7.3.0.
+
 **Remove features**
 
 * Removed Joomla extension update support
