@@ -337,7 +337,7 @@ $formatCurrency = function(float $price) use ($currencyPosition, $currencySymbol
                     </p>
 
                     {{-- RECEIPT / INVOICE --}}
-                    @if (!is_null($sub->invoice) || !empty($sub->receipt_url))
+                    @if (!empty($sub->akeebasubs_invoice_id) || !empty($sub->receipt_url))
                         <p>
                             @if (!empty($sub->receipt_url))
                                 <a class="akeeba-btn--grey--small"
@@ -348,7 +348,7 @@ $formatCurrency = function(float $price) use ($currencyPosition, $currencySymbol
                                 </a>
                             @endif
 
-                            @if (!is_null($sub->invoice))
+                            @if (!empty($sub->akeebasubs_invoice_id))
                                 <a class="akeeba-btn--small--grey--small"
                                    href="@route('index.php?option=com_akeebasubs&view=Invoice&task=read&id=' . $sub->getId() . '&tmpl=component')"
                                    target="_blank"
