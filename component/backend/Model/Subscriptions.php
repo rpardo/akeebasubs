@@ -169,7 +169,7 @@ class Subscriptions extends DataModel
 
 		if (!$this->getState('_dontCheckPaymentID', false))
 		{
-			$this->assertNotEmpty($this->processor_key, 'COM_AKEEBASUBS_SUBSCRIPTION_ERR_PROCESSOR_KEY');
+			//$this->assertNotEmpty($this->processor_key, 'COM_AKEEBASUBS_SUBSCRIPTION_ERR_PROCESSOR_KEY');
 		}
 
 		if (!in_array($this->payment_method, ['apple-pay', 'card', 'free', 'paypal', 'wire-transfer', 'unknown']))
