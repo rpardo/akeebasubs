@@ -247,16 +247,24 @@ class Subscribe extends Controller
 
 				// Store the payment URL to the database
 				$newSubscription->payment_url = $ret['url'];
+				$newSubscription->_dontCheckPaymentID = true;
 				$newSubscription->save();
 			}
 			catch (\Throwable $e)
 			{
 				$this->enqueueMessage($e->getMessage(), 'error');
 
+				$info = 'Server-side error';
+
+				if (defined('JDEBUG') && JDEBUG)
+				{
+					$info .= ' -- ' . $e->getMessage() . ' -- ' . $e->getFile() . ' :: ' . $e->getLine() . "\n\n" . $e->getTraceAsString();
+				}
+
 				echo json_encode([
 					'method' => 'redirect',
 					'url'    => null,
-					'info'   => 'Server-side error',
+					'info'   => $info,
 				]);
 
 				$this->container->platform->closeApplication();

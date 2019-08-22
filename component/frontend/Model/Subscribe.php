@@ -20,6 +20,7 @@ use FOF30\Model\DataModel\Exception\NoItemsFound;
 use FOF30\Model\DataModel\Exception\RecordNotLoaded;
 use FOF30\Model\Model;
 use FOF30\Utils\Ip;
+use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Environment\Browser as JBrowser;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
@@ -29,6 +30,7 @@ use Joomla\CMS\Log\Log as JLog;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\User as JUser;
+use Joomla\CMS\User\UserHelper;
 use JUserHelper;
 use RuntimeException;
 
@@ -220,19 +222,19 @@ class Subscribe extends Model
 	 *
 	 * @param   bool    $allowNewUser  When true, we can create a new user. False, only update an existing user's data.
 	 * @param   Levels  $level         The subscription level object
+	 * @param   User    $user          The user object to update
 	 *
-	 * @return  bool  True on success
+	 * @return  User|null Updated user object. Null on failure.
 	 */
-	public function updateUserInfo($allowNewUser = true, $level = null)
+	public function updateUserInfo($allowNewUser, ?Levels $level, ?User $user): ?User
 	{
 		$state = $this->getStateVariables();
-		$user = $this->container->platform->getUser();
-		$user = $this->getState('user', $user);
+		$user  = $user ?? $this->container->platform->getUser();
 
 		if (($user->id == 0) && !$allowNewUser)
 		{
 			// New user creation is not allowed. Sorry.
-			return false;
+			throw new RuntimeException('updateUserInfo: New user creation is not allowed');
 		}
 
 		if ($user->id == 0)
@@ -293,7 +295,7 @@ class Subscribe extends Model
 
 					// Remove $user2 and set $user to $user1 so that it gets updated
 					$jUser2 = $this->container->platform->getUser($user2->id);
-					$error = '';
+					$error  = '';
 
 					try
 					{
@@ -310,7 +312,7 @@ class Subscribe extends Model
 						$user2->delete($id2);
 					}
 
-					$user = $this->container->platform->getUser($user1->id);
+					$user        = $this->container->platform->getUser($user1->id);
 					$user->email = $state->email;
 					$user->save(true);
 				}
@@ -332,16 +334,16 @@ class Subscribe extends Model
 		if (is_null($user->id) || ($user->id == 0))
 		{
 			// CREATE A NEW USER
-			$params = array(
+			$params = [
 				'name'      => $state->name,
 				'username'  => $state->username,
 				'email'     => $state->email,
 				'password'  => $state->password,
 				'password2' => $state->password2,
-			);
+			];
 
-			// We have to use JUser directly instead of Factory getUser
-			$user = new JUser(0);
+			// We have to use User directly instead of Factory getUser
+			$user = new User(0);
 
 			$usersConfig = \JComponentHelper::getParams('com_users');
 			$newUsertype = $usersConfig->get('new_usertype');
@@ -352,22 +354,22 @@ class Subscribe extends Model
 				$newUsertype = 2;
 			}
 
-			$params['groups'] = array($newUsertype);
+			$params['groups'] = [$newUsertype];
 
 			$params['sendEmail'] = 0;
 
 			// Set the user's default language to whatever the site's current language is
-			$params['params'] = array(
+			$params['params'] = [
 				'language' => $this->container->platform->getConfig()->get('language'),
-			);
+			];
 
 			// We always block the user, so that only a successful payment or
 			// clicking on the email link activates his account. This is to
 			// prevent spam registrations when the subscription form is abused.
 			$params['block'] = 1;
 
-			$randomString = JUserHelper::genRandomPassword();
-			$hash = \JApplicationHelper::getHash($randomString);
+			$randomString         = UserHelper::genRandomPassword();
+			$hash                 = ApplicationHelper::getHash($randomString);
 			$params['activation'] = $hash;
 
 			$user->bind($params);
@@ -394,18 +396,18 @@ class Subscribe extends Model
 			try
 			{
 				// Delete an existing record
-				$db = $this->container->db;
+				$db    = $this->container->db;
 				$query = $db->getQuery(true)
 					->delete($db->quoteName('#__user_profiles'))
-					->where($db->quoteName('user_id') . ' = ' . (int)($user->id))
+					->where($db->quoteName('user_id') . ' = ' . (int) ($user->id))
 					->where($db->quoteName('profile_key') . ' = ' . $db->q('privacyconsent.privacy'));
 				$db->setQuery($query);
 				$db->execute();
 
 				// Insert a new record
 				$o = (object) [
-					'user_id' => $user->id,
-					'profile_key' => 'privacyconsent.privacy',
+					'user_id'       => $user->id,
+					'profile_key'   => 'privacyconsent.privacy',
 					'profile_value' => 1,
 				];
 				$db->insertObject('#__user_profiles', $o);
@@ -421,16 +423,16 @@ class Subscribe extends Model
 		 */
 		if ($userIsSaved && PluginHelper::isEnabled('system', 'privacyconsent') && class_exists('PlgSystemPrivacyconsent'))
 		{
-			$ip = Ip::getIp();
+			$ip        = Ip::getIp();
 			$userAgent = $this->input->server->get('HTTP_USER_AGENT', '', 'string');
 
 			// Create the user note
-			$userNote = (object) array(
+			$userNote = (object) [
 				'user_id' => $user->id,
 				'subject' => 'PLG_SYSTEM_PRIVACYCONSENT_SUBJECT',
 				'body'    => Text::sprintf('PLG_SYSTEM_PRIVACYCONSENT_BODY', $ip, $userAgent),
 				'created' => Factory::getDate()->toSql(),
-			);
+			];
 
 			try
 			{
@@ -451,7 +453,7 @@ class Subscribe extends Model
 				// Send the activation email
 				if (!isset($params))
 				{
-					$params = array();
+					$params = [];
 				}
 
 				$this->sendActivationEmail($user, $params);
@@ -460,14 +462,10 @@ class Subscribe extends Model
 
 		if (!$userIsSaved)
 		{
-			$this->setState('user', null);
-
-			return false;
+			throw new RuntimeException('updateUserInfo: Cannot save user with ID ' . $user->id);
 		}
 
-		$this->setState('user', $user);
-
-		return true;
+		return $user;
 	}
 
 	/**
@@ -557,24 +555,33 @@ class Subscribe extends Model
 		// Step #3. Create or update a user record
 		// ----------------------------------------------------------------------
 		$user = $this->container->platform->getUser();
-		$this->setState('user', $user);
-		$userIsSaved = $this->updateUserInfo(true, $level);
 
-		if (!$userIsSaved)
+		try
 		{
-			$this->logSubscriptionCreationFailure(sprintf('Cannot update user information for user ID %d', $user->id));
+			$user = $this->updateUserInfo(true, $level, $user);
+
+			$this->setState('user', $user);
+		}
+		catch (Exception $e)
+		{
+			$this->logSubscriptionCreationFailure(sprintf('Cannot update user information for user ID %d -- %s', $user->id, $e->getMessage()));
 
 			throw new RuntimeException(sprintf('Cannot update user information for user ID %d', $user->id));
 		}
-
-		$user = $this->getState('user', $user);
 
 		// Store the user's ID in the session
 		$this->container->platform->setSessionVar('subscribes.user_id', $user->id, 'com_akeebasubs');
 
 		// Step #3.b. Look for an existing unpaid subscription for the same level and user
 		// ----------------------------------------------------------------------
-		$existingSubscription = $this->findExistingUnpaidSubscription($user->id, $level->getId());
+		try
+		{
+			$existingSubscription = $this->findExistingUnpaidSubscription($user->id, $level->getId());
+		}
+		catch (Exception $e)
+		{
+			$existingSubscription = null;
+		}
 		$useExistingSubscription = false;
 
 		/**
@@ -1080,7 +1087,7 @@ class Subscribe extends Model
 		}
 
 		// Load the users plugin group.
-		\JPluginHelper::importPlugin('user');
+		PluginHelper::importPlugin('user');
 
 		// Store the data.
 		if (!$user->save())
@@ -1643,12 +1650,12 @@ TEXT;
 	 *
 	 * @since   7.0.0
 	 */
-	public function getRelatedSubscriptions($recurring = true): Collection
+	public function getRelatedSubscriptions($recurring, ?User $user = null): Collection
 	{
 		// Get the user I am interested in
 		/** @var User $user */
-		$user = $this->container->platform->getUser();
-		$user = $this->getState('user', $user);
+		$defaultUser = $this->getState('user', $this->container->platform->getUser());
+		$user = $user ?? $defaultUser;
 
 		// A guest user cannot have subscriptions so let's exit early
 		if ($user->guest)
