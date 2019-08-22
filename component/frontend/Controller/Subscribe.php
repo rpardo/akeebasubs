@@ -158,7 +158,8 @@ class Subscribe extends Controller
 		}
 		catch (\Exception $e)
 		{
-			$details         = $e->getCode() . ":" . $e->getMessage();
+			//$details         = $e->getCode() . ":" . $e->getMessage();
+			$details         = $e->getMessage();
 			$newSubscription = null;
 		}
 
@@ -171,7 +172,8 @@ class Subscribe extends Controller
 			$layout   = $this->input->getCmd('layout', 'default');
 
 
-			$msg = Text::sprintf('COM_AKEEBASUBS_LEVEL_ERR_VALIDATIONOVERALL_HELPCODE', $helpCode);
+			$msg = $details;
+			$msg .= Text::sprintf('COM_AKEEBASUBS_LEVEL_ERR_VALIDATIONOVERALL_HELPCODE', $helpCode);
 
 			$resetUrl = str_replace('&amp;', '&', \JRoute::_('index.php?option=com_akeebasubs&view=Level&layout=' . $layout . '&slug=' . $model->slug . '&reset=1'));
 			$msg      .= ' ' . Text::sprintf('COM_AKEEBASUBS_LEVEL_ERR_VALIDATIONOVERALL_RESET', $resetUrl);

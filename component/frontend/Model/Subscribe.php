@@ -463,7 +463,15 @@ class Subscribe extends Model
 
 		if (!$userIsSaved)
 		{
-			throw new RuntimeException('updateUserInfo: Cannot save user with ID ' . $user->id);
+			$error = 'updateUserInfo: Cannot save user with ID ' . $user->id;
+			$reason = $user->getError();
+
+			if (!empty($reason))
+			{
+				$error = $reason;
+			}
+
+			throw new RuntimeException($error);
 		}
 
 		return $user;
@@ -567,7 +575,7 @@ class Subscribe extends Model
 		{
 			$this->logSubscriptionCreationFailure(sprintf('Cannot update user information for user ID %d -- %s', $user->id, $e->getMessage()));
 
-			throw new RuntimeException(sprintf('Cannot update user information for user ID %d', $user->id));
+			throw new RuntimeException(sprintf($e->getMessage()));
 		}
 
 		// Store the user's ID in the session
