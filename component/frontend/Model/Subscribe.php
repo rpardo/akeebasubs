@@ -21,6 +21,7 @@ use FOF30\Model\DataModel\Exception\RecordNotLoaded;
 use FOF30\Model\Model;
 use FOF30\Utils\Ip;
 use Joomla\CMS\Application\ApplicationHelper;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Environment\Browser as JBrowser;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
@@ -345,7 +346,7 @@ class Subscribe extends Model
 			// We have to use User directly instead of Factory getUser
 			$user = new User(0);
 
-			$usersConfig = \JComponentHelper::getParams('com_users');
+			$usersConfig = ComponentHelper::getParams('com_users');
 			$newUsertype = $usersConfig->get('new_usertype');
 
 			// get the New User Group from com_users' settings
