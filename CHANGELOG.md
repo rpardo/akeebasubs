@@ -4,6 +4,7 @@
 
 * Bump minimum PHP version to 7.3.0.
 * Joomla 4 compatibility (preliminary work based on Joomla 4.0.0-beta10)
+* Give an option to disable emails (gh-388)
 
 **Remove features**
 

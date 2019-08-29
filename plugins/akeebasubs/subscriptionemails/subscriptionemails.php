@@ -7,6 +7,7 @@
 
 defined('_JEXEC') or die();
 
+use Akeeba\Subscriptions\Admin\Helper\Email;
 use \Akeeba\Subscriptions\Admin\Model\Subscriptions;
 use FOF30\Container\Container;
 
@@ -173,9 +174,9 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 
 		// Get a preloaded mailer
 		$key = 'plg_akeebasubs_' . $this->_name . '_' . $type;
-		$mailer = \Akeeba\Subscriptions\Admin\Helper\Email::getPreloadedMailer($row, $key);
+		$mailer = Email::getPreloadedMailer($row, $key);
 
-		if ($mailer === false)
+		if (is_null($mailer))
 		{
 			return false;
 		}

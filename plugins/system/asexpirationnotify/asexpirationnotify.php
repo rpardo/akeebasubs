@@ -7,6 +7,7 @@
 
 defined('_JEXEC') or die();
 
+use Akeeba\Subscriptions\Admin\Helper\Email;
 use FOF30\Container\Container;
 use Akeeba\Subscriptions\Admin\Model\Levels;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
@@ -476,9 +477,9 @@ class plgSystemAsexpirationnotify extends JPlugin
 
 		// Get a preloaded mailer
 		$key    = 'plg_system_' . $this->_name . '_' . $type;
-		$mailer = \Akeeba\Subscriptions\Admin\Helper\Email::getPreloadedMailer($row, $key);
+		$mailer = Email::getPreloadedMailer($row, $key);
 
-		if ($mailer === false)
+		if (is_null($mailer))
 		{
 			return false;
 		}
