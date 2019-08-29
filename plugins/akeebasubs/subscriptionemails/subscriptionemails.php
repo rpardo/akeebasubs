@@ -46,8 +46,14 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 			return;
 		}
 
-		// Did the payment status just change to C or P? It's a new subscription
-		if (array_key_exists('state', (array)$info['modified']) && in_array($payState, array('P', 'C')))
+		/**
+		 * Special consideration for recurring subscriptions. Only the expired subscription email is sent. Everything
+		 * else is handled by Paddle anyway.
+		 */
+		$isRecurring = !empty($row->cancel_url) && !empty($row->update_url);
+
+		// Did the payment status just change to C or P? It's a new subscription.
+		if (!$isRecurring && array_key_exists('state', (array)$info['modified']) && in_array($payState, array('P', 'C')))
 		{
 			if ($row->enabled)
 			{
@@ -76,13 +82,16 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 				$this->sendEmail($row, 'new_pending', $info);
 			}
 		}
-		elseif (array_key_exists('state', (array)$info['modified']) && ($payState == 'X'))
+		elseif (!$isRecurring && array_key_exists('state', (array)$info['modified']) && ($payState == 'X'))
 		{
 			// The payment just got refused
 			if (!is_object($info['previous']) || $info['previous']->getFieldValue('state') == 'N')
 			{
 				// A new subscription which could not be paid
-				$this->sendEmail($row, 'cancelled_new', $info);
+				if (!$isRecurring)
+				{
+					$this->sendEmail($row, 'cancelled_new', $info);
+				}
 			}
 			else
 			{
@@ -99,7 +108,8 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 			{
 				return;
 			}
-			elseif (array_key_exists('enabled', (array)$info['modified']) && !$row->enabled)
+
+			if (array_key_exists('enabled', (array)$info['modified']) && !$row->enabled)
 			{
 				// Disabled subscription, suppose expired
 				if (($payState == 'C'))
@@ -110,7 +120,7 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 			elseif (array_key_exists('enabled', (array)$info['modified']) && $row->enabled)
 			{
 				// Subscriptions just enabled, suppose date triggered
-				if (($payState == 'C'))
+				if (($payState == 'C') && !$isRecurring)
 				{
 					$this->sendEmail($row, 'published', $info);
 				}
@@ -120,7 +130,7 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 				// Only contact_flag change; ignore
 				return;
 			}
-			else
+			elseif (!$isRecurring)
 			{
 				// All other cases: generic email
 				$this->sendEmail($row, 'generic', $info);
