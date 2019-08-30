@@ -6,6 +6,7 @@
 * Joomla 4 compatibility (preliminary work based on Joomla 4.0.0-beta10)
 * Give an option to disable emails (gh-388)
 * Replace graphs with Charts.js (gh-386)
+* Implement Joomla! 4 routing (gh-301) 
 
 **Remove features**
 
