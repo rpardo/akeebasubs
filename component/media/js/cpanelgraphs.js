@@ -80,13 +80,7 @@ function akeebasubs_cpanel_graphs_load()
     // Remove the charts and show the spinners
     (function ($) {
         $("#aklevelschart").hide();
-
-        akeebasubs_cpanel_graph_plot2 = null;
-
         $("#aksaleschart").hide();
-
-        akeebasubs_cpanel_graph_plot1 = null;
-
         $("#akthrobber").show();
         $("#akthrobber2").show();
     })(akeeba.jQuery);
@@ -173,128 +167,116 @@ function akeebasubs_get_color(levelTitle)
 
 function akeebasubs_render_sales()
 {
-    (function ($) {
-		new Chart(document.getElementById("aksaleschart"),{
-			type: "bar",
-			data: {
-				datasets:[
-					{
-						label: "Sales",
-						data: akeebasubs_cpanel_graph_salesPoints,
-						borderColor: '#514F50',
-						fill: false,
-						yAxisID: 'y-axis-sales',
-						type: 'line'
-					},
-					{
-						label: "Subscriptions",
-						data: akeebasubs_cpanel_graph_subsPoints,
-						backgroundColor: '#40B5B8AA',
-						fill: true,
-						yAxisID: 'y-axis-subs'
-					}
-				]
-			},
-			options:{
-				legend: {
-					display: false
+	var chartOptions                           = {
+		type: "bar",
+		data: {
+			datasets:[
+				{
+					label: "Sales",
+					data: akeebasubs_cpanel_graph_salesPoints,
+					borderColor: '#514F50',
+					fill: false,
+					yAxisID: 'y-axis-sales',
+					type: 'line'
 				},
-				scales: {
-					xAxes: [{
-						type: 'time',
-						time: {
-							round: 'day',
-							tooltipFormat: 'll',
-							unit: 'day',
-							minUnit: 'day'
-						}
-					}],
-					yAxes: [{
-						id: "y-axis-subs",
-						position: 'left',
-						ticks: {
-							beginAtZero: true
-						}
-					}, {
-						id: "y-axis-sales",
-						position: 'right',
-						ticks: {
-							beginAtZero: true,
-							callback: function(value, index, values) {
-								return value + ' €';
-							}
-						},
-						gridLines: {
-							drawOnChartArea: false
-						}
-					}]
+				{
+					label: "Subscriptions",
+					data: akeebasubs_cpanel_graph_subsPoints,
+					backgroundColor: '#40B5B8AA',
+					fill: true,
+					yAxisID: 'y-axis-subs'
 				}
+			]
+		},
+		options:{
+			legend: {
+				display: false
+			},
+			scales: {
+				xAxes: [{
+					type: 'time',
+					time: {
+						round: 'day',
+						tooltipFormat: 'll',
+						unit: 'day',
+						minUnit: 'day'
+					}
+				}],
+				yAxes: [{
+					id: "y-axis-subs",
+					position: 'left',
+					ticks: {
+						beginAtZero: true
+					}
+				}, {
+					id: "y-axis-sales",
+					position: 'right',
+					ticks: {
+						beginAtZero: true,
+						callback: function(value, index, values) {
+							return value + ' €';
+						}
+					},
+					gridLines: {
+						drawOnChartArea: false
+					}
+				}]
 			}
-		});
-    })(akeeba.jQuery);
+		}
+	};
+
+	if (akeebasubs_cpanel_graph_plot1)
+	{
+		akeebasubs_cpanel_graph_plot1.destroy();
+		akeebasubs_cpanel_graph_plot1 = null;
+	}
+
+	akeebasubs_cpanel_graph_plot1 = new Chart(document.getElementById("aksaleschart"), chartOptions);
 }
 
 function akeebasubs_render_levels()
 {
-    (function ($) {
-		new Chart(document.getElementById("aklevelschart"),{
-			type: "pie",
-			data: {
-				datasets:[
-					{
-						label: "Sales",
-						data: akeebasubs_cpanel_graph_levelsPoints,
-						backgroundColor: akeebasubs_cpanel_graph_levelsColors
-					}
-				],
-				labels: akeebasubs_cpanel_graph_levelsLabels
+	var chartOptions                           = {
+		type: "pie",
+		data: {
+			datasets:[
+				{
+					label: "Sales",
+					data: akeebasubs_cpanel_graph_levelsPoints,
+					backgroundColor: akeebasubs_cpanel_graph_levelsColors
+				}
+			],
+			labels: akeebasubs_cpanel_graph_levelsLabels
+		},
+		options:{
+			responsive: true,
+			legend: {
+				display: true
 			},
-			options:{
-				responsive: true,
-				legend: {
-					display: true
-				},
-				tooltips: {
-					callbacks: {
-						label: function(tooltipItem, data) {
-							var label = data.labels[tooltipItem.index] || "";
+			tooltips: {
+				callbacks: {
+					label: function(tooltipItem, data) {
+						var label = data.labels[tooltipItem.index] || "";
 
-							if (label)
-							{
-								label += ": ";
-							}
-
-							label +=
-								Math.round(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] * 100) / 100;
-							return label + " €";
+						if (label)
+						{
+							label += ": ";
 						}
+
+						label +=
+							Math.round(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index] * 100) / 100;
+						return label + " €";
 					}
 				}
 			}
-		});
+		}
+	};
 
-		/**
-        $.jqplot.config.enablePlugins = true;
-        akeebasubs_cpanel_graph_plot2 = $.jqplot("aklevelschart", [akeebasubs_cpanel_graph_levelsPoints], {
-            show:           true,
-            highlighter:    {
-                show:              true,
-                formatString:      "%s: %0.2f",
-                tooltipLocation:   "sw",
-                useAxesFormatters: false
-            },
-            seriesDefaults: {
-                renderer:        jQuery.jqplot.PieRenderer,
-                rendererOptions: {
-                    showDataLabels: true,
-                    dataLabels:     "value"
-                },
-                markerOptions:   {
-                    style: "none"
-                }
-            },
-            legend:         {show: true, location: "e"}
-        }).replot();
-		/**/
-    })(akeeba.jQuery);
+	if (akeebasubs_cpanel_graph_plot2)
+	{
+		akeebasubs_cpanel_graph_plot2.destroy();
+		akeebasubs_cpanel_graph_plot2 = null;
+	}
+
+	akeebasubs_cpanel_graph_plot2 = new Chart(document.getElementById("aklevelschart"), chartOptions);
 }
