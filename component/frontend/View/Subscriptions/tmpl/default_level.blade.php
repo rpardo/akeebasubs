@@ -243,10 +243,10 @@ $formatCurrency = function(float $price) use ($currencyPosition, $currencySymbol
                     </span>
 
                     <span class="akeebasubs-subscription-purchase-date">
-                        @if ((int)substr($lastSub->created_on, 0, 4) < 1)
+                        @if ((int)substr($sub->created_on, 0, 4) < 1)
                             @lang('COM_AKEEBASUBS_SUBSCRIPTIONS_INVALIDCREATIONDATE')
                         @else
-                            {{ \Akeeba\Subscriptions\Admin\Helper\Format::date($lastSub->created_on) }}
+                            {{ \Akeeba\Subscriptions\Admin\Helper\Format::date($sub->created_on) }}
                         @endif
                     </span>
 
@@ -286,8 +286,8 @@ $formatCurrency = function(float $price) use ($currencyPosition, $currencySymbol
                         <p>
                             @sprintf(
                             'COM_AKEEBASUBS_SUBSCRIPTIONS_PUBLISHDATES_EXPIRED_ALL',
-                            \Akeeba\Subscriptions\Admin\Helper\Format::date($lastSub->publish_up),
-                            \Akeeba\Subscriptions\Admin\Helper\Format::date($lastSub->publish_down)
+                            \Akeeba\Subscriptions\Admin\Helper\Format::date($sub->publish_up),
+                            \Akeeba\Subscriptions\Admin\Helper\Format::date($sub->publish_down)
                             )
                         </p>
                     {{-- Renewal / upgrade / downgrade --}}
@@ -295,8 +295,8 @@ $formatCurrency = function(float $price) use ($currencyPosition, $currencySymbol
                         <p>
                             @sprintf(
                             'COM_AKEEBASUBS_SUBSCRIPTIONS_PUBLISHDATES_RENEWAL_ALL',
-                            \Akeeba\Subscriptions\Admin\Helper\Format::date($lastSub->publish_up),
-                            \Akeeba\Subscriptions\Admin\Helper\Format::date($lastSub->publish_down)
+                            \Akeeba\Subscriptions\Admin\Helper\Format::date($sub->publish_up),
+                            \Akeeba\Subscriptions\Admin\Helper\Format::date($sub->publish_down)
                             )
                         </p>
                     {{-- Active --}}
@@ -304,8 +304,8 @@ $formatCurrency = function(float $price) use ($currencyPosition, $currencySymbol
                         <p>
                             @sprintf(
                             'COM_AKEEBASUBS_SUBSCRIPTIONS_PUBLISHDATES_ACTIVE_ALL',
-                            \Akeeba\Subscriptions\Admin\Helper\Format::date($lastSub->publish_up),
-                            \Akeeba\Subscriptions\Admin\Helper\Format::date($lastSub->publish_down)
+                            \Akeeba\Subscriptions\Admin\Helper\Format::date($sub->publish_up),
+                            \Akeeba\Subscriptions\Admin\Helper\Format::date($sub->publish_down)
                             )
                         </p>
                     @endif
@@ -420,9 +420,9 @@ $formatCurrency = function(float $price) use ($currencyPosition, $currencySymbol
                 </span>
             @endif
             {{-- Created on --}}
-            {{ \Akeeba\Subscriptions\Admin\Helper\Format::date($lastSub->created_on) }}
-            {{ $lastSub->processor}}
-            {{ $lastSub->processor_key}}
+            {{ \Akeeba\Subscriptions\Admin\Helper\Format::date($sub->created_on) }}
+            {{ $sub->processor}}
+            {{ $sub->processor_key}}
         </li>
         -->
         @endforeach
