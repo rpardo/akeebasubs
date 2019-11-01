@@ -19,6 +19,7 @@
 * Wrong display in My Subscriptions page when you have not subscribed yet
 * Wrong dates in My Subscriptions page for older subscription records
 * Users were linking to a view that no longer exists. Now they point to their J! user profile.
+* The asprice content plugin did not respect the "Localise prices" component option.
 
 # 7.0.0
 
