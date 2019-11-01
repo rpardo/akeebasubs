@@ -91,7 +91,7 @@ function akeebasubs_cpanel_graphs_load()
 function akeebasubs_load_sales()
 {
     (function ($) {
-        var url = "index.php?option=com_akeebasubs&view=SubscriptionStatistics&since=" + akeebasubs_cpanel_graph_from + "&until=" + akeebasubs_cpanel_graph_to + "&groupbydate=1&paystate=C&nozero=1&savestate=0&format=json";
+        var url = "index.php?option=com_akeebasubs&view=SubscriptionStatistics&since=" + akeebasubs_cpanel_graph_from + "&until=" + akeebasubs_cpanel_graph_to + "&groupbydate=1&filter_order=date&paystate=C&nozero=1&savestate=0&format=json";
         if (akeebasubs_cpanel_graph_level > 0)
         {
             url += "&level=" + akeebasubs_cpanel_graph_level;
