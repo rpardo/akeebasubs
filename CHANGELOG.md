@@ -21,6 +21,7 @@
 * Users were linking to a view that no longer exists. Now they point to their J! user profile.
 * The asprice content plugin did not respect the "Localise prices" component option.
 * Sales Graph would show looped trend lines because the data wasn't sorted properly.
+* Subscription expiration emails were sent for recurring subscriptions
 
 # 7.0.0
 
