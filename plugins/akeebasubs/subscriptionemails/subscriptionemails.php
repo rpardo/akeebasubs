@@ -10,12 +10,17 @@ defined('_JEXEC') or die();
 use Akeeba\Subscriptions\Admin\Helper\Email;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 use FOF30\Container\Container;
+use FOF30\Date\Date;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log as JLog;
 
 /**
  * Sends notification emails to subscribers
  */
 class plgAkeebasubsSubscriptionemails extends JPlugin
 {
+	protected static $langStringPrefix = 'PLG_AKEEBASUBS_SUBSCRIPTIONEMAILS_EMAIL';
+
 	/**
 	 * Public constructor. Overridden to load the language strings.
 	 */
@@ -38,6 +43,8 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 	 */
 	public function onAKSubscriptionChange(Subscriptions $row, array $info)
 	{
+		JLog::addLogger(['text_file' => "akeebasubs_emails.php"], JLog::ALL, ['akeebasubs.emails']);
+
 		$payState              = $row->getFieldValue('state', 'N');
 		$hasModifiedInfo       = isset($info['modified']) && !is_null($info['modified']);
 		$hasPreviousInfo       = is_object($info['previous']);
@@ -98,7 +105,6 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 			// Active, now Completed, previously Pending: A pending subscription just got paid
 			if ($isCurrentlyActive && $wasPreviouslyPending)
 			{
-				// Send the new, paid subscription email
 				$this->sendEmail($row, 'paid', $info);
 
 				return;
@@ -107,8 +113,7 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 			// Active, now Completed, previously New or Canceled: A new subscriptions just got paid
 			if ($isCurrentlyActive && !$wasPreviouslyPending)
 			{
-				// Send the new, paid subscription email
-				$this->sendEmail($row, 'paid', $info);
+				$this->sendEmail($row, 'new_active', $info);
 
 				return;
 			}
@@ -289,7 +294,7 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 	 *
 	 * @return bool
 	 */
-	protected function sendEmail($row, $type = '', array $info = [])
+	protected function sendEmail(Subscriptions $row, $type = '', array $info = [])
 	{
 		// Get the user object
 		$container = Container::getInstance('com_akeebasubs');
@@ -308,6 +313,70 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 		$result = $mailer->Send();
 		$mailer = null;
 
+		// Log the email we just sent
+		$this->logEmail($row, $type);
+
 		return $result;
+	}
+
+	protected function logEmail(Subscriptions $row, $type = '')
+	{
+		$container = Container::getInstance('com_akeebasubs');
+
+		/** @var \Akeeba\Subscriptions\Admin\Model\JoomlaUsers $user */
+		$user = $row->juser ?? $container->factory->model('JoomlaUsers')->tmpInstance()->load($row->user_id);
+		/** @var \Akeeba\Subscriptions\Admin\Model\Levels $level */
+		$level = $row->level ?? $container->factory->model('Levels')->tmpInstance()->load($row->akeebasubs_level_id);
+
+		// Is this a recurring or one-time subscription?
+		$isRecurring   = !empty($row->update_url) && !empty($row->cancel_url);
+		$recurringText = $isRecurring ? 'recurring' : 'one-time';
+
+		// Get a human readable payment state
+		$payState        = $row->getFieldValue('state');
+		$payStateToHuman = [
+			'N' => 'New',
+			'P' => 'Pending',
+			'C' => 'Completed',
+			'X' => 'Canceled',
+		];
+		$payStateHuman   = $payStateToHuman[$payState];
+
+		// Add cancellation reason for canceled subscriptions
+		if ($payState == 'X')
+		{
+			$payStateHuman .= sprintf(' (%s)', $row->cancellation_reason);
+
+			if ($row->cancellation_reason == 'past_due')
+			{
+				$recurringText = 'recurring';
+			}
+		}
+
+		// Create the log entry text
+		$logEntry = sprintf(
+			'%s (%s) to %s <%s> (%s) for %s #%05u %s -- %s %s to %s -- Contact Flag %d',
+			$type,
+			Text::_(sprintf("%s_%s", self::$langStringPrefix, $type)),
+			$user->username,
+			$user->email,
+			$user->name,
+			$payStateHuman,
+			$row->akeebasubs_subscription_id,
+			$level->title,
+			$recurringText,
+			Date::getInstance($row->publish_up)->format('Y-m-d H:i:s T'),
+			Date::getInstance($row->publish_down)->format('Y-m-d H:i:s T'),
+			$row->contact_flag
+		);
+
+		// If there has been a transaction recorded append it to the log entry
+		if ($payState != 'N')
+		{
+			$logEntry .= sprintf(' -- %s payment key %s', ucfirst($row->processor), $row->processor_key);
+		}
+
+		// Write the log entry
+		JLog::add($logEntry, JLog::INFO, 'akeebasubs.emails');
 	}
 }

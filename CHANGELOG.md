@@ -1,5 +1,9 @@
 # 7.0.1
 
+**New features**
+
+* Subscription emails and expiration notification plugins log all the emails they send in a common log and format.
+
 **Miscellaneous changes**
 
 * Bump minimum PHP version to 7.3.0.

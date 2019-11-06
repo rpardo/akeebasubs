@@ -13,11 +13,14 @@ use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 use FOF30\Container\Container;
 use FOF30\Date\Date;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 
 class plgSystemAsexpirationnotify extends CMSPlugin
 {
+	protected static $langStringPrefix = 'PLG_SYSTEM_ASEXPIRATIONNOTIFY';
+
 	/**
 	 * Should this plugin be allowed to run? True if FOF can be loaded and the Akeeba Subscriptions component is enabled
 	 *
@@ -75,6 +78,8 @@ class plgSystemAsexpirationnotify extends CMSPlugin
 		{
 			return;
 		}
+
+		Log::addLogger(['text_file' => "akeebasubs_emails.php"], Log::ALL, ['akeebasubs.emails']);
 
 		$defaultOptions = array(
 			'time_limit' => 2,
@@ -481,6 +486,71 @@ class plgSystemAsexpirationnotify extends CMSPlugin
 		$result = $mailer->Send();
 		$mailer = null;
 
+		// Log the email we just sent
+		$this->logEmail($row, $type);
+
 		return $result;
 	}
+
+	protected function logEmail(Subscriptions $row, $type = '')
+	{
+		$container = Container::getInstance('com_akeebasubs');
+
+		/** @var \Akeeba\Subscriptions\Admin\Model\JoomlaUsers $user */
+		$user = $row->juser ?? $container->factory->model('JoomlaUsers')->tmpInstance()->load($row->user_id);
+		/** @var \Akeeba\Subscriptions\Admin\Model\Levels $level */
+		$level = $row->level ?? $container->factory->model('Levels')->tmpInstance()->load($row->akeebasubs_level_id);
+
+		// Is this a recurring or one-time subscription?
+		$isRecurring   = !empty($row->update_url) && !empty($row->cancel_url);
+		$recurringText = $isRecurring ? 'recurring' : 'one-time';
+
+		// Get a human readable payment state
+		$payState        = $row->getFieldValue('state');
+		$payStateToHuman = [
+			'N' => 'New',
+			'P' => 'Pending',
+			'C' => 'Completed',
+			'X' => 'Canceled',
+		];
+		$payStateHuman   = $payStateToHuman[$payState];
+
+		// Add cancellation reason for canceled subscriptions
+		if ($payState == 'X')
+		{
+			$payStateHuman .= sprintf(' (%s)', $row->cancellation_reason);
+
+			if ($row->cancellation_reason == 'past_due')
+			{
+				$recurringText = 'recurring';
+			}
+		}
+
+		// Create the log entry text
+		$logEntry = sprintf(
+			'Expiration %s (%s) to %s <%s> (%s) for %s #%05u %s -- %s %s to %s -- Contact Flag %d',
+			$type,
+			Text::_(sprintf("%s_%s", self::$langStringPrefix, $type)),
+			$user->username,
+			$user->email,
+			$user->name,
+			$payStateHuman,
+			$row->akeebasubs_subscription_id,
+			$level->title,
+			$recurringText,
+			Date::getInstance($row->publish_up)->format('Y-m-d H:i:s T'),
+			Date::getInstance($row->publish_down)->format('Y-m-d H:i:s T'),
+			$row->contact_flag
+		);
+
+		// If there has been a transaction recorded append it to the log entry
+		if ($payState != 'N')
+		{
+			$logEntry .= sprintf(' -- %s payment key %s', ucfirst($row->processor), $row->processor_key);
+		}
+
+		// Write the log entry
+		JLog::add($logEntry, JLog::INFO, 'akeebasubs.emails');
+	}
+
 }
