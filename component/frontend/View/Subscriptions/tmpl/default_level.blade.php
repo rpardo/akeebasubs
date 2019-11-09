@@ -33,14 +33,28 @@ if ($allSubs->isEmpty())
     return;
 }
 
+$lastFortniteTimestamp = (new \FOF30\Date\Date())->sub(new DateInterval('P2W'))->getTimestamp();
+
 /** @var Subscriptions|null $unpaidSub */
 $unpaidSub = (clone $allSubs)->filter(function (Subscriptions $sub) {
 	return $sub->status == 'new';
+})->filter(function (Subscriptions $sub) use ($lastFortniteTimestamp) {
+	try {
+		return (new FOF30\Date\Date($sub->created_on))->getTimestamp() >= $lastFortniteTimestamp;
+    } catch (Exception $e) {
+		return false;
+    }
 })->first();
 
 /** @var Subscriptions|null $pendingSub */
 $pendingSub = (clone $allSubs)->filter(function (Subscriptions $sub) {
 	return $sub->status == 'pending';
+})->filter(function (Subscriptions $sub) use ($lastFortniteTimestamp) {
+	try {
+		return (new FOF30\Date\Date($sub->created_on))->getTimestamp() >= $lastFortniteTimestamp;
+	} catch (Exception $e) {
+		return false;
+	}
 })->first();
 
 $statusToColor = function(string $status): string {

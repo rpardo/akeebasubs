@@ -27,6 +27,7 @@
 * Sales Graph would show looped trend lines because the data wasn't sorted properly.
 * Subscription expiration emails were sent for recurring subscriptions
 * Hard failure (will no longer retry recurring payment) should cancel the subscription on our site, not just mark it expired.
+* You couldn't renew if there was a pending transaction (unpaid subscription) ever, even ten years ago. Corrected to one fortnight only.
 
 # 7.0.0
 
