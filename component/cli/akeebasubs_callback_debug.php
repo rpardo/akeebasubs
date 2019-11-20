@@ -5,21 +5,21 @@
  * @license   GNU General Public License version 3, or later
  */
 
-// Define ourselves as a parent file
-define('_JEXEC', 1);
-define('JDEBUG', 1);
-
 use Akeeba\Subscriptions\Site\Model\Subscriptions;
 use FOF30\Container\Container;
 use FOF30\Date\Date;
-use Joomla\CMS\Application\CliApplication;
 use Joomla\CMS\Crypt\Crypt;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Input\Cli;
 
+// Enable Joomla's debug mode
+define('JDEBUG', 1);
+
 // Boilerplate -- START
+define('_JEXEC', 1);
+
 foreach ([__DIR__, getcwd()] as $curdir)
 {
 	if (file_exists($curdir . '/defines.php'))
