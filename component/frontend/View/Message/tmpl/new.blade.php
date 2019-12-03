@@ -49,6 +49,23 @@ JS;
 	</h4>
 
 	<h5>
+		<a href="javascript:akeebasubsToggleHelp('accidentalcancel')">
+			@lang('COM_AKEEBASUBS_MESSAGE_NEW_HELP_ACCIDENTALCANCEL_HEAD')
+		</a>
+	</h5>
+	<div id="accidentalcancel" style="display: none;">
+		<p>
+			@lang('COM_AKEEBASUBS_MESSAGE_NEW_HELP_ACCIDENTALCANCEL_BODY_P1')
+		</p>
+		<a class="akeeba-btn--primary"
+		   href="javascript:Paddle.Checkout.open({override: '{{ $this->subscription->payment_url }}', successCallback: 'akeebasubsCheckoutComplete', closeCallback: 'akeebasubsCheckoutClosed', eventCallback: 'akeebasubsCheckoutEvent'});">
+			<span class="akion-card"></span>
+			@lang('COM_AKEEBASUBS_SUBSCRIPTIONS_BTN_COMPLETEPAYMENT')
+		</a>
+
+	</div>
+
+	<h5>
 		<a href="javascript:akeebasubsToggleHelp('changecountry')">
 			@lang('COM_AKEEBASUBS_MESSAGE_NEW_HELP_CHANGECOUNTRY_HEAD')
 		</a>
@@ -85,6 +102,11 @@ JS;
 		<p>
 			@lang('COM_AKEEBASUBS_MESSAGE_NEW_HELP_PAYMETHOD_BODY_P1')
 		</p>
+		<a class="akeeba-btn--primary"
+		   href="javascript:Paddle.Checkout.open({override: '{{ $this->subscription->payment_url }}', successCallback: 'akeebasubsCheckoutComplete', closeCallback: 'akeebasubsCheckoutClosed', eventCallback: 'akeebasubsCheckoutEvent'});">
+			<span class="akion-card"></span>
+			@lang('COM_AKEEBASUBS_SUBSCRIPTIONS_BTN_COMPLETEPAYMENT')
+		</a>
 		<p>
 			@lang('COM_AKEEBASUBS_MESSAGE_NEW_HELP_PAYMETHOD_BODY_P2')
 		</p>

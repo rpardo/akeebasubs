@@ -11,6 +11,7 @@
 * Give an option to disable emails (gh-388)
 * Replace graphs with Charts.js (gh-386)
 * Implement Joomla! 4 routing (gh-301) 
+* Unpaid subscription page: update messages, provide support when people accidentally closed the payment popup
 
 **Remove features**
 
