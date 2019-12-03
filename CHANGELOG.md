@@ -1,3 +1,9 @@
+# 7.0.2
+
+**Bug fixes**
+
+* Early recurring renewal would still charge you for the trial period 
+
 # 7.0.1
 
 **New features**

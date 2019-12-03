@@ -51,9 +51,9 @@ class CustomCheckout
 	 *
 	 * @return  string
 	 *
+	 * @throws  RuntimeException
 	 * @since   7.0.0
 	 *
-	 * @throws  RuntimeException
 	 */
 	public function getCheckoutUrl(Subscriptions $sub): string
 	{
@@ -104,30 +104,27 @@ class CustomCheckout
 			unset($fields['discountable']);
 
 			/**
-			 * If the initial price is zero (or not overridden), we have to unset the custom initial pricing field. This
-			 * is due to Paddle's web UI always setting the initial price to 0.00 when you edit a subscription plan,
-			 * i.e. leaving the value empty always results in a zero initial payment.
+			 * Explicitly pass the custom initial period price and length by default.
 			 */
-			if (is_null($initial_price) || ($initial_price < 0.01))
-			{
-				unset($fields['prices']);
-			}
-			/**
-			 * When we have a non-zero initial price we need to send it to Paddle explicitly.
-			 */
-			else
-			{
-				$fields['prices'] = [
-					$this->container->params->get('currency') . ':' . sprintf('%0.2f', $initial_price),
-				];
-			}
+			$fields['prices']     = [
+				$this->container->params->get('currency') . ':' . sprintf('%0.2f', $initial_price),
+			];
+			$fields['trial_days'] = $trial_days;
 
 			/**
-			 * If we have a trial_days override we need to pass that along to Paddle.
+			 * Do we a trial period override?
 			 */
-			if (!is_null($trial_days) && ($trial_days > 0))
+			$noTrial = is_null($trial_days) || ($trial_days <= 0);
+
+			/**
+			 * If we have a zero/unset trial period we need to unset this is a new recurring subscription as the
+			 * result of a recurring access coupon code. Unset both overrides, otherwise we are giving away a free
+			 * subscription.
+			 */
+			if ($noTrial)
 			{
-				$fields['trial_days'] = $trial_days;
+				unset($fields['prices']);
+				unset($fields['trial_days']);
 			}
 		}
 		else
@@ -190,10 +187,10 @@ class CustomCheckout
 
 	private function getCountry(User $user): ?string
 	{
-		$db = $this->container->db;
+		$db    = $this->container->db;
 		$query = $db->getQuery(true)
 			->select([
-				$db->qn('profile_value')
+				$db->qn('profile_value'),
 			])->from($db->qn('#__user_profiles'))
 			->where($db->qn('user_id') . ' = ' . $db->q($user->id))
 			->where($db->qn('profile_key') . ' = ' . $db->q('akeebasubs.country'));
