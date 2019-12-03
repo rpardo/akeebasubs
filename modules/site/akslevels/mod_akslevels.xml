@@ -12,8 +12,8 @@
     <license>GNU GPLv3 - http://www.gnu.org/licenses/gpl.html</license>
     <authorEmail>nicholas@akeebabackup.com</authorEmail>
     <authorUrl>www.akeebabackup.com</authorUrl>
-    <creationDate>2019-07-22</creationDate>
-    <version>7.0.0</version>
+    <creationDate>2019-12-03</creationDate>
+    <version>7.0.1</version>
     <description>MOD_AKSLEVELS_DESCRIPTION</description>
     <files>
         <file module="mod_akslevels">mod_akslevels.php</file>

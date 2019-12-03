@@ -12,8 +12,8 @@
     <authorUrl>http://www.akeebabackup.com</authorUrl>
     <copyright>Copyright (c)2010-2019 Nicholas K. Dionysopoulos</copyright>
     <license>GNU General Public License version 3, or later</license>
-    <creationDate>2019-07-22</creationDate>
-    <version>7.0.0</version>
+    <creationDate>2019-12-03</creationDate>
+    <version>7.0.1</version>
     <description>PLG_AKEEBASUBS_CONTENTPUBLISH_DESCRIPTION</description>
     <files>
         <filename plugin="contentpublish">contentpublish.php</filename>
