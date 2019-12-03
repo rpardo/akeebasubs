@@ -244,7 +244,7 @@ $formatCurrency = function(float $price) use ($currencyPosition, $currencySymbol
                 @lang('COM_AKEEBASUBS_SUBSCRIPTIONS_ACTION_HISTORY_SHOW_HIDE')
             </button>
         </h4>
-        <div id="akeebasubs_my_subscriptions_level_{{ $level->slug }}" style="display: none;">
+        <div id="akeebasubs_my_subscriptions_level_{{ $level->slug }}">
         @foreach ($allSubs as $sub)
         <?php /** @var Subscriptions $sub */ ?>
             {{-- TRANSACTION DISPLAY --}}
