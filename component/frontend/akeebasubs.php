@@ -13,4 +13,16 @@ if (!defined('FOF30_INCLUDED') && !@include_once(JPATH_LIBRARIES . '/fof30/inclu
 	throw new RuntimeException('FOF 3.0 is not installed', 500);
 }
 
+// PHP version check
+define('AKEEBA_COMMON_WRONGPHP', 1);
+$minPHPVersion         = '7.3.0';
+$recommendedPHPVersion = '7.3';
+$softwareName          = 'Akeeba Subscriptions';
+$silentResults         = true;
+
+if (require_once(JPATH_COMPONENT_ADMINISTRATOR . '/ViewTemplates/ErrorPages/wrongphp.php'))
+{
+	return;
+}
+
 FOF30\Container\Container::getInstance('com_akeebasubs')->dispatcher->dispatch();

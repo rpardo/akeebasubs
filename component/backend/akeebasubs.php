@@ -8,10 +8,14 @@
 // Protect from unauthorized access
 defined('_JEXEC') or die();
 
-if (version_compare(PHP_VERSION, '7.3.0', 'lt'))
-{
-	(include_once __DIR__ . '/ViewTemplates/ErrorPages/wrongphp.php') or die('Your PHP version is too old for this component.');
+// PHP version check
+define('AKEEBA_COMMON_WRONGPHP', 1);
+$minPHPVersion         = '7.3.0';
+$recommendedPHPVersion = '7.3';
+$softwareName          = 'Akeeba Subscriptions';
 
+if (!require_once(__DIR__ . '/ViewTemplates/ErrorPages/wrongphp.php'))
+{
 	return;
 }
 
@@ -75,7 +79,9 @@ function mainLoopAkeebaSubscriptions()
 	}
 
 	FOF30\Container\Container::getInstance('com_akeebasubs')->dispatcher->dispatch();
-};
+}
+
+;
 
 function errorHandlerAkeebaSubscriptions($e)
 {
