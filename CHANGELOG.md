@@ -1,5 +1,9 @@
 # 7.0.2
 
+**New features**
+
+* Common PHP version warning scripts
+
 **Bug fixes**
 
 * Early recurring renewal would still charge you for the trial period 
