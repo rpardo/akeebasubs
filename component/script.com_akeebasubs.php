@@ -201,6 +201,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'media/com_akeebasubs/js/autosubmit.js',
 
 			// Replaced jqPlot with Charts.js
+			'media/com_akeebasubs/css/jquery.jqplot.min.css',
 			'media/com_akeebasubs/js/excanvas.min.js',
 			'media/com_akeebasubs/js/jqplot.barRenderer.min.js',
 			'media/com_akeebasubs/js/jqplot.canvasAxisLabelRenderer.min.js',
