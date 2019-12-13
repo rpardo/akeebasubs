@@ -16,7 +16,9 @@ class Dispatcher extends \FOF30\Dispatcher\Dispatcher
 
 	public function onBeforeDispatch()
 	{
-		if (!@include_once(JPATH_ADMINISTRATOR . '/components/com_akeebasubs/version.php'))
+		@include_once(JPATH_ADMINISTRATOR . '/components/com_akeebasubs/version.php');
+
+		if (!defined('AKEEBASUBS_VERSION'))
 		{
 			define('AKEEBASUBS_VERSION', 'dev');
 			define('AKEEBASUBS_DATE', date('Y-m-d'));
