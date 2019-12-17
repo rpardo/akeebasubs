@@ -20,7 +20,7 @@ $recommendedPHPVersion = '7.3';
 $softwareName          = 'Akeeba Subscriptions';
 $silentResults         = true;
 
-if (require_once(JPATH_COMPONENT_ADMINISTRATOR . '/ViewTemplates/ErrorPages/wrongphp.php'))
+if (!require_once(JPATH_COMPONENT_ADMINISTRATOR . '/ViewTemplates/ErrorPages/wrongphp.php'))
 {
 	return;
 }
