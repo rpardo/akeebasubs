@@ -1,0 +1,61 @@
+/*
+ * @package   AkeebaSubs
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
+ */
+/*
+ * @package   AkeebaSubs
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
+ */
+@media (prefers-color-scheme: dark) {
+  #akeebasubs #akeebasubs-panel-yourorder .akeebasubs-subscription-level {
+    background-color: #6b686a;
+    color: #62c6c9;
+  }
+  #akeebasubs #akeebasubs-panel-yourorder .akeebasubs-subscription-level div.akeebasubs-subscription-level-inner-container h5 {
+    color: #EFEFEF;
+  }
+  #akeebasubs #akeebasubs-panel-yourorder-info {
+    background-color: #6b686a;
+    color: #EFEFEF;
+  }
+  #akeebasubs div.akeebasubs-notices {
+    font-size: 80%;
+    color: #ffffff;
+  }
+  #akeebasubs .akeebasubs-awesome {
+    background: #787576 !important;
+    color: #EFEFEF;
+  }
+  #akeebasubs .akeebasubs-awesome .columns {
+    border: 1px solid #858183;
+  }
+  #akeebasubs div.akeebasubs-awesome-column {
+    background-color: #5e5c5d;
+  }
+  #akeebasubs div.akeebasubs-awesome-column div.akeebasubs-awesome-header {
+    background-color: #858183;
+  }
+  #akeebasubs div.akeebasubs-awesome-column div.akeebasubs-awesome-header div.akeebasubs-awesome-level {
+    background-color: #514F50;
+  }
+  #akeebasubs div.akeebasubs-awesome-column:hover {
+    box-shadow: 0 0 10px #bcbcbc;
+  }
+  #akeebasubs .column-first {
+    border-right: 2px solid #bcbcbc;
+  }
+  #akeebasubs .column-middle {
+    border-right: 2px solid #bcbcbc;
+  }
+  #akeebasubs .akeebasubs-awesome-prediscount {
+    color: #c81d23;
+    text-shadow: #ffffff 0 0 2px;
+  }
+  #akeebasubs .akeebasubs-awesome-taxnotice {
+    color: #aad074;
+    text-shadow: black 0 0 1px;
+  }
+}
+/*# sourceMappingURL=frontend_dark.css.map */

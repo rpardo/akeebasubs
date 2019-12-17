@@ -1,0 +1,86 @@
+/*
+ * @package   AkeebaSubs
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
+ */
+
+@import "frontend/variables";
+
+@media (prefers-color-scheme: dark) {
+  #akeebasubs {
+
+    // region Level
+    #akeebasubs-panel-yourorder {
+      .akeebasubs-subscription-level {
+        background-color: lighten(@grey, 10%);
+        color: lighten(@teal, 10%);
+
+        div.akeebasubs-subscription-level-inner-container {
+          h5 {
+            color: @light-grey;
+          }
+        }
+      }
+    }
+
+    #akeebasubs-panel-yourorder-info {
+      background-color: lighten(@grey, 10%);
+      color: @light-grey;
+    }
+
+    //endregion
+
+    // region Levels
+    div.akeebasubs-notices {
+      font-size: 80%;
+      color: lighten(@light-grey, 10%);
+    }
+
+    .akeebasubs-awesome {
+      background: lighten(@grey, 15%) !important;
+      color: @light-grey;
+
+      .columns {
+        border: 1px solid lighten(@grey, 20%);
+      }
+    }
+
+    div.akeebasubs-awesome-column {
+      background-color: lighten(@grey, 5%);
+
+      div.akeebasubs-awesome-header {
+        background-color: lighten(@grey, 20%);
+
+        div.akeebasubs-awesome-level {
+          background-color: @grey;
+        }
+      }
+
+      &:hover {
+        box-shadow: 0 0 10px darken(@light-grey, 20%);
+      }
+    }
+
+    .column-first {
+      border-right: 2px solid darken(@light-grey, 20%);
+    }
+
+    .column-middle {
+      border-right: 2px solid darken(@light-grey, 20%);
+    }
+
+    .akeebasubs-awesome-prediscount {
+      color: darken(@red, 10%);
+      text-shadow: @white 0 0 2px;
+
+    }
+
+    .akeebasubs-awesome-taxnotice {
+      color: lighten(@green, 10%);
+      text-shadow: black 0 0 1px;
+    }
+    // endregion
+
+
+  }
+}
