@@ -1,0 +1,79 @@
+/*
+ * @package   AkeebaSubs
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
+ */
+/*
+ * @package   AkeebaSubs
+ * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
+ */
+.akeebasubs-subscription-netamount {
+  color: #c1dd9a;
+}
+.akeebasubs-subscription-discountamount {
+  font-weight: bold;
+  color: #e86367;
+}
+.akeebasubs-subscription-taxamount {
+  color: #88d4d6;
+}
+.akeebasubs-subscription-grossamount {
+  color: #EFEFEF;
+  border-top: thin solid #bcbcbc;
+}
+.akeeba-renderer-fef table[class*=akeeba-table][class*=striped] tbody > tr.expired {
+  background: #420a0c;
+}
+.akeeba-renderer-fef table[class*=akeeba-table][class*=striped] tbody > tr.pending-renewal {
+  background: #263411;
+}
+.akeeba-renderer-fef table[class*=akeeba-table][class*=striped] tbody > tr.new {
+  background: #694109;
+}
+.akeeba-renderer-fef table[class*=akeeba-table][class*=striped] tbody > tr.canceled {
+  background: #898989;
+}
+.akeeba-renderer-fef table[class*=akeeba-table][class*=striped] tbody > tr:nth-child(2n+1).expired {
+  background: #590d0f;
+}
+.akeeba-renderer-fef table[class*=akeeba-table][class*=striped] tbody > tr:nth-child(2n+1).pending-renewal {
+  background: #334718;
+}
+.akeeba-renderer-fef table[class*=akeeba-table][class*=striped] tbody > tr:nth-child(2n+1).new {
+  background: #81500b;
+}
+.akeeba-renderer-fef table[class*=akeeba-table][class*=striped] tbody > tr:nth-child(2n+1).canceled {
+  background: #969696;
+}
+.akeebasubs-coupon-discount-value {
+  color: #f5bcbe;
+}
+.akeebasubs-coupon-discount-percent {
+  color: #88d4d6;
+}
+.akeebasubs-coupon-discount-lastpercent {
+  color: #F0AD4E;
+}
+.akeebasubs-susbcription-publishup {
+  color: #d6d6d6;
+}
+.akeebasubs-susbcription-publishdown {
+  color: #ffffff;
+}
+.akeebasubs-subscription-discount-coupon {
+  color: #c1dd9a;
+}
+.akeebasubs-subscription-discount-upgrade {
+  color: #F0AD4E;
+}
+.akeebasubs-subscription-discount-none {
+  color: #EFEFEF;
+}
+.akeebasubs-subscription-processor {
+  color: #88d4d6;
+}
+.akeebasubs-subscription-ua {
+  color: #88d4d6;
+}
+/*# sourceMappingURL=backend_dark.css.map */
