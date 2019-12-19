@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" serverName="MyOldSite" filePermissions="420" folderPermissions="493">
+    <serverData>
+      <paths name="ABCOM live">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/administrator/components/com_akeebasubs" local="$PROJECT_DIR$/component/backend" web="/administrator/components/com_akeebasubs" />
+            <mapping deploy="/components/com_akeebasubs" local="$PROJECT_DIR$/component/frontend" web="/components/com_akeebasubs" />
+            <mapping deploy="/media/com_akeebasubs" local="$PROJECT_DIR$/component/media" web="/media/com_akeebasubs" />
+            <mapping deploy="/modules/mod_akmysubs" local="$PROJECT_DIR$/modules/site/akmysubs" web="/modules/mod_akmysubs" />
+            <mapping deploy="/modules/mod_aksexpires" local="$PROJECT_DIR$/modules/site/aksexpires" web="/modules/mod_aksexpires" />
+            <mapping deploy="/modules/mod_akslevels" local="$PROJECT_DIR$/modules/site/akslevels" web="/modules/mod_akslevels" />
+            <mapping deploy="/modules/mod_aksubslist" local="$PROJECT_DIR$/modules/site/aksubslist" web="/modules/mod_aksubslist" />
+            <mapping deploy="/plugins/akeebasubs/adminemails" local="$PROJECT_DIR$/plugins/akeebasubs/adminemails" web="/plugins/akeebasubs/adminemails" />
+            <mapping deploy="/plugins/akeebasubs/atscredits" local="$PROJECT_DIR$/plugins/akeebasubs/atscredits" web="/plugins/akeebasubs/atscredits" />
+            <mapping deploy="/plugins/akeebasubs/contentpublish" local="$PROJECT_DIR$/plugins/akeebasubs/contentpublish" web="/plugins/akeebasubs/contentpublish" />
+            <mapping deploy="/plugins/akeebasubs/joomla" local="$PROJECT_DIR$/plugins/akeebasubs/joomla" web="/plugins/akeebasubs/joomla" />
+            <mapping deploy="/plugins/akeebasubs/subscriptionemails" local="$PROJECT_DIR$/plugins/akeebasubs/subscriptionemails" web="/plugins/akeebasubs/subscriptionemails" />
+            <mapping deploy="/plugins/content/aslink" local="$PROJECT_DIR$/plugins/content/aslink" web="/plugins/content/aslink" />
+            <mapping deploy="/plugins/content/asprice" local="$PROJECT_DIR$/plugins/content/asprice" web="/plugins/content/asprice" />
+            <mapping deploy="/plugins/content/asrestricted" local="$PROJECT_DIR$/plugins/content/asrestricted" web="/plugins/content/asrestricted" />
+            <mapping deploy="/plugins/content/astimedrelease" local="$PROJECT_DIR$/plugins/content/astimedrelease" web="/plugins/content/astimedrelease" />
+            <mapping deploy="/plugins/system/asexpirationcontrol" local="$PROJECT_DIR$/plugins/system/asexpirationcontrol" web="/plugins/system/asexpirationcontrol" />
+            <mapping deploy="/plugins/system/asexpirationnotify" local="$PROJECT_DIR$/plugins/system/asexpirationnotify" web="/plugins/system/asexpirationnotify" />
+            <mapping deploy="/plugins/system/asfixrenewalsflag" local="$PROJECT_DIR$/plugins/system/asfixrenewalsflag" web="/plugins/system/asfixrenewalsflag" />
+            <mapping deploy="/plugins/system/asuserregredir" local="$PROJECT_DIR$/plugins/system/asuserregredir" web="/plugins/system/asuserregredir" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="MyOldSite">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/administrator/components/com_akeebasubs" local="$PROJECT_DIR$/component/backend" web="/administrator/components/com_akeebasubs" />
+            <mapping deploy="/components/com_akeebasubs" local="$PROJECT_DIR$/component/frontend" web="/components/com_akeebasubs" />
+            <mapping deploy="/media/com_akeebasubs" local="$PROJECT_DIR$/component/media" web="/media/com_akeebasubs" />
+            <mapping deploy="/modules/mod_akmysubs" local="$PROJECT_DIR$/modules/site/akmysubs" web="/modules/mod_akmysubs" />
+            <mapping deploy="/modules/mod_aksexpires" local="$PROJECT_DIR$/modules/site/aksexpires" web="/modules/mod_aksexpires" />
+            <mapping deploy="/modules/mod_akslevels" local="$PROJECT_DIR$/modules/site/akslevels" web="/modules/mod_akslevels" />
+            <mapping deploy="/modules/mod_aksubslist" local="$PROJECT_DIR$/modules/site/aksubslist" web="/modules/mod_aksubslist" />
+            <mapping deploy="/plugins/akeebasubs/adminemails" local="$PROJECT_DIR$/plugins/akeebasubs/adminemails" web="/plugins/akeebasubs/adminemails" />
+            <mapping deploy="/plugins/akeebasubs/atscredits" local="$PROJECT_DIR$/plugins/akeebasubs/atscredits" web="/plugins/akeebasubs/atscredits" />
+            <mapping deploy="/plugins/akeebasubs/contentpublish" local="$PROJECT_DIR$/plugins/akeebasubs/contentpublish" web="/plugins/akeebasubs/contentpublish" />
+            <mapping deploy="/plugins/akeebasubs/joomla" local="$PROJECT_DIR$/plugins/akeebasubs/joomla" web="/plugins/akeebasubs/joomla" />
+            <mapping deploy="/plugins/akeebasubs/subscriptionemails" local="$PROJECT_DIR$/plugins/akeebasubs/subscriptionemails" web="/plugins/akeebasubs/subscriptionemails" />
+            <mapping deploy="/plugins/content/aslink" local="$PROJECT_DIR$/plugins/content/aslink" web="/plugins/content/aslink" />
+            <mapping deploy="/plugins/content/asprice" local="$PROJECT_DIR$/plugins/content/asprice" web="/plugins/content/asprice" />
+            <mapping deploy="/plugins/content/asrestricted" local="$PROJECT_DIR$/plugins/content/asrestricted" web="/plugins/content/asrestricted" />
+            <mapping deploy="/plugins/content/astimedrelease" local="$PROJECT_DIR$/plugins/content/astimedrelease" web="/plugins/content/astimedrelease" />
+            <mapping deploy="/plugins/system/asexpirationcontrol" local="$PROJECT_DIR$/plugins/system/asexpirationcontrol" web="/plugins/system/asexpirationcontrol" />
+            <mapping deploy="/plugins/system/asexpirationnotify" local="$PROJECT_DIR$/plugins/system/asexpirationnotify" web="/plugins/system/asexpirationnotify" />
+            <mapping deploy="/plugins/system/asfixrenewalsflag" local="$PROJECT_DIR$/plugins/system/asfixrenewalsflag" web="/plugins/system/asfixrenewalsflag" />
+            <mapping deploy="/plugins/system/asuserregredir" local="$PROJECT_DIR$/plugins/system/asuserregredir" web="/plugins/system/asuserregredir" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>
