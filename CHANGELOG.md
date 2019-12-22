@@ -4,6 +4,7 @@
 
 * Common PHP version warning scripts
 * Dark Mode
+* CLI script to fix recurring subscriptions with missing update/cancel URLs 
 
 **Bug fixes**
 
