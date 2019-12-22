@@ -166,7 +166,7 @@ abstract class Email
 	 *
 	 * @return  array  Returns [subject, body]
 	 */
-	private static function loadEmailTemplate($key, $level = null, $user = null)
+	public static function loadEmailTemplate($key, $level = null, $user = null)
 	{
 		if (is_null($user))
 		{

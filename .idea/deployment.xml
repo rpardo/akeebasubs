@@ -25,6 +25,7 @@
             <mapping deploy="/plugins/system/asexpirationnotify" local="$PROJECT_DIR$/plugins/system/asexpirationnotify" web="/plugins/system/asexpirationnotify" />
             <mapping deploy="/plugins/system/asfixrenewalsflag" local="$PROJECT_DIR$/plugins/system/asfixrenewalsflag" web="/plugins/system/asfixrenewalsflag" />
             <mapping deploy="/plugins/system/asuserregredir" local="$PROJECT_DIR$/plugins/system/asuserregredir" web="/plugins/system/asuserregredir" />
+            <mapping deploy="/cli" local="$PROJECT_DIR$/component/cli" web="/cli" />
           </mappings>
         </serverdata>
       </paths>

@@ -1,10 +1,11 @@
-# 7.0.2
+# 7.1.0
 
 **New features**
 
 * Common PHP version warning scripts
 * Dark Mode
-* CLI script to fix recurring subscriptions with missing update/cancel URLs 
+* CLI script to fix recurring subscriptions with missing update/cancel URLs
+* Collation script to identify problem transactions and send a report email 
 
 **Bug fixes**
 
