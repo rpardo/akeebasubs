@@ -8,6 +8,7 @@
 **Bug fixes**
 
 * Early recurring renewal would still charge you for the trial period 
+* Recurring payments fail if the original transaction is not marked as such
 
 # 7.0.1
 

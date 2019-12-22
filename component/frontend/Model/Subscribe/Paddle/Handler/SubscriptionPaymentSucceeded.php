@@ -42,6 +42,13 @@ class SubscriptionPaymentSucceeded extends PaymentSucceeded
 		 * IMPORTANT! $subscription always contains the subscription record of the VERY FIRST payment.
 		 */
 
+		/**
+		 * I will accept a recurring subscription even if the actual record is not marked as such.
+		 *
+		 * This field is NOT editable in the backend. Every time I manually set up a recurring subscription because
+		 * of some failure I was not entering a recurring_plan_id. This invalidates this sanity check.
+		 */
+		/**
 		// Sanity check
 		$isRecurring = isset($subscription->params['recurring_plan_id']) && ($subscription->params['recurring_plan_id'] == $subscription->level->paddle_plan_id);
 
@@ -49,6 +56,7 @@ class SubscriptionPaymentSucceeded extends PaymentSucceeded
 		{
 			throw new \RuntimeException('Recurring payment notification was issued for an one-off subscription');
 		}
+		/**/
 
 		$requestPlanId      = $requestData['subscription_plan_id'];
 		$subscriptionPlanId = $subscription->level->paddle_plan_id;
