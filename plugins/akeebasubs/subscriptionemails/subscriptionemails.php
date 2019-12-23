@@ -24,7 +24,7 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 	/**
 	 * Public constructor. Overridden to load the language strings.
 	 */
-	public function __construct(& $subject, $config = [])
+	public function __construct(&$subject, $config = [])
 	{
 		if (!is_object($config['params']))
 		{
@@ -272,34 +272,6 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 	}
 
 	/**
-	 * Notifies the component of the supported email keys by this plugin.
-	 *
-	 * @return  array
-	 *
-	 * @since 3.0
-	 */
-	public function onAKGetEmailKeys()
-	{
-		$this->loadLanguage();
-
-		return [
-			'section' => $this->_name,
-			'title'   => JText::_('PLG_AKEEBASUBS_SUBSCRIPTIONEMAILS_EMAILSECTION'),
-			'keys'    => [
-				'paid'               => JText::_('PLG_AKEEBASUBS_SUBSCRIPTIONEMAILS_EMAIL_PAID'),
-				'new_active'         => JText::_('PLG_AKEEBASUBS_SUBSCRIPTIONEMAILS_EMAIL_NEW_ACTIVE'),
-				'new_renewal'        => JText::_('PLG_AKEEBASUBS_SUBSCRIPTIONEMAILS_EMAIL_NEW_RENEWAL'),
-				'new_pending'        => JText::_('PLG_AKEEBASUBS_SUBSCRIPTIONEMAILS_EMAIL_NEW_PENDING'),
-				'cancelled_new'      => JText::_('PLG_AKEEBASUBS_SUBSCRIPTIONEMAILS_EMAIL_CANCELLED_NEW'),
-				'cancelled_existing' => JText::_('PLG_AKEEBASUBS_SUBSCRIPTIONEMAILS_EMAIL_CANCELLED_EXISTING'),
-				'expired'            => JText::_('PLG_AKEEBASUBS_SUBSCRIPTIONEMAILS_EMAIL_EXPIRED'),
-				'published'          => JText::_('PLG_AKEEBASUBS_SUBSCRIPTIONEMAILS_EMAIL_PUBLISHED'),
-				'generic'            => JText::_('PLG_AKEEBASUBS_SUBSCRIPTIONEMAILS_EMAIL_GENERIC'),
-			],
-		];
-	}
-
-	/**
 	 * Sends out the email to the owner of the subscription.
 	 *
 	 * @param   Subscriptions  $row   The subscription row object
@@ -312,7 +284,6 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 	{
 		// Get the user object
 		$container = Container::getInstance('com_akeebasubs');
-		$user      = $container->platform->getUser($row->user_id);
 
 		// Get a preloaded mailer
 		$key    = 'plg_akeebasubs_' . $this->_name . '_' . $type;
@@ -323,7 +294,6 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 			return false;
 		}
 
-		$mailer->addRecipient($user->email);
 		$result = $mailer->Send();
 		$mailer = null;
 

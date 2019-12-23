@@ -5,7 +5,8 @@
 * Common PHP version warning scripts
 * Dark Mode
 * CLI script to fix recurring subscriptions with missing update/cancel URLs
-* Collation script to identify problem transactions and send a report email 
+* Collation script to identify problem transactions and send a report email
+* Using Blade templates for email messages 
 
 **Bug fixes**
 
