@@ -34,30 +34,16 @@ abstract class Message
 	protected static $container;
 
 	/**
-	 * Returns the component's container
-	 *
-	 * @return  Container
-	 */
-	protected static function getContainer()
-	{
-		if (is_null(self::$container))
-		{
-			self::$container = Container::getInstance('com_akeebasubs');
-		}
-
-		return self::$container;
-	}
-
-	/**
 	 * Pre-processes the message text in $text, replacing merge tags with those
 	 * fetched based on subscription $sub
 	 *
-	 * @param   string         $text               The message to process
-	 * @param   Subscriptions  $sub                A subscription object
+	 * @param   string         $text    The message to process
+	 * @param   Subscriptions  $sub     A subscription object
+	 * @param   array          $extras  Additional text keys to substitute
 	 *
 	 * @return  string  The processed string
 	 */
-	public static function processSubscriptionTags($text, $sub, $extras = array())
+	public static function processSubscriptionTags(string $text, Subscriptions $sub, array $extras = []): string
 	{
 		// Get the user object for this subscription
 		$joomlaUser = self::getContainer()->platform->getUser($sub->user_id);
@@ -78,17 +64,17 @@ abstract class Message
 		}
 
 		// Merge the user objects
-		$userData = (array)$joomlaUser;
+		$userData = (array) $joomlaUser;
 
 		// Create and replace merge tags for subscriptions. Format [SUB:KEYNAME]
 		if ($sub instanceof DataModel)
 		{
-			$subData = (array)($sub->getData());
+			$subData = (array) ($sub->getData());
 		}
 		else
 		{
 			// Why am I here?!
-			$subData = (array)$sub;
+			$subData = (array) $sub;
 		}
 
 		foreach ($subData as $k => $v)
@@ -110,14 +96,14 @@ abstract class Message
 
 			$tag = '[SUB:' . strtoupper($k) . ']';
 
-			if (in_array($k, array(
+			if (in_array($k, [
 				'net_amount',
 				'gross_amount',
 				'tax_amount',
 				'fee_amount',
 				'prediscount_amount',
 				'discount_amount',
-			)))
+			]))
 			{
 				$v = sprintf('%.2f', $v);
 			}
@@ -130,7 +116,7 @@ abstract class Message
 
 		if ($level instanceof Levels)
 		{
-			$levelData = (array)($level->getData());
+			$levelData = (array) ($level->getData());
 		}
 
 		foreach ($levelData as $k => $v)
@@ -167,11 +153,11 @@ abstract class Message
 			}
 			elseif (is_object($subData['params']))
 			{
-				$custom = (array)$subData['params'];
+				$custom = (array) $subData['params'];
 			}
 			else
 			{
-				$custom = array();
+				$custom = [];
 			}
 
 			// Extra check for subcustom params: if you save a subscription form the backend,
@@ -183,7 +169,7 @@ abstract class Message
 
 			if (is_object($custom))
 			{
-				$custom = (array)$custom;
+				$custom = (array) $custom;
 			}
 
 			if (!empty($custom))
@@ -247,11 +233,11 @@ abstract class Message
 			}
 			elseif (is_object($userData['params']))
 			{
-				$custom = (array)$userData['params'];
+				$custom = (array) $userData['params'];
 			}
 			else
 			{
-				$custom = array();
+				$custom = [];
 			}
 
 			if (!empty($custom))
@@ -267,7 +253,7 @@ abstract class Message
 
 					if ($v instanceof \stdClass)
 					{
-						$v = (array)$v;
+						$v = (array) $v;
 					}
 
 					if (is_array($v))
@@ -372,8 +358,8 @@ abstract class Message
 		$renewalURL = rtrim($baseURL, '/') . '/' . ltrim($url, '/');
 
 		// Currency
-		$currency     = self::getContainer()->params->get('currency', 'EUR');
-		$symbol       = self::getContainer()->params->get('currencysymbol', 'EUR');
+		$currency = self::getContainer()->params->get('currency', 'EUR');
+		$symbol   = self::getContainer()->params->get('currencysymbol', 'EUR');
 
 		// Dates
 		$jFrom = new Date($sub->publish_up);
@@ -423,43 +409,43 @@ abstract class Message
 		$messageUrl = rtrim($baseURL, '/') . '/' . ltrim($messageUrl, '/');
 
 		// -- The actual replacement
-		$extras = array_merge(array(
-			"\\n"                      => "\n",
-			'[SITENAME]'               => $sitename,
-			'[SITEURL]'                => $baseURL,
-			'[FULLNAME]'               => $fullname,
-			'[FIRSTNAME]'              => $firstname,
-			'[LASTNAME]'               => $lastname,
-			'[USERNAME]'               => $joomlaUser->username,
-			'[USEREMAIL]'              => $joomlaUser->email,
-			'[LEVEL]'                  => $level->title,
-			'[SLUG]'                   => $level->slug,
-			'[RENEWALURL]'             => $renewalURL,
-			'[RENEWALURL:]'            => $renewalURL, // Malformed tag without a coupon code...
-			'[MESSAGEURL]'             => $messageUrl,
-			'[ENABLED]'                => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_COMMON_' . ($sub->enabled ? 'ENABLED' :
+		$extras = array_merge([
+			"\\n"                  => "\n",
+			'[SITENAME]'           => $sitename,
+			'[SITEURL]'            => $baseURL,
+			'[FULLNAME]'           => $fullname,
+			'[FIRSTNAME]'          => $firstname,
+			'[LASTNAME]'           => $lastname,
+			'[USERNAME]'           => $joomlaUser->username,
+			'[USEREMAIL]'          => $joomlaUser->email,
+			'[LEVEL]'              => $level->title,
+			'[SLUG]'               => $level->slug,
+			'[RENEWALURL]'         => $renewalURL,
+			'[RENEWALURL:]'        => $renewalURL, // Malformed tag without a coupon code...
+			'[MESSAGEURL]'         => $messageUrl,
+			'[ENABLED]'            => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_COMMON_' . ($sub->enabled ? 'ENABLED' :
 					'DISABLED')),
-			'[PAYSTATE]'               => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_STATE_' . $sub->getFieldValue('state', 'N')),
-			'[PUBLISH_UP]'             => Format::date($jFrom,JText::_('DATE_FORMAT_LC2') . ' T', $sub->user_id),
-			'[PUBLISH_UP_EU]'          => Format::date($jFrom,'d/m/Y H:i:s T', $sub->user_id),
-			'[PUBLISH_UP_USA]'         => Format::date($jFrom,'m/d/Y h:i:s a T', $sub->user_id),
-			'[PUBLISH_UP_JAPAN]'       => Format::date($jFrom,'Y/m/d H:i:s T', $sub->user_id),
-			'[PUBLISH_DOWN]'           => Format::date($jTo,JText::_('DATE_FORMAT_LC2'). ' T', $sub->user_id),
-			'[PUBLISH_DOWN_EU]'        => Format::date($jTo,'d/m/Y H:i:s T', $sub->user_id),
-			'[PUBLISH_DOWN_USA]'       => Format::date($jTo,'m/d/Y h:i:s a T', $sub->user_id),
-			'[PUBLISH_DOWN_JAPAN]'     => Format::date($jTo,'Y/m/d H:i:s T', $sub->user_id),
-			'[MYSUBSURL]'              => $mysubsurl,
-			'[URL]'                    => $mysubsurl,
-			'[CURRENCY]'               => $currency,
-			'[$]'                      => $symbol,
-			'[DLID]'                   => $dlid,
-			'[COUPONCODE]'             => $couponCode,
+			'[PAYSTATE]'           => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_STATE_' . $sub->getFieldValue('state', 'N')),
+			'[PUBLISH_UP]'         => Format::date($jFrom, JText::_('DATE_FORMAT_LC2') . ' T', $sub->user_id),
+			'[PUBLISH_UP_EU]'      => Format::date($jFrom, 'd/m/Y H:i:s T', $sub->user_id),
+			'[PUBLISH_UP_USA]'     => Format::date($jFrom, 'm/d/Y h:i:s a T', $sub->user_id),
+			'[PUBLISH_UP_JAPAN]'   => Format::date($jFrom, 'Y/m/d H:i:s T', $sub->user_id),
+			'[PUBLISH_DOWN]'       => Format::date($jTo, JText::_('DATE_FORMAT_LC2') . ' T', $sub->user_id),
+			'[PUBLISH_DOWN_EU]'    => Format::date($jTo, 'd/m/Y H:i:s T', $sub->user_id),
+			'[PUBLISH_DOWN_USA]'   => Format::date($jTo, 'm/d/Y h:i:s a T', $sub->user_id),
+			'[PUBLISH_DOWN_JAPAN]' => Format::date($jTo, 'Y/m/d H:i:s T', $sub->user_id),
+			'[MYSUBSURL]'          => $mysubsurl,
+			'[URL]'                => $mysubsurl,
+			'[CURRENCY]'           => $currency,
+			'[$]'                  => $symbol,
+			'[DLID]'               => $dlid,
+			'[COUPONCODE]'         => $couponCode,
 			// Legacy keys
-			'[NAME]'                   => $firstname,
-			'[STATE]'                  => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_STATE_' . $sub->getFieldValue('state', 'N')),
-			'[FROM]'                   => Format::date($jFrom,JText::_('DATE_FORMAT_LC2'). ' T', $sub->user_id),
-			'[TO]'                     => Format::date($jTo,JText::_('DATE_FORMAT_LC2'). ' T', $sub->user_id),
-		), $extras);
+			'[NAME]'               => $firstname,
+			'[STATE]'              => JText::_('COM_AKEEBASUBS_SUBSCRIPTION_STATE_' . $sub->getFieldValue('state', 'N')),
+			'[FROM]'               => Format::date($jFrom, JText::_('DATE_FORMAT_LC2') . ' T', $sub->user_id),
+			'[TO]'                 => Format::date($jTo, JText::_('DATE_FORMAT_LC2') . ' T', $sub->user_id),
+		], $extras);
 
 		foreach ($extras as $key => $value)
 		{
@@ -469,7 +455,7 @@ abstract class Message
 		// Special replacement for RENEWALURL:COUPONCODE
 		$text = self::substituteRenewalURLWithCoupon($text, $renewalURL);
 
-		$container->platform->runPlugins('onAkeebasubsAfterProcessTags', array(&$text, $sub, $extras));
+		$container->platform->runPlugins('onAkeebasubsAfterProcessTags', [&$text, $sub, $extras]);
 
 		return $text;
 	}
@@ -521,16 +507,16 @@ abstract class Message
 		}
 
 		// Find languages
-		$translations = array();
+		$translations = [];
 
 		while (strpos($text, '[IFLANG ') !== false)
 		{
-			$start                     = strpos($text, '[IFLANG ');
-			$end                       = strpos($text, '[/IFLANG]');
-			$langEnd                   = strpos($text, ']', $start);
-			$langCode                  = substr($text, $start + 8, $langEnd - $start - 8);
-			$langText                  = substr($text, $langEnd + 1, $end - $langEnd - 1);
-			$translations[ $langCode ] = $langText;
+			$start                   = strpos($text, '[IFLANG ');
+			$end                     = strpos($text, '[/IFLANG]');
+			$langEnd                 = strpos($text, ']', $start);
+			$langCode                = substr($text, $start + 8, $langEnd - $start - 8);
+			$langText                = substr($text, $langEnd + 1, $end - $langEnd - 1);
+			$translations[$langCode] = $langText;
 
 			if ($start > 0)
 			{
@@ -556,11 +542,11 @@ abstract class Message
 
 		if (array_key_exists($lang, $translations))
 		{
-			return $translations[ $lang ];
+			return $translations[$lang];
 		}
 		elseif (array_key_exists($siteLang, $translations))
 		{
-			return $translations[ $siteLang ];
+			return $translations[$siteLang];
 		}
 		elseif (array_key_exists('*', $translations))
 		{
@@ -619,8 +605,7 @@ abstract class Message
 
 			$toReplace = substr($text, $pos, $endPos - $pos + 1);
 			$text      = str_replace($toReplace, $uri->toString(), $text);
-		}
-		while ($pos !== false);
+		} while ($pos !== false);
 
 		return $text;
 	}
@@ -628,7 +613,7 @@ abstract class Message
 	/**
 	 * Route a Joomla URL safely, even if the application cannot be initialized (e.g. CLI or system-under-test)
 	 *
-	 * @param string $url The URL to route
+	 * @param   string  $url  The URL to route
 	 *
 	 * @return  string  The routed URL
 	 */
@@ -681,5 +666,20 @@ abstract class Message
 		$routedUrl = htmlspecialchars($routedUrl, ENT_COMPAT, 'UTF-8');
 
 		return $routedUrl;
+	}
+
+	/**
+	 * Returns the component's container
+	 *
+	 * @return  Container
+	 */
+	protected static function getContainer()
+	{
+		if (is_null(self::$container))
+		{
+			self::$container = Container::getInstance('com_akeebasubs');
+		}
+
+		return self::$container;
 	}
 }

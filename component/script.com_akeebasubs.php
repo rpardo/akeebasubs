@@ -213,6 +213,11 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'media/com_akeebasubs/js/jqplot.json2.min.js',
 			'media/com_akeebasubs/js/jqplot.pieRenderer.min.js',
 			'media/com_akeebasubs/js/jquery.jqplot.min.js',
+
+			// Removing email templates
+			'administrator/components/com_akeebasubs/Controller/EmailTemplate.php',
+			'administrator/components/com_akeebasubs/Model/EmailTemplates.php',
+			'components/com_akeebasubs/Model/EmailTemplates.php',
 		],
 		'folders' => [
 			'administrator/components/com_akeebasubs/commands',
@@ -300,6 +305,9 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 
 			// Akeeba Subscriptions 7 - We no longer need any Composer dependencies
             'administrator/components/com_akeebasubs/vendor',
+
+			// Removing email templates
+			'administrator/components/com_akeebasubs/ViewTemplates/EmailTemplates',
 		]
 	];
 
@@ -320,6 +328,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 		'plugins' => [
 			'akeebasubs' => [
 				'acymailing',
+				'adminemails',
 				'ageverification',
 				'agreetoeu',
 				'agreetotos',

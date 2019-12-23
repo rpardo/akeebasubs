@@ -280,14 +280,7 @@ HTML;
 
 		foreach ($emails as $email)
 		{
-			/** @var JoomlaUsers $usersModel */
-			$usersModel = $container->factory->model('JoomlaUsers')->tmpInstance();
-			$myUser     = $usersModel
-				->email($email)
-				->get(true)
-				->first();
-			$user       = $container->platform->getUser($myUser->id);
-			[$subject, $templateText] = EmailHelper::loadEmailTemplate('plg_akeebasubs_adminemails_problem_transactions', null, $user);
+			[$subject, $templateText] = EmailHelper::loadEmailTemplate('plg_akeebasubs_adminemails_problem_transactions', null);
 
 			if (empty($subject))
 			{

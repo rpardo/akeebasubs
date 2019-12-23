@@ -7,15 +7,16 @@
 
 namespace Akeeba\Subscriptions\Admin\Helper;
 
-use Akeeba\Subscriptions\Admin\Model\EmailTemplates;
+use Akeeba\Subscriptions\Admin\Model\Levels;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
+use Exception;
 use FOF30\Container\Container;
+use FOF30\Model\DataModel\Exception\RecordNotLoaded;
 use JFactory;
-use JFile;
-use JHtml;
-use Joomla\Registry\Registry as JRegistry;
-use JPluginHelper;
-use JUser;
+use JMail;
+use Joomla\CMS\Mail\Mail;
+use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\User;
 
 defined('_JEXEC') or die;
 
@@ -30,6 +31,116 @@ abstract class Email
 	 * @var   Container
 	 */
 	protected static $container;
+
+	/**
+	 * Allowed image file extensions to inline in sent emails
+	 *
+	 * @var   array
+	 */
+	private static $allowedImageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg'];
+
+	/**
+	 * Loads an email template from the view templates in the Templates folder.
+	 *
+	 * @param   string       $key    The language key, in the form PLG_LOCATION_PLUGINNAME_TYPE e.g.
+	 *                               plg_akeebasubs_subscriptionemails_paid
+	 * @param   Levels|null  $level  The subscription level we're interested in
+	 *
+	 * @return  array  Returns [subject, body]
+	 */
+	public static function loadEmailTemplate(string $key, ?Levels $level = null, array $forceParams = [])
+	{
+		// Parse the key
+		$key               = strtolower($key);
+		$keyParts          = explode('_', $key, 4);
+		$possibleTemplates = [
+			// e.g. any:com_akeebasubs/Templates/subscriptionemails_paid
+			'any:com_akeebasubs/Templates/' . $keyParts[2] . '_' . $keyParts[3],
+		];
+
+		// If we have a desired subscription level add its specific template first in the list
+		if (!is_null($level) && ($level->getId()))
+		{
+			// e.g. any:com_akeebasubs/Templates/subscriptionemails_paid-ADMINTOOLS
+			array_unshift($possibleTemplates, $possibleTemplates[0] . '-' . $level->title);
+		}
+
+		// Try to load the rendered view template
+		$templateText = self::loadFirstViewTemplate($possibleTemplates, $forceParams);
+
+		// If we got null or an empty string there's no email to send
+		if (empty($templateText))
+		{
+			return ['', ''];
+		}
+
+		// Extract the subject from the email template text
+		$subject = self::extractTitle($templateText);
+
+		return [$subject, $templateText];
+	}
+
+	/**
+	 * Creates a mailer instance, preloads its subject and body with your email
+	 * data based on the key and extra substitution parameters and waits for
+	 * you to send a recipient and send the email.
+	 *
+	 * @param   Subscriptions  $sub     The subscription record against which the email is sent
+	 * @param   string         $key     The email key, in the form PLG_LOCATION_PLUGINNAME_TYPE
+	 * @param   array          $extras  Any optional substitution strings you want to introduce
+	 *
+	 * @return  Mail|null  Null if we can't load the email template. A preloaded mailer otherwise.
+	 */
+	public static function getPreloadedMailer(Subscriptions $sub, string $key, array $extras = []): ?Mail
+	{
+		$container = self::getContainer();
+
+		// Get the subscription level (if defined)
+		$level = self::getLevelFromSubscription($sub);
+
+		// Get the Joomla user object for the subscription's owner
+		$user = null;
+
+		if (!empty($sub) && ($sub->user_id != 0))
+		{
+			$user = $container->platform->getUser($sub->user_id);
+		}
+
+		// Load the email template
+		[$subject, $templateText] = self::loadEmailTemplate($key, $level, [
+			'subscription' => $sub,
+			'level'        => $level,
+			'user'         => $user,
+		]);
+
+		// An empty subject means that the email template was not found
+		if (empty($subject))
+		{
+			return null;
+		}
+
+		// Replace text in the message
+		$templateText = Message::processSubscriptionTags($templateText, $sub, $extras);
+		$subject      = Message::processSubscriptionTags($subject, $sub, $extras);
+
+		// Get and populate the mailer
+		$mailer = self::getMailer(true);
+		$mailer->setSubject($subject);
+
+		// Include inline images
+		$templateText = self::inlineImages($templateText, $mailer);
+
+		// Set the email body
+		$mailer->setBody($templateText);
+
+		// Set the recipient, if the subscription record defines an owner user
+		if (is_object($user) && ($user instanceof User))
+		{
+			$mailer->addRecipient($user->email, $user->name);
+		}
+
+		return $mailer;
+	}
 
 	/**
 	 * Returns the component's container
@@ -47,251 +158,64 @@ abstract class Email
 	}
 
 	/**
-	 * Gets the email keys currently known to the component
+	 * Extract the email template title from the provided HTML
 	 *
-	 * @param   int  $style  0 = raw sections list, 1 = grouped list options, 2 = key/description array
+	 * @param   string  $contents  The HTML content of the email (full page)
 	 *
-	 * @return  array|string
+	 * @return  string
 	 */
-	public static function getEmailKeys($style = 0)
+	private static function extractTitle(string $contents): string
 	{
-		static $rawOptions = null;
-		static $htmlOptions = null;
-		static $shortlist = null;
+		$titleRegEx = '#<title>(.*)</title>#su';
+		$title      = '';
 
-		if (is_null($rawOptions))
+		if (preg_match($titleRegEx, $contents, $matches))
 		{
-			$rawOptions = array();
-
-			JPluginHelper::importPlugin('akeebasubs');
-			JPluginHelper::importPlugin('system');
-			$app       = JFactory::getApplication();
-			$jResponse = $app->triggerEvent('onAKGetEmailKeys', array());
-
-			if (is_array($jResponse) && !empty($jResponse))
-			{
-				foreach ($jResponse as $pResponse)
-				{
-					if (!is_array($pResponse))
-					{
-						continue;
-					}
-
-					if (empty($pResponse))
-					{
-						continue;
-					}
-
-					$rawOptions[ $pResponse['section'] ] = $pResponse;
-				}
-			}
+			return trim($matches[1]);
 		}
 
-		if ($style == 0)
-		{
-			return $rawOptions;
-		}
-
-		if (is_null($htmlOptions))
-		{
-			$htmlOptions = array();
-
-			foreach ($rawOptions as $section)
-			{
-				$htmlOptions[] = JHTML::_('select.option', '<OPTGROUP>', $section['title']);
-
-				foreach ($section['keys'] as $key => $description)
-				{
-					$htmlOptions[]                                 = JHTML::_('select.option', $section['section'] . '_' . $key, $description);
-					$shortlist[ $section['section'] . '_' . $key ] = $section['title'] . ' - ' . $description;
-				}
-				$htmlOptions[] = JHTML::_('select.option', '</OPTGROUP>');
-			}
-		}
-
-		if ($style == 1)
-		{
-			return $htmlOptions;
-		}
-
-		return $shortlist;
+		return '';
 	}
 
 	/**
-	 * Load language overrides for a specific extension. Used to load the
-	 * custom languages for each plugin, if necessary.
+	 * Returns the rendering of the first valid view template in the provided list.
 	 *
-	 * @param   string  $extension  The extension to load translations for
-	 * @param   JUser   $user       The user whose preferred language we'll also be loading
+	 * It goes through the entire list. The first one of them that returns a rendering, even an empty string, results in
+	 * an immediate return.
+	 *
+	 * @param   array  $viewTemplateNames
+	 * @param   array  $forceParams
+	 *
+	 * @return string|null
+	 *
+	 * @since version
 	 */
-	private static function loadLanguageOverrides($extension, $user = null)
+	private static function loadFirstViewTemplate(array $viewTemplateNames, array $forceParams = []): ?string
 	{
-		if (!($user instanceof JUser))
+		$container  = self::getContainer();
+		$viewObject = $container->factory->view('Templates');
+
+		foreach ($viewTemplateNames as $viewTemplateName)
 		{
-			$user = self::getContainer()->platform->getUser();
-		}
-
-		// Load the language files and their overrides
-		$jlang = JFactory::getLanguage();
-
-		// -- English (default fallback)
-		$jlang->load($extension, JPATH_ADMINISTRATOR, 'en-GB', true);
-		$jlang->load($extension . '.override', JPATH_ADMINISTRATOR, 'en-GB', true);
-
-		// -- Default site language
-		$jlang->load($extension, JPATH_ADMINISTRATOR, $jlang->getDefault(), true);
-		$jlang->load($extension . '.override', JPATH_ADMINISTRATOR, $jlang->getDefault(), true);
-
-		// -- Current site language
-		$jlang->load($extension, JPATH_ADMINISTRATOR, null, true);
-		$jlang->load($extension . '.override', JPATH_ADMINISTRATOR, null, true);
-
-		// -- User's preferred language
-		$uparams  = is_object($user->params) ? $user->params : new JRegistry($user->params);
-		$userlang = $uparams->get('language', '');
-
-		if (!empty($userlang))
-		{
-			$jlang->load($extension, JPATH_ADMINISTRATOR, $userlang, true);
-			$jlang->load($extension . '.override', JPATH_ADMINISTRATOR, $userlang, true);
-		}
-	}
-
-	/**
-	 * Loads an email template from the database.
-	 *
-	 * @param   string   $key    The language key, in the form PLG_LOCATION_PLUGINNAME_TYPE
-	 * @param   integer  $level  The subscription level we're interested in
-	 * @param   JUser    $user   The user whose preferred language will be loaded
-	 *
-	 * @return  array  Returns [subject, body]
-	 */
-	public static function loadEmailTemplate($key, $level = null, $user = null)
-	{
-		if (is_null($user))
-		{
-			$user = self::getContainer()->platform->getUser();
-		}
-
-		// Parse the key
-		$key           = strtolower($key);
-		$keyParts      = explode('_', $key, 4);
-		$keyInDatabase = $keyParts[2] . '_' . $keyParts[3];
-
-		// Initialise
-		$templateText = '';
-		$subject      = '';
-
-		// Look for desired languages
-		$jLang     = JFactory::getLanguage();
-		$userLang  = $user->getParam('language', '');
-		$languages = [
-			$userLang,
-			$jLang->getTag(),
-			$jLang->getDefault(),
-			'en-GB',
-			'*',
-		];
-
-		// Find an email template in the database
-		/** @var EmailTemplates $templatesModel */
-		$templatesModel = Container::getInstance('com_akeebasubs')->factory
-			->model('EmailTemplates')->tmpInstance();
-
-		$allTemplates = $templatesModel->key($keyInDatabase)->enabled(1)->get(true);
-
-		if (!empty($allTemplates))
-		{
-			// Pass 1 - Give match scores to each template
-			$preferredIndex = null;
-			$preferredScore = 0;
-
-			/** @var EmailTemplates $template */
-			foreach ($allTemplates as $template)
+			try
 			{
-				// Get the language and level of this template
-				$myLang  = $template->language;
-				$myLevel = $template->subscription_level_id;
-
-				// Make sure the language matches one of our desired languages, otherwise skip it
-				$langPos = array_search($myLang, $languages);
-
-				if ($langPos === false)
-				{
-					continue;
-				}
-
-				$langScore = (5 - $langPos);
-
-				// Make sure the level matches the desired or "*", otherwise skip it
-				$levelScore = 5;
-
-				if (!is_null($level))
-				{
-					if ($myLevel == $level)
-					{
-						$levelScore = 10;
-					}
-					elseif ($myLevel != 0)
-					{
-						$levelScore = 0;
-					}
-				}
-				elseif ($myLevel != 0)
-				{
-					$levelScore = 0;
-				}
-
-				if ($levelScore == 0)
-				{
-					continue;
-				}
-
-				// Calculate the score. If it's winning, use it
-				$score = $langScore + $levelScore;
-
-				if ($score > $preferredScore)
-				{
-					$subject        = $template->subject;
-					$templateText   = $template->body;
-					$preferredScore = $score;
-				}
+				return trim($viewObject->loadAnyTemplate($viewTemplateName, $forceParams));
+			}
+			catch (Exception $e)
+			{
+				// No problem, we're gonna try the next view template in the list
 			}
 		}
 
-		if (empty($templateText))
-		{
-			return ['' ,''];
-		}
-
-		// Because SpamAssassin demands there is a body and surrounding html tag even though it's not necessary.
-		if (strpos($templateText, '<body') == false)
-		{
-			$templateText = '<body>' . $templateText . '</body>';
-		}
-
-		if (strpos($templateText, '<html') == false)
-		{
-			$templateText = <<< HTML
-<html>
-<head>
-<title>{$subject}</title>
-</head>
-$templateText
-</html>
-HTML;
-
-		}
-
-		return [$subject, $templateText];
+		return null;
 	}
 
 	/**
 	 * Creates a PHPMailer instance
 	 *
-	 * @param   boolean $isHTML
+	 * @param   boolean  $isHTML
 	 *
-	 * @return  \JMail  A mailer instance
+	 * @return  JMail  A mailer instance
 	 */
 	private static function &getMailer($isHTML = true)
 	{
@@ -306,112 +230,205 @@ HTML;
 	}
 
 	/**
-	 * Creates a mailer instance, preloads its subject and body with your email
-	 * data based on the key and extra substitution parameters and waits for
-	 * you to send a recipient and send the email.
+	 * Get the level object given a specific subscription record
 	 *
-	 * @param   Subscriptions  $sub     The subscription record against which the email is sent
-	 * @param   string         $key     The email key, in the form PLG_LOCATION_PLUGINNAME_TYPE
-	 * @param   array          $extras  Any optional substitution strings you want to introduce
+	 * @param   Subscriptions|null  $sub
 	 *
-	 * @return  \JMail|null Null if something bad happened (e.g. template not found), the PHPMailer instance in any other case
+	 * @return  Levels|null
+	 *
+	 * @since   7.1.0
 	 */
-	public static function getPreloadedMailer(Subscriptions $sub, $key, array $extras = array())
+	private static function getLevelFromSubscription(?Subscriptions $sub): ?Levels
 	{
-		// Load the template
-		list($subject, $templateText) = self::loadEmailTemplate($key, $sub->akeebasubs_level_id, self::getContainer()->platform->getUser($sub->user_id));
-
-		if (empty($subject))
+		// No subscription? No level.
+		if (is_null($sub) || ($sub->getId() == 0))
 		{
 			return null;
 		}
 
-		$templateText = Message::processSubscriptionTags($templateText, $sub, $extras);
-		$subject      = Message::processSubscriptionTags($subject, $sub, $extras);
+		// First try to return the Levels object we get from the relation
+		$level = $sub->level;
 
-		// Get the mailer
-		$mailer = self::getMailer(true);
-		$mailer->setSubject($subject);
-
-		// Include inline images
-		$pattern           = '/(src)=\"([^"]*)\"/i';
-		$number_of_matches = preg_match_all($pattern, $templateText, $matches, PREG_OFFSET_CAPTURE);
-
-		if ($number_of_matches > 0)
+		if (is_object($level) && ($level instanceof Levels) && ($level->getId() > 0))
 		{
-			$substitutions = $matches[2];
-			$last_position = 0;
-			$temp          = '';
-
-			// Loop all URLs
-			$imgidx    = 0;
-			$imageSubs = array();
-
-			foreach ($substitutions as &$entry)
-			{
-				// Copy unchanged part, if it exists
-				if ($entry[1] > 0)
-				{
-					$temp .= substr($templateText, $last_position, $entry[1] - $last_position);
-				}
-
-				// Examine the current URL
-				$url = $entry[0];
-
-				if ((substr($url, 0, 7) == 'http://') || (substr($url, 0, 8) == 'https://'))
-				{
-					// External link, skip
-					$temp .= $url;
-				}
-				else
-				{
-					$ext = strtolower(JFile::getExt($url));
-
-					// Commented out as we're not passed a template URL now that the the templates are in the database.
-					/*if (!JFile::exists($url))
-					{
-						// Relative path, make absolute
-						$url = dirname($template) . '/' . ltrim($url, '/');
-					}*/
-
-					if (!JFile::exists($url) || !in_array($ext, array('jpg', 'png', 'gif')))
-					{
-						// Not an image or inexistent file
-						$temp .= $url;
-					}
-					else
-					{
-						// Image found, substitute
-						if (!array_key_exists($url, $imageSubs))
-						{
-							// First time I see this image, add as embedded image and push to
-							// $imageSubs array.
-							$imgidx ++;
-							$mailer->AddEmbeddedImage($url, 'img' . $imgidx, basename($url));
-							$imageSubs[ $url ] = $imgidx;
-						}
-
-						// Do the substitution of the image
-						$temp .= 'cid:img' . $imageSubs[ $url ];
-					}
-				}
-
-				// Calculate next starting offset
-				$last_position = $entry[1] + strlen($entry[0]);
-			}
-
-			// Do we have any remaining part of the string we have to copy?
-			if ($last_position < strlen($templateText))
-			{
-				$temp .= substr($templateText, $last_position);
-			}
-
-			// Replace content with the processed one
-			$templateText = $temp;
+			return $level;
 		}
 
-		$mailer->setBody($templateText);
+		// The relation wasn't available. Go through the Levels model.
+		$container = self::getContainer();
 
-		return $mailer;
+		try
+		{
+			$level = $container->factory->model('Levels')->tmpInstance()
+				->findOrFail($sub->akeebasubs_level_id);
+		}
+		catch (RecordNotLoaded $e)
+		{
+			// Could not find the record (possibly an already deleted level...?)
+			return null;
+		}
+
+		// Sanity check.
+		if (is_object($level) && ($level instanceof Levels) && ($level->getId() > 0))
+		{
+			return $level;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Attach and inline the referenced images in the email message
+	 *
+	 * @param   string  $templateText
+	 * @param   Mail    $mailer
+	 *
+	 * @return  string
+	 *
+	 * @since   7.1.0
+	 */
+	private static function inlineImages(string $templateText, Mail $mailer): string
+	{
+		// RegEx patterns to detect images
+		$patterns = [
+			// srcset="**URL**" e.g. source tags
+			'/srcset=\"?([^"]*)\"?/i',
+			// src="**URL**" e.g. img tags
+			'/src=\"?([^"]*)\"?/i',
+			// url(**URL**) nad url("**URL**") i.e. inside CSS
+			'/url\(\"?([^"\(\)]*)\"?\)/i',
+		];
+
+		// Cache of images so we don't inline them multiple times
+		$foundImages = [];
+		// Running counter of images, used to create the attachment IDs in the message
+		$imageIndex = 0;
+
+		// Run a RegEx search & replace for each pattern
+		foreach ($patterns as $pattern)
+		{
+			// $matches[0]: the entire string matched by RegEx; $matches[1]: just the path / URL
+			$templateText = preg_replace_callback($pattern, function (array $matches) use ($mailer, &$foundImages, &$imageIndex): string {
+				// Abort if it's not a file type we can inline
+				if (!self::isInlineableFileExtension($matches[1]))
+				{
+					return $matches[0];
+				}
+
+				// Try to get the local absolute filesystem path of the referenced media file
+				$localPath = self::getLocalAbsolutePath(self::normalizeURL($matches[1]));
+
+				// Abort if this was not a relative / absolute URL pointing to our own site
+				if (empty($localPath))
+				{
+					return $matches[0];
+				}
+
+				// Abort if the referenced file does not exist
+				if (!@file_exists($localPath) || !@is_file($localPath))
+				{
+					return $matches[0];
+				}
+
+				// Make sure the inlined image is cached; prevent inlining the same file multiple times
+				if (!array_key_exists($localPath, $foundImages))
+				{
+					$imageIndex++;
+					$mailer->AddEmbeddedImage($localPath, 'img' . $imageIndex, basename($localPath));
+					$foundImages[$localPath] = $imageIndex;
+				}
+
+				return str_replace($matches[1], $toReplace = 'cid:img' . $foundImages[$localPath], $matches[0]);
+			}, $templateText);
+		}
+
+		// Return the processed email content
+		return $templateText;
+	}
+
+	/**
+	 * Does this file / URL have an allowed image extension for inlining?
+	 *
+	 * @param   string  $fileOrUri
+	 *
+	 * @return  bool
+	 *
+	 * @since   7.1.0
+	 */
+	private static function isInlineableFileExtension(string $fileOrUri): bool
+	{
+		$dot = strrpos($fileOrUri, '.');
+
+		if ($dot === false)
+		{
+			return false;
+		}
+
+		$extension = substr($fileOrUri, $dot + 1);
+
+		return in_array(strtolower($extension), self::$allowedImageExtensions);
+	}
+
+	/**
+	 * Normalizes an image relative or absolute URL as an absolute URL
+	 *
+	 * @param   string  $fileOrUri
+	 *
+	 * @return  string
+	 *
+	 * @since   7.1.0
+	 */
+	private static function normalizeURL(string $fileOrUri): string
+	{
+		// Empty file / URIs are returned as-is (obvious screw up)
+		if (empty($fileOrUri))
+		{
+			return $fileOrUri;
+		}
+
+		// Remove leading / trailing slashes
+		$fileOrUri = trim($fileOrUri, '/');
+
+		// HTTPS URLs are returned as-is
+		if (substr($fileOrUri, 0, 8) == 'https://')
+		{
+			return $fileOrUri;
+		}
+
+		// HTTP URLs are returned upgraded to HTTPS
+		if (substr($fileOrUri, 0, 7) == 'http://')
+		{
+			return 'https://' . substr($fileOrUri, 7);
+		}
+
+		// Normalize URLs with a partial schema as HTTPS
+		if (substr($fileOrUri, 0, 3) == '://')
+		{
+			return 'https://' . substr($fileOrUri, 3);
+		}
+
+		// This is a file. We assume it's relative to the site's root
+		return rtrim(Uri::base(), '/') . '/' . $fileOrUri;
+	}
+
+	/**
+	 * Return the path to the local file referenced by the URL, provided it's internal.
+	 *
+	 * @param   string  $url
+	 *
+	 * @return  string|null  The local file path. NULL if the URL is not internal.
+	 *
+	 * @since   7.1.0
+	 */
+	private static function getLocalAbsolutePath(string $url): ?string
+	{
+		$base     = rtrim(Uri::base(), '/');
+
+		if (strpos($url, $base) !== 0)
+		{
+			return null;
+		}
+
+		return JPATH_ROOT . '/' . ltrim(substr($url, strlen($base) + 1), '/');
 	}
 }

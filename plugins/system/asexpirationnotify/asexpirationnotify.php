@@ -31,7 +31,7 @@ class plgSystemAsexpirationnotify extends CMSPlugin
 	/**
 	 * Public constructor. Overridden to load the language strings.
 	 */
-	public function __construct(& $subject, $config = array())
+	public function __construct(&$subject, $config = [])
 	{
 		parent::__construct($subject, $config);
 
@@ -67,7 +67,7 @@ class plgSystemAsexpirationnotify extends CMSPlugin
 		$this->onAkeebasubsCronTask('expirationnotify');
 	}
 
-	public function onAkeebasubsCronTask($task, $options = array())
+	public function onAkeebasubsCronTask($task, $options = [])
 	{
 		if (!$this->enabled)
 		{
@@ -81,9 +81,9 @@ class plgSystemAsexpirationnotify extends CMSPlugin
 
 		Log::addLogger(['text_file' => "akeebasubs_emails.php"], Log::ALL, ['akeebasubs.emails']);
 
-		$defaultOptions = array(
+		$defaultOptions = [
 			'time_limit' => 2,
-		);
+		];
 
 		$options = array_merge($defaultOptions, $options);
 
@@ -99,7 +99,7 @@ class plgSystemAsexpirationnotify extends CMSPlugin
 		// Get and loop all subscription levels
 		/** @var Levels $levelsModel */
 		$levelsModel = Container::getInstance('com_akeebasubs')->factory->model('Levels')->tmpInstance();
-		$levels = $levelsModel
+		$levels      = $levelsModel
 			->enabled(1)
 			->get(true);
 
@@ -358,83 +358,6 @@ class plgSystemAsexpirationnotify extends CMSPlugin
 	}
 
 	/**
-	 * Fetches the com_akeebasubs component's parameters as a JRegistry instance
-	 *
-	 * @return JRegistry The component parameters
-	 */
-	private function getComponentParameters()
-	{
-		$component = JComponentHelper::getComponent('com_akeebasubs');
-
-		if ($component->params instanceof JRegistry)
-		{
-			$cparams = $component->params;
-		}
-		elseif (!empty($component->params))
-		{
-			$cparams = new JRegistry($component->params);
-		}
-		else
-		{
-			$cparams = new JRegistry('{}');
-		}
-
-		return $cparams;
-	}
-
-	/**
-	 * "Do I have to run?" - the age old question. Let it be answered by checking the
-	 * last execution timestamp, stored in the component's configuration.
-	 */
-	private function doIHaveToRun()
-	{
-		// Get the component parameters
-		$componentParameters      = $this->getComponentParameters();
-
-		// Is scheduling enabled?
-		// WARNING: DO NOT USE $componentParameters HERE! THIS IS A PLUGIN PARAMETER NOT A COMPONENT PARAMETER
-		$scheduling  = $this->params->get('scheduling', 1);
-
-		if (!$scheduling)
-		{
-			return false;
-		}
-
-		// Find the next execution time (midnight GMT of the next day after the last time we ran the scheduling)
-		$lastRunUnix = $componentParameters->get('plg_akeebasubs_asexpirationnotify_timestamp', 0);
-		$dateInfo    = getdate($lastRunUnix);
-		$nextRunUnix = mktime(0, 0, 0, $dateInfo['mon'], $dateInfo['mday'], $dateInfo['year']);
-		$nextRunUnix += 24 * 3600;
-
-		// Get the current time
-		$now = time();
-
-		// have we reached the next execution time?
-		return ($now >= $nextRunUnix);
-	}
-
-	/**
-	 * Saves the timestamp of this plugin's last run
-	 */
-	private function setLastRunTimestamp($timestamp = null)
-	{
-		$lastRun = is_null($timestamp) ? time() : $timestamp;
-		$params  = $this->getComponentParameters();
-		$params->set('plg_akeebasubs_asexpirationnotify_timestamp', $lastRun);
-
-		$db = Container::getInstance('com_akeebasubs')->db;
-
-		$data  = $params->toString('JSON');
-		$query = $db->getQuery(true)
-		            ->update($db->qn('#__extensions'))
-		            ->set($db->qn('params') . ' = ' . $db->q($data))
-		            ->where($db->qn('element') . ' = ' . $db->q('com_akeebasubs'))
-		            ->where($db->qn('type') . ' = ' . $db->q('component'));
-		$db->setQuery($query);
-		$db->execute();
-	}
-
-	/**
 	 * Notifies the component of the supported email keys by this plugin.
 	 *
 	 * @return  array
@@ -445,51 +368,15 @@ class plgSystemAsexpirationnotify extends CMSPlugin
 	{
 		$this->loadLanguage();
 
-		return array(
+		return [
 			'section' => $this->_name,
 			'title'   => JText::_('PLG_SYSTEM_ASEXPIRATIONNOTIFY_EMAILSECTION'),
-			'keys'    => array(
+			'keys'    => [
 				'first'  => JText::_('PLG_SYSTEM_ASEXPIRATIONNOTIFY_EMAIL_FIRST'),
 				'second' => JText::_('PLG_SYSTEM_ASEXPIRATIONNOTIFY_EMAIL_SECOND'),
 				'after'  => JText::_('PLG_SYSTEM_ASEXPIRATIONNOTIFY_EMAIL_AFTER'),
-			)
-		);
-	}
-
-	/**
-	 * Sends a notification email to the user
-	 *
-	 * @param   Subscriptions  $row   The subscription row
-	 * @param   string         $type  Contact type (first, second, after)
-	 *
-	 * @return  bool
-	 */
-	private function sendEmail($row, $type)
-	{
-		$container = Container::getInstance('com_akeebasubs');
-
-		// Get the user object
-		$user = $container->platform->getUser($row->user_id);
-
-		// Get a preloaded mailer
-		$key    = 'plg_system_' . $this->_name . '_' . $type;
-		$mailer = Email::getPreloadedMailer($row, $key);
-
-		if (is_null($mailer))
-		{
-			return false;
-		}
-
-		Log::add("Sending $type notification to #{$row->akeebasubs_subscription_id} @{$user->username} ($user->name <{$user->email}>)", Log::INFO, "akeebasubs.cron.expirationnotify");
-
-		$mailer->addRecipient($user->email);
-		$result = $mailer->Send();
-		$mailer = null;
-
-		// Log the email we just sent
-		$this->logEmail($row, $type);
-
-		return $result;
+			],
+		];
 	}
 
 	protected function logEmail(Subscriptions $row, $type = '')
@@ -551,6 +438,117 @@ class plgSystemAsexpirationnotify extends CMSPlugin
 
 		// Write the log entry
 		JLog::add($logEntry, JLog::INFO, 'akeebasubs.emails');
+	}
+
+	/**
+	 * Fetches the com_akeebasubs component's parameters as a JRegistry instance
+	 *
+	 * @return JRegistry The component parameters
+	 */
+	private function getComponentParameters()
+	{
+		$component = JComponentHelper::getComponent('com_akeebasubs');
+
+		if ($component->params instanceof JRegistry)
+		{
+			$cparams = $component->params;
+		}
+		elseif (!empty($component->params))
+		{
+			$cparams = new JRegistry($component->params);
+		}
+		else
+		{
+			$cparams = new JRegistry('{}');
+		}
+
+		return $cparams;
+	}
+
+	/**
+	 * "Do I have to run?" - the age old question. Let it be answered by checking the
+	 * last execution timestamp, stored in the component's configuration.
+	 */
+	private function doIHaveToRun()
+	{
+		// Get the component parameters
+		$componentParameters = $this->getComponentParameters();
+
+		// Is scheduling enabled?
+		// WARNING: DO NOT USE $componentParameters HERE! THIS IS A PLUGIN PARAMETER NOT A COMPONENT PARAMETER
+		$scheduling = $this->params->get('scheduling', 1);
+
+		if (!$scheduling)
+		{
+			return false;
+		}
+
+		// Find the next execution time (midnight GMT of the next day after the last time we ran the scheduling)
+		$lastRunUnix = $componentParameters->get('plg_akeebasubs_asexpirationnotify_timestamp', 0);
+		$dateInfo    = getdate($lastRunUnix);
+		$nextRunUnix = mktime(0, 0, 0, $dateInfo['mon'], $dateInfo['mday'], $dateInfo['year']);
+		$nextRunUnix += 24 * 3600;
+
+		// Get the current time
+		$now = time();
+
+		// have we reached the next execution time?
+		return ($now >= $nextRunUnix);
+	}
+
+	/**
+	 * Saves the timestamp of this plugin's last run
+	 */
+	private function setLastRunTimestamp($timestamp = null)
+	{
+		$lastRun = is_null($timestamp) ? time() : $timestamp;
+		$params  = $this->getComponentParameters();
+		$params->set('plg_akeebasubs_asexpirationnotify_timestamp', $lastRun);
+
+		$db = Container::getInstance('com_akeebasubs')->db;
+
+		$data  = $params->toString('JSON');
+		$query = $db->getQuery(true)
+			->update($db->qn('#__extensions'))
+			->set($db->qn('params') . ' = ' . $db->q($data))
+			->where($db->qn('element') . ' = ' . $db->q('com_akeebasubs'))
+			->where($db->qn('type') . ' = ' . $db->q('component'));
+		$db->setQuery($query);
+		$db->execute();
+	}
+
+	/**
+	 * Sends a notification email to the user
+	 *
+	 * @param   Subscriptions  $row   The subscription row
+	 * @param   string         $type  Contact type (first, second, after)
+	 *
+	 * @return  bool
+	 */
+	private function sendEmail($row, $type)
+	{
+		$container = Container::getInstance('com_akeebasubs');
+
+		// Get the user object
+		$user = $container->platform->getUser($row->user_id);
+
+		// Get a preloaded mailer
+		$key    = 'plg_system_' . $this->_name . '_' . $type;
+		$mailer = Email::getPreloadedMailer($row, $key);
+
+		if (is_null($mailer))
+		{
+			return false;
+		}
+
+		Log::add("Sending $type notification to #{$row->akeebasubs_subscription_id} @{$user->username} ($user->name <{$user->email}>)", Log::INFO, "akeebasubs.cron.expirationnotify");
+
+		$result = $mailer->Send();
+
+		// Log the email we just sent
+		$this->logEmail($row, $type);
+
+		return $result;
 	}
 
 }
