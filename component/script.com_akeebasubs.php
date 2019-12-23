@@ -327,6 +327,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 		'plugins' => [
 			'akeebasubs' => [
 				'acymailing',
+				'adminemails',
 				'ageverification',
 				'agreetoeu',
 				'agreetotos',

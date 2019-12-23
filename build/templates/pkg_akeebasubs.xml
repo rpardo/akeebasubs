@@ -27,7 +27,6 @@
         <file type="module" client="site" id="mod_aksubslist">mod_aksubslist.zip</file>
 
         <!-- Plugins: akeebasubs -->
-        <file type="plugin" group="akeebasubs" id="adminemails">plg_akeebasubs_adminemails.zip</file>
         <file type="plugin" group="akeebasubs" id="atscredits">plg_akeebasubs_atscredits.zip</file>
         <file type="plugin" group="akeebasubs" id="contentpublish">plg_akeebasubs_contentpublish.zip</file>
         <file type="plugin" group="akeebasubs" id="joomla">plg_akeebasubs_joomla.zip</file>
