@@ -217,6 +217,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			// Removing email templates
 			'administrator/components/com_akeebasubs/Controller/EmailTemplate.php',
 			'administrator/components/com_akeebasubs/Model/EmailTemplates.php',
+			'components/com_akeebasubs/Model/EmailTemplates.php',
 		],
 		'folders' => [
 			'administrator/components/com_akeebasubs/commands',

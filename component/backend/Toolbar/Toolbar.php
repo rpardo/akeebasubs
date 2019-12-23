@@ -105,23 +105,6 @@ class Toolbar extends \FOF30\Toolbar\Toolbar
 		$this->onAdd();
 	}
 
-	public function onEmailtemplatesEdit()
-	{
-		$this->onEdit();
-
-		if (!isset($this->_isNew))
-		{
-			JToolBarHelper::divider();
-
-			$options['class']   = 'envelope';
-			$options['a.task']  = 'testTemplate';
-			$options['a.href']  = '#';
-			$options['text']    = JText::_('COM_AKEEBASUBS_EMAILTEMPLATES_TESTTEMPLATE');
-
-			$this->addCustomBtn('test-template', $options);
-		}
-	}
-
 	public function onLevelsBrowse()
 	{
 		$this->onBrowse();

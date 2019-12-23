@@ -7,7 +7,6 @@
 
 namespace Akeeba\Subscriptions\Admin\Helper;
 
-use Akeeba\Subscriptions\Admin\Model\EmailTemplates;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 use FOF30\Container\Container;
 use JFactory;
