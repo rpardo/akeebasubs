@@ -31,10 +31,17 @@
 		<include name="mod_*.zip" />
 		<include name="plg_*.zip" />
 		<include name="lib_*.zip" />
-		<include name="file_fef*.zip" />
+		<include name="file_*.zip" />
 		<include name="pkg_*.xml" />
 		<include name="*.txt" />
 		<include name="script.*.php" />
+	</fileset>
+
+	<fileset dir="${dirs.component}/cli" id="cli">
+		<include name="*.php" />
+		<include name="file_akeebasubs.xml" />
+
+		<exclude name="akeebasubs_callback_debug.php" />
 	</fileset>
 
 	<target name="release">

@@ -61,7 +61,7 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 		// TODO Email recurring subscriptions on first instalment and only if they have a non-zero trial period. These are clients who purchased a new subscription and chose the recurring payment option as well.
 
 		/**
-		 * A new subscription record was created: no emails
+		 * A New subscription record was created: no emails
 		 *
 		 * Why? We always create a new subscription record with payment state New (N) when a user tries to subscribe,
 		 * before showing him the payment UI. No email needs to be sent in this case.
@@ -76,9 +76,10 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 		}
 
 		/**
-		 * Modified subscription records without a payment attempt: no emails. We should have no use case for this but
-		 * it can happen if a human operator fat-fingers a manually created / modified subscription. This is protection
-		 * against stupid humans.
+		 * A modified record without a payment attempt (still New).
+		 *
+		 * We should have no use case for this but it can happen if a human operator fat-fingers a manually created /
+		 * modified subscription.
 		 */
 		if ($payState == 'N')
 		{
@@ -86,11 +87,17 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 		}
 
 		/**
-		 * Recurring subscriptions whose payment state changed: no action; Paddle has sent the user an email.
+		 * Recurring subscriptions with payment state change
+		 *
+		 * Note that Paddle has sent the user an email.
 		 *
 		 * This does NOT handle a hard failure (past due and gave up on retrying billing). In this case the cancel_url
 		 * and update_url is cleared, therefore the subscription is handled as an one-time payment subscription which
 		 * just expired (see further below).
+		 *
+		 * TODO We need to handle some recurring subscription cases which warrant an email from us:
+		 * - First installment, non-zero trial period, zero payment: Early renewal into a recurring subscription
+		 * - First installment, zero trial period: new recurring subscription, e.g. with a coupon code
 		 */
 		if ($isRecurring && $isPaymentStateChanged)
 		{
@@ -98,11 +105,11 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 		}
 
 		/**
-		 * One-time payment subscriptions whose status changed to Completed (C)
+		 * One-time payment subscription just got paid
 		 */
 		if ($isPaymentStateChanged && ($payState == 'C'))
 		{
-			// Active, now Completed, previously Pending: A pending subscription just got paid
+			// P => C (enabled = 1): A pending subscription just got paid
 			if ($isCurrentlyActive && $wasPreviouslyPending)
 			{
 				$this->sendEmail($row, 'paid', $info);
@@ -110,7 +117,7 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 				return;
 			}
 
-			// Active, now Completed, previously New or Canceled: A new subscriptions just got paid
+			// N or X => C (enabled=1): A new subscriptions just got paid
 			if ($isCurrentlyActive && !$wasPreviouslyPending)
 			{
 				$this->sendEmail($row, 'new_active', $info);
@@ -118,7 +125,7 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 				return;
 			}
 
-			// Inactive, now Completed: An early renewal was successfully purchased
+			// whatever => C (enabled=0): An early renewal was successfully purchased
 			if (!$isCurrentlyActive)
 			{
 				// Don't send emails for silent renewals. No use case, just a precaution.
@@ -134,7 +141,7 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 		}
 
 		/**
-		 * One-time payment subscriptions whose status changed to Pending (P)
+		 * One-time payment subscription changed to Pending (P)
 		 */
 		if ($isPaymentStateChanged && ($payState == 'P'))
 		{
@@ -149,11 +156,11 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 		}
 
 		/**
-		 * One-time subscriptions whose payment status changed to Cancelled (X)
+		 * One-time subscription changed to Cancelled (X)
 		 */
 		if ($isPaymentStateChanged && ($payState == 'X'))
 		{
-			// Previously New: the payment was refused
+			// N => X: the payment was refused by Paddle
 			if ($wasPreviouslyNew)
 			{
 				$this->sendEmail($row, 'cancelled_new', $info);
@@ -161,8 +168,16 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 				return;
 			}
 
-			// Previously Pending or Completed: the payment was cancelled / refunded
-			$this->sendEmail($row, 'cancelled_existing', $info);
+			/**
+			 * P or C => C: the payment was cancelled / refunded
+			 *
+			 * It will first try to send a different email per cancellation reason. If that fails it will fall back to
+			 * the generic subscription cancellation email.
+			 */
+			if (!$this->sendEmail($row, 'cancelled_existing_' . $row->cancellation_reason, $info))
+			{
+				$this->sendEmail($row, 'cancelled_existing', $info);
+			}
 
 			return;
 		}
@@ -181,7 +196,7 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 		}
 
 		/**
-		 * A subscription just got disabled without payment status change, payment is Completed: expired subscription
+		 * C (enabled = 1) => C (enabled = 0): expired subscription
 		 */
 		if ($isEnabledChanged && !$row->enabled)
 		{
@@ -201,7 +216,7 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 		}
 
 		/**
-		 * A subscription just got enabled without payment status change, payment is Completed: renewal got activated.
+		 * C (enabled = 0) => C (enabled = 1): renewal got activated.
 		 */
 		if ($isEnabledChanged && $row->enabled)
 		{
