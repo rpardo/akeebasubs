@@ -24,21 +24,5 @@ defined('_JEXEC') or die;
                 @lang('COM_AKEEBASUBS_GEOIP_LBL_DOWNLOADGEOIPPLUGIN')
             </a>
         </div>
-    @elseif ($this->geoIPPluginNeedsUpdate)
-        <div class="akeeba-block--info">
-            <h3>
-                @lang('COM_AKEEBASUBS_GEOIP_LBL_GEOIPPLUGINEXISTS')
-            </h3>
-
-            <p>
-                @lang('COM_AKEEBASUBS_GEOIP_LBL_GEOIPPLUGINCANUPDATE')
-            </p>
-
-            <a class="akeeba-btn--dark--small"
-               href="index.php?option=com_akeebasubs&view=ControlPanel&task=updategeoip&@token()=1">
-                <span class="akion-refresh"></span>
-                @lang('COM_AKEEBASUBS_GEOIP_LBL_UPDATEGEOIPDATABASE')
-            </a>
-        </div>
     @endif
 @stop

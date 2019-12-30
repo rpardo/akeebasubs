@@ -1,5 +1,9 @@
 # 7.1.0
 
+**Removed features**
+
+* Will no longer update the GeoLite2 database
+
 **New features**
 
 * Common PHP version warning scripts
