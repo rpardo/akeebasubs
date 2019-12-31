@@ -2,8 +2,8 @@
 
 **Removed features**
 
-* Will no longer update the GeoLite2 database
 * Removed subscription country determined from IP address
+* Removed installation and update prompts for the Akeeba GeoIP plugin
 
 **New features**
 

@@ -71,32 +71,6 @@ class ControlPanel extends Model
 	}
 
 	/**
-	 * Do we have the Akeeba GeoIP provider plugin installed?
-	 *
-	 * @return  boolean  False = not installed, True = installed
-	 */
-	public function hasGeoIPPlugin()
-	{
-		static $result = null;
-
-		if (is_null($result))
-		{
-			$db = $this->container->platform->getDbo();
-
-			$query = $db->getQuery(true)
-				->select('COUNT(*)')
-				->from($db->qn('#__extensions'))
-				->where($db->qn('type') . ' = ' . $db->q('plugin'))
-				->where($db->qn('folder') . ' = ' . $db->q('system'))
-				->where($db->qn('element') . ' = ' . $db->q('akgeoip'));
-			$db->setQuery($query);
-			$result = $db->loadResult();
-		}
-
-		return ($result != 0);
-	}
-
-	/**
 	 * Removes the update sites for this extension
 	 *
 	 * @since  7.0.1

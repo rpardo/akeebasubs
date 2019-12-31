@@ -11,11 +11,8 @@ defined('_JEXEC') or die;
 @include('admin:com_akeebasubs/ControlPanel/phpversion')
 @include('admin:com_akeebasubs/ControlPanel/graphs')
 @include('admin:com_akeebasubs/ControlPanel/stats')
-@include('admin:com_akeebasubs/ControlPanel/geoip')
 
 @yield('phpVersionWarning', '')
-
-@yield('geoip', '')
 
 <div class="akeeba-container--50-50">
     <div>
