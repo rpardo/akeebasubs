@@ -39,7 +39,6 @@ use FOF30\Model\DataModel;
  * @property  string		$created_on					Date/time when this subscription was created
  * @property  array 		$params						Parameters, used by custom fields and plugins
  * @property  string		$ip							IP address of the user who created this subscription
- * @property  string		$ip_country					Country of the user who created this subscription, based on IP geolocation
  * @property  string        $ua                         User agent
  * @property  int           $mobile                     Is this subscription originating from a mobile device?
  * @property  string        $receipt_url                Paddle receipt URL
@@ -100,7 +99,6 @@ use FOF30\Model\DataModel;
  * @method  $this paystate() 					 paystate(string|string[] $states)  Search by payment state (string or array of string)
  * @method  $this processor() 					 processor(string $v)      	 	    Search by payment processor identifier
  * @method  $this ip() 							 ip(string $v)                      Search by IP of user signing up
- * @method  $this ip_country() 					 ip_country(string $v)    		    Search by auto-detected country code based on IP
  * @method  $this paykey() 						 paykey(string $key)          	    Search by payment key
  * @method  $this user_id() 					 user_id(int|int[] $ids)            Search by user ID (int or array of int)
  * @method  $this enabled() 					 enabled(int $enabled)       	    Search by enabled status
@@ -1305,7 +1303,6 @@ class Subscriptions extends DataModel
 			'created_on',
 			'params',
 			'ip',
-			'ip_country',
 			'ua',
 			'mobile',
 			'receipt_url',

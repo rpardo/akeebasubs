@@ -51,7 +51,6 @@ class MessageTest extends \PHPUnit\Framework\TestCase
 			'gross_amount' => '99.00',
 			'tax_percent' => '10',
 			'ip' => '8.8.8.8',
-			'ip_country' => 'US',
 			'prediscount_amount' => '100',
 			'discount_amount' => '10',
 		]);
@@ -137,7 +136,6 @@ class MessageTest extends \PHPUnit\Framework\TestCase
 			['[SUB:TAX_PERCENT]', true, '10'],
 			['[SUB:CREATED_ON]', true, '2014-04-30 00:00:00'],
 			['[SUB:IP]', true, '8.8.8.8'],
-			['[SUB:IP_COUNTRY]', true, 'US'],
 			['[SUB:AKEEBASUBS_COUPON_ID]', true, '15'],
 			['[SUB:AKEEBASUBS_UPGRADE_ID]', true, ''],
 			['[SUB:AKEEBASUBS_INVOICE_ID]', true, ''],

@@ -793,20 +793,6 @@ class Subscribe extends Model
 		// Get the IP address
 		$ip = Ip::getIp();
 
-		// Get the country from the IP address if the Akeeba GeoIP Provider Plugin is installed and activated
-		$ip_country = '(Unknown)';
-
-		if (class_exists('AkeebaGeoipProvider'))
-		{
-			$geoip = new \AkeebaGeoipProvider();
-			$ip_country = $geoip->getCountryName($ip);
-
-			if (empty($ip_country))
-			{
-				$ip_country = '(Unknown)';
-			}
-		}
-
 		// Get the User Agent string
 		$browser = new JBrowser();
 		$ua      = $browser->getAgentString();
@@ -856,7 +842,6 @@ class Subscribe extends Model
 			'created_on'                 => $mNow,
 			'params'                     => $subcustom,
 			'ip'                         => $ip,
-			'ip_country'                 => $ip_country,
 			'akeebasubs_coupon_id'       => $validation->price->couponid,
 			'akeebasubs_upgrade_id'      => $validation->price->upgradeid,
 			'contact_flag'               => 0,

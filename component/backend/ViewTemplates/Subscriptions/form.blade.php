@@ -264,13 +264,6 @@ $user = JFactory::getUser($item->user_id ?? 0);
 			<input type="text" name="ip" id="ip" value="{{{ $item->ip }}}" />
 		</div>
 
-		<div class="akeeba-form-group">
-			<label for="ip_country">
-				@fieldtitle('ip_country')
-			</label>
-			<input type="text" name="ip_country" id="ip_country" value="{{{ $item->ip_country }}}" />
-		</div>
-
 	</div>
 
 	<div class="akeeba-panel--info akeebasubs-panel-force-top-margin" id="akeebasubs-uainfo">

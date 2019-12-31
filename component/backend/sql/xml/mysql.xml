@@ -234,7 +234,6 @@ CREATE TABLE `#__akeebasubs_subscriptions` (
 	`created_on` datetime NOT NULL default '0000-00-00 00:00:00',
 	`params` TEXT,
 	`ip` VARCHAR(255),
-	`ip_country` VARCHAR(255),
 	`ua` VARCHAR(255),
 	`mobile` TINYINT(1) NOT NULL DEFAULT '0',
 	`receipt_url` MEDIUMTEXT NULL,
@@ -441,6 +440,13 @@ ALTER TABLE `#__akeebasubs_subscriptions` DROP COLUMN `affiliate_comission_alt`;
             <condition type="missing" value="recurring_amount" operator="not"  />
             <query><![CDATA[
 ALTER TABLE `#__akeebasubs_subscriptions` DROP COLUMN `recurring_amount`;
+            ]]></query>
+        </action>
+
+        <action table="#__akeebasubs_subscriptions" canfail="1">
+            <condition type="missing" value="ip_country" operator="not"  />
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_subscriptions` DROP COLUMN `ip_country`;
             ]]></query>
         </action>
 
