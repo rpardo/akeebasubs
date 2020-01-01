@@ -1,11 +1,5 @@
 <?php
 /**
- * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
- * @license   GNU General Public License version 3, or later
- */
-
-/**
  * Old PHP version notification
  *
  * @copyright Copyright Nicholas K. Dionysopoulos / Akeeba Ltd
