@@ -1,4 +1,12 @@
-<?php defined('_JEXEC') or die(); ?>
+<?php
+/**
+ * @package   AkeebaSubs
+ * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @license   GNU General Public License version 3, or later
+ */
+
+defined('_JEXEC') or die();
+?>
 <div class="akeeba-container--50-50">
     <div class="akeeba-panel--green">
         <div class="akeeba-form-group">

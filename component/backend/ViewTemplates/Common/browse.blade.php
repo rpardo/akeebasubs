@@ -1,9 +1,11 @@
 <?php
 /**
  * @package   AkeebaSubs
- * @copyright Copyright (c)2010-2019 Nicholas K. Dionysopoulos / Akeeba Ltd
+ * @copyright Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license   GNU General Public License version 3, or later
- *
+ */
+
+/**
  * Template for Browse views
  *
  * Use this by extending it (I'm using -at- instead of the at-sign)

@@ -1,7 +1,11 @@
 <component name="CopyrightManager">
-  <settings default="AkeebaSubs">
+  <settings>
     <module2copyright>
       <element module="Copyright" copyright="AkeebaSubs" />
     </module2copyright>
+    <LanguageOptions name="HTML">
+      <option name="fileTypeOverride" value="1" />
+      <option name="prefixLines" value="false" />
+    </LanguageOptions>
   </settings>
 </component>

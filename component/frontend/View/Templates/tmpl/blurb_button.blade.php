@@ -9,7 +9,7 @@
  *
  * @package    akeeba/internal
  * @subpackage email_template
- * @copyright  Copyright (c) 2017-2019 Akeeba Ltd
+ * @copyright  Copyright (c)2010-2020 Nicholas K. Dionysopoulos / Akeeba Ltd
  * @license    Proprietary
  */
 ?>
