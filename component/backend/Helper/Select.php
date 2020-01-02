@@ -170,7 +170,7 @@ abstract class Select
 		'MF' => 'Saint Martin (French part)',
 		'MG' => 'Madagascar',
 		'MH' => 'Marshall Islands',
-		'MK' => 'Macedonia, the former Yugoslav Republic of',
+		'MK' => 'Northern Macedonia',
 		'ML' => 'Mali',
 		'MM' => 'Myanmar',
 		'MN' => 'Mongolia',
