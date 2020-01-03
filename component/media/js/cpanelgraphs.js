@@ -174,7 +174,7 @@ function akeebasubs_render_sales()
 				{
 					label: "Sales",
 					data: akeebasubs_cpanel_graph_salesPoints,
-					borderColor: '#514F50',
+					borderColor: '#93C34E',
 					fill: false,
 					yAxisID: 'y-axis-sales',
 					type: 'line'
@@ -199,19 +199,24 @@ function akeebasubs_render_sales()
 						round: 'day',
 						tooltipFormat: 'll',
 						unit: 'day',
-						minUnit: 'day'
+						minUnit: 'day',
+					},
+					ticks: {
+						fontColor: '#F0AD4E'
 					}
 				}],
 				yAxes: [{
 					id: "y-axis-subs",
 					position: 'left',
 					ticks: {
+						fontColor: '#93C34E',
 						beginAtZero: true
 					}
 				}, {
 					id: "y-axis-sales",
 					position: 'right',
 					ticks: {
+						fontColor: '#40B5B8',
 						beginAtZero: true,
 						callback: function(value, index, values) {
 							return value + ' €';
@@ -237,7 +242,7 @@ function akeebasubs_render_sales()
 function akeebasubs_render_levels()
 {
 	var chartOptions                           = {
-		type: "pie",
+		type: "doughnut",
 		data: {
 			datasets:[
 				{
@@ -250,8 +255,13 @@ function akeebasubs_render_levels()
 		},
 		options:{
 			responsive: true,
+			cutoutPercentage: 40,
 			legend: {
-				display: true
+				display: true,
+				labels: {
+					usePointStyle: true,
+					fontColor: '#F0AD4E'
+				}
 			},
 			tooltips: {
 				callbacks: {
