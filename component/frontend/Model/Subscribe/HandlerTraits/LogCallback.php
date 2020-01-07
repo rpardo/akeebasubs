@@ -8,6 +8,7 @@
 namespace Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits;
 
 
+use FOF30\Utils\Ip;
 use Joomla\CMS\Filesystem\File;
 use Joomla\Registry\Registry;
 
@@ -30,7 +31,7 @@ trait LogCallback
 	/**
 	 * Log a webhook callback
 	 *
-	 * @param   array   $data      The raw data to log.
+	 * @param   array   $data  The raw data to log.
 	 * @param   string  $decision
 	 *
 	 * @return  void
@@ -50,15 +51,17 @@ trait LogCallback
 		// Fulfillment webhooks do not have an alert_name so I add a fake one
 		$webhookName = $data['alert_name'] ?? 'fulfillment';
 		$webhookType = $this->translateAlertName($webhookName);
+		$remoteIP    = Ip::getIp();
 		$dateTime    = gmdate('Y-m-d H:i:s T');
 		$printData   = print_r($data, true);
 
 		$logData .= <<< TXT
 ================================================================================
-Date / Time  : $dateTime
-Webhook Name : $webhookName
-Webhook Type : $webhookType
-Decision     : $decision
+Date / Time       : $dateTime
+Remote IP         : $remoteIP
+Webhook Name      : $webhookName
+Webhook Type      : $webhookType
+Handling Decision : $decision
 
 $printData
 

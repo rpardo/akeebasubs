@@ -143,7 +143,7 @@ class CallbackHandler implements CallbackInterface
 			case 'transfer_paid':
 			case 'new_audience_member':
 			case 'update_audience_member':
-				$this->logCallback($requestData, 'Ignored / not interesting webhook');
+				$this->logCallback($requestData, 'IGNORED -- Not interested in handling this webhook');
 				return null;
 				break;
 
@@ -167,7 +167,7 @@ class CallbackHandler implements CallbackInterface
 		}
 		catch (\Exception $e)
 		{
-			$this->logCallback($requestData, 'INVALID -- Cannot find the subscription record');
+			$this->logCallback($requestData, 'PROBLEM -- Cannot find the subscription record');
 
 			return sprintf('Invalid subscription key %s', print_r($findKeys, true));
 		}
@@ -179,13 +179,15 @@ class CallbackHandler implements CallbackInterface
 
 		if (!class_exists($class, true))
 		{
-			$this->logCallback($requestData, 'NOT IMPLEMENTED -- I do not have a handler for these webhooks (yet)');
+			$this->logCallback($requestData, 'NOT IMPLEMENTED -- I do not have a handler for this webhook');
 
 			return null;
 		}
 
 		/** @var SubscriptionCallbackHandlerInterface $handler */
 		$handler = new $class($this->container);
+
+		$this->logCallback($requestData, sprintf("HANDLED -- Handling with %s", $class));
 
 		return $handler->handleCallback($subscription, $requestData);
 	}
