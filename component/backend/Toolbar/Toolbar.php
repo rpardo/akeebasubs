@@ -27,7 +27,6 @@ class Toolbar extends \FOF30\Toolbar\Toolbar
 				'Levels',
 				'Relations',
 				'Upgrades',
-				'EmailTemplates',
 				'BlockRules',
 			],
 			'Subscriptions',

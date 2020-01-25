@@ -1,3 +1,9 @@
+# 7.1.1
+
+**Bug fixes**
+
+* Obsolete EmailTemplates link in the toolbar
+
 # 7.1.0
 
 **Removed features**
