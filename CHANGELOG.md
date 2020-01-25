@@ -12,6 +12,7 @@
 * CLI script to fix recurring subscriptions with missing update/cancel URLs
 * Collation script to identify problem transactions and send a report email
 * Using Blade templates for email messages 
+* Do not show ugly errors in the subscription form for first time subscribers
 
 **Bug fixes**
 

@@ -47,6 +47,11 @@ if ($hasErrors['password'] && $hasErrors['password2'])
 	$hasErrors['password2'] = false;
 }
 
+if ($this->validation->validation->rawDataForDebug['firstrun'])
+{
+	$hasErrors = array_combine(array_keys($hasErrors), array_fill(0, count(array_keys($hasErrors)), false));
+}
+
 $returnURI = JUri::getInstance();
 $returnURI->setVar('reset', 1);
 ?>

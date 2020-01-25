@@ -93,7 +93,7 @@ class StateData
 			/**
 			 * Save the level slug, level ID and coupon code
 			 *
-			 * The first two are required for the priceto be displayed. The latter must survive the reset, otherwise we
+			 * The first two are required for the price to be displayed. The latter must survive the reset, otherwise we
 			 * will have unhappy clients.
 			 */
 			$slug   = $model->getState('slug', '', 'string');
@@ -139,6 +139,19 @@ class StateData
 			$stateVars['name'] = $user->name;
 			$stateVars['email'] = $user->email;
 			$stateVars['email2'] = $user->email;
+		}
+
+		/**
+		 * The user may have reloaded the page without entering any information. For example, they may have changed
+		 * their mind about which subscription they want to buy. In this case the firstrun flag is unset and the client
+		 * sees scary red borders around the account fields they still haven't entered. These borders don't go away,
+		 * confusing the user.
+		 *
+		 * The code below fixes that.
+		 */
+		if (!$stateVars['firstrun'] && $user->guest && $this->isEmptyStateVars($stateVars))
+		{
+			$stateVars['firstrun'] = true;
 		}
 
 		foreach ($stateVars as $k => $v)
@@ -213,5 +226,36 @@ class StateData
 		{
 			$model->setState($k, $v);
 		}
+	}
+
+	private function isEmptyStateVars($stateVars)
+	{
+		$defaults = [
+			'username'  => '',
+			'password'  => '',
+			'password2' => '',
+			'name'      => '',
+			'email'     => '',
+			'email2'    => '',
+		];
+
+		$stateVars = array_merge($defaults, $stateVars);
+
+		if (!empty($stateVars['username']) || !empty($stateVars['name']))
+		{
+			return false;
+		}
+
+		if (!(empty($stateVars['password']) && empty($stateVars['password2'])))
+		{
+			return false;
+		}
+
+		if (!(empty($stateVars['email']) && empty($stateVars['email2'])))
+		{
+			return false;
+		}
+
+		return true;
 	}
 }
