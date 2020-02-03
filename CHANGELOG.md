@@ -3,6 +3,7 @@
 **Bug fixes**
 
 * Obsolete EmailTemplates link in the toolbar
+* Emails not sent
 
 # 7.1.0
 
