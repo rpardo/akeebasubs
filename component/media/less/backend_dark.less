@@ -6,108 +6,110 @@
 
 @import "frontend/variables";
 
-// region Subscriptions
-.akeebasubs-subscription-netamount {
-  color: lighten(@green, 20%);
-}
+@media (prefers-color-scheme: dark) {
+  // region Subscriptions
+  .akeebasubs-subscription-netamount {
+    color: lighten(@green, 20%);
+  }
 
-.akeebasubs-subscription-discountamount {
-  font-weight: bold;
-  color: lighten(@red, 10%);
-}
+  .akeebasubs-subscription-discountamount {
+    font-weight: bold;
+    color: lighten(@red, 10%);
+  }
 
-.akeebasubs-subscription-taxamount {
-  color: lighten(@teal, 20%);
-}
+  .akeebasubs-subscription-taxamount {
+    color: lighten(@teal, 20%);
+  }
 
-.akeebasubs-subscription-grossamount {
-  color: @light-grey;
-  border-top: thin solid darken(@light-grey, 20%);
-}
+  .akeebasubs-subscription-grossamount {
+    color: @light-grey;
+    border-top: thin solid darken(@light-grey, 20%);
+  }
 
-.akeeba-renderer-fef {
-  table[class*=akeeba-table][class*=striped] {
-    tbody > tr {
-      &.expired {
-        background: darken(@red, 40%);
-      }
-
-      &.pending-renewal {
-        background: darken(@green, 40%);
-      }
-
-      &.new {
-        background: darken(@orange, 40%);
-      }
-
-      &.canceled {
-        background: darken(@light-grey, 40%);
-      }
-
-      &:nth-child(2n+1) {
+  .akeeba-renderer-fef {
+    table[class*=akeeba-table][class*=striped] {
+      tbody > tr {
         &.expired {
-          background: darken(@red, 35%);
+          background: darken(@red, 40%);
         }
 
         &.pending-renewal {
-          background: darken(@green, 35%);
+          background: darken(@green, 40%);
         }
 
         &.new {
-          background: darken(@orange, 35%);
+          background: darken(@orange, 40%);
         }
 
         &.canceled {
-          background: darken(@light-grey, 35%);
+          background: darken(@light-grey, 40%);
+        }
+
+        &:nth-child(2n+1) {
+          &.expired {
+            background: darken(@red, 35%);
+          }
+
+          &.pending-renewal {
+            background: darken(@green, 35%);
+          }
+
+          &.new {
+            background: darken(@orange, 35%);
+          }
+
+          &.canceled {
+            background: darken(@light-grey, 35%);
+          }
         }
       }
     }
   }
+
+  .akeebasubs-coupon-discount-value {
+    color: lighten(@red, 30%);
+  }
+
+  .akeebasubs-coupon-discount-percent {
+    color: lighten(@teal, 20%);
+  }
+
+  .akeebasubs-coupon-discount-lastpercent {
+    color: @orange;
+  }
+
+  // endregion
+
+  // region Reusable elements
+
+  .akeebasubs-susbcription-publishup {
+    color: darken(@light-grey, 10%);
+  }
+
+  .akeebasubs-susbcription-publishdown {
+    color: @white;
+  }
+
+
+  .akeebasubs-subscription-discount-coupon {
+    color: lighten(@green, 20%);
+  }
+
+  .akeebasubs-subscription-discount-upgrade {
+    color: @orange;
+  }
+
+  .akeebasubs-subscription-discount-none {
+    color: @light-grey;
+  }
+
+  .akeebasubs-subscription-processor {
+    color: lighten(@teal, 20%);
+  }
+
+  .akeebasubs-subscription-ua {
+    color: lighten(@teal, 20%);
+  }
+
+  // endregion
 }
-
-.akeebasubs-coupon-discount-value {
-  color: lighten(@red, 30%);
-}
-
-.akeebasubs-coupon-discount-percent {
-  color: lighten(@teal, 20%);
-}
-
-.akeebasubs-coupon-discount-lastpercent {
-  color: @orange;
-}
-
-// endregion
-
-// region Reusable elements
-
-.akeebasubs-susbcription-publishup {
-  color: darken(@light-grey, 10%);
-}
-
-.akeebasubs-susbcription-publishdown {
-  color: @white;
-}
-
-
-.akeebasubs-subscription-discount-coupon {
-  color: lighten(@green, 20%);
-}
-
-.akeebasubs-subscription-discount-upgrade {
-  color: @orange;
-}
-
-.akeebasubs-subscription-discount-none {
-  color: @light-grey;
-}
-
-.akeebasubs-subscription-processor {
-  color: lighten(@teal, 20%);
-}
-
-.akeebasubs-subscription-ua {
-  color: lighten(@teal, 20%);
-}
-
-// endregion

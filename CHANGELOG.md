@@ -4,6 +4,7 @@
 
 * Obsolete EmailTemplates link in the toolbar
 * Emails not sent
+* Administrator Dark Mode CSS would also partially apply in Light Mode as well if the setting was Auto instead of Always
 
 # 7.1.0
 
