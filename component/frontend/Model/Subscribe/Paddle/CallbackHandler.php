@@ -38,6 +38,29 @@ class CallbackHandler implements CallbackInterface
 	private $container;
 
 	/**
+	 * Both the subscription_payment_succeeded and the subscription_created callbacks are sent to us at the
+	 * exact same time.
+	 *
+	 * We want the subscription_payment_succeeded callback to be handled BEFORE subscription_created. This
+	 * way subscription_payment_succeeded will update all the payment information and activate the subscription
+	 * whereas subscription_created will update the update_url and cancel_url of the subscription.
+	 *
+	 * Since they are sent at the same time the save() in the subscription_created handler ends up reading the database
+	 * record BEFORE it's updated by subscription_payment_succeeded and written to the database AFTER the
+	 * subscription_payment_succeeded handler (SubscriptionPaymentSucceeded) has written the update. As a result
+	 * the subscription ends up recurring but inactive which is all sorts of trouble.
+	 *
+	 * In order to prevent this issue from occurring we add a 3 second delay when we see a subscription_created callback
+	 * to allow for subscription_payment_succeeded to run successfully, then we call the callback handler again to make
+	 * sure that the correct database record is being loaded.
+	 *
+	 * This is the flag determining whether the delay has been already applied.
+	 *
+	 * @var  bool
+	 */
+	private $hasWaitedForSubscriptionCreated = false;
+
+	/**
 	 * Constructor
 	 *
 	 * @param Container $container The component container
@@ -104,6 +127,19 @@ class CallbackHandler implements CallbackInterface
 
 		// Get the alert name. If none is set up, it's a fulfilment webhook.
 		$alertName = $requestData['alert_name'] ?? 'fulfillment';
+
+		/**
+		 * Special handling for subscription_created. See the docblock of $hasWaitedForSubscriptionCreated.
+		 */
+		if (($alertName == 'subscription_created') && !$this->hasWaitedForSubscriptionCreated)
+		{
+			$this->logCallback($requestData, 'TIME_WAIT -- Waiting for 3 seconds before handling the subscription_created callback');
+
+			$this->hasWaitedForSubscriptionCreated = true;
+			sleep(3);
+
+			return $this->handleCallback($requestMethod, $requestData);
+		}
 
 		/**
 		 * Some webhooks we don't really care about and do not handle. If that's the case, log and return.
