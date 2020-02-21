@@ -30,13 +30,6 @@
 
 ### This project
 
-# Build files
-/build/bin
-/build/buildlang
-/build/epub
-/build/phingext
-/build/tools
-
 # Test configuration
 /Tests/config.php
 
@@ -55,11 +48,6 @@
 
 # Release directory
 /release
-
-# Internal language symlinks
-component/language/*/en-GB
-modules/*/*/language/en-GB
-plugins/*/*/language/en-GB
 
 # Symlink to FEF to let phpStorm auto-complete the CSS class names
 /fef.min.css
