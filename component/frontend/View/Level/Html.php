@@ -9,6 +9,7 @@ namespace Akeeba\Subscriptions\Site\View\Level;
 
 defined('_JEXEC') or die;
 
+use Akeeba\Subscriptions\Admin\Helper\Article;
 use Akeeba\Subscriptions\Site\Model\Levels;
 use Akeeba\Subscriptions\Site\Model\Subscribe;
 use FOF30\Model\DataModel\Collection;
@@ -68,10 +69,26 @@ class Html extends \FOF30\View\DataView\Html
 	public $warnSubscriptions = null;
 
 	/**
+	 * Page header for sales off-line
+	 *
+	 * @var   string
+	 * @since 7.1.1
+	 */
+	public $offlineHeader = '';
+
+	/**
+	 * Page body for sales off-line
+	 *
+	 * @var   string
+	 * @since 7.1.1
+	 */
+	public $offlineBody = '';
+
+	/**
 	 * Get the value of a field from the session cache. If it's empty use the value from the user parameters cache.
 	 *
-	 * @param string $fieldName   The name of the field
-	 * @param array  $emptyValues A list of values considered to be "empty" for the purposes of this method
+	 * @param   string  $fieldName    The name of the field
+	 * @param   array   $emptyValues  A list of values considered to be "empty" for the purposes of this method
 	 *
 	 * @return  mixed  The field value
 	 */
@@ -104,6 +121,18 @@ class Html extends \FOF30\View\DataView\Html
 	protected function onBeforeRead()
 	{
 		parent::onBeforeRead();
+
+		if ($this->container->params->get('sales_offline', 0))
+		{
+			$this->setLayout('offline');
+
+			$articleId           = $this->container->params->get('offline_article', 0);
+			$articleInfo         = Article::getArticle($articleId);
+			$this->offlineHeader = $articleInfo['title'];
+			$this->offlineBody   = $articleInfo['fulltext'];
+
+			return;
+		}
 
 		// Make sure the layout exists. Otherwise use the "default" layout
 		try

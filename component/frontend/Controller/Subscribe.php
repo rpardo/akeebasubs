@@ -94,6 +94,18 @@ class Subscribe extends Controller
 			$level = $levelsModel->find($id);
 		}
 
+		// Are the sales off-line?
+		if ($this->container->params->get('sales_offline', 0))
+		{
+			$ret['info'] = 'Our sales system is currently off-line';
+
+			$this->enqueueMessage(Text::_('COM_AKEEBASUBS_LEVEL_LBL_OFFLINE_MSG'), 'error');
+
+			echo json_encode($ret);
+
+			$this->container->platform->closeApplication();
+		}
+
 		// If we do not have a valid level ID cause an error to be displayed
 		if (!$level->getId())
 		{

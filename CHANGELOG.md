@@ -1,5 +1,9 @@
 # 7.1.1
 
+**New features**
+
+* Sales off-line switch
+
 **Bug fixes**
 
 * Obsolete EmailTemplates link in the toolbar

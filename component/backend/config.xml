@@ -79,7 +79,28 @@
 
 	</fieldset>
 
-	<fieldset name="frontend" label="COM_AKEEBASUBS_CONFIG_FRONTEND_TITLE">
+	<fieldset name="frontend" label="COM_AKEEBASUBS_CONFIG_FRONTEND_TITLE"
+			  addfieldpath="/administrator/components/com_content/models/fields">
+
+		<field name="sales_offline" type="radio" class="switcher btn-group" default="0"
+			   label="COM_AKEEBASUBS_CONFIG_BACKEND_SALES_OFFLINE"
+			   description="COM_AKEEBASUBS_CONFIG_BACKEND_SALES_OFFLINE_DESC">
+			<option value="0">JNo</option>
+			<option value="1">JYes</option>
+		</field>
+
+		<field
+				name="offline_article"
+				type="modal_article"
+				label="COM_AKEEBASUBS_CONFIG_BACKEND_OFFLINE_ARTICLE"
+				description="COM_AKEEBASUBS_CONFIG_BACKEND_OFFLINE_ARTICLE_DESC"
+				required="false"
+				select="true"
+				new="true"
+				edit="true"
+				clear="true"
+		/>
+
 		<field name="secret" type="text"
 			   default=""
 			   size="40"
