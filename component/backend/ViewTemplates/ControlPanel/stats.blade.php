@@ -10,6 +10,39 @@ defined('_JEXEC') or die;
 /** @var \Akeeba\Subscriptions\Admin\View\ControlPanel\Html $this */
 /** @var \Akeeba\Subscriptions\Admin\Model\SubscriptionsForStats $subs */
 $subs = $this->container->factory->model('SubscriptionsForStats')->tmpInstance();
+
+$jNow = new \FOF30\Date\Date();
+$oneYearAgo = (clone $jNow)->sub(new DateInterval('P1Y'));
+$lastYearToDateCount = $subs->clearState()
+	->since((gmdate('Y')-1).'-01-01')
+	->until($oneYearAgo->toSql())
+	->nozero(1)
+	->nojoins(1)
+	->paystate('C')
+	->count();
+$lastYearToDateMoney = $subs->clearState()
+	->since((gmdate('Y')-1).'-01-01')
+	->until($oneYearAgo->toSql())
+	->moneysum(1)
+	->nozero(1)
+	->nojoins(1)
+	->paystate('C')
+	->count();
+$yearToDateCount = $subs->clearState()
+	->since(gmdate('Y').'-01-01')
+	->until(gmdate('Y').'-12-31 23:59:59')
+	->nozero(1)
+	->nojoins(1)
+	->paystate('C')
+	->count();
+$yearToDateMoney = $subs->clearState()
+	->since(gmdate('Y').'-01-01')
+	->until(gmdate('Y').'-12-31 23:59:59')
+	->moneysum(1)
+	->nozero(1)
+	->nojoins(1)
+	->paystate('C')
+	->count();
 ?>
 
 @section('stats')
@@ -34,8 +67,28 @@ $subs = $this->container->factory->model('SubscriptionsForStats')->tmpInstance()
         @endif
         @endRepeatable
 
+        @repeatable('renderTrend', $percent)
+        @if ($percent < 0)
+            <span class="akeeba-label--red">
+                <span class="akion-arrow-down-b"></span>
+                {{{ sprintf('%2.2f', abs($percent)) }}} %
+            </span>
+        @elseif (abs($percent) < 0.01)
+            <span class="akeeba-label--grey">
+                <span class="akion-minus"></span>
+                {{{ sprintf('%2.2f', $percent) }}} %
+            </span>
+        @else
+            <span class="akeeba-label--green">
+                <span class="akion-arrow-up-b"></span>
+                {{{ sprintf('%2.2f', $percent) }}} %
+            </span>
+        @endif
+        @endrepeatable
+
         <table class="akeeba-table--striped">
             <tbody>
+                <!-- Last year (total) -->
                 <tr>
                     <td width="50%">
                         @lang('COM_AKEEBASUBS_DASHBOARD_STATS_LASTYEAR')
@@ -60,30 +113,37 @@ $subs = $this->container->factory->model('SubscriptionsForStats')->tmpInstance()
                         @yieldRepeatable('renderMoney', $money)
                     </td>
                 </tr>
-                <tr class="row1">
-                    <td>@lang('COM_AKEEBASUBS_DASHBOARD_STATS_THISYEAR')</td>
+                <!-- Last year to date -->
+                <tr>
+                    <td>@lang('COM_AKEEBASUBS_DASHBOARD_STATS_LASTYEAR_TO_DATE')</td>
                     <td align="right">
-                        {{{ $subs->clearState()
-                                           ->since(gmdate('Y').'-01-01')
-                                           ->until(gmdate('Y').'-12-31 23:59:59')
-                                           ->nozero(1)
-                                           ->nojoins(1)
-                                           ->paystate('C')
-                                           ->count() }}}
+                        {{{ $lastYearToDateCount }}}
                     </td>
                     <td align="right">
-
-                        <?php $money = $subs->clearState()
-                                        ->since(gmdate('Y').'-01-01')
-                                        ->until(gmdate('Y').'-12-31 23:59:59')
-                                        ->moneysum(1)
-                                        ->nozero(1)
-                                        ->nojoins(1)
-                                        ->paystate('C')
-                                        ->count() ?>
-                        @yieldRepeatable('renderMoney', $money)
+                        @yieldRepeatable('renderMoney', $lastYearToDateMoney)
                     </td>
                 </tr>
+                <!-- Year to date -->
+                <tr>
+                    <td>@lang('COM_AKEEBASUBS_DASHBOARD_STATS_THISYEAR')</td>
+                    <td align="right">
+                        {{{ $yearToDateCount }}}
+                    </td>
+                    <td align="right">
+                        @yieldRepeatable('renderMoney', $yearToDateMoney)
+                    </td>
+                </tr>
+                <!-- Year to date trend -->
+                <tr>
+                    <td>@lang('COM_AKEEBASUBS_DASHBOARD_STATS_YTD_TREND')</td>
+                    <td align="right">
+                        @yieldRepeatable('renderTrend', 100 * ($yearToDateCount - $lastYearToDateCount) / $lastYearToDateCount)
+                    </td>
+                    <td align="right">
+                        @yieldRepeatable('renderTrend', 100 * ($yearToDateMoney - $lastYearToDateMoney) / $lastYearToDateMoney)
+                    </td>
+                </tr>
+
                 <tr>
                     <td>@lang('COM_AKEEBASUBS_DASHBOARD_STATS_LASTMONTH')</td>
                     <td align="right">

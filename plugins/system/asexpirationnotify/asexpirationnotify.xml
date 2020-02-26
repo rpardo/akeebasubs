@@ -12,8 +12,8 @@
     <authorUrl>http://www.akeebabackup.com</authorUrl>
     <copyright>Copyright (c)2010-2019 Nicholas K. Dionysopoulos</copyright>
     <license>GNU General Public License version 3, or later</license>
-    <creationDate>2020-01-25</creationDate>
-    <version>7.1.0</version>
+    <creationDate>2020-02-22</creationDate>
+    <version>7.1.1.a1</version>
     <description>PLG_SYSTEM_ASEXPIRATIONNOTIFY_XML_DESC</description>
     <files>
         <filename plugin="asexpirationnotify">asexpirationnotify.php</filename>
