@@ -12,7 +12,6 @@
             <mapping deploy="/modules/mod_aksexpires" local="$PROJECT_DIR$/modules/site/aksexpires" web="/modules/mod_aksexpires" />
             <mapping deploy="/modules/mod_akslevels" local="$PROJECT_DIR$/modules/site/akslevels" web="/modules/mod_akslevels" />
             <mapping deploy="/modules/mod_aksubslist" local="$PROJECT_DIR$/modules/site/aksubslist" web="/modules/mod_aksubslist" />
-            <mapping deploy="/plugins/akeebasubs/adminemails" local="$PROJECT_DIR$/plugins/akeebasubs/adminemails" web="/plugins/akeebasubs/adminemails" />
             <mapping deploy="/plugins/akeebasubs/atscredits" local="$PROJECT_DIR$/plugins/akeebasubs/atscredits" web="/plugins/akeebasubs/atscredits" />
             <mapping deploy="/plugins/akeebasubs/contentpublish" local="$PROJECT_DIR$/plugins/akeebasubs/contentpublish" web="/plugins/akeebasubs/contentpublish" />
             <mapping deploy="/plugins/akeebasubs/joomla" local="$PROJECT_DIR$/plugins/akeebasubs/joomla" web="/plugins/akeebasubs/joomla" />
@@ -26,6 +25,8 @@
             <mapping deploy="/plugins/system/asfixrenewalsflag" local="$PROJECT_DIR$/plugins/system/asfixrenewalsflag" web="/plugins/system/asfixrenewalsflag" />
             <mapping deploy="/plugins/system/asuserregredir" local="$PROJECT_DIR$/plugins/system/asuserregredir" web="/plugins/system/asuserregredir" />
             <mapping deploy="/cli" local="$PROJECT_DIR$/component/cli" web="/cli" />
+            <mapping deploy="/language/en-GB" local="$PROJECT_DIR$/component/language/frontend/en-GB" web="/language/en-GB" />
+            <mapping deploy="/administrator/language/en-GB" local="$PROJECT_DIR$/component/language/backend/en-GB" web="/administrator/language/en-GB" />
           </mappings>
         </serverdata>
       </paths>
