@@ -92,6 +92,7 @@ use FOF30\Model\DataModel;
  * @method  $this expires_from() 				 expires_from(string $v)  		    Subscriptions expiring from this date onwards
  * @method  $this expires_to()					 expires_to(string $v)      	    Subscriptions expiring before this date
  * @method  $this nozero() 						 nozero(bool $v)              	    Set to 1 to skip free (net_amount=0) subscriptions
+ * @method  $this recurring() 				     recurring(?int $v)              	Return only 1 = recurring; 0 = non recurring; null (default) = no filter
  * @method  $this search() 						 search(string $v)            	    Search by user info (username, name, email, business name or VAT number)
  * @method  $this subid() 						 subid(int|int[] $ids)             	Search by subscription ID (int or array of int)
  * @method  $this level() 						 level(int|int[] $ids)             	Search by subscription level ID (int or array of int)
@@ -299,17 +300,20 @@ class Subscriptions extends DataModel
 		// Filter by discount mode and code (filter_discountmode / filter_discountcode)
 		$this->filterByDiscountCode($query);
 
-		// Filter by publish_up / publish_down dates
+		// Filter by `publish_up` / `publish_down` dates
 		$this->filterByDate($query);
 
-		// Filter by created date (since / until)
+		// Filter by created date (`since` / `until`)
 		$this->filterByCreatedOn($query);
 
-		// Filter by expiration date range (expires_from / expires_to)
+		// Filter by expiration date range (`expires_from` / `expires_to`)
 		$this->filterByExpirationDate($query);
 
-		// Filter by non-free subscriptions (nozero)
+		// Filter by non-free subscriptions (`nozero`)
 		$this->filterByNonFree($query);
+
+		// Filter by recurring (`recurring`)
+		$this->filterByRecurring($query);
 
 		/**
 		 * Filter by subscription ID. See onBeforeBuildQuery. When we have caught the case where subid is not set but
@@ -852,6 +856,51 @@ class Subscriptions extends DataModel
 				$tableAlias . $db->qn('net_amount') . ' > ' . $db->q('0')
 			);
 		}
+	}
+
+	/**
+	 * Filter the select query by recurring subscriptions (recurring)
+	 *
+	 * 1 = recurring; 0 = non-recurring, null (default) = indifference
+	 *
+	 * @param   \JDatabaseQuery  $query  The query to modify
+	 *
+	 * @return  void
+	 */
+	protected function filterByRecurring(\JDatabaseQuery $query)
+	{
+		$recurring = $this->getState('recurring', null, 'int');
+
+		if (is_null($recurring) || !in_array($recurring, [0, 1]))
+		{
+			return;
+		}
+
+		$db = $this->getDbo();
+
+		$tableAlias = $this->getBehaviorParam('tableAlias', null);
+		$tableAlias = !empty($tableAlias) ? ($db->qn($tableAlias) . '.') : '';
+
+		// 1 = only recurring subscriptions
+		if ($recurring === 1)
+		{
+			$query
+				->where(
+					'(' . $tableAlias . $db->qn('cancel_url') . ' IS NOT NULL AND ' .
+					$tableAlias . $db->qn('cancel_url') . ' != ' . $db->q('') . ')'
+				);
+
+			return;
+		}
+
+		// 0 = only non-recurring (one off) subscriptions
+		$query
+			->where(
+				'(' . $tableAlias . $db->qn('cancel_url') . ' IS NULL OR ' .
+				$tableAlias . $db->qn('cancel_url') . ' = ' . $db->q('') . ')'
+			);
+
+		return;
 	}
 
 	/**

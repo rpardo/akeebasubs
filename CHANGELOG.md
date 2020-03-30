@@ -3,6 +3,7 @@
 **New features**
 
 * Sales off-line switch
+* Script to fix contact flags of early renewals
 
 **Bug fixes**
 
