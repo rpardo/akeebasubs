@@ -7,6 +7,7 @@
 
 defined('_JEXEC') or die();
 
+use Akeeba\Subscriptions\Admin\Helper\Plugins;
 use Akeeba\Subscriptions\Admin\Model\Levels;
 use FOF30\Container\Container;
 use Joomla\CMS\Component\ComponentHelper;
@@ -97,20 +98,12 @@ class plgContentAsprice extends CMSPlugin
 	 */
 	private static function initializeLevelInformation(): void
 	{
-		$container = Container::getInstance('com_akeebasubs');
-
-		/** @var Levels $levelsModel */
-		$levelsModel = $container
-			->factory
-			->model('Levels')
-			->tmpInstance();
-
 		self::$levels               = [];
 		self::$upperSlugs           = [];
 		self::$levelIdToProductIds  = [];
 		$productIDs                 = [];
 
-		$list = $levelsModel->get(true);
+		$list = Plugins::getAllLevels();
 
 		if (!count($list))
 		{
@@ -412,12 +405,6 @@ HTML;
 			return true;
 		}
 
-		if (is_null(self::$localisePrices))
-		{
-			$container            = Container::getInstance('com_akeebasubs');
-			self::$localisePrices = $container->params->get('localisePrice', 1) == 1;
-		}
-
 		$accceptableActions = [
 			'asprice',
 		];
@@ -438,6 +425,12 @@ HTML;
 		if (!$mustProcess)
 		{
 			return true;
+		}
+
+		if (is_null(self::$localisePrices))
+		{
+			$container            = Container::getInstance('com_akeebasubs');
+			self::$localisePrices = $container->params->get('localisePrice', 1) == 1;
 		}
 
 		// {asprice MYLEVEL} ==> 10.00€

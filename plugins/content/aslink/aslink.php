@@ -7,6 +7,7 @@
 
 defined('_JEXEC') or die();
 
+use Akeeba\Subscriptions\Admin\Helper\Plugins;
 use FOF30\Container\Container;
 use Akeeba\Subscriptions\Admin\Model\Levels;
 use Joomla\CMS\Plugin\CMSPlugin;
@@ -90,11 +91,10 @@ class plgContentAslink extends CMSPlugin
 		if (is_null($levels))
 		{
 			/** @var Levels $levelsModel */
-			$levelsModel = Container::getInstance('com_akeebasubs', [], 'site')->factory->model('Levels')->tmpInstance();
 			$levels      = array();
 			$slugs       = array();
 			$upperSlugs  = array();
-			$list        = $levelsModel->get(true);
+			$list        = Plugins::getAllLevels();
 
 			if (count($list))
 			{

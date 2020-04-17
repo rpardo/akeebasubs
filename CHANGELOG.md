@@ -5,6 +5,10 @@
 * Sales off-line switch
 * Script to fix contact flags of early renewals
 
+**Miscellaneous changes**
+
+* Database optimization: cache Levels queries in content plugins
+
 **Bug fixes**
 
 * Obsolete EmailTemplates link in the toolbar

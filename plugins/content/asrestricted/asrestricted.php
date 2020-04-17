@@ -5,6 +5,7 @@
  * @license   GNU General Public License version 3, or later
  */
 
+use Akeeba\Subscriptions\Admin\Helper\Plugins;
 use FOF30\Container\Container;
 use Akeeba\Subscriptions\Admin\Model\Levels;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
@@ -48,33 +49,33 @@ class plgContentAsrestricted extends JPlugin
 	 */
 	public function onContentPrepare($context, &$row, &$params, $page = 0)
 	{
+		// Make sure the plugin is able to run at all
 		if (!$this->enabled)
 		{
 			return true;
 		}
 
+		// Do I have any of the supported plugin tags in the content?
+		$text = is_object($row) ? $row->text : $row;
+
+		if (StringHelper::strpos($text, 'akeebasubs') !== false)
+		{
+			return true;
+		}
+
+		// Search for this tag in the content
+		$regex = "#{akeebasubs(.*?)}(.*?){/akeebasubs}#s";
+		$text = preg_replace_callback($regex, array('self', 'process'), $text);
+
+		// Return the results
 		if (is_object($row))
 		{
-			// Check whether the plugin should process or not
-			if (StringHelper::strpos($row->text, 'akeebasubs') === false)
-			{
-				return true;
-			}
+			$row->text = $text;
 
-			// Search for this tag in the content
-			$regex = "#{akeebasubs(.*?)}(.*?){/akeebasubs}#s";
-			$row->text = preg_replace_callback($regex, array('self', 'process'), $row->text);
+			return true;
 		}
-		else
-		{
-			if (StringHelper::strpos($row, 'akeebasubs') === false)
-			{
-				return true;
-			}
 
-			$regex = "#{akeebasubs(.*?)}(.*?){/akeebasubs}#s";
-			$row   = preg_replace_callback($regex, array('self', 'process'), $row);
-		}
+		$row = $text;
 
 		return true;
 	}
@@ -103,11 +104,10 @@ class plgContentAsrestricted extends JPlugin
 		if (is_null($levels))
 		{
 			/** @var Levels $levelsModel */
-			$levelsModel = Container::getInstance('com_akeebasubs', [], 'site')->factory->model('Levels')->tmpInstance();
 			$levels      = array();
 			$slugs       = array();
 			$upperSlugs  = array();
-			$list        = $levelsModel->get(true);
+			$list        = Plugins::getAllLevels();
 
 			if (count($list))
 			{

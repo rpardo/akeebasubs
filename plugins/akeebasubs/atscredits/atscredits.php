@@ -7,6 +7,7 @@
 
 defined('_JEXEC') or die();
 
+use Akeeba\Subscriptions\Admin\Helper\Plugins;
 use Akeeba\Subscriptions\Admin\Model\Levels;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 
@@ -50,10 +51,7 @@ class plgAkeebasubsAtscredits extends \Akeeba\Subscriptions\Admin\PluginAbstract
 	{
 		$this->credits = array();
 
-		/** @var Levels $model */
-		$model = $this->container->factory->model('Levels')->tmpInstance();
-
-		$levels = $model->get(true);
+		$levels = Plugins::getAllLevels();
 
 		if ($levels->count())
 		{

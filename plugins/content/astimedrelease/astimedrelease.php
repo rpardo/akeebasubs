@@ -7,6 +7,7 @@
 
 defined('_JEXEC') or die();
 
+use Akeeba\Subscriptions\Admin\Helper\Plugins;
 use FOF30\Container\Container;
 use Akeeba\Subscriptions\Site\Model\Levels;
 use Akeeba\Subscriptions\Site\Model\Subscriptions;
@@ -58,35 +59,56 @@ class plgContentAstimedrelease extends JPlugin
 		}
 
 		parent::__construct($subject, $config);
-
-		if ($this->enabled)
-		{
-			$this->initialiseArrays();
-		}
 	}
 
 	public function onContentPrepare($context, &$row, &$params, $page = 0)
 	{
+		static $isInitialized = false;
+
+		// Make sure the plugin is able to run at all
 		if (!$this->enabled)
 		{
 			return true;
 		}
 
+		// Do I have any of the supported plugin tags in the content?
 		$text = is_object($row) ? $row->text : $row;
 
-		if (StringHelper::strpos($row->text, 'astimedrelease') !== false)
+		$supportedTags = [
+			'astimedrelease',
+			'asdayselapsed',
+			'asdaysremaining'
+		];
+
+		$shouldRun = array_reduce($supportedTags, function ($carry, $reason) use ($text) {
+			return $carry || (StringHelper::strpos($text, $reason) !== false);
+		}, false);
+
+		if (!$shouldRun)
+		{
+			return true;
+		}
+
+		// Just in time initialization
+		if (!$isInitialized)
+		{
+			$this->initialiseArrays();
+		}
+
+		// Process each tag
+		if (StringHelper::strpos($text, 'astimedrelease') !== false)
 		{
 			$regex = "#{astimedrelease(.*?)}(.*?){/astimedrelease}#s";
 			$text  = preg_replace_callback($regex, array('self', 'process'), $text);
 		}
 
-		if (StringHelper::strpos($row->text, 'asdayselapsed') !== false)
+		if (StringHelper::strpos($text, 'asdayselapsed') !== false)
 		{
 			$regex = "#{asdayselapsed(.*?)}#s";
 			$text  = preg_replace_callback($regex, array('self', 'processElapsed'), $text);
 		}
 
-		if (StringHelper::strpos($row->text, 'asdaysremaining') !== false)
+		if (StringHelper::strpos($text, 'asdaysremaining') !== false)
 		{
 			$regex = "#{asdaysremaining(.*?)}#s";
 			$text  = preg_replace_callback($regex, array('self', 'processRemaining'), $text);
@@ -117,8 +139,7 @@ class plgContentAstimedrelease extends JPlugin
 		// Get level title to ID map
 		/** @var Levels $levelsModel */
 		$container   = Container::getInstance('com_akeebasubs', [], 'site');
-		$levelsModel = $container->factory->model('Levels')->tmpInstance();
-		$levels      = $levelsModel->get(true);
+		$levels      = Plugins::getAllLevels();
 
 		if ($levels->count())
 		{

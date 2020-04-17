@@ -8,6 +8,7 @@
 defined('_JEXEC') or die();
 
 use Akeeba\Subscriptions\Admin\Helper\Email;
+use Akeeba\Subscriptions\Admin\Helper\Plugins;
 use Akeeba\Subscriptions\Admin\Model\Levels;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 use FOF30\Container\Container;
@@ -97,11 +98,9 @@ class plgSystemAsexpirationnotify extends CMSPlugin
 		$clockStart = microtime(true);
 
 		// Get and loop all subscription levels
-		/** @var Levels $levelsModel */
-		$levelsModel = Container::getInstance('com_akeebasubs')->factory->model('Levels')->tmpInstance();
-		$levels      = $levelsModel
-			->enabled(1)
-			->get(true);
+		$levels = Plugins::getAllLevels()->filter(function (Levels $level) {
+			return $level->enabled == 1;
+		});
 
 		// Update the last run info before sending any emails
 		$this->setLastRunTimestamp();

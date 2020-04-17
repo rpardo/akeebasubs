@@ -7,6 +7,7 @@
 
 defined('_JEXEC') or die();
 
+use Akeeba\Subscriptions\Admin\Helper\Plugins;
 use Akeeba\Subscriptions\Admin\Model\Levels;
 use Akeeba\Subscriptions\Admin\Model\Subscriptions;
 
@@ -433,8 +434,7 @@ class plgAkeebasubsContentpublish extends \Akeeba\Subscriptions\Admin\PluginAbst
 		$this->addGroups = array();
 		$this->removeGroups = array();
 
-		$model           = $this->container->factory->model('Levels')->tmpInstance();
-		$levels          = $model->get(true);
+		$levels          = Plugins::getAllLevels();
 
 		if (!empty($levels))
 		{
