@@ -38,7 +38,7 @@
     </p>
 @stop
 @section('announcement_note')
-    The two necessary for receiving the discount or being eligible for the recurring 3-month subscription are:<br/>
+    The two necessary conditions for receiving the discount or being eligible for the recurring 3-month subscription are:<br/>
     a. You are purchasing a [LEVEL] subscription. If you buy a subscription to a different product or a bundle this offer is void.<br/>
     b. You must complete the checkout (payment) for your [LEVEL] renewal purchase before [PUBLISH_DOWN].<br/>
     Both conditions must be fulfilled to receive the discount. You do not need to use a coupon code or special link.<br/>
