@@ -141,14 +141,14 @@ $yearToDateMoney = $subs->clearState()
                             @yieldRepeatable('renderTrend', 100 * ($yearToDateCount - $lastYearToDateCount) / $lastYearToDateCount)
                         @else
                             &mdash;
-                        @endif;
+                        @endif
                     </td>
                     <td align="right">
                         @if ($lastYearToDateMoney)
                             @yieldRepeatable('renderTrend', 100 * ($yearToDateMoney - $lastYearToDateMoney) / $lastYearToDateMoney)
                         @else
                             &mdash;
-                        @endif;
+                        @endif
                     </td>
                 </tr>
 
