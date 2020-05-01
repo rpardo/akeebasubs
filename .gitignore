@@ -51,3 +51,4 @@
 
 # Symlink to FEF to let phpStorm auto-complete the CSS class names
 /fef.min.css
+/.idea/sshConfigs.xml

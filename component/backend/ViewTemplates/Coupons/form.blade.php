@@ -19,7 +19,10 @@ $typeOptions = [
 $item = $this->getItem();
 
 ?>
-@jhtml('behavior.tooltip')
+@if (version_compare(JVERSION, '3.999.999', 'le'))
+    @jhtml('behavior.tooltip')
+@endif
+
 @jhtml('formbehavior.chosen', 'select')
 
 @extends('admin:com_akeebasubs/Common/edit')

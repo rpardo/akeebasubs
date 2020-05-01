@@ -10,8 +10,6 @@ use FOF30\Utils\SelectOptions;
 
 defined('_JEXEC') or die();
 
-JHtml::_('behavior.tooltip');
-
 /**
  * @var \FOF30\View\DataView\Form $this
  * @var  Coupons                  $row
@@ -20,6 +18,10 @@ JHtml::_('behavior.tooltip');
 
 $model = $this->getModel();
 ?>
+@if (version_compare(JVERSION, '3.999.999', 'le'))
+    @jhtml('behavior.tooltip')
+@endif
+
 @extends('admin:com_akeebasubs/Common/browse')
 
 @section('browse-page-top')

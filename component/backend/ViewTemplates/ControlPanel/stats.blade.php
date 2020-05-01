@@ -137,10 +137,18 @@ $yearToDateMoney = $subs->clearState()
                 <tr>
                     <td>@lang('COM_AKEEBASUBS_DASHBOARD_STATS_YTD_TREND')</td>
                     <td align="right">
-                        @yieldRepeatable('renderTrend', 100 * ($yearToDateCount - $lastYearToDateCount) / $lastYearToDateCount)
+                        @if ($lastYearToDateCount > 0)
+                            @yieldRepeatable('renderTrend', 100 * ($yearToDateCount - $lastYearToDateCount) / $lastYearToDateCount)
+                        @else
+                            &mdash;
+                        @endif;
                     </td>
                     <td align="right">
-                        @yieldRepeatable('renderTrend', 100 * ($yearToDateMoney - $lastYearToDateMoney) / $lastYearToDateMoney)
+                        @if ($lastYearToDateMoney)
+                            @yieldRepeatable('renderTrend', 100 * ($yearToDateMoney - $lastYearToDateMoney) / $lastYearToDateMoney)
+                        @else
+                            &mdash;
+                        @endif;
                     </td>
                 </tr>
 

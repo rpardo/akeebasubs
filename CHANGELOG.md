@@ -8,6 +8,7 @@
 **Miscellaneous changes**
 
 * Database optimization: cache Levels queries in content plugins
+* Joomla 4 beta 1 compatibility
 
 **Bug fixes**
 
