@@ -8,10 +8,12 @@
 namespace Akeeba\Subscriptions\Admin\Helper;
 
 use FOF30\Container\Container;
+use FOF30\Layout\LayoutHelper;
 use FOF30\Model\DataModel;
-use JHtml;
-use JLoader;
-use JText;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 
 defined('_JEXEC') or die;
 
@@ -25,7 +27,7 @@ abstract class Select
 	 *
 	 * @var  array
 	 */
-	public static $countries = array(
+	public static $countries = [
 		''   => '----',
 		'AD' => 'Andorra',
 		'AE' => 'United Arab Emirates',
@@ -275,8 +277,8 @@ abstract class Select
 		'YT' => 'Mayotte',
 		'ZA' => 'South Africa',
 		'ZM' => 'Zambia',
-		'ZW' => 'Zimbabwe'
-	);
+		'ZW' => 'Zimbabwe',
+	];
 
 	/**
 	 * Returns a list of all countries including the empty option (no country)
@@ -311,11 +313,12 @@ abstract class Select
 	{
 		if (array_key_exists($cCode, self::$countries))
 		{
-			return self::$countries[ $cCode ];
+			return self::$countries[$cCode];
 		}
 
 		return $cCode;
 	}
+
 	/**
 	 * Translate a two letter country code into the country name (in English). If the country is unknown three em-dashes
 	 * are returned. This is different to decode country which returns the country code in this case.
@@ -346,7 +349,7 @@ abstract class Select
 	 * On really old browsers (pre-2015) this still renders as the country code since the Regional Indicator Symbol
 	 * Letter glyphs were added to Unicode in 2010. Now, if you have an even older browser -- what the heck, dude?!
 	 *
-	 * @param string $cCode
+	 * @param   string  $cCode
 	 *
 	 * @return string
 	 *
@@ -408,16 +411,16 @@ abstract class Select
 	 *
 	 * @return string
 	 */
-	public static function countries($selected = null, $id = 'country', $attribs = array())
+	public static function countries($selected = null, $id = 'country', $attribs = [])
 	{
 		// Get the raw list of countries
-		$options   = array();
+		$options   = [];
 		$countries = self::$countries;
 		asort($countries);
 		// Parse show / hide options
 		// -- Initialisation
-		$show = array();
-		$hide = array();
+		$show = [];
+		$hide = [];
 		// -- Parse the show attribute
 		if (isset($attribs['show']))
 		{
@@ -428,7 +431,7 @@ abstract class Select
 			}
 			else
 			{
-				$show = array();
+				$show = [];
 			}
 			unset($attribs['show']);
 		}
@@ -442,19 +445,19 @@ abstract class Select
 			}
 			else
 			{
-				$hide = array();
+				$hide = [];
 			}
 			unset($attribs['hide']);
 		}
 		// -- If $show is not empty, filter the countries
 		if (count($show))
 		{
-			$temp = array();
+			$temp = [];
 			foreach ($show as $key)
 			{
 				if (array_key_exists($key, $countries))
 				{
-					$temp[ $key ] = $countries[ $key ];
+					$temp[$key] = $countries[$key];
 				}
 			}
 			asort($temp);
@@ -463,12 +466,12 @@ abstract class Select
 		// -- If $show is empty but $hide is not, filter the countries
 		elseif (count($hide))
 		{
-			$temp = array();
+			$temp = [];
 			foreach ($countries as $key => $v)
 			{
 				if (!in_array($key, $hide))
 				{
-					$temp[ $key ] = $v;
+					$temp[$key] = $v;
 				}
 			}
 			asort($temp);
@@ -476,8 +479,9 @@ abstract class Select
 		}
 		foreach ($countries as $code => $name)
 		{
-			$options[] = JHtml::_('select.option', $code, $name);
+			$options[] = HTMLHelper::_('select.option', $code, $name);
 		}
+
 		return self::genericlist($options, $id, $attribs, $selected, $id);
 	}
 
@@ -492,21 +496,536 @@ abstract class Select
 
 		if (is_null($invoiceExtensions))
 		{
-			$source = Container::getInstance('com_akeebasubs')->factory
+			$source            = Container::getInstance('com_akeebasubs')->factory
 				->model('Invoices')->tmpInstance()
 				->getExtensions(0);
-			$invoiceExtensions = array();
+			$invoiceExtensions = [];
 
 			if (!empty($source))
 			{
 				foreach ($source as $item)
 				{
-					$invoiceExtensions[ $item['extension'] ] = $item['title'];
+					$invoiceExtensions[$item['extension']] = $item['title'];
 				}
 			}
 		}
 
 		return $invoiceExtensions;
+	}
+
+	/**
+	 * Generates a yes/no drop-down list.
+	 *
+	 * @param   string  $name      The value of the HTML name attribute
+	 * @param   array   $attribs   Additional HTML attributes for the <select> tag
+	 * @param   string  $selected  The key that is selected
+	 *
+	 * @return  string  HTML for the list
+	 */
+	public static function booleanlist($name, $attribs = null, $selected = null)
+	{
+		$options = [
+			HTMLHelper::_('select.option', '', '---'),
+			HTMLHelper::_('select.option', '0', Text::_('JNo')),
+			HTMLHelper::_('select.option', '1', Text::_('JYes')),
+		];
+
+		return self::genericlist($options, $name, $attribs, $selected, $name);
+	}
+
+	/**
+	 * Displays a list of the available user groups.
+	 *
+	 * @param   string  $name      The form field name.
+	 * @param   string  $selected  The name of the selected section.
+	 * @param   array   $attribs   Additional attributes to add to the select field.
+	 *
+	 * @return  string   The HTML for the list
+	 */
+	public static function usergroups($name = 'usergroups', $selected = '', $attribs = [])
+	{
+		return HTMLHelper::_('access.usergroup', $name, $selected, $attribs, false);
+	}
+
+	/**
+	 * Generates a Published/Unpublished drop-down list.
+	 *
+	 * @param   string  $selected  The key that is selected (0 = unpublished / 1 = published)
+	 * @param   string  $id        The value of the HTML name attribute
+	 * @param   array   $attribs   Additional HTML attributes for the <select> tag
+	 *
+	 * @return  string  HTML for the list
+	 */
+	public static function published($selected = null, $id = 'enabled', $attribs = [])
+	{
+		$options   = [];
+		$options[] = HTMLHelper::_('select.option', null, '- ' . Text::_('COM_AKEEBASUBS_COMMON_SELECTSTATE') . ' -');
+		$options[] = HTMLHelper::_('select.option', 0, Text::_('JUNPUBLISHED'));
+		$options[] = HTMLHelper::_('select.option', 1, Text::_('JPUBLISHED'));
+
+		return self::genericlist($options, $id, $attribs, $selected, $id);
+	}
+
+	/**
+	 * Generates a drop-down list for the available languages of a multi-language site.
+	 *
+	 * @param   string  $selected  The key that is selected
+	 * @param   string  $id        The value of the HTML name attribute
+	 * @param   array   $attribs   Additional HTML attributes for the <select> tag
+	 *
+	 * @return  string  HTML for the list
+	 */
+	public static function languages($selected = null, $id = 'language', $attribs = [])
+	{
+		$languages = \JLanguageHelper::getLanguages('lang_code');
+		$options   = [];
+		$options[] = HTMLHelper::_('select.option', '*', Text::_('JALL_LANGUAGE'));
+
+		if (!empty($languages))
+		{
+			foreach ($languages as $key => $lang)
+			{
+				$options[] = HTMLHelper::_('select.option', $key, $lang->title);
+			}
+		}
+
+		return self::genericlist($options, $id, $attribs, $selected, $id);
+	}
+
+	/**
+	 * Generates a drop-down list for the available subscription payment states.
+	 *
+	 * @param   string  $selected  The key that is selected
+	 * @param   string  $id        The value of the HTML name attribute
+	 * @param   array   $attribs   Additional HTML attributes for the <select> tag
+	 *
+	 * @return  string  HTML for the list
+	 */
+	public static function paystates($selected = null, $id = 'state', $attribs = [])
+	{
+		$options   = [];
+		$options[] = HTMLHelper::_('select.option', '', '- ' . Text::_('COM_AKEEBASUBS_SUBSCRIPTION_STATE') . ' -');
+
+		$types = ['N', 'P', 'C', 'X'];
+
+		foreach ($types as $type)
+		{
+			$options[] = HTMLHelper::_('select.option', $type, Text::_('COM_AKEEBASUBS_SUBSCRIPTION_STATE_' . $type));
+		}
+
+		return self::genericlist($options, $id, $attribs, $selected, $id);
+	}
+
+	/**
+	 * Generates a drop-down list for the available coupon types.
+	 *
+	 * @param   string  $name      The value of the HTML name attribute
+	 * @param   string  $selected  The key that is selected
+	 * @param   array   $attribs   Additional HTML attributes for the <select> tag
+	 *
+	 * @return  string  HTML for the list
+	 */
+	public static function coupontypes($name = 'type', $selected = 'value', $attribs = [])
+	{
+		$options   = [];
+		$options[] = HTMLHelper::_('select.option', '', '- ' . Text::_('COM_AKEEBASUBS_COMMON_SELECT') . ' -');
+		$options[] = HTMLHelper::_('select.option', 'value', Text::_('COM_AKEEBASUBS_COUPON_TYPE_VALUE'));
+		$options[] = HTMLHelper::_('select.option', 'percent', Text::_('COM_AKEEBASUBS_COUPON_TYPE_PERCENT'));
+
+		return self::genericlist($options, $name, $attribs, $selected, $name);
+	}
+
+	/**
+	 * Generates a drop-down list for the available subscription levels. Alias of levels() with different ordering of
+	 * parameters and include_clear set to true.
+	 *
+	 * @param   string  $selected  The key that is selected
+	 * @param   string  $id        The value of the HTML name attribute
+	 * @param   array   $attribs   Additional HTML attributes for the <select> tag
+	 *
+	 * @return  string  HTML for the list
+	 */
+	public static function subscriptionlevels($selected = null, $id = 'akeebasubs_level_id', $attribs = [])
+	{
+		$attribs['include_clear'] = true;
+
+		return self::levels($id, $selected, $attribs);
+	}
+
+	/**
+	 * Generates a drop-down list for the available subscription levels.
+	 *
+	 * Some interesting attributes:
+	 *
+	 * include_none     Include an option with value -1 titled "None"
+	 * include_all      Include an option with value 0 titled "All"
+	 * include_clear    Include an option with no value for clearing the selection
+	 *
+	 * By default none of these attributes is set
+	 *
+	 * @param   string  $name      The value of the HTML name attribute
+	 * @param   string  $selected  The key that is selected
+	 * @param   array   $attribs   Additional HTML attributes for the <select> tag
+	 *
+	 * @return  string  HTML for the list
+	 */
+	public static function levels($name = 'level', $selected = '', $attribs = [])
+	{
+		/** @var DataModel $model */
+		$model = Container::getInstance('com_akeebasubs')->factory
+			->model('Levels')->tmpInstance();
+
+		$list = $model->filter_order('ordering')->filter_order_Dir('ASC')->get(true);
+
+		$options = [];
+
+		$include_none  = false;
+		$include_all   = false;
+		$include_clear = false;
+
+		if (array_key_exists('include_none', $attribs))
+		{
+			$include_none = $attribs['include_none'];
+			unset($attribs['include_none']);
+		}
+
+		if (array_key_exists('include_all', $attribs))
+		{
+			$include_all = $attribs['include_all'];
+			unset($attribs['include_all']);
+		}
+
+		if (array_key_exists('include_clear', $attribs))
+		{
+			$include_clear = $attribs['include_clear'];
+			unset($attribs['include_clear']);
+		}
+
+		if ($include_none)
+		{
+			$options[] = HTMLHelper::_('select.option', '-1', Text::_('COM_AKEEBASUBS_COMMON_SELECTLEVEL_NONE'));
+		}
+
+		if ($include_all)
+		{
+			$options[] = HTMLHelper::_('select.option', '0', Text::_('COM_AKEEBASUBS_COMMON_SELECTLEVEL_ALL'));
+		}
+
+		if ($include_clear || (!$include_none && !$include_all))
+		{
+			$options[] = HTMLHelper::_('select.option', '', '- ' . Text::_('COM_AKEEBASUBS_COMMON_SELECT') . ' -');
+		}
+
+		foreach ($list as $item)
+		{
+			$options[] = HTMLHelper::_('select.option', $item->akeebasubs_level_id, $item->title);
+		}
+
+		return self::genericlist($options, $name, $attribs, $selected, $name);
+	}
+
+	/**
+	 * Returns the human readable subscription level title based on the numeric subscription level ID given in $id
+	 *
+	 * Alias of Format::formatLevel
+	 *
+	 * @param   int  $id  The subscription level ID
+	 *
+	 * @return  string  The subscription level title, or three em-dashes if it's unknown
+	 */
+	public static function formatLevel($id)
+	{
+		return Format::formatLevel($id);
+	}
+
+	/**
+	 * Drop down list of discount modes
+	 *
+	 * @param   string  $name      The field's name
+	 * @param   string  $selected  Pre-selected value
+	 * @param   array   $attribs   Field attributes
+	 *
+	 * @return  string  The HTML of the drop-down
+	 */
+	public static function discountmodes($name = 'discountmode', $selected = '', $attribs = [])
+	{
+		$options   = [];
+		$options[] = HTMLHelper::_('select.option', '', '- ' . Text::_('COM_AKEEBASUBS_SUBSCRIPTIONS_DISCOUNT') . ' -');
+		$options[] = HTMLHelper::_('select.option', 'none', Text::_('COM_AKEEBASUBS_SUBSCRIPTIONS_DISCOUNT_NONE'));
+		$options[] = HTMLHelper::_('select.option', 'coupon', Text::_('COM_AKEEBASUBS_SUBSCRIPTIONS_DISCOUNT_COUPON'));
+		$options[] = HTMLHelper::_('select.option', 'upgrade', Text::_('COM_AKEEBASUBS_SUBSCRIPTIONS_DISCOUNT_UPGRADE'));
+
+		return self::genericlist($options, $name, $attribs, $selected, $name);
+	}
+
+	/**
+	 * Drop down list of upgrade types
+	 *
+	 * @param   string  $name      The field's name
+	 * @param   string  $selected  Pre-selected value
+	 * @param   array   $attribs   Field attributes
+	 *
+	 * @return  string  The HTML of the drop-down
+	 */
+	public static function upgradetypes($name = 'type', $selected = 'value', $attribs = [])
+	{
+		$options   = [];
+		$options[] = HTMLHelper::_('select.option', '', '- ' . Text::_('COM_AKEEBASUBS_COMMON_SELECT') . ' -');
+		$options[] = HTMLHelper::_('select.option', 'value', Text::_('COM_AKEEBASUBS_UPGRADE_TYPE_VALUE'));
+		$options[] = HTMLHelper::_('select.option', 'percent', Text::_('COM_AKEEBASUBS_UPGRADE_TYPE_PERCENT'));
+		$options[] = HTMLHelper::_('select.option', 'lastpercent', Text::_('COM_AKEEBASUBS_UPGRADE_TYPE_LASTPERCENT'));
+
+		return self::genericlist($options, $name, $attribs, $selected, $name);
+	}
+
+	/**
+	 * Drop down list of custom field types
+	 *
+	 * @param   string  $name      The field's name
+	 * @param   string  $selected  Pre-selected value
+	 * @param   array   $attribs   Field attributes
+	 *
+	 * @return  string  The HTML of the drop-down
+	 */
+	public static function fieldtypes($name = 'type', $selected = 'text', $attribs = [])
+	{
+		$fieldTypes = self::getFieldTypes();
+
+		$options   = [];
+		$options[] = HTMLHelper::_('select.option', '', '- ' . Text::_('COM_AKEEBASUBS_COMMON_SELECT') . ' -');
+		foreach ($fieldTypes as $type => $desc)
+		{
+			$options[] = HTMLHelper::_('select.option', $type, $desc);
+		}
+
+		return self::genericlist($options, $name, $attribs, $selected, $name);
+	}
+
+	/**
+	 * Drop down list of subscription level relation modes
+	 *
+	 * @param   string  $name      The field's name
+	 * @param   string  $selected  Pre-selected value
+	 * @param   array   $attribs   Field attributes
+	 *
+	 * @return  string  The HTML of the drop-down
+	 */
+	public static function relationmode($name = 'mode', $selected = 'rules', $attribs = [])
+	{
+		$options   = [];
+		$options[] = HTMLHelper::_('select.option', '', '- ' . Text::_('COM_AKEEBASUBS_COMMON_SELECT') . ' -');
+		$options[] = HTMLHelper::_('select.option', 'rules', Text::_('COM_AKEEBASUBS_RELATIONS_MODE_RULES'));
+		$options[] = HTMLHelper::_('select.option', 'fixed', Text::_('COM_AKEEBASUBS_RELATIONS_MODE_FIXED'));
+		$options[] = HTMLHelper::_('select.option', 'flexi', Text::_('COM_AKEEBASUBS_RELATIONS_MODE_FLEXI'));
+
+		return self::genericlist($options, $name, $attribs, $selected, $name);
+	}
+
+	/**
+	 * Drop down list of subscription level relations' period units of measurement
+	 *
+	 * @param   string  $name      The field's name
+	 * @param   string  $selected  Pre-selected value
+	 * @param   array   $attribs   Field attributes
+	 *
+	 * @return  string  The HTML of the drop-down
+	 */
+	public static function flexiperioduoms($name = 'flex_uom', $selected = 'rules', $attribs = [])
+	{
+		$options   = [];
+		$options[] = HTMLHelper::_('select.option', '', '- ' . Text::_('COM_AKEEBASUBS_COMMON_SELECT') . ' -');
+		$options[] = HTMLHelper::_('select.option', 'd', Text::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_UOM_D'));
+		$options[] = HTMLHelper::_('select.option', 'w', Text::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_UOM_W'));
+		$options[] = HTMLHelper::_('select.option', 'm', Text::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_UOM_M'));
+		$options[] = HTMLHelper::_('select.option', 'y', Text::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_UOM_Y'));
+
+		return self::genericlist($options, $name, $attribs, $selected, $name);
+	}
+
+	/**
+	 * Drop down list of subscription level relations' flexible discount time calculation preference
+	 *
+	 * @param   string  $name      The field's name
+	 * @param   string  $selected  Pre-selected value
+	 * @param   array   $attribs   Field attributes
+	 *
+	 * @return  string  The HTML of the drop-down
+	 */
+	public static function flexitimecalc($name = 'flex_timecalculation', $selected = 'current', $attribs = [])
+	{
+		$options   = [];
+		$options[] = HTMLHelper::_('select.option', '', '- ' . Text::_('COM_AKEEBASUBS_COMMON_SELECT') . ' -');
+		$options[] = HTMLHelper::_('select.option', 'current', Text::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_TIMECALCULATION_CURRENT'));
+		$options[] = HTMLHelper::_('select.option', 'future', Text::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_TIMECALCULATION_FUTURE'));
+
+		return self::genericlist($options, $name, $attribs, $selected, $name);
+	}
+
+	/**
+	 * Drop down list of subscription level relations' flexible discount rounding preference
+	 *
+	 * @param   string  $name      The field's name
+	 * @param   string  $selected  Pre-selected value
+	 * @param   array   $attribs   Field attributes
+	 *
+	 * @return  string  The HTML of the drop-down
+	 */
+	public static function flexirounding($name = 'flex_rounding', $selected = 'round', $attribs = [])
+	{
+		$options   = [];
+		$options[] = HTMLHelper::_('select.option', '', '- ' . Text::_('COM_AKEEBASUBS_COMMON_SELECT') . ' -');
+		$options[] = HTMLHelper::_('select.option', 'floor', Text::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_TIMEROUNDING_FLOOR'));
+		$options[] = HTMLHelper::_('select.option', 'ceil', Text::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_TIMEROUNDING_CEIL'));
+		$options[] = HTMLHelper::_('select.option', 'round', Text::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_TIMEROUNDING_ROUND'));
+
+		return self::genericlist($options, $name, $attribs, $selected, $name);
+	}
+
+	/**
+	 * Drop down list of subscription level relations' subscription expiration preference
+	 *
+	 * @param   string  $name      The field's name
+	 * @param   string  $selected  Pre-selected value
+	 * @param   array   $attribs   Field attributes
+	 *
+	 * @return  string  The HTML of the drop-down
+	 */
+	public static function flexiexpiration($name = 'expiration', $selected = 'replace', $attribs = [])
+	{
+		$options   = [];
+		$options[] = HTMLHelper::_('select.option', '', '- ' . Text::_('COM_AKEEBASUBS_COMMON_SELECT') . ' -');
+		$options[] = HTMLHelper::_('select.option', 'replace', Text::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_EXPIRATION_REPLACE'));
+		$options[] = HTMLHelper::_('select.option', 'after', Text::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_EXPIRATION_AFTER'));
+		$options[] = HTMLHelper::_('select.option', 'overlap', Text::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_EXPIRATION_OVERLAP'));
+
+		return self::genericlist($options, $name, $attribs, $selected, $name);
+	}
+
+	/**
+	 * Drop down list of invoice extensions
+	 *
+	 * @param   string  $name      The field's name
+	 * @param   string  $selected  Pre-selected value
+	 * @param   array   $attribs   Field attributes
+	 *
+	 * @return  string  The HTML of the drop-down
+	 */
+	public static function invoiceextensions($name = 'extension', $selected = '', $attribs = [])
+	{
+		/** @var \Akeeba\Subscriptions\Admin\Model\Invoices $model */
+		$model = Container::getInstance('com_akeebasubs')->factory
+			->model('Invoices')->tmpInstance();
+
+		$options = $model->getExtensions(1);
+		$option  = HTMLHelper::_('select.option', '', '- ' . Text::_('COM_AKEEBASUBS_COMMON_SELECT') . ' -');
+		array_unshift($options, $option);
+
+		return self::genericlist($options, $name, $attribs, $selected, $name);
+	}
+
+	/**
+	 * Drop down list of CSV delimiter preference
+	 *
+	 * @param   string  $name      The field's name
+	 * @param   int     $selected  Pre-selected value
+	 * @param   array   $attribs   Field attributes
+	 *
+	 * @return  string  The HTML of the drop-down
+	 */
+	public static function csvdelimiters($name = 'csvdelimiters', $selected = 1, $attribs = [])
+	{
+		$options   = [];
+		$options[] = HTMLHelper::_('select.option', '1', 'abc, def');
+		$options[] = HTMLHelper::_('select.option', '2', 'abc; def');
+		$options[] = HTMLHelper::_('select.option', '3', '"abc"; "def"');
+		$options[] = HTMLHelper::_('select.option', '-99', Text::_('COM_AKEEBASUBS_IMPORT_DELIMITERS_CUSTOM'));
+
+		return self::genericlist($options, $name, $attribs, $selected, $name);
+	}
+
+	/**
+	 * Drop down list of payment method types
+	 *
+	 * @param   string  $name      The field's name
+	 * @param   string  $selected  Pre-selected value
+	 * @param   array   $attribs   Field attributes
+	 *
+	 * @return  string  The HTML of the drop-down
+	 */
+	public static function paymentMethods($name = 'flex_uom', $selected = 'rules', $attribs = [])
+	{
+		$options   = [];
+		$options[] = HTMLHelper::_('select.option', '', '- ' . Text::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_FIELDTITLE') . ' -');
+		$options[] = HTMLHelper::_('select.option', 'apple', Text::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_APPLE'));
+		$options[] = HTMLHelper::_('select.option', 'card', Text::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_CARD'));
+		$options[] = HTMLHelper::_('select.option', 'free', Text::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_FREE'));
+		$options[] = HTMLHelper::_('select.option', 'paypal', Text::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_PAYPAL'));
+		$options[] = HTMLHelper::_('select.option', 'wire', Text::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_WIRE'));
+		$options[] = HTMLHelper::_('select.option', 'unknown', Text::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_UNKNOWN'));
+
+		return self::genericlist($options, $name, $attribs, $selected, $name);
+	}
+
+	/**
+	 * Displays a media (image) select field, rendered by Joomla itself
+	 *
+	 * @param   string  $name      The name of the field
+	 * @param   string  $selected  Currently selected image
+	 * @param   array   $attribs   Overrides to the layout parameters
+	 *
+	 * @return  string  The rendered Joomla layout
+	 *
+	 * @throws \Exception
+	 * @since  7.1.1
+	 */
+	public static function mediaSelect(string $name, ?string $selected = '', array $attribs = []): string
+	{
+		$selected = $selected ?? '';
+
+		$data = array_merge([
+			'asset'         => 'com_akeebasubs',
+			'authorField'   => null,
+			'authorId'      => null,
+			'class'         => '',
+			'disabled'      => false,
+			'folder'        => '',
+			'id'            => '',
+			'link'          => '',
+			'name'          => $name,
+			'preview'       => 'false',
+			'previewHeight' => 200,
+			'previewWidth'  => 200,
+			'onchange'      => '',
+			'readonly'      => false,
+			'size'          => '',
+			'value'         => $selected,
+			'src'           => '',
+		], $attribs);
+
+		if ($data['asset'] === '')
+		{
+			$data['asset'] = Factory::getApplication()->input->get('option', 'com_akeebasubs');
+		}
+
+		$directory = $data['directory'] ?? '';
+
+		if ($selected && file_exists(JPATH_ROOT . '/' . $selected))
+		{
+			$folder = explode('/', $selected);
+			$folder = array_diff_assoc($folder, explode('/', ComponentHelper::getParams('com_media')->get('image_path', 'images')));
+			array_pop($folder);
+			$data['folder'] = implode('/', $folder);
+		}
+		elseif (file_exists(JPATH_ROOT . '/' . ComponentHelper::getParams('com_media')->get('image_path', 'images') . '/' . $directory))
+		{
+			$data['folder'] = $directory;
+		}
+		else
+		{
+			$data['folder'] = '';
+		}
+
+		return LayoutHelper::render(self::getContainer(), 'joomla.form.field.media', $data);
 	}
 
 	/**
@@ -517,8 +1036,8 @@ abstract class Select
 	 * @param   mixed   $attribs   Additional HTML attributes for the <select> tag. This
 	 *                             can be an array of attributes, or an array of options. Treated as options
 	 *                             if it is the last argument passed. Valid options are:
-	 *                             Format options, see {@see JHtml::$formatOptions}.
-	 *                             Selection options, see {@see JHtmlSelect::options()}.
+	 *                             Format options, see {@see HTMLHelper::$formatOptions}.
+	 *                             Selection options, see {@see HTMLHelperSelect::options()}.
 	 *                             list.attr, string|array: Additional attributes for the select
 	 *                             element.
 	 *                             id, string: Value to use as the select element id attribute.
@@ -548,17 +1067,17 @@ abstract class Select
 			$attribs = $temp;
 		}
 
-		return JHtml::_('select.genericlist', $list, $name, $attribs, 'value', 'text', $selected, $idTag);
+		return HTMLHelper::_('select.genericlist', $list, $name, $attribs, 'value', 'text', $selected, $idTag);
 	}
 
 	/**
 	 * Generates an HTML radio list.
 	 *
-	 * @param   array    $list       An array of objects
-	 * @param   string   $name       The value of the HTML name attribute
-	 * @param   string   $attribs    Additional HTML attributes for the <select> tag
-	 * @param   string   $selected   The name of the object variable for the option text
-	 * @param   boolean  $idTag      Value of the field id or null by default
+	 * @param   array    $list      An array of objects
+	 * @param   string   $name      The value of the HTML name attribute
+	 * @param   string   $attribs   Additional HTML attributes for the <select> tag
+	 * @param   string   $selected  The name of the object variable for the option text
+	 * @param   boolean  $idTag     Value of the field id or null by default
 	 *
 	 * @return  string  HTML for the select list
 	 */
@@ -580,460 +1099,7 @@ abstract class Select
 			$attribs = $temp;
 		}
 
-		return JHtml::_('select.radiolist', $list, $name, $attribs, 'value', 'text', $selected, $idTag);
-	}
-
-	/**
-	 * Generates a yes/no drop-down list.
-	 *
-	 * @param   string  $name      The value of the HTML name attribute
-	 * @param   array   $attribs   Additional HTML attributes for the <select> tag
-	 * @param   string  $selected  The key that is selected
-	 *
-	 * @return  string  HTML for the list
-	 */
-	public static function booleanlist($name, $attribs = null, $selected = null)
-	{
-		$options = array(
-			JHtml::_('select.option', '', '---'),
-			JHtml::_('select.option', '0', JText::_('JNo')),
-			JHtml::_('select.option', '1', JText::_('JYes'))
-		);
-
-		return self::genericlist($options, $name, $attribs, $selected, $name);
-	}
-
-	/**
-	 * Displays a list of the available user groups.
-	 *
-	 * @param   string   $name      The form field name.
-	 * @param   string   $selected  The name of the selected section.
-	 * @param   array    $attribs   Additional attributes to add to the select field.
-	 *
-	 * @return  string   The HTML for the list
-	 */
-	public static function usergroups($name = 'usergroups', $selected = '', $attribs = array())
-	{
-		return JHtml::_('access.usergroup', $name, $selected, $attribs, false);
-	}
-
-	/**
-	 * Generates a Published/Unpublished drop-down list.
-	 *
-	 * @param   string  $selected  The key that is selected (0 = unpublished / 1 = published)
-	 * @param   string  $id        The value of the HTML name attribute
-	 * @param   array   $attribs   Additional HTML attributes for the <select> tag
-	 *
-	 * @return  string  HTML for the list
-	 */
-	public static function published($selected = null, $id = 'enabled', $attribs = array())
-	{
-		$options   = array();
-		$options[] = JHtml::_('select.option', null, '- ' . JText::_('COM_AKEEBASUBS_COMMON_SELECTSTATE') . ' -');
-		$options[] = JHtml::_('select.option', 0, JText::_('JUNPUBLISHED'));
-		$options[] = JHtml::_('select.option', 1, JText::_('JPUBLISHED'));
-
-		return self::genericlist($options, $id, $attribs, $selected, $id);
-	}
-
-	/**
-	 * Generates a drop-down list for the available languages of a multi-language site.
-	 *
-	 * @param   string  $selected  The key that is selected
-	 * @param   string  $id        The value of the HTML name attribute
-	 * @param   array   $attribs   Additional HTML attributes for the <select> tag
-	 *
-	 * @return  string  HTML for the list
-	 */
-	public static function languages($selected = null, $id = 'language', $attribs = array())
-	{
-		$languages = \JLanguageHelper::getLanguages('lang_code');
-		$options   = array();
-		$options[] = JHtml::_('select.option', '*', JText::_('JALL_LANGUAGE'));
-
-		if (!empty($languages))
-		{
-			foreach ($languages as $key => $lang)
-			{
-				$options[] = JHtml::_('select.option', $key, $lang->title);
-			}
-		}
-
-		return self::genericlist($options, $id, $attribs, $selected, $id);
-	}
-
-	/**
-	 * Generates a drop-down list for the available subscription payment states.
-	 *
-	 * @param   string  $selected  The key that is selected
-	 * @param   string  $id        The value of the HTML name attribute
-	 * @param   array   $attribs   Additional HTML attributes for the <select> tag
-	 *
-	 * @return  string  HTML for the list
-	 */
-	public static function paystates($selected = null, $id = 'state', $attribs = array())
-	{
-		$options   = array();
-		$options[] = JHtml::_('select.option', '', '- ' . JText::_('COM_AKEEBASUBS_SUBSCRIPTION_STATE') . ' -');
-
-		$types = array('N', 'P', 'C', 'X');
-
-		foreach ($types as $type)
-		{
-			$options[] = JHtml::_('select.option', $type, JText::_('COM_AKEEBASUBS_SUBSCRIPTION_STATE_' . $type));
-		}
-
-		return self::genericlist($options, $id, $attribs, $selected, $id);
-	}
-
-	/**
-	 * Generates a drop-down list for the available coupon types.
-	 *
-	 * @param   string  $name      The value of the HTML name attribute
-	 * @param   string  $selected  The key that is selected
-	 * @param   array   $attribs   Additional HTML attributes for the <select> tag
-	 *
-	 * @return  string  HTML for the list
-	 */
-	public static function coupontypes($name = 'type', $selected = 'value', $attribs = array())
-	{
-		$options   = array();
-		$options[] = JHtml::_('select.option', '', '- ' . JText::_('COM_AKEEBASUBS_COMMON_SELECT') . ' -');
-		$options[] = JHtml::_('select.option', 'value', JText::_('COM_AKEEBASUBS_COUPON_TYPE_VALUE'));
-		$options[] = JHtml::_('select.option', 'percent', JText::_('COM_AKEEBASUBS_COUPON_TYPE_PERCENT'));
-
-		return self::genericlist($options, $name, $attribs, $selected, $name);
-	}
-
-	/**
-	 * Generates a drop-down list for the available subscription levels. Alias of levels() with different ordering of
-	 * parameters and include_clear set to true.
-	 *
-	 * @param   string  $selected  The key that is selected
-	 * @param   string  $id        The value of the HTML name attribute
-	 * @param   array   $attribs   Additional HTML attributes for the <select> tag
-	 *
-	 * @return  string  HTML for the list
-	 */
-	public static function subscriptionlevels($selected = null, $id = 'akeebasubs_level_id', $attribs = array())
-	{
-		$attribs['include_clear'] = true;
-
-		return self::levels($id, $selected, $attribs);
-	}
-
-	/**
-	 * Generates a drop-down list for the available subscription levels.
-	 *
-	 * Some interesting attributes:
-	 *
-	 * include_none     Include an option with value -1 titled "None"
-	 * include_all      Include an option with value 0 titled "All"
-	 * include_clear    Include an option with no value for clearing the selection
-	 *
-	 * By default none of these attributes is set
-	 *
-	 * @param   string  $name      The value of the HTML name attribute
-	 * @param   string  $selected  The key that is selected
-	 * @param   array   $attribs   Additional HTML attributes for the <select> tag
-	 *
-	 * @return  string  HTML for the list
-	 */
-	public static function levels($name = 'level', $selected = '', $attribs = array())
-	{
-		/** @var DataModel $model */
-		$model =  Container::getInstance('com_akeebasubs')->factory
-			->model('Levels')->tmpInstance();
-
-		$list = $model->filter_order('ordering')->filter_order_Dir('ASC')->get(true);
-
-		$options = array();
-
-		$include_none  = false;
-		$include_all   = false;
-		$include_clear = false;
-
-		if (array_key_exists('include_none', $attribs))
-		{
-			$include_none = $attribs['include_none'];
-			unset($attribs['include_none']);
-		}
-
-		if (array_key_exists('include_all', $attribs))
-		{
-			$include_all = $attribs['include_all'];
-			unset($attribs['include_all']);
-		}
-
-		if (array_key_exists('include_clear', $attribs))
-		{
-			$include_clear = $attribs['include_clear'];
-			unset($attribs['include_clear']);
-		}
-
-		if ($include_none)
-		{
-			$options[] = JHtml::_('select.option', '-1', JText::_('COM_AKEEBASUBS_COMMON_SELECTLEVEL_NONE'));
-		}
-
-		if ($include_all)
-		{
-			$options[] = JHtml::_('select.option', '0', JText::_('COM_AKEEBASUBS_COMMON_SELECTLEVEL_ALL'));
-		}
-
-		if ($include_clear || (!$include_none && !$include_all))
-		{
-			$options[] = JHtml::_('select.option', '', '- ' . JText::_('COM_AKEEBASUBS_COMMON_SELECT') . ' -');
-		}
-
-		foreach ($list as $item)
-		{
-			$options[] = JHtml::_('select.option', $item->akeebasubs_level_id, $item->title);
-		}
-
-		return self::genericlist($options, $name, $attribs, $selected, $name);
-	}
-
-	/**
-	 * Returns the human readable subscription level title based on the numeric subscription level ID given in $id
-	 *
-	 * Alias of Format::formatLevel
-	 *
-	 * @param   int  $id  The subscription level ID
-	 *
-	 * @return  string  The subscription level title, or three em-dashes if it's unknown
-	 */
-	public static function formatLevel($id)
-	{
-		return Format::formatLevel($id);
-	}
-
-	/**
-	 * Drop down list of discount modes
-	 *
-	 * @param   string  $name      The field's name
-	 * @param   string  $selected  Pre-selected value
-	 * @param   array   $attribs   Field attributes
-	 *
-	 * @return  string  The HTML of the drop-down
-	 */
-	public static function discountmodes($name = 'discountmode', $selected = '', $attribs = array())
-	{
-		$options   = array();
-		$options[] = JHtml::_('select.option', '', '- ' . JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_DISCOUNT') . ' -');
-		$options[] = JHtml::_('select.option', 'none', JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_DISCOUNT_NONE'));
-		$options[] = JHtml::_('select.option', 'coupon', JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_DISCOUNT_COUPON'));
-		$options[] = JHtml::_('select.option', 'upgrade', JText::_('COM_AKEEBASUBS_SUBSCRIPTIONS_DISCOUNT_UPGRADE'));
-
-		return self::genericlist($options, $name, $attribs, $selected, $name);
-	}
-
-	/**
-	 * Drop down list of upgrade types
-	 *
-	 * @param   string  $name      The field's name
-	 * @param   string  $selected  Pre-selected value
-	 * @param   array   $attribs   Field attributes
-	 *
-	 * @return  string  The HTML of the drop-down
-	 */
-	public static function upgradetypes($name = 'type', $selected = 'value', $attribs = array())
-	{
-		$options   = array();
-		$options[] = JHtml::_('select.option', '', '- ' . JText::_('COM_AKEEBASUBS_COMMON_SELECT') . ' -');
-		$options[] = JHtml::_('select.option', 'value', JText::_('COM_AKEEBASUBS_UPGRADE_TYPE_VALUE'));
-		$options[] = JHtml::_('select.option', 'percent', JText::_('COM_AKEEBASUBS_UPGRADE_TYPE_PERCENT'));
-		$options[] = JHtml::_('select.option', 'lastpercent', JText::_('COM_AKEEBASUBS_UPGRADE_TYPE_LASTPERCENT'));
-
-		return self::genericlist($options, $name, $attribs, $selected, $name);
-	}
-
-	/**
-	 * Drop down list of custom field types
-	 *
-	 * @param   string  $name      The field's name
-	 * @param   string  $selected  Pre-selected value
-	 * @param   array   $attribs   Field attributes
-	 *
-	 * @return  string  The HTML of the drop-down
-	 */
-	public static function fieldtypes($name = 'type', $selected = 'text', $attribs = array())
-	{
-		$fieldTypes = self::getFieldTypes();
-
-		$options   = array();
-		$options[] = JHtml::_('select.option', '', '- ' . JText::_('COM_AKEEBASUBS_COMMON_SELECT') . ' -');
-		foreach ($fieldTypes as $type => $desc)
-		{
-			$options[] = JHtml::_('select.option', $type, $desc);
-		}
-
-		return self::genericlist($options, $name, $attribs, $selected, $name);
-	}
-	
-	/**
-	 * Drop down list of subscription level relation modes
-	 *
-	 * @param   string  $name      The field's name
-	 * @param   string  $selected  Pre-selected value
-	 * @param   array   $attribs   Field attributes
-	 *
-	 * @return  string  The HTML of the drop-down
-	 */
-	public static function relationmode($name = 'mode', $selected = 'rules', $attribs = array())
-	{
-		$options   = array();
-		$options[] = JHtml::_('select.option', '', '- ' . JText::_('COM_AKEEBASUBS_COMMON_SELECT') . ' -');
-		$options[] = JHtml::_('select.option', 'rules', JText::_('COM_AKEEBASUBS_RELATIONS_MODE_RULES'));
-		$options[] = JHtml::_('select.option', 'fixed', JText::_('COM_AKEEBASUBS_RELATIONS_MODE_FIXED'));
-		$options[] = JHtml::_('select.option', 'flexi', JText::_('COM_AKEEBASUBS_RELATIONS_MODE_FLEXI'));
-
-		return self::genericlist($options, $name, $attribs, $selected, $name);
-	}
-
-	/**
-	 * Drop down list of subscription level relations' period units of measurement
-	 *
-	 * @param   string  $name      The field's name
-	 * @param   string  $selected  Pre-selected value
-	 * @param   array   $attribs   Field attributes
-	 *
-	 * @return  string  The HTML of the drop-down
-	 */
-	public static function flexiperioduoms($name = 'flex_uom', $selected = 'rules', $attribs = array())
-	{
-		$options   = array();
-		$options[] = JHtml::_('select.option', '', '- ' . JText::_('COM_AKEEBASUBS_COMMON_SELECT') . ' -');
-		$options[] = JHtml::_('select.option', 'd', JText::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_UOM_D'));
-		$options[] = JHtml::_('select.option', 'w', JText::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_UOM_W'));
-		$options[] = JHtml::_('select.option', 'm', JText::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_UOM_M'));
-		$options[] = JHtml::_('select.option', 'y', JText::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_UOM_Y'));
-
-		return self::genericlist($options, $name, $attribs, $selected, $name);
-	}
-
-	/**
-	 * Drop down list of subscription level relations' flexible discount time calculation preference
-	 *
-	 * @param   string  $name      The field's name
-	 * @param   string  $selected  Pre-selected value
-	 * @param   array   $attribs   Field attributes
-	 *
-	 * @return  string  The HTML of the drop-down
-	 */
-	public static function flexitimecalc($name = 'flex_timecalculation', $selected = 'current', $attribs = array())
-	{
-		$options   = array();
-		$options[] = JHtml::_('select.option', '', '- ' . JText::_('COM_AKEEBASUBS_COMMON_SELECT') . ' -');
-		$options[] = JHtml::_('select.option', 'current', JText::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_TIMECALCULATION_CURRENT'));
-		$options[] = JHtml::_('select.option', 'future', JText::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_TIMECALCULATION_FUTURE'));
-
-		return self::genericlist($options, $name, $attribs, $selected, $name);
-	}
-
-	/**
-	 * Drop down list of subscription level relations' flexible discount rounding preference
-	 *
-	 * @param   string  $name      The field's name
-	 * @param   string  $selected  Pre-selected value
-	 * @param   array   $attribs   Field attributes
-	 *
-	 * @return  string  The HTML of the drop-down
-	 */
-	public static function flexirounding($name = 'flex_rounding', $selected = 'round', $attribs = array())
-	{
-		$options   = array();
-		$options[] = JHtml::_('select.option', '', '- ' . JText::_('COM_AKEEBASUBS_COMMON_SELECT') . ' -');
-		$options[] = JHtml::_('select.option', 'floor', JText::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_TIMEROUNDING_FLOOR'));
-		$options[] = JHtml::_('select.option', 'ceil', JText::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_TIMEROUNDING_CEIL'));
-		$options[] = JHtml::_('select.option', 'round', JText::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_TIMEROUNDING_ROUND'));
-
-		return self::genericlist($options, $name, $attribs, $selected, $name);
-	}
-
-	/**
-	 * Drop down list of subscription level relations' subscription expiration preference
-	 *
-	 * @param   string  $name      The field's name
-	 * @param   string  $selected  Pre-selected value
-	 * @param   array   $attribs   Field attributes
-	 *
-	 * @return  string  The HTML of the drop-down
-	 */
-	public static function flexiexpiration($name = 'expiration', $selected = 'replace', $attribs = array())
-	{
-		$options   = array();
-		$options[] = JHtml::_('select.option', '', '- ' . JText::_('COM_AKEEBASUBS_COMMON_SELECT') . ' -');
-		$options[] = JHtml::_('select.option', 'replace', JText::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_EXPIRATION_REPLACE'));
-		$options[] = JHtml::_('select.option', 'after', JText::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_EXPIRATION_AFTER'));
-		$options[] = JHtml::_('select.option', 'overlap', JText::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_EXPIRATION_OVERLAP'));
-
-		return self::genericlist($options, $name, $attribs, $selected, $name);
-	}
-
-	/**
-	 * Drop down list of invoice extensions
-	 *
-	 * @param   string  $name      The field's name
-	 * @param   string  $selected  Pre-selected value
-	 * @param   array   $attribs   Field attributes
-	 *
-	 * @return  string  The HTML of the drop-down
-	 */
-	public static function invoiceextensions($name = 'extension', $selected = '', $attribs = array())
-	{
-		/** @var \Akeeba\Subscriptions\Admin\Model\Invoices $model */
-		$model = Container::getInstance('com_akeebasubs')->factory
-			->model('Invoices')->tmpInstance();
-
-		$options = $model->getExtensions(1);
-		$option = JHtml::_('select.option', '', '- ' . JText::_('COM_AKEEBASUBS_COMMON_SELECT') . ' -');
-		array_unshift($options, $option);
-
-		return self::genericlist($options, $name, $attribs, $selected, $name);
-	}
-
-	/**
-	 * Drop down list of CSV delimiter preference
-	 *
-	 * @param   string  $name      The field's name
-	 * @param   int     $selected  Pre-selected value
-	 * @param   array   $attribs   Field attributes
-	 *
-	 * @return  string  The HTML of the drop-down
-	 */
-	public static function csvdelimiters($name = 'csvdelimiters', $selected = 1, $attribs = array())
-	{
-		$options   = array();
-		$options[] = JHtml::_('select.option', '1', 'abc, def');
-		$options[] = JHtml::_('select.option', '2', 'abc; def');
-		$options[] = JHtml::_('select.option', '3', '"abc"; "def"');
-		$options[] = JHtml::_('select.option', '-99', JText::_('COM_AKEEBASUBS_IMPORT_DELIMITERS_CUSTOM'));
-
-		return self::genericlist($options, $name, $attribs, $selected, $name);
-	}
-
-	/**
-	 * Drop down list of payment method types
-	 *
-	 * @param   string  $name      The field's name
-	 * @param   string  $selected  Pre-selected value
-	 * @param   array   $attribs   Field attributes
-	 *
-	 * @return  string  The HTML of the drop-down
-	 */
-	public static function paymentMethods($name = 'flex_uom', $selected = 'rules', $attribs = array())
-	{
-		$options   = array();
-		$options[] = JHtml::_('select.option', '', '- ' . JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_FIELDTITLE') . ' -');
-		$options[] = JHtml::_('select.option', 'apple', JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_APPLE'));
-		$options[] = JHtml::_('select.option', 'card', JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_CARD'));
-		$options[] = JHtml::_('select.option', 'free', JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_FREE'));
-		$options[] = JHtml::_('select.option', 'paypal', JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_PAYPAL'));
-		$options[] = JHtml::_('select.option', 'wire', JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_WIRE'));
-		$options[] = JHtml::_('select.option', 'unknown', JText::_('COM_AKEEBASUBS_SUBSCRIPTION_PAYMENT_TYPE_UNKNOWN'));
-
-		return self::genericlist($options, $name, $attribs, $selected, $name);
+		return HTMLHelper::_('select.radiolist', $list, $name, $attribs, 'value', 'text', $selected, $idTag);
 	}
 
 	/**

@@ -40,7 +40,7 @@ defined('_JEXEC') or die();
     <label for="image">
         @lang('COM_AKEEBASUBS_LEVEL_FIELD_IMAGE')
     </label>
-    <input type="text" name="image" id="image" value="{{{ $item->image }}}">
+    {{ \Akeeba\Subscriptions\Admin\Helper\Select::mediaSelect('image', $item->image) }}
 </div>
 
 
