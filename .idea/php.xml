@@ -4,7 +4,6 @@
     <include_path>
       <path value="$PROJECT_DIR$/../../dionysopoulos/joomlatypehints/generated_hints" />
       <path value="$PROJECT_DIR$/../fof3/fof" />
-      <path value="$PROJECT_DIR$/../../master/joomla4" />
       <path value="$PROJECT_DIR$/vendor/sebastian/exporter" />
       <path value="$PROJECT_DIR$/vendor/phpunit/php-token-stream" />
       <path value="$PROJECT_DIR$/vendor/webmozart/assert" />
@@ -34,7 +33,8 @@
       <path value="$PROJECT_DIR$/vendor/sebastian/code-unit-reverse-lookup" />
       <path value="$PROJECT_DIR$/vendor/sebastian/comparator" />
       <path value="$PROJECT_DIR$/vendor/sebastian/environment" />
-      <path value="$PROJECT_DIR$/../../master/joomla4" />
+      <path value="$PROJECT_DIR$/../../master/joomla-cms" />
+      <path value="$USER_HOME$/Sites/dev3/configuration.php" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.2" />
