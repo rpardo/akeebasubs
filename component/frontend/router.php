@@ -19,16 +19,19 @@ include_once JPATH_LIBRARIES . '/fof30/include.php';
  * This used to be separate functions for building and parsing routes. It has been converted to a router class since it
  * is necessary for Joomla! 4. Router classes are supported since Joomla! 3.3, so no lost compatibility there.
  *
- * @since       7.0.1
+ * @since        7.0.1
+ * @noinspection PhpIllegalPsrClassPathInspection
  */
 class AkeebasubsRouter extends RouterBase
 {
+	private $container;
+
 	/**
 	 * Build method for URLs
 	 * This method is meant to transform the query parameters into a more human
 	 * readable form. It is only executed when SEF mode is switched on.
 	 *
-	 * @param array  &$query An array of URL arguments
+	 * @param   array  &$query  An array of URL arguments
 	 *
 	 * @return  array  The URL arguments to use to assemble the subsequent URL.
 	 *
@@ -37,7 +40,7 @@ class AkeebasubsRouter extends RouterBase
 	 */
 	public function build(&$query)
 	{
-		$segments = array();
+		$segments = [];
 
 		// Default view
 		$default = 'Levels';
@@ -49,7 +52,7 @@ class AkeebasubsRouter extends RouterBase
 
 			if (!is_object($menu))
 			{
-				$menuquery = array();
+				$menuquery = [];
 			}
 			else
 			{
@@ -58,7 +61,7 @@ class AkeebasubsRouter extends RouterBase
 		}
 		else
 		{
-			$menuquery = array();
+			$menuquery = [];
 		}
 
 		// Add the view
@@ -94,7 +97,7 @@ class AkeebasubsRouter extends RouterBase
 		// Add the slug
 		if ($newView != 'UserInfo')
 		{
-			$container = Container::getInstance('com_akeebasubs');
+			$container = $this->getContainer();
 
 			if (array_key_exists('slug', $query) && ($container->inflector->isSingular($segments[0]) || ($segments[0] == 'new')))
 			{
@@ -123,7 +126,7 @@ class AkeebasubsRouter extends RouterBase
 	 * This method is meant to transform the human readable URL back into
 	 * query parameters. It is only executed when SEF mode is switched on.
 	 *
-	 * @param array  &$segments The segments of the URL to parse.
+	 * @param   array  &$segments  The segments of the URL to parse.
 	 *
 	 * @return  array  The URL attributes to be used by the application.
 	 *
@@ -133,112 +136,143 @@ class AkeebasubsRouter extends RouterBase
 	public function parse(&$segments)
 	{
 		// accepted views:
-		$views = array('new', 'thankyou', 'cancelled', 'level', 'levels', 'message', 'subscribe', 'subscription', 'subscriptions', 'callback', 'validate', 'userinfo', 'invoices', 'invoice');
+		$views = [
+			'new', 'thankyou', 'cancelled', 'level', 'levels', 'message', 'subscribe', 'subscription', 'subscriptions',
+			'callback', 'validate', 'userinfo', 'invoices', 'invoice',
+		];
 
 		// accepted layouts:
-		$layoutsAccepted = array(
-			'Invoice' => array('item')
-		);
+		$layoutsAccepted = [
+			'Invoice' => ['item'],
+		];
 
 		// default view
 		$default = 'levels';
 
 		$mObject = Factory::getApplication()->getMenu()->getActive();
-		$menu = is_object($mObject) ? $mObject->query : array();
+		$menu    = is_object($mObject) ? $mObject->query : [];
 
 		// circumvent the auto-segment decoding
 		$segments = str_replace(':', '-', $segments);
 
-		$vars = array();
+		$vars = [];
+
+		if (!count($segments))
+		{
+			return $vars;
+		}
 
 		// if there's no view, but the menu item has view info, we use that
-		if (count($segments))
+		if (!in_array(strtolower($segments[0]), $views))
 		{
-			if (!in_array(strtolower($segments[0]), $views))
+			$vars['view'] = array_key_exists('view', $menu) ? $menu['view'] : $default;
+		}
+		else
+		{
+			$vars['view'] = array_shift($segments);
+		}
+
+		switch ($vars['view'])
+		{
+			case 'New':
+			case 'new':
+				$vars['view'] = 'Level';
+				$vars['task'] = 'read';
+				break;
+
+			case 'Invoices':
+			case 'invoices':
+				$vars['view']   = 'Invoices';
+				$vars['layout'] = 'default';
+				break;
+
+			case 'Invoice':
+			case 'invoice':
+				$vars['view']   = 'Invoice';
+				$vars['task']   = 'read';
+				$vars['layout'] = 'item';
+				break;
+
+			case 'thankyou':
+			case 'Thankyou':
+			case 'ThankYou':
+				$vars['view'] = 'Messages';
+				$vars['task'] = 'show';
+				break;
+
+			case 'userinfo':
+			case 'Userinfo':
+			case 'UserInfo':
+				$vars['view']   = 'UserInfo';
+				$vars['task']   = 'read';
+				$vars['layout'] = 'default';
+				break;
+		}
+
+		// When we have a forced layout we need to push it to the segments for the next check to work.
+		if (array_key_exists('layout', $vars))
+		{
+			array_unshift($segments, $vars['layout']);
+		}
+
+		// The next segment is likely to be the layout.
+		$layouts        = array_key_exists($vars['view'], $layoutsAccepted) ? $layoutsAccepted[$vars['view']] : [];
+		$vars['layout'] = count($segments) ? array_shift($segments) : 'default';
+
+		/**
+		 * If that was an invalid layout I probably read something I shouldn't, e.g. an ID or slug.
+		 *
+		 * Let me push what I read back to the segments array and apply the default layout for the view.
+		 */
+		if (!in_array($vars['layout'], $layouts))
+		{
+			array_unshift($segments, $vars['layout']);
+
+			$vars['layout'] = array_key_exists('layout', $menu) ? $menu['layout'] : 'default';
+		}
+
+		// if we are in a singular view, the next item is the slug, unless we are in the userinfo view
+		$container = $this->getContainer();
+
+		if ($container->inflector->isSingular($vars['view']) && ($vars['view'] != 'UserInfo'))
+		{
+			if (in_array($vars['view'], ['Subscription', 'Invoice']))
 			{
-				$vars['view'] = array_key_exists('view', $menu) ? $menu['view'] : $default;
+				$vars['id'] = array_shift($segments);
 			}
 			else
 			{
-				$vars['view'] = array_shift($segments);
-			}
-
-			switch ($vars['view'])
-			{
-				case 'New':
-				case 'new':
-					$vars['view'] = 'Level';
-					$vars['task'] = 'read';
-					break;
-
-				case 'Invoices':
-				case 'invoices':
-					$vars['view'] = 'Invoices';
-					$vars['layout'] = 'default';
-					break;
-
-				case 'Invoice':
-				case 'invoice':
-					$vars['view'] = 'Invoice';
-					$vars['task'] = 'read';
-					$vars['layout'] = 'item';
-					break;
-
-				case 'thankyou':
-				case 'Thankyou':
-				case 'ThankYou':
-					$vars['view'] = 'Messages';
-					$vars['task'] = 'show';
-					break;
-
-				case 'userinfo':
-				case 'Userinfo':
-				case 'UserInfo':
-					$vars['view'] = 'UserInfo';
-					$vars['task'] = 'read';
-					$vars['layout'] = 'default';
-					break;
-			}
-
-			array_push($segments, $vars['view']);
-
-			if (array_key_exists('layout', $vars))
-			{
-				array_unshift($segments, $vars['layout']);
-			}
-
-			$layouts = array_key_exists($vars['view'], $layoutsAccepted) ? $layoutsAccepted[$vars['view']] : array();
-
-			if (!in_array($segments[0], $layouts))
-			{
-				$vars['layout'] = array_key_exists('layout', $menu) ? $menu['layout'] : 'default';
-			}
-			else
-			{
-				$vars['layout'] = array_shift($segments);
-			}
-
-			// if we are in a singular view, the next item is the slug, unless we are in the userinfo view
-			$container = Container::getInstance('com_akeebasubs');
-
-			if ($container->inflector->isSingular($vars['view']) && ($vars['view'] != 'UserInfo'))
-			{
-				if (in_array($vars['view'], array('Subscription', 'Invoice')))
-				{
-					$vars['id'] = array_shift($segments);
-				}
-				else
-				{
-					$vars['slug'] = array_shift($segments);
-				}
-			}
-
-			if (($vars['view'] == 'Messages') && !empty($segments))
-			{
-				$vars['subid'] = array_shift($segments);
+				$vars['slug'] = array_shift($segments);
 			}
 		}
 
+		if (($vars['view'] == 'Messages') && !empty($segments))
+		{
+			$vars['subid'] = array_shift($segments);
+		}
+
+		// I need to remove all leftover segments in Joomla 4 to avoid a 404 error.
+        $segments = [];
+
 		return $vars;
+	}
+
+	/**
+	 * Gets a temporary instance of the Akeeba Subscriptions container
+	 *
+	 * @return Container
+	 *
+	 * @since   7.1.1
+	 */
+	private function getContainer()
+	{
+		if (is_null($this->container))
+		{
+			$this->container = Container::getInstance('com_akeebasubs', [
+				'tempInstance' => true
+			]);
+		}
+
+		return $this->container;
 	}
 }
