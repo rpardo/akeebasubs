@@ -232,13 +232,13 @@ class Subscribe extends Model
 		$state = $this->getStateVariables();
 		$user  = $user ?? $this->container->platform->getUser();
 
-		if (($user->id == 0) && !$allowNewUser)
+		if (empty($user->id) && !$allowNewUser)
 		{
 			// New user creation is not allowed. Sorry.
 			throw new RuntimeException('updateUserInfo: New user creation is not allowed');
 		}
 
-		if ($user->id == 0)
+		if (empty($user->id))
 		{
 			// Check for an existing, blocked, unactivated user with the same
 			// username or email address.
@@ -332,7 +332,7 @@ class Subscribe extends Model
 			}
 		}
 
-		if (is_null($user->id) || ($user->id == 0))
+		if (empty($user->id))
 		{
 			// CREATE A NEW USER
 			$params = [
