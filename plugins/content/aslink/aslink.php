@@ -255,14 +255,11 @@ class plgContentAslink extends CMSPlugin
 		{
 			foreach ($items as $item)
 			{
-				if (is_string($item->params))
+				$params = $item->getParams();
+
+				if (is_string($params))
 				{
-					$params = new JRegistry();
-					$params->loadString($item->params, 'JSON');
-				}
-				else
-				{
-					$params = $item->params;
+					$params = new JRegistry($params);
 				}
 
 				if (@$item->query['view'] == 'level')

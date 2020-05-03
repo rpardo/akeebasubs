@@ -16,6 +16,7 @@
 * Emails not sent
 * Administrator Dark Mode CSS would also partially apply in Light Mode as well if the setting was Auto instead of Always
 * Concurrent handling of subscription_created and subscription_payment_succeeded callbacks leads to inactive subscriptions 
+* Content plugin aslink incompatible with Joomla 4
 
 # 7.1.0
 
