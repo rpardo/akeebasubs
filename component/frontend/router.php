@@ -67,7 +67,7 @@ class AkeebasubsRouter extends RouterBase
 		if (empty($itemId))
 		{
 			$activeMenuItem = $this->menu->getActive();
-			$itemID         = (is_object($activeMenuItem) && property_exists($activeMenuItem, 'id')) ?
+			$itemId         = (is_object($activeMenuItem) && property_exists($activeMenuItem, 'id')) ?
 				$activeMenuItem->id : null;
 		}
 
@@ -75,9 +75,9 @@ class AkeebasubsRouter extends RouterBase
 		$menuItem = null;
 
 		// If I have a menu item ID let's load the presumptive menu item.
-		if (!empty($itemID))
+		if (!empty($itemId))
 		{
-			$menuItem = $this->menu->getItem($itemID);
+			$menuItem = $this->menu->getItem($itemId);
 		}
 
 		// Check that the component matches
@@ -93,9 +93,9 @@ class AkeebasubsRouter extends RouterBase
 		if (!empty($menuItem))
 		{
 			$uri  = Uri::getInstance($menuItem->link);
-			$view = $uri->getVar('view', 'Levels');
+			$view = $uri->getVar('view', null);
 
-			if (!in_array(strtolower($view), ['level', 'levels', 'new', 'subscribe']))
+			if (!empty($view) && !in_array(strtolower($view), ['level', 'levels', 'new', 'subscribe', 'subscriptions', 'userinfo', 'invoices']))
 			{
 				$menuItem = null;
 			}
@@ -114,6 +114,14 @@ class AkeebasubsRouter extends RouterBase
 		{
 			$menuItem = $this->findMenu([
 				'view' => $query['view'] ?? 'Levels',
+			]);
+		}
+
+		// Otherwise, find a suitable menu -- default view
+		if (empty($menuItem))
+		{
+			$menuItem = $this->findMenu([
+				'view' => 'Levels',
 			]);
 		}
 
