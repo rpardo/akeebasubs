@@ -58,7 +58,7 @@ class plgContentAsrestricted extends JPlugin
 		// Do I have any of the supported plugin tags in the content?
 		$text = is_object($row) ? $row->text : $row;
 
-		if (StringHelper::strpos($text, 'akeebasubs') !== false)
+		if (StringHelper::strpos($text, 'akeebasubs') === false)
 		{
 			return true;
 		}
