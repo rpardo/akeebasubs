@@ -427,6 +427,9 @@ HTML;
 			return true;
 		}
 
+		// I must load the container to register the component's autoloader
+		Container::getInstance('com_akeebasubs');
+
 		if (is_null(self::$localisePrices))
 		{
 			$container            = Container::getInstance('com_akeebasubs');

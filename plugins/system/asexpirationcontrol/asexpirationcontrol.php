@@ -89,6 +89,9 @@ class plgSystemAsexpirationcontrol extends JPlugin
 			return;
 		}
 
+		// I must load the container to register the component's autoloader
+		Container::getInstance('com_akeebasubs');
+
 		$this->onAkeebasubsCronTask('expirationcontrol');
 	}
 
@@ -115,8 +118,9 @@ class plgSystemAsexpirationcontrol extends JPlugin
 		 * - publish_down <= now (hence expires_to)
 		 */
 		/** @var Subscriptions $subsModel */
-		$subsModel = Container::getInstance('com_akeebasubs')->factory->model('Subscriptions')->tmpInstance();
-		$subs = $subsModel
+		$container = Container::getInstance('com_akeebasubs');
+		$subsModel = $container->factory->model('Subscriptions')->tmpInstance();
+		$subs      = $subsModel
 			->enabled(1)
 			->expires_to($jNow->toSql())
 			->get();
@@ -133,7 +137,7 @@ class plgSystemAsexpirationcontrol extends JPlugin
 		 * - publish_up <= now (hence publish_upto)
 		 */
 		/** @var Subscriptions $subsModel */
-		$subsModel = Container::getInstance('com_akeebasubs')->factory->model('Subscriptions')->tmpInstance();
+		$subsModel = $container->factory->model('Subscriptions')->tmpInstance();
 		$subs = $subsModel
 			->enabled(0)
 			->paystate('C')

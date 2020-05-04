@@ -89,6 +89,9 @@ class plgContentAstimedrelease extends JPlugin
 			return true;
 		}
 
+		// I must load the container to register the component's autoloader
+		Container::getInstance('com_akeebasubs');
+
 		// Just in time initialization
 		if (!$isInitialized)
 		{

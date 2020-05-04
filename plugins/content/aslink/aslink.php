@@ -61,6 +61,9 @@ class plgContentAslink extends CMSPlugin
 			return true;
 		}
 
+		// I must load the container to register the component's autoloader
+		Container::getInstance('com_akeebasubs');
+
 		// Search for this tag in the content
 		$regex = "#{aslink (.*?)}#s";
 

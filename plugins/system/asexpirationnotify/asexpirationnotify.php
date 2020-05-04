@@ -65,6 +65,9 @@ class plgSystemAsexpirationnotify extends CMSPlugin
 			return;
 		}
 
+		// I must load the container to register the component's autoloader
+		Container::getInstance('com_akeebasubs');
+
 		$this->onAkeebasubsCronTask('expirationnotify');
 	}
 
@@ -134,7 +137,8 @@ class plgSystemAsexpirationnotify extends CMSPlugin
 			$jTo   = new Date($now + $notify1 * 24 * 3600);
 
 			/** @var Subscriptions $subsModel */
-			$subsModel = Container::getInstance('com_akeebasubs')->factory->model('Subscriptions')->tmpInstance();
+			$container = Container::getInstance('com_akeebasubs');
+			$subsModel = $container->factory->model('Subscriptions')->tmpInstance();
 
 			$subs1 = $subsModel->getClone()
 				->contact_flag(0)
@@ -216,7 +220,7 @@ class plgSystemAsexpirationnotify extends CMSPlugin
 					}
 
 					// Given the user and the level, load similar subscriptions with start date after this subscription's expiry date
-					$subsModel = Container::getInstance('com_akeebasubs')->factory->model('Subscriptions')->tmpInstance();
+					$subsModel = $container->factory->model('Subscriptions')->tmpInstance();
 
 					/**
 					 * Renewal subscriptions won't be enabled at this point (since they have not reached the publish_up

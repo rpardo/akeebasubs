@@ -85,6 +85,9 @@ class plgSystemAsfixrenewalsflag extends JPlugin
 			return;
 		}
 
+		// I must load the container to register the component's autoloader
+		Container::getInstance('com_akeebasubs');
+
 		$this->onAkeebasubsCronTask('fixrenewalsflag');
 	}
 
@@ -121,7 +124,8 @@ class plgSystemAsfixrenewalsflag extends JPlugin
 		$jTo   = new Date($now + (60 * 24 * 3600));
 
 		/** @var Subscriptions $subsModel */
-		$subsModel = Container::getInstance('com_akeebasubs')->factory->model('Subscriptions')->tmpInstance();
+		$container = Container::getInstance('com_akeebasubs');
+		$subsModel = $container->factory->model('Subscriptions')->tmpInstance();
 
 		// Let's fetch all the expiring subs in the next 60 days, one query for each contact flag
 		$next_expires0 = $subsModel->getClone()
@@ -167,7 +171,7 @@ class plgSystemAsfixrenewalsflag extends JPlugin
 				}
 
 				// Given the user and the level, load similar subscriptions with start date after this subscription's expiry date
-				$subsModel = Container::getInstance('com_akeebasubs')->factory->model('Subscriptions')->tmpInstance();
+				$subsModel = $container->factory->model('Subscriptions')->tmpInstance();
 
 				/**
 				 * Renewal subscriptions won't be enabled at this point (since they have not reached the publish_up

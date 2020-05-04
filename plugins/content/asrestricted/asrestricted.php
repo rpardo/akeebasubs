@@ -63,6 +63,9 @@ class plgContentAsrestricted extends JPlugin
 			return true;
 		}
 
+		// I must load the container to register the component's autoloader
+		Container::getInstance('com_akeebasubs');
+
 		// Search for this tag in the content
 		$regex = "#{akeebasubs(.*?)}(.*?){/akeebasubs}#s";
 		$text = preg_replace_callback($regex, array('self', 'process'), $text);
