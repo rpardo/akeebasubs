@@ -523,9 +523,10 @@ class AkeebasubsRouter extends RouterBase
 	{
 		$container      = $this->getContainer();
 		$languages      = ['*'];
+		$platform       = $container->platform;
 		$isMultilingual = false;
 
-		if (!$container->platform->isCli() && !$container->platform->isBackend())
+		if (!$platform->isCli() && !$platform->isBackend() && !$platform->isApi())
 		{
 			$isMultilingual = method_exists($this->app, 'getLanguageFilter') ?
 				$this->app->getLanguageFilter() : false;

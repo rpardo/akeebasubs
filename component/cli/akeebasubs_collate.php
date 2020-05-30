@@ -24,13 +24,14 @@
 // Enable Joomla's debug mode
 use Akeeba\Subscriptions\Admin\Helper\Email as EmailHelper;
 use Akeeba\Subscriptions\Admin\Helper\Message;
-use Akeeba\Subscriptions\Site\Model\JoomlaUsers;
 use Akeeba\Subscriptions\Site\Model\Levels;
 use Akeeba\Subscriptions\Site\Model\Subscriptions;
 use FOF30\Container\Container;
 use FOF30\Model\DataModel\Collection as DataCollection;
 use FOF30\Model\DataModel\Exception\RecordNotLoaded;
 use Joomla\CMS\Factory as JFactory;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Date\Date;
 
 define('JDEBUG', 1);
 
@@ -172,6 +173,11 @@ class AkeebasubsCollateTransactions extends FOFApplicationCLI
 	 */
 	private $forReal = false;
 
+	public function isClient()
+	{
+		return false;
+	}
+
 	protected function doExecute()
 	{
 		// Get the Akeeba Subscriptions container
@@ -257,7 +263,7 @@ HTML;
 		}
 
 		$html         .= "</dl>";
-		$plugin       = \Joomla\CMS\Plugin\PluginHelper::getPlugin('akeebasubs', 'adminemails');
+		$plugin       = PluginHelper::getPlugin('akeebasubs', 'adminemails');
 		$pluginParams = new Joomla\Registry\Registry($plugin->params);
 		$emails       = trim($pluginParams->get('emails', ''));
 		$emails       = str_replace(';', ',', $emails);
@@ -280,7 +286,9 @@ HTML;
 
 		foreach ($emails as $email)
 		{
-			[$subject, $templateText] = EmailHelper::loadEmailTemplate('plg_akeebasubs_adminemails_problem_transactions', null);
+			[
+				$subject, $templateText,
+			] = EmailHelper::loadEmailTemplate('plg_akeebasubs_adminemails_problem_transactions', null);
 
 			if (empty($subject))
 			{
@@ -288,7 +296,7 @@ HTML;
 			}
 
 			/** @var Subscriptions $fakeSub */
-			$fakeSub = $container->factory->model('Subscriptions')->tmpInstance();
+			$fakeSub          = $container->factory->model('Subscriptions')->tmpInstance();
 			$fakeSub->user_id = $myUser->id;
 
 			$extras       = [
@@ -410,7 +418,7 @@ HTML;
 
 		if ($maxDateString)
 		{
-			$this->maximumTimestamp = (new Joomla\CMS\Date\Date($maxDateString))->getTimestamp();
+			$this->maximumTimestamp = (new Date($maxDateString))->getTimestamp();
 		}
 
 		// Do I have a --min-date parameter?
@@ -418,7 +426,7 @@ HTML;
 
 		if ($minDateString)
 		{
-			$this->minimumTimestamp = (new Joomla\CMS\Date\Date($minDateString))->getTimestamp();
+			$this->minimumTimestamp = (new Date($minDateString))->getTimestamp();
 		}
 
 		// Do I have a --days parameter?
@@ -529,7 +537,7 @@ HTML;
 			foreach ($decodedBody['response'] as $transaction)
 			{
 				// Have we hit the earliest date we're supposed to handle?
-				$creationDate         = new Joomla\CMS\Date\Date($transaction['created_at']);
+				$creationDate         = new Date($transaction['created_at']);
 				$transactionTimestamp = $creationDate->getTimestamp();
 
 				if ($transactionTimestamp < $this->minimumTimestamp)
@@ -981,11 +989,6 @@ HTML;
 			$this->out("\t$reason");
 			$this->out(str_repeat('-', 80));
 		}
-	}
-
-	public function isClient()
-	{
-		return false;
 	}
 }
 
