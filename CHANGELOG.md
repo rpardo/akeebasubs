@@ -18,6 +18,7 @@
 * Concurrent handling of subscription_created and subscription_payment_succeeded callbacks leads to inactive subscriptions 
 * Content plugin aslink incompatible with Joomla 4
 * Some system plugins could fail depending on execution order
+* Joomla 4 throws an exception when mail is disabled and you try to send an email
 
 # 7.1.0
 

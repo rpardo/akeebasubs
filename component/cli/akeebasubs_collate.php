@@ -382,7 +382,15 @@ HTML;
 
 			$mailer->setBody($templateText);
 			$mailer->addRecipient($myUser->email, $myUser->name);
-			$mailer->Send();
+
+			try
+			{
+				$mailer->Send();
+			}
+			catch (Exception $e)
+			{
+				continue;
+			}
 		}
 	}
 

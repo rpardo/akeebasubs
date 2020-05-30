@@ -523,7 +523,7 @@ class AkeebasubsRouter extends RouterBase
 	{
 		$container      = $this->getContainer();
 		$languages      = ['*'];
-		$isMultilingual = true;
+		$isMultilingual = false;
 
 		if (!$container->platform->isCli() && !$container->platform->isBackend())
 		{

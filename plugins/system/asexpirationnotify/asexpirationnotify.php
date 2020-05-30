@@ -546,7 +546,14 @@ class plgSystemAsexpirationnotify extends CMSPlugin
 
 		Log::add("Sending $type notification to #{$row->akeebasubs_subscription_id} @{$user->username} ($user->name <{$user->email}>)", Log::INFO, "akeebasubs.cron.expirationnotify");
 
-		$result = $mailer->Send();
+		try
+		{
+			$result = $mailer->Send();
+		}
+		catch (RuntimeException $e)
+		{
+			return false;
+		}
 
 		// Log the email we just sent
 		$this->logEmail($row, $type);

@@ -294,7 +294,15 @@ class plgAkeebasubsSubscriptionemails extends JPlugin
 			return false;
 		}
 
-		$result = $mailer->Send();
+		try
+		{
+			$result = $mailer->Send();
+		}
+		catch (RuntimeException $e)
+		{
+			return false;
+		}
+
 		$mailer = null;
 
 		// Log the email we just sent
