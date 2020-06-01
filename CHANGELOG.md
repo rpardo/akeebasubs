@@ -9,6 +9,7 @@
 
 * Database optimization: cache Levels queries in content plugins
 * Joomla 4 beta 1 compatibility
+* Remove hardcoded null date 0000-00-00 00:00:00 (required for J4 compatibility)
 
 **Bug fixes**
 

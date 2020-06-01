@@ -585,7 +585,7 @@ class Subscriptions extends DataModel
 			$to = trim($publish_down);
 		}
 
-		if (empty($to) || ($to == '0000-00-00') || ($to == '0000-00-00 00:00:00'))
+		if (empty($to) || ($to == '0000-00-00') || ($to == '0000-00-00 00:00:00') || ($to == $db->getNullDate()))
 		{
 			$to = '';
 		}
@@ -784,7 +784,7 @@ class Subscriptions extends DataModel
 
 		$to = trim($expires_to);
 
-		if (empty($to) || ($to == '0000-00-00') || ($to == '0000-00-00 00:00:00'))
+		if (empty($to) || ($to == '0000-00-00') || ($to == '0000-00-00 00:00:00') || ($to == $db->getNullDate()))
 		{
 			$to = '';
 		}
@@ -992,7 +992,7 @@ class Subscriptions extends DataModel
 			 * We make the following checks:
 			 *
 			 * - Is the date empty?
-			 * - Is the date equal to the MySQL null date (0000-00-00 00:00:00).
+			 * - Is the date equal to the Joomla null date (1000-01-01 00:00:00).
 			 * - Is the date matching a RegEx for database date format?
 			 *
 			 * These checks will only fire if there was a mistake creating the subscription, typically something

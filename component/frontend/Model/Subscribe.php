@@ -847,8 +847,8 @@ class Subscribe extends Model
 			'contact_flag'               => 0,
 			'prediscount_amount'         => $validation->price->net,
 			'discount_amount'            => $validation->price->discount,
-			'first_contact'              => '0000-00-00 00:00:00',
-			'second_contact'             => '0000-00-00 00:00:00',
+			'first_contact'              => $this->container->db->getNullDate(),
+			'second_contact'             => $this->container->db->getNullDate(),
 			'ua'                         => $ua,
 			'mobile'                     => $mobile ? 1 : 0,
 			// Flags
