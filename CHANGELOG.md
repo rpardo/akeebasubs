@@ -20,6 +20,7 @@
 * Content plugin aslink incompatible with Joomla 4
 * Some system plugins could fail depending on execution order
 * Joomla 4 throws an exception when mail is disabled and you try to send an email
+* Unhandled exception page was incompatible with Joomla 4
 
 # 7.1.0
 
