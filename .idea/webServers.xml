@@ -10,7 +10,7 @@
         </fileTransfer>
       </webServer>
       <webServer id="0c1cbb85-f302-4554-8b56-a79fc6be31ee" name="ABCOM live" url="https://www.akeebabackup.com">
-        <fileTransfer rootFolder="/home/akeebaba/public_html" accessType="SFTP" host="akeebabackup.com" port="18765" sshConfigId="e16181e4-cdc8-4616-a397-136a172437ac" sshConfig="ABCOM live" authAgent="true">
+        <fileTransfer rootFolder="/home/akeebaba/public_html" accessType="SFTP" host="akeebabackup.com" port="18765" sshConfigId="e16181e4-cdc8-4616-a397-136a172437ac" sshConfig="ABCOM live" keyPair="true">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>

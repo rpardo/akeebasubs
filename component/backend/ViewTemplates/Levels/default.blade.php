@@ -77,7 +77,7 @@ $model = $this->getModel();
     </th>
     {{-- Recurring --}}
     <th>
-        @sortgrid('recurring')
+        @fieldtitle('recurring')
     </th>
     {{-- Price --}}
     <th>
@@ -127,7 +127,7 @@ $model = $this->getModel();
         </td>
         {{-- Recurring --}}
         <td>
-            @jhtml('FEFHelper.browse.published', $row->recurring, $i, '', false)
+            @jhtml('FEFHelper.browse.published', $row->upsell != 'never', $i, '', false)
         </td>
         <td>
             @include('admin:com_akeebasubs/Common/ShowPrice', array('item' => $row, 'field' => 'price'))
