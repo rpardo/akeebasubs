@@ -246,7 +246,12 @@ $formatCurrency = function(float $price) use ($currencyPosition, $currencySymbol
         </h4>
         <div id="akeebasubs_my_subscriptions_level_{{ $level->slug }}">
         @foreach ($allSubs as $sub)
-        <?php /** @var Subscriptions $sub */ ?>
+        <?php /** @var Subscriptions $sub */
+            if (($sub->status == 'pending') && ($sub->cancellation_reason == 'past_due'))
+            {
+	            $sub->setFieldValue('state', $sub->isRecurring() ? 'C' : 'X');
+            }
+        ?>
             {{-- TRANSACTION DISPLAY --}}
             <div class="akeeba-panel--info akeebasubs-subscription-container">
                 {{-- TRANSACTION HEADER --}}
@@ -256,6 +261,7 @@ $formatCurrency = function(float $price) use ($currencyPosition, $currencySymbol
                         #{{ $sub->getId() }}
                     </span>
 
+                    @if (!$sub->isRecurring())
                     <span class="akeebasubs-subscription-purchase-date">
                         @if ((int)substr($sub->created_on, 0, 4) < 1)
                             @lang('COM_AKEEBASUBS_SUBSCRIPTIONS_INVALIDCREATIONDATE')
@@ -263,6 +269,7 @@ $formatCurrency = function(float $price) use ($currencyPosition, $currencySymbol
                             {{ \Akeeba\Subscriptions\Admin\Helper\Format::date($sub->created_on) }}
                         @endif
                     </span>
+                    @endif
 
                     {{-- TRANSACTION HEADER :: STATUS --}}
                     @if ($sub->status == 'canceled')

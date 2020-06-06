@@ -22,6 +22,7 @@
 * Joomla 4 throws an exception when mail is disabled and you try to send an email
 * Unhandled exception page was incompatible with Joomla 4
 * Show correct recurring status in backend
+* Recurring subscriptions with failed payments appeared as pending in the frontend instead of expired or canceled
 
 # 7.1.0
 
