@@ -70,10 +70,6 @@ use JText;
  * @method  $this  locked_by()                locked_by(int $v)
  * @method  $this  hits()                     hits(int $v)
  * @method  $this  skipOnProcessList()        skipOnProcessList(bool $v)
- *
- * Relations:
- *
- * @property-read  Users       $forUser
  */
 class Coupons extends DataModel
 {
@@ -85,8 +81,6 @@ class Coupons extends DataModel
 
 		// Always load the Filters behaviour
 		$this->addBehaviour('Filters');
-
-		$this->hasOne('forUser', 'Users', 'user', 'user_id');
 	}
 
 	/**
