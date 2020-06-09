@@ -225,6 +225,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
             // Removing Reports
 			'administrator/components/com_akeebasubs/Controller/Reports.php',
 			'administrator/components/com_akeebasubs/Model/Reports.php',
+			'administrator/components/com_akeebasubs/Model/RenewalsForReports.php',
 		],
 		'folders' => [
 			'administrator/components/com_akeebasubs/commands',
