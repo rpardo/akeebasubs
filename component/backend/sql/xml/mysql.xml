@@ -286,34 +286,6 @@ CREATE TABLE `#__akeebasubs_upgrades` (
             ]]></query>
         </action>
 
-        <action table="#__akeebasubs_users" canfail="0">
-            <condition type="missing" value="" />
-            <query><![CDATA[
-CREATE TABLE `#__akeebasubs_users` (
-	`akeebasubs_user_id` bigint(20) unsigned NOT NULL auto_increment,
-	`user_id` bigint(20) unsigned NOT NULL,
-	`isbusiness` TINYINT(1) NOT NULL DEFAULT '0',
-	`businessname` VARCHAR(255) NULL,
-	`occupation` VARCHAR(255) NULL,
-	`vatnumber` VARCHAR(255) NULL,
-	`viesregistered` TINYINT(1) NOT NULL DEFAULT '0',
-	`taxauthority` VARCHAR(255) NULL,
-	`address1` VARCHAR(255) NULL,
-	`address2` VARCHAR(255) NULL,
-	`city` VARCHAR(255) NULL,
-	`zip` VARCHAR(255) NULL,
-	`country` CHAR(2) NOT NULL DEFAULT 'XX',
-	`params` TEXT,
-	`notes` TEXT,
-    `needs_logout` TINYINT NOT NULL DEFAULT '0',
-	PRIMARY KEY ( `akeebasubs_user_id` ),
-	UNIQUE KEY `joomlauser` (`user_id`)
-) DEFAULT COLLATE utf8_general_ci;
-            ]]></query>
-        </action>
-
-
-
         <!-- Typos in column names -->
         <action table="#__akeebasubs_blockrules" canfail="1">
             <condition type="missing" value="modifed_by" operator="not" />
@@ -450,15 +422,6 @@ ALTER TABLE `#__akeebasubs_subscriptions` DROP COLUMN `ip_country`;
             ]]></query>
         </action>
 
-        <action table="#__akeebasubs_users" canfail="1">
-            <condition type="missing" value="state" operator="not"  />
-            <query><![CDATA[
-ALTER TABLE `#__akeebasubs_users` DROP COLUMN `state`;
-            ]]></query>
-        </action>
-
-
-
         <!-- Obsolete tables -->
         <action table="#__akeebasubs_apicoupons" canfail="0">
             <condition type="missing" value="" operator="not" />
@@ -541,6 +504,13 @@ DROP TABLE IF EXISTS `#__akeebasubs_levelgroups`;
             <condition type="missing" value="" operator="not" />
             <query><![CDATA[
 DROP TABLE IF EXISTS `#__akeebasubs_states`;
+            ]]></query>
+        </action>
+
+        <action table="#__akeebasubs_users" canfail="1">
+            <condition type="missing" value="" operator="not" />
+            <query><![CDATA[
+DROP TABLE IF EXISTS `#__akeebasubs_users`;
             ]]></query>
         </action>
 
