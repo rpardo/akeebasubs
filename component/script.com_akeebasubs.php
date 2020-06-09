@@ -221,6 +221,11 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 
 			// Removing GeoIP features
 			'administrator/components/com_akeebasubs/ViewTemplates/ControlPanel/geoip.blade.php',
+
+            // Removing Reports
+			'administrator/components/com_akeebasubs/Controller/Reports.php',
+			'administrator/components/com_akeebasubs/Model/Reports.php',
+			'administrator/components/com_akeebasubs/Model/RenewalsForReports.php',
 		],
 		'folders' => [
 			'administrator/components/com_akeebasubs/commands',
@@ -311,6 +316,10 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 
 			// Removing email templates
 			'administrator/components/com_akeebasubs/ViewTemplates/EmailTemplates',
+
+            // Removing reports
+			'administrator/components/com_akeebasubs/View/Reports',
+			'administrator/components/com_akeebasubs/ViewTemplates/Reports',
 		]
 	];
 
