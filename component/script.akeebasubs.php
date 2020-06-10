@@ -52,7 +52,6 @@ class Pkg_AkeebasubsInstallerScript
 	 * @var array
 	 */
 	protected $extensionsToEnable = [
-		['plugin', 'invoices', 1, 'akeebasubs'],
 		['plugin', 'joomla', 1, 'akeebasubs'],
 		['plugin', 'joomlaprofilesync', 1, 'akeebasubs'],
 		['plugin', 'needslogout', 1, 'akeebasubs'],

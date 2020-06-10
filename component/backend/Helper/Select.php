@@ -486,34 +486,6 @@ abstract class Select
 	}
 
 	/**
-	 * Returns a list of known invoicing extensions supported by plugins
-	 *
-	 * @return  array  extension => title
-	 */
-	public static function getInvoiceExtensions()
-	{
-		static $invoiceExtensions = null;
-
-		if (is_null($invoiceExtensions))
-		{
-			$source            = Container::getInstance('com_akeebasubs')->factory
-				->model('Invoices')->tmpInstance()
-				->getExtensions(0);
-			$invoiceExtensions = [];
-
-			if (!empty($source))
-			{
-				foreach ($source as $item)
-				{
-					$invoiceExtensions[$item['extension']] = $item['title'];
-				}
-			}
-		}
-
-		return $invoiceExtensions;
-	}
-
-	/**
 	 * Generates a yes/no drop-down list.
 	 *
 	 * @param   string  $name      The value of the HTML name attribute

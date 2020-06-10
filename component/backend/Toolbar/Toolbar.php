@@ -41,8 +41,6 @@ class Toolbar extends \FOF30\Toolbar\Toolbar
 			unset ($views['COM_AKEEBASUBS_MAINMENU_TOOLS'][1]);
 			unset ($views[1]);
 			unset ($views[2]);
-			unset ($views['COM_AKEEBASUBS_MAINMENU_INVOICES'][0]);
-			unset ($views['COM_AKEEBASUBS_MAINMENU_INVOICES'][1]);
 		}
 
 		foreach ($views as $label => $view)

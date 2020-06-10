@@ -95,7 +95,7 @@ class AkeebasubsRouter extends RouterBase
 			$uri  = Uri::getInstance($menuItem->link);
 			$view = $uri->getVar('view', null);
 
-			if (!empty($view) && !in_array(strtolower($view), ['level', 'levels', 'new', 'subscribe', 'subscriptions', 'userinfo', 'invoices']))
+			if (!empty($view) && !in_array(strtolower($view), ['level', 'levels', 'new', 'subscribe', 'subscriptions', 'userinfo']))
 			{
 				$menuItem = null;
 			}
@@ -247,7 +247,7 @@ class AkeebasubsRouter extends RouterBase
 		// accepted views:
 		$views = [
 			'new', 'thankyou', 'cancelled', 'level', 'levels', 'message', 'subscribe', 'subscription', 'subscriptions',
-			'callback', 'validate', 'userinfo', 'invoices', 'invoice',
+			'callback', 'validate', 'userinfo', 'invoice',
 		];
 
 		// accepted layouts:
@@ -287,19 +287,6 @@ class AkeebasubsRouter extends RouterBase
 			case 'new':
 				$vars['view'] = 'Level';
 				$vars['task'] = 'read';
-				break;
-
-			case 'Invoices':
-			case 'invoices':
-				$vars['view']   = 'Invoices';
-				$vars['layout'] = 'default';
-				break;
-
-			case 'Invoice':
-			case 'invoice':
-				$vars['view']   = 'Invoice';
-				$vars['task']   = 'read';
-				$vars['layout'] = 'item';
 				break;
 
 			case 'thankyou':

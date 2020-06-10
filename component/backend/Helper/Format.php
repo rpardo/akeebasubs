@@ -205,36 +205,6 @@ abstract class Format
 	}
 
 	/**
-	 * Return the human readable name of the invoicing extension
-	 *
-	 * @param   string  $extension  The invoicing extension code
-	 *
-	 * @return  string
-	 */
-	public static function formatInvoicingExtension($extension)
-	{
-		static $map = null;
-
-		if (is_null($map))
-		{
-			/** @var Akeeba\Subscriptions\Admin\Model\Invoices $model */
-			$model = Container::getInstance('com_akeebasubs')->factory
-				->model('Invoices')->tmpInstance();
-
-			$map = $model->getExtensions(2);
-		}
-
-		if (array_key_exists($extension, $map))
-		{
-			return $map[ $extension ];
-		}
-		else
-		{
-			return $extension;
-		}
-	}
-
-	/**
 	 * Format a value as money
 	 *
 	 * @param   float   $value  The money value to format
