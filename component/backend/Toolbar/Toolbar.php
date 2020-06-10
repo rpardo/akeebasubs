@@ -32,7 +32,6 @@ class Toolbar extends \FOF30\Toolbar\Toolbar
 			'Subscriptions',
 			'Coupons',
 			'COM_AKEEBASUBS_MAINMENU_LEGACY' => [
-				'Invoices',
 				'CreditNotes',
 			],
 		];
@@ -109,26 +108,6 @@ class Toolbar extends \FOF30\Toolbar\Toolbar
 
 		JToolBarHelper::divider();
 		JToolBarHelper::custom('copy', 'copy.png', 'copy_f2.png', 'JLIB_HTML_BATCH_COPY', false);
-	}
-
-	public function onInvoicesBrowse()
-	{
-		$this->renderSubmenu();
-
-		$option = $this->container->componentName;
-		$view = 'Invoices';
-
-		$subtitle_key = $option . '_TITLE_' . $view;
-		JToolBarHelper::title(JText::_($option).' &ndash; <small>' .
-			JText::_($subtitle_key) .
-			'</small>',
-			str_replace('com_', '', $option));
-
-		// Add toolbar buttons
-		if ($this->perms->delete)
-		{
-			JToolBarHelper::deleteList();
-		}
 	}
 
 	public function onSubscriptionsBrowse()

@@ -15,8 +15,6 @@ use Akeeba\Subscriptions\Admin\Model\CreditNotes;
 
 $model = $this->getModel();
 $nullDate = $this->container->db->getNullDate();
-/** @var \Akeeba\Subscriptions\Admin\Model\Invoices $invoiceModel */
-$invoiceModel = $this->getModel()->getContainer()->factory->model('Invoices')->tmpInstance();
 ?>
 
 @extends('admin:com_akeebasubs/Common/browse')

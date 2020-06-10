@@ -68,8 +68,6 @@ class Dispatcher extends \FOF30\Dispatcher\Dispatcher
 			'callback'      => 'Callbacks',
 			'cron'          => 'Cron',
 			'crons'         => 'Cron',
-			'invoice'       => 'Invoices',
-			'invoices'      => 'Invoices',
 			'level'         => 'Level',
 			'levels'        => 'Levels',
 			'messages'      => 'Messages',
