@@ -23,7 +23,7 @@ class Html extends \FOF30\View\DataView\Html
 		// Eager loading of relations
 		/** @var Subscriptions $model */
 		$model = $this->getModel();
-		$model->with(['level', 'invoice']);
+		$model->with(['level']);
 
 		parent::onBeforeBrowse();
 
