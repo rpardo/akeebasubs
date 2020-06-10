@@ -228,6 +228,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeebasubs/Model/RenewalsForReports.php',
 
 			// Removing invoices and credit notes
+			'administrator/components/com_akeebasubs/Controller/CreditNote.php',
 			'administrator/components/com_akeebasubs/Controller/Invoice.php',
 			'administrator/components/com_akeebasubs/Model/Invoices.php',
             'administrator/components/com_akeebasubs/ViewTemplates/Subscriptions/form_invoice.blade.php',
@@ -331,8 +332,10 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeebasubs/ViewTemplates/Reports',
 
             // Remove invoices and credit notes
+			'components/com_akeebasubs/View/CreditNotes',
 			'components/com_akeebasubs/View/Invoices',
 			'administrator/components/com_akeebasubs/View/Invoices',
+			'administrator/components/com_akeebasubs/ViewTemplates/CreditNotes',
 			'administrator/components/com_akeebasubs/ViewTemplates/Invoices',
 		]
 	];
