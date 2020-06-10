@@ -234,6 +234,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'components/com_akeebasubs/Controller/Invoice.php',
 			'components/com_akeebasubs/Controller/Invoices.php',
 			'components/com_akeebasubs/Model/Invoices.php',
+			'components/com_akeebasubs/Model/MissingInvoices.php',
 		],
 		'folders' => [
 			'administrator/components/com_akeebasubs/commands',
