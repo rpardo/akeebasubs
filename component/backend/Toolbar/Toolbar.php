@@ -31,9 +31,6 @@ class Toolbar extends \FOF30\Toolbar\Toolbar
 			],
 			'Subscriptions',
 			'Coupons',
-			'COM_AKEEBASUBS_MAINMENU_LEGACY' => [
-				'CreditNotes',
-			],
 		];
 
 		if (!$this->container->platform->getUser()->authorise('com_akeebasubs.pii', 'com_akeebasubs'))

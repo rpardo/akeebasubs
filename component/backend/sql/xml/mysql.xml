@@ -76,32 +76,6 @@ CREATE TABLE `#__akeebasubs_coupons` (
             ]]></query>
         </action>
 
-        <action table="#__akeebasubs_creditnotes" canfail="0">
-            <condition type="missing" value="" />
-            <query><![CDATA[
-CREATE TABLE `#__akeebasubs_creditnotes` (
-	`akeebasubs_invoice_id` BIGINT(20) UNSIGNED NOT NULL,
-	`creditnote_no` BIGINT(20) unsigned NOT NULL,
-	`display_number` VARCHAR(255) NULL,
-	`creditnote_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-	`html` LONGTEXT,
-	`atxt` LONGTEXT,
-	`btxt` LONGTEXT,
-	`filename` VARCHAR(255) NULL,
-	`sent_on` DATETIME NULL,
-
-	`enabled` tinyint(1) NOT NULL DEFAULT '1',
-	`created_on` datetime NOT NULL default '0000-00-00 00:00:00',
-	`created_by` int(11) NOT NULL DEFAULT 0,
-	`modified_on` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-	`modified_by` int(11) NOT NULL DEFAULT 0,
-	`locked_on` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-	`locked_by` int(11) NOT NULL DEFAULT 0,
-	PRIMARY KEY (`akeebasubs_invoice_id`)
-) DEFAULT COLLATE utf8_general_ci;
-            ]]></query>
-        </action>
-
         <action table="#__akeebasubs_levels" canfail="0">
             <condition type="missing" value="" />
             <query><![CDATA[
@@ -422,6 +396,13 @@ DROP TABLE IF EXISTS `#__akeebasubs_configurations`
             <query><![CDATA[
 DROP TABLE IF EXISTS `#__akeebasubs_countrycurrencies`;
 				]]></query>
+        </action>
+
+        <action table="#__akeebasubs_creditnotes" canfail="0">
+            <condition type="missing" value="" operator="not" />
+            <query><![CDATA[
+DROP TABLE IF EXISTS `#__akeebasubs_creditnotes`
+            ]]></query>
         </action>
 
         <action table="#__akeebasubs_creditnotetemplates" canfail="0">

@@ -230,6 +230,7 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			// Removing invoices and credit notes
 			'administrator/components/com_akeebasubs/Controller/CreditNote.php',
 			'administrator/components/com_akeebasubs/Controller/Invoice.php',
+			'administrator/components/com_akeebasubs/Model/CreditNotes.php',
 			'administrator/components/com_akeebasubs/Model/Invoices.php',
             'administrator/components/com_akeebasubs/ViewTemplates/Subscriptions/form_invoice.blade.php',
 			'components/com_akeebasubs/Controller/Invoice.php',
