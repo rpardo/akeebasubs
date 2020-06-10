@@ -199,14 +199,6 @@ $user = JFactory::getUser($item->user_id ?? 0);
 
 <div class="akeeba-container--50-50">
 
-	<div class="akeeba-panel--orange akeebasubs-panel-force-top-margin" id="akeebasubs-invoices">
-		<header class="akeeba-block-header">
-			<h3>@lang('COM_AKEEBASUBS_MAINMENU_INVOICES')</h3>
-		</header>
-
-		@include('admin:com_akeebasubs/Subscriptions/form_invoice', ['model' => $item])
-	</div>
-
 	<div class="akeeba-panel--red akeebasubs-panel-force-top-margin" id="akeebasubs-paddle">
 		<header class="akeeba-block-header">
 			<h3>@lang('COM_AKEEBASUBS_SUBSCRIPTION_LBL_PADDLE')</h3>

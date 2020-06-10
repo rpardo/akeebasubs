@@ -902,28 +902,6 @@ abstract class Select
 	}
 
 	/**
-	 * Drop down list of invoice extensions
-	 *
-	 * @param   string  $name      The field's name
-	 * @param   string  $selected  Pre-selected value
-	 * @param   array   $attribs   Field attributes
-	 *
-	 * @return  string  The HTML of the drop-down
-	 */
-	public static function invoiceextensions($name = 'extension', $selected = '', $attribs = [])
-	{
-		/** @var \Akeeba\Subscriptions\Admin\Model\Invoices $model */
-		$model = Container::getInstance('com_akeebasubs')->factory
-			->model('Invoices')->tmpInstance();
-
-		$options = $model->getExtensions(1);
-		$option  = HTMLHelper::_('select.option', '', '- ' . Text::_('COM_AKEEBASUBS_COMMON_SELECT') . ' -');
-		array_unshift($options, $option);
-
-		return self::genericlist($options, $name, $attribs, $selected, $name);
-	}
-
-	/**
 	 * Drop down list of CSV delimiter preference
 	 *
 	 * @param   string  $name      The field's name
