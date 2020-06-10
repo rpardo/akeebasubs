@@ -226,6 +226,10 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
 			'administrator/components/com_akeebasubs/Controller/Reports.php',
 			'administrator/components/com_akeebasubs/Model/Reports.php',
 			'administrator/components/com_akeebasubs/Model/RenewalsForReports.php',
+
+			// Removing invoices and credit notes
+			'administrator/components/com_akeebasubs/Controller/Invoice.php',
+			'administrator/components/com_akeebasubs/Model/Invoices.php',
 		],
 		'folders' => [
 			'administrator/components/com_akeebasubs/commands',
@@ -320,6 +324,10 @@ class Com_AkeebasubsInstallerScript extends \FOF30\Utils\InstallScript
             // Removing reports
 			'administrator/components/com_akeebasubs/View/Reports',
 			'administrator/components/com_akeebasubs/ViewTemplates/Reports',
+
+            // Remove invoices and credit notes
+			'administrator/components/com_akeebasubs/View/Invoices',
+			'administrator/components/com_akeebasubs/ViewTemplates/Invoices',
 		]
 	];
 
