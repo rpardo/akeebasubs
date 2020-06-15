@@ -357,8 +357,8 @@ $formatCurrency = function(float $price) use ($currencyPosition, $currencySymbol
                         @sprintf('COM_AKEEBASUBS_SUBSCRIPTIONS_TRANSACTION_ID', $sub->processor_key)
                     </p>
 
-                    {{-- RECEIPT / INVOICE --}}
-                    @if (!empty($sub->akeebasubs_invoice_id) || !empty($sub->receipt_url))
+                    {{-- RECEIPT --}}
+                    @if (!empty($sub->receipt_url))
                         <p>
                             @if (!empty($sub->receipt_url))
                                 <a class="akeeba-btn--grey--small"
@@ -366,16 +366,6 @@ $formatCurrency = function(float $price) use ($currencyPosition, $currencySymbol
                                    target="_blank">
                                     <span class="akion-document-text"></span>
                                     @lang('COM_AKEEBASUBS_SUBSCRIPTIONS_BTN_RECEIPT')
-                                </a>
-                            @endif
-
-                            @if (!empty($sub->akeebasubs_invoice_id))
-                                <a class="akeeba-btn--small--grey--small"
-                                   href="@route('index.php?option=com_akeebasubs&view=Invoice&task=read&id=' . $sub->getId() . '&tmpl=component')"
-                                   target="_blank"
-                                >
-                                    <span class="akion-document-text"></span>
-                                    @lang('COM_AKEEBASUBS_SUBSCRIPTIONS_ACTION_INVOICE')
                                 </a>
                             @endif
                         </p>

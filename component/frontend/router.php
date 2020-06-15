@@ -95,7 +95,7 @@ class AkeebasubsRouter extends RouterBase
 			$uri  = Uri::getInstance($menuItem->link);
 			$view = $uri->getVar('view', null);
 
-			if (!empty($view) && !in_array(strtolower($view), ['level', 'levels', 'new', 'subscribe', 'subscriptions', 'userinfo', 'invoices']))
+			if (!empty($view) && !in_array(strtolower($view), ['level', 'levels', 'new', 'subscribe', 'subscriptions', 'userinfo']))
 			{
 				$menuItem = null;
 			}
@@ -247,13 +247,12 @@ class AkeebasubsRouter extends RouterBase
 		// accepted views:
 		$views = [
 			'new', 'thankyou', 'cancelled', 'level', 'levels', 'message', 'subscribe', 'subscription', 'subscriptions',
-			'callback', 'validate', 'userinfo', 'invoices', 'invoice',
+			'callback', 'validate', 'userinfo',
 		];
 
 		// accepted layouts:
-		$layoutsAccepted = [
-			'Invoice' => ['item'],
-		];
+		// TODO Now empty because it was holding references to Invoices, must refactor this
+		$layoutsAccepted = [];
 
 		// default view
 		$default = 'levels';
@@ -287,19 +286,6 @@ class AkeebasubsRouter extends RouterBase
 			case 'new':
 				$vars['view'] = 'Level';
 				$vars['task'] = 'read';
-				break;
-
-			case 'Invoices':
-			case 'invoices':
-				$vars['view']   = 'Invoices';
-				$vars['layout'] = 'default';
-				break;
-
-			case 'Invoice':
-			case 'invoice':
-				$vars['view']   = 'Invoice';
-				$vars['task']   = 'read';
-				$vars['layout'] = 'item';
 				break;
 
 			case 'thankyou':
@@ -345,7 +331,7 @@ class AkeebasubsRouter extends RouterBase
 
 		if ($container->inflector->isSingular($vars['view']) && ($vars['view'] != 'UserInfo'))
 		{
-			if (in_array($vars['view'], ['Subscription', 'Invoice']))
+			if (in_array($vars['view'], ['Subscription']))
 			{
 				$vars['id'] = array_shift($segments);
 			}

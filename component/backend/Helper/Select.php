@@ -486,34 +486,6 @@ abstract class Select
 	}
 
 	/**
-	 * Returns a list of known invoicing extensions supported by plugins
-	 *
-	 * @return  array  extension => title
-	 */
-	public static function getInvoiceExtensions()
-	{
-		static $invoiceExtensions = null;
-
-		if (is_null($invoiceExtensions))
-		{
-			$source            = Container::getInstance('com_akeebasubs')->factory
-				->model('Invoices')->tmpInstance()
-				->getExtensions(0);
-			$invoiceExtensions = [];
-
-			if (!empty($source))
-			{
-				foreach ($source as $item)
-				{
-					$invoiceExtensions[$item['extension']] = $item['title'];
-				}
-			}
-		}
-
-		return $invoiceExtensions;
-	}
-
-	/**
 	 * Generates a yes/no drop-down list.
 	 *
 	 * @param   string  $name      The value of the HTML name attribute
@@ -897,28 +869,6 @@ abstract class Select
 		$options[] = HTMLHelper::_('select.option', 'replace', Text::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_EXPIRATION_REPLACE'));
 		$options[] = HTMLHelper::_('select.option', 'after', Text::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_EXPIRATION_AFTER'));
 		$options[] = HTMLHelper::_('select.option', 'overlap', Text::_('COM_AKEEBASUBS_RELATIONS_FIELD_FLEX_EXPIRATION_OVERLAP'));
-
-		return self::genericlist($options, $name, $attribs, $selected, $name);
-	}
-
-	/**
-	 * Drop down list of invoice extensions
-	 *
-	 * @param   string  $name      The field's name
-	 * @param   string  $selected  Pre-selected value
-	 * @param   array   $attribs   Field attributes
-	 *
-	 * @return  string  The HTML of the drop-down
-	 */
-	public static function invoiceextensions($name = 'extension', $selected = '', $attribs = [])
-	{
-		/** @var \Akeeba\Subscriptions\Admin\Model\Invoices $model */
-		$model = Container::getInstance('com_akeebasubs')->factory
-			->model('Invoices')->tmpInstance();
-
-		$options = $model->getExtensions(1);
-		$option  = HTMLHelper::_('select.option', '', '- ' . Text::_('COM_AKEEBASUBS_COMMON_SELECT') . ' -');
-		array_unshift($options, $option);
 
 		return self::genericlist($options, $name, $attribs, $selected, $name);
 	}

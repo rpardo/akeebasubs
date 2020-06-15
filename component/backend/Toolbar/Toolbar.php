@@ -31,10 +31,6 @@ class Toolbar extends \FOF30\Toolbar\Toolbar
 			],
 			'Subscriptions',
 			'Coupons',
-			'COM_AKEEBASUBS_MAINMENU_LEGACY' => [
-				'Invoices',
-				'CreditNotes',
-			],
 		];
 
 		if (!$this->container->platform->getUser()->authorise('com_akeebasubs.pii', 'com_akeebasubs'))
@@ -42,8 +38,6 @@ class Toolbar extends \FOF30\Toolbar\Toolbar
 			unset ($views['COM_AKEEBASUBS_MAINMENU_TOOLS'][1]);
 			unset ($views[1]);
 			unset ($views[2]);
-			unset ($views['COM_AKEEBASUBS_MAINMENU_INVOICES'][0]);
-			unset ($views['COM_AKEEBASUBS_MAINMENU_INVOICES'][1]);
 		}
 
 		foreach ($views as $label => $view)
@@ -109,26 +103,6 @@ class Toolbar extends \FOF30\Toolbar\Toolbar
 
 		JToolBarHelper::divider();
 		JToolBarHelper::custom('copy', 'copy.png', 'copy_f2.png', 'JLIB_HTML_BATCH_COPY', false);
-	}
-
-	public function onInvoicesBrowse()
-	{
-		$this->renderSubmenu();
-
-		$option = $this->container->componentName;
-		$view = 'Invoices';
-
-		$subtitle_key = $option . '_TITLE_' . $view;
-		JToolBarHelper::title(JText::_($option).' &ndash; <small>' .
-			JText::_($subtitle_key) .
-			'</small>',
-			str_replace('com_', '', $option));
-
-		// Add toolbar buttons
-		if ($this->perms->delete)
-		{
-			JToolBarHelper::deleteList();
-		}
 	}
 
 	public function onSubscriptionsBrowse()
