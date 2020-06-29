@@ -28,7 +28,7 @@
     </p>
 @stop
 @section('announcement_visitlink')
-    You can <a href="https://www.akeebabackup.com/my-subscriptions/subscriptions.html">review the status
+    You can <a href="https://www.akeeba.com/my-subscriptions/subscriptions.html">review the status
         of all your subscriptions</a> any time on our site.
 @stop
 @section('email_reason')

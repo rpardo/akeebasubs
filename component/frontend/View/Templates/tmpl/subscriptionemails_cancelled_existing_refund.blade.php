@@ -25,7 +25,7 @@
     </p>
     <p>
         If you had not requested a refund and you're not sure why you are receiving this email please
-        <a href="https://www.akeebabackup.com/contact-us.html">contact us</a>.Kindly remember to include subscription
+        <a href="https://www.akeeba.com/contact-us.html">contact us</a>.Kindly remember to include subscription
         reference #[SUB:ID] in your communication with us. Do not reply to this email directly; it is sent from an
         unmonitored email address.
     </p>
@@ -36,7 +36,7 @@
     </p>
 @stop
 @section('announcement_visitlink')
-    You can <a href="https://www.akeebabackup.com/my-subscriptions/subscriptions.html">review the status
+    You can <a href="https://www.akeeba.com/my-subscriptions/subscriptions.html">review the status
         of all your subscriptions</a> any time on our site.
 @stop
 @section('email_reason')

@@ -50,7 +50,7 @@
     Please note that the expiration date and time is expressed in the GMT timezone unless noted otherwise. If you'd like to use a different timezone please edit your user profile on our site.
 @stop
 @section('announcement_visitlink')
-    You can <a href="https://www.akeebabackup.com/my-subscriptions/subscriptions.html">review the status
+    You can <a href="https://www.akeeba.com/my-subscriptions/subscriptions.html">review the status
         of all your subscriptions</a> any time on our site.
 @stop
 @section('email_reason')

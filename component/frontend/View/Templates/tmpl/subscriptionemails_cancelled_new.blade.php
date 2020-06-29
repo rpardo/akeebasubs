@@ -30,7 +30,7 @@
         inconvenience.
     </p>
     <p>
-        If you are not sure what is going on please <a href="https://www.akeebabackup.com/contact-us.html">contact
+        If you are not sure what is going on please <a href="https://www.akeeba.com/contact-us.html">contact
             us</a>. Kindly remember to include subscription reference #[SUB:ID] in your communication with us. Do not
         reply to this email directly; it is sent from an unmonitored email address.
     </p>

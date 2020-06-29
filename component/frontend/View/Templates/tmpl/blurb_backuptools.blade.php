@@ -18,7 +18,7 @@
     <li><strong>Akeeba Remote CLI</strong>. Unattended remote site backup and administration, including downloading your backup archives.</li>
 </ul>
 @include('any:com_akeebasubs/Templates/blurb_buttons', [
-	'download_url' => 'https://www.akeebabackup.com/download.html',
-	'docs_url' => 'https://www.akeebabackup.com/documentation.html',
-	'support_url' => 'https://www.akeebabackup.com/support/desktop-utilities/Tickets.html'
+	'download_url' => 'https://www.akeeba.com/download.html',
+	'docs_url' => 'https://www.akeeba.com/documentation.html',
+	'support_url' => 'https://www.akeeba.com/support/desktop-utilities/Tickets.html'
 ])

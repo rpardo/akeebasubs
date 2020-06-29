@@ -10,8 +10,8 @@
 ?>
 <h4>Akeeba Backup Professional for WordPress</h4>
 @include('any:com_akeebasubs/Templates/blurb_buttons', [
-	'download_url' => 'https://www.akeebabackup.com/download.html',
-	'video_url' => 'https://www.akeebabackup.com/videos/1215-akeeba-backup-wordpress.html',
-	'docs_url' => 'https://www.akeebabackup.com/documentation/akeeba-solo.html',
-	'support_url' => 'https://www.akeebabackup.com/support/akeeba-backup-wordpress/Tickets.html'
+	'download_url' => 'https://www.akeeba.com/download.html',
+	'video_url' => 'https://www.akeeba.com/videos/1215-akeeba-backup-wordpress.html',
+	'docs_url' => 'https://www.akeeba.com/documentation/akeeba-solo.html',
+	'support_url' => 'https://www.akeeba.com/support/akeeba-backup-wordpress/Tickets.html'
 ])

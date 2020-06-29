@@ -46,7 +46,7 @@
     If the special offer does not seem to work on the checkout page of our site please contact us <em>before</em> making a payment.
 @stop
 @section('announcement_visitlink')
-    You can <a href="https://www.akeebabackup.com/my-subscriptions/subscriptions.html">review the status
+    You can <a href="https://www.akeeba.com/my-subscriptions/subscriptions.html">review the status
         of all your subscriptions</a> any time on our site.
 @stop
 @section('email_reason')

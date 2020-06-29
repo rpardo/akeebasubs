@@ -290,7 +290,7 @@
                     <div class="akemail-container">
                         <!-- Logo Header -->
                         <div class="akemail-logo">
-                            <a href="[SITEURL]" title="Visit akeebabackup.com">
+                            <a href="[SITEURL]" title="Visit Akeeba Ltd">
                                 <picture>
                                     <source srcset="/images/email-template/akeeba-logo-white.png" media="(prefers-color-scheme: dark)">
                                     <source srcset="/images/email-template/akeeba-logo.png" media="(prefers-color-scheme: light)">
@@ -338,8 +338,8 @@
                         <!-- Footer -->
                         <div class="akemail-footer">
                             <p class="akemail-footer-sitelink">
-                                <a href="[SITEURL]" title="Visit akeebabackup.com">
-                                    www.akeebabackup.com
+                                <a href="[SITEURL]" title="Visit akeeba.com">
+                                    https://www.akeeba.com
                                 </a>
                             </p>
                             <p class="akemail-footer-follow">

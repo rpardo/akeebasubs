@@ -15,7 +15,7 @@ defined('_JEXEC') or die;
 	<br/>
 	<span style="font-size: x-small">
 		Copyright &copy;2010&ndash;{{{ $this->getContainer()->platform->getDate(AKEEBASUBS_DATE)->format('Y') }}}
-		Nicholas K. Dionysopoulos / AkeebaBackup.com
+		Nicholas K. Dionysopoulos / Akeeba Ltd
 	</span>
 	<br/>
 

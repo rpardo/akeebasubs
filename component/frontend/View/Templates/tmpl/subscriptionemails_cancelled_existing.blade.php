@@ -35,7 +35,7 @@
         about half an hour; you will receive a reply to your ticket explaining the actions taken.
     </p>
     <p>
-        If you are not sure what is going on please <a href="https://www.akeebabackup.com/contact-us.html">contact
+        If you are not sure what is going on please <a href="https://www.akeeba.com/contact-us.html">contact
             us</a>. Kindly remember to include subscription reference #[SUB:ID] in your communication with us. Do not
         reply to this email directly; it is sent from an unmonitored email address.
     </p>
@@ -46,7 +46,7 @@
     </p>
 @stop
 @section('announcement_visitlink')
-    You can <a href="https://www.akeebabackup.com/my-subscriptions/subscriptions.html">review the status
+    You can <a href="https://www.akeeba.com/my-subscriptions/subscriptions.html">review the status
         of all your subscriptions</a> any time on our site.
 @stop
 @section('email_reason')

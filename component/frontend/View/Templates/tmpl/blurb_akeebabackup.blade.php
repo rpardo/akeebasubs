@@ -10,8 +10,8 @@
 ?>
 <h4>Akeeba Backup Professional for Joomla!</h4>
 @include('any:com_akeebasubs/Templates/blurb_buttons', [
-	'download_url' => 'https://www.akeebabackup.com/download.html',
-	'video_url' => 'https://www.akeebabackup.com/videos/1212-akeeba-backup.html',
-	'docs_url' => 'https://www.akeebabackup.com/documentation/akeeba-backup-documentation.html',
-	'support_url' => 'https://www.akeebabackup.com/support/akeeba-backup-3x/Tickets.html'
+	'download_url' => 'https://www.akeeba.com/download.html',
+	'video_url' => 'https://www.akeeba.com/videos/1212-akeeba-backup.html',
+	'docs_url' => 'https://www.akeeba.com/documentation/akeeba-backup-documentation.html',
+	'support_url' => 'https://www.akeeba.com/support/akeeba-backup-3x/Tickets.html'
 ])
