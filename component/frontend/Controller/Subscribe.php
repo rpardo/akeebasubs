@@ -142,6 +142,7 @@ class Subscribe extends Controller
 		$view->form = $model->getPaymentForm();
 		$view->setDefaultModelName('Subscribe');
 		$view->setModel('Subscribe', $model);
+		$view->task = $this->getTask();
 
 		$view->display();
 	}
