@@ -480,7 +480,7 @@ class plgAkpaymentViva extends AkpaymentBase
 				CURLOPT_SSLVERSION      => 6,
 				CURLOPT_SSL_VERIFYPEER  => true,
 				CURLOPT_SSL_VERIFYHOST  => 2,
-				CURLOPT_CAINFO          => JPATH_LIBRARIES . '/fof30/Download/Adapter/cacert.pem',
+				CURLOPT_CAINFO          => JPATH_LIBRARIES . '/src/Http/Transport/cacert.pem',
 				// Force the use of TLS (therefore SSLv3 is not used, mitigating POODLE; see https://github.com/paypal/merchant-sdk-php)
 				CURLOPT_SSL_CIPHER_LIST => 'TLSv1',
 				// This forces the use of TLS 1.x

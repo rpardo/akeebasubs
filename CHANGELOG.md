@@ -9,6 +9,7 @@
 * [HIGH] Exception in Subscriptions page with FOF 3.6
 * [HIGH] Cannot select "Last percent" when setting up a coupon
 * [HIGH] Cannot advance the Configuration Wizard when caching is enabled
+* [HIGH] cacert.pem files pointing to old location which is no longer available
 * [LOW] Wrong icons and documentation URL in configuration wizard
 
 # 6.2.2

@@ -533,7 +533,7 @@ class plgAkpaymentPaypal extends AkpaymentBase
 			CURLOPT_HEADER          => false,
 			CURLINFO_HEADER_OUT     => false,
 			CURLOPT_RETURNTRANSFER  => true,
-			CURLOPT_CAINFO          => JPATH_LIBRARIES . '/fof30/Download/Adapter/cacert.pem',
+			CURLOPT_CAINFO          => JPATH_LIBRARIES . '/src/Http/Transport/cacert.pem',
 			CURLOPT_HTTPHEADER      => [
 				'User-Agent: AkeebaSubscriptions',
 				'Connection: Close'

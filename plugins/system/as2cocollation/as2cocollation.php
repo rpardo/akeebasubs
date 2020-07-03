@@ -271,7 +271,7 @@ class plgSystemAs2cocollation extends JPlugin
 			CURLOPT_HEADER          => false,
 			CURLINFO_HEADER_OUT     => false,
 			CURLOPT_RETURNTRANSFER  => true,
-			CURLOPT_CAINFO          => JPATH_LIBRARIES . '/fof30/Download/Adapter/cacert.pem',
+			CURLOPT_CAINFO          => JPATH_LIBRARIES . '/src/Http/Transport/cacert.pem',
 			CURLOPT_HTTPHEADER      => [
 				"Accept: application/json"
 			],
@@ -334,7 +334,7 @@ class plgSystemAs2cocollation extends JPlugin
 		curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 		curl_setopt($ch, CURLOPT_USERPWD, self::$apiUsername . ':' . self::$apiPassword);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($ch, CURLOPT_CAINFO, JPATH_LIBRARIES . '/fof30/Download/Adapter/cacert.pem');
+		curl_setopt($ch, CURLOPT_CAINFO, JPATH_LIBRARIES . '/src/Http/Transport/cacert.pem');
 
 		$json_resp = curl_exec($ch);
 		curl_close($ch);
