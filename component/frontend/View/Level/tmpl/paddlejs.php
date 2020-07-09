@@ -30,7 +30,7 @@ window.jQuery('document').ready(function($){
 });
 JS;
 
-$this->addJavascriptFile('https://cdn.paddle.com/paddle/paddle.js');
+$this->addJavascriptFile('https://cdn.paddle.com/paddle/paddle.js', null, 'text/javascript', true);
 $this->addJavascriptInline($setupJS);
 ?>
 <div id="akeebasubs_js_elements_blocked" style="display: none;">

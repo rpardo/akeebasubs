@@ -4,6 +4,7 @@
 
 * Sales off-line switch
 * Script to fix contact flags of early renewals
+* Defer loading of the Paddle JS
 
 **Miscellaneous changes**
 
