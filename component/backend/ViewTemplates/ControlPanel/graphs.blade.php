@@ -7,6 +7,8 @@
 
 defined('_JEXEC') or die;
 
+/** @var \Akeeba\Subscriptions\Admin\View\ControlPanel\Html $this */
+
 use \Akeeba\Subscriptions\Admin\Helper\Select;
 
 $graphDayFrom = gmdate('Y-m-d', time() - 30 * 24 * 3600);
@@ -29,8 +31,8 @@ JS;
 ?>
 
 @section('graphs')
-    @js('media://com_akeebasubs/js/Chart.bundle.min.js')
-    @js('media://com_akeebasubs/js/cpanelgraphs.js')
+    @js('media://com_akeebasubs/js/Chart.bundle.min.js', $this->getContainer()->mediaVersion)
+    @js('media://com_akeebasubs/js/cpanelgraphs.min.js', $this->getContainer()->mediaVersion)
 
     <div class="akeeba-panel--info">
         <header class="akeeba-block-header">

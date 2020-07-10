@@ -55,7 +55,7 @@ if ($this->validation->validation->rawDataForDebug['firstrun'])
 $returnURI = JUri::getInstance();
 $returnURI->setVar('reset', 1);
 ?>
-@js('media://com_akeebasubs/js/signup.js')
+@js('media://com_akeebasubs/js/signup.min.js', $this->getContainer()->mediaVersion)
 
 @if ($this->container->platform->getUser()->guest)
 	<div id="akeebasubs-panel-account" class="akeeba-panel--info">

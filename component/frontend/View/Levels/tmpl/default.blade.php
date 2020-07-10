@@ -17,7 +17,7 @@ $i          = 0;
 ?>
 {{-- Load and initialise Paddle's JavaScript --}}
 @include('site:com_akeebasubs/Level/paddlejs')
-@js('media://com_akeebasubs/js/signup.js')
+@js('media://com_akeebasubs/js/signup.min.js', $this->getContainer()->mediaVersion)
 
 <div id="akeebasubs" class="levels awesome">
 

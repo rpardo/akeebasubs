@@ -64,13 +64,13 @@ class Dispatcher extends \FOF30\Dispatcher\Dispatcher
 
 		// Load common CSS and JavaScript
 		\JHtml::_('jquery.framework');
-		$this->container->template->addCSS('media://com_akeebasubs/css/backend.css', $this->container->mediaVersion);
+		$this->container->template->addCSS('media://com_akeebasubs/css/backend.min.css', $this->container->mediaVersion);
 
 		if ($useFEF && ($darkMode != 0))
 		{
-			$this->container->template->addCSS('media://com_akeebasubs/css/backend_dark.css', $this->container->mediaVersion);
+			$this->container->template->addCSS('media://com_akeebasubs/css/backend_dark.min.css', $this->container->mediaVersion);
 		}
 
-		$this->container->template->addJS('media://com_akeebasubs/js/backend.js', false, false, $this->container->mediaVersion);
+		$this->container->template->addJS('media://com_akeebasubs/js/backend.min.js', false, false, $this->container->mediaVersion);
 	}
 }

@@ -204,7 +204,7 @@ $paymentMethodOptions = [
 
 {{-- This used to display the Run Integrations interface --}}
 @section('browse-page-bottom')
-    @js('media://com_akeebasubs/js/blockui.js')
+    @js('media://com_akeebasubs/js/blockui.min.js', $this->getContainer()->mediaVersion)
 
     <div id="refreshMessage" style="display:none">
         <h3>

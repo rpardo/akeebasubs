@@ -339,7 +339,7 @@ window.jQuery('document').ready(function(){
 
 JS;
 			$container->template->addJS('https://cdn.paddle.com/paddle/paddle.js', true, false, $container->mediaVersion);
-			$container->template->addJS('media://com_akeebasubs/js/signup.js', true, false, $container->mediaVersion);
+			$container->template->addJS('media://com_akeebasubs/js/signup.min.js', true, false, $container->mediaVersion);
 			$container->template->addJSInline($setupJS);
 
 			$langStrings = [

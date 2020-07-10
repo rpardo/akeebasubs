@@ -45,11 +45,11 @@ class Dispatcher extends \FOF30\Dispatcher\Dispatcher
 
 		// Load common CSS JavaScript
 		\JHtml::_('jquery.framework');
-		$this->container->template->addCSS('media://com_akeebasubs/css/frontend.css', $this->container->mediaVersion);
+		$this->container->template->addCSS('media://com_akeebasubs/css/frontend.min.css', $this->container->mediaVersion);
 
 		if ($useFEF && ($darkMode != 0))
 		{
-			$this->container->template->addCSS('media://com_akeebasubs/css/frontend_dark.css', $this->container->mediaVersion);
+			$this->container->template->addCSS('media://com_akeebasubs/css/frontend_dark.min.css', $this->container->mediaVersion);
 		}
 
 		// Translate view names from Akeeba Subscriptions 1.x, 2.x, 3.x and 4.x
