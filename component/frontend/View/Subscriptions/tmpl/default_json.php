@@ -36,7 +36,7 @@ foreach ($this->items as $item)
 	$array['_userInfo'] = [
 		'name' => $item->juser->name,
 		'username' => $item->juser->username,
-		'v' => $item->juser->username,
+		'email' => $item->juser->email,
 	];
 
 	$array['_levelInfo'] = [

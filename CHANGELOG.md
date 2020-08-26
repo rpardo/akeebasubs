@@ -1,3 +1,9 @@
+# 7.1.2
+
+**Bug fixes**
+
+* _userInfo in frontend JSON subscriptions did not include the email address of the user
+
 # 7.1.1
 
 **New features**
