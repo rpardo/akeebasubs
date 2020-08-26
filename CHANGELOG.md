@@ -1,5 +1,9 @@
 # 7.1.2
 
+**New features**
+
+* Frontend subscription statistics JSON API
+
 **Bug fixes**
 
 * _userInfo in frontend JSON subscriptions did not include the email address of the user
