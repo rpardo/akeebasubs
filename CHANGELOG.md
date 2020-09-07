@@ -4,6 +4,10 @@
 
 * Frontend subscription statistics JSON API
 
+**Miscellaneous changes**
+
+* Transaction in progress page, information about reloading the page
+
 **Bug fixes**
 
 * _userInfo in frontend JSON subscriptions did not include the email address of the user
