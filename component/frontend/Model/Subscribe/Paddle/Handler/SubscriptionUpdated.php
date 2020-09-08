@@ -8,15 +8,11 @@
 namespace Akeeba\Subscriptions\Site\Model\Subscribe\Paddle\Handler;
 
 
-use Akeeba\Subscriptions\Admin\Helper\Message;
-use Akeeba\Subscriptions\Admin\Helper\UserLogin;
 use Akeeba\Subscriptions\Site\Model\Subscribe\HandlerTraits\StackCallback;
 use Akeeba\Subscriptions\Site\Model\Subscribe\SubscriptionCallbackHandlerInterface;
 use Akeeba\Subscriptions\Site\Model\Subscriptions;
 use FOF30\Container\Container;
 use FOF30\Date\Date;
-use FOF30\View\Exception\AccessForbidden;
-use Joomla\CMS\HTML\HTMLHelper;
 
 /**
  * Handle a subscription update event
@@ -48,6 +44,7 @@ class SubscriptionUpdated implements SubscriptionCallbackHandlerInterface
 	{
 		$this->container = $container;
 	}
+
 	/**
 	 * Handle a webhook callback from the payment service provider about a specific subscription
 	 *
@@ -58,9 +55,9 @@ class SubscriptionUpdated implements SubscriptionCallbackHandlerInterface
 	 *
 	 * @throws  \RuntimeException  In case an error occurs. The exception code will be used as the HTTP status.
 	 *
+	 * @throws \Exception
 	 * @since  7.0.0
 	 *
-	 * @throws \Exception
 	 */
 	public function handleCallback(Subscriptions $subscription, array $requestData): ?string
 	{
@@ -68,13 +65,24 @@ class SubscriptionUpdated implements SubscriptionCallbackHandlerInterface
 		{
 			// The price was updated OR we went from trialing to active
 			case 'active':
-			// Trial mode started
+				// Trial mode started
 			case 'trialing':
 				break;
 
-			// Automatic charge failed -- CANNOT HAPPEN IN THIS EVENT
+			// Automatic charge failed -- Use the SubscriptionPaymentFailed handler
 			case 'past_due':
-				// Subscription cancelled -- CANNOT HAPPEN IN THIS EVENT
+				// Past Due subscriptions are soft fails
+				$requestData['hard_failure'] = 'false';
+				// Payment failures use 'next_retry_date' whereas subscription updated uses 'next_bill_date'
+				$requestData['next_retry_date'] = $requestData['next_retry_date'] ?? $requestData['next_bill_date'];
+
+				// Get the SubscriptionPaymentFailed handler and process the request
+				return (new SubscriptionPaymentFailed($this->container))
+					->handleCallback($subscription, $requestData);
+
+				break;
+
+			// Subscription cancelled -- CANNOT HAPPEN IN THIS EVENT
 			case 'deleted':
 				throw new \RuntimeException(sprintf('Invalid subscription status “%s”', $requestData['status']), 403);
 				break;
