@@ -8,6 +8,7 @@
 
 * Transaction in progress page, information about reloading the page
 * Handle the subscription update event for Past Due subscriptions
+* Improved unhandled PHP exception error page
 
 **Bug fixes**
 
