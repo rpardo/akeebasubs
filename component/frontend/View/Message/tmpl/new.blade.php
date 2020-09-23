@@ -33,7 +33,7 @@ $timeAgo = time() - $jThen->toUnix();
 			@lang('COM_AKEEBASUBS_MESSAGE_NEW_LBL_WAITAFEWMINUTES')
 		</p>
 		<p>
-			<a class="akeeba-btn--green-big" href="@route('index.php?option=com_akeebasubs&view=Message&id=' . $this->subscription->getId())">
+			<a class="akeeba-btn--green-big" href="@route('index.php?option=com_akeebasubs&view=Message&subid=' . $this->subscription->getId())">
 				<span class="akion-refresh"></span>
 				@lang('COM_AKEEBASUBS_SUBSCRIPTIONS_BTN_RELOADTHISPAGE')
 			</a>
