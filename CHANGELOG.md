@@ -13,6 +13,7 @@
 **Bug fixes**
 
 * _userInfo in frontend JSON subscriptions did not include the email address of the user
+* Users with a refunded latest subscription but a still active previous one would see the wrong expiration date in UI.
 
 # 7.1.1
 

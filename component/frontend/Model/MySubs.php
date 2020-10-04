@@ -88,8 +88,12 @@ class MySubs extends Model
 					}, SORT_NUMERIC);
 
 				/** @var Subscriptions $latestSubOnThisLevel */
-				$latestSubOnThisLevel = $subsInThisLevel->first();
-				$levelStatus          = $this->getLevelStatus($level);
+				$nonCancelledSubscriptions = $subsInThisLevel->filter(function (Subscriptions $sub) {
+					return $sub->getFieldValue('state') != 'X';
+				});
+
+				$latestSubOnThisLevel      = $nonCancelledSubscriptions->isEmpty() ? $subsInThisLevel->first() : $nonCancelledSubscriptions->first();
+				$levelStatus               = $this->getLevelStatus($level);
 
 				/**
 				 * We allow fixed date subscription renewals if the level's fixed expiration date is in the future of
@@ -116,7 +120,7 @@ class MySubs extends Model
 					/**
 					 * If either condition is not met we consider this an un-renewable fixed date sub
 					 */
-					$isFixedDate                          = !$inTheFuture || !$levelExpiresAfterSubscriptionExpires;
+					$isFixedDate = !$inTheFuture || !$levelExpiresAfterSubscriptionExpires;
 				}
 
 
