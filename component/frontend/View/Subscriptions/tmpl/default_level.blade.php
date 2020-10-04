@@ -122,7 +122,7 @@ $formatCurrency = function(float $price) use ($currencyPosition, $currencySymbol
                 </strong>
             </span>
             <span>
-                @if (in_array($levelInfo['status'], ['canceled', 'expired']))
+                @if ($levelInfo['status'] == 'expired')
                     @sprintf(
                     'COM_AKEEBASUBS_SUBSCRIPTIONS_PUBLISHDATES_EXPIRED',
                     \Akeeba\Subscriptions\Admin\Helper\Format::date($lastSub->publish_down)
