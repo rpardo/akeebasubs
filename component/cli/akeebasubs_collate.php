@@ -470,20 +470,38 @@ HTML;
 		$paddlePlanId    = $level->paddle_plan_id;
 		$paddleProductId = $level->paddle_product_id;
 
-		if (!empty($paddlePlanId) && !$this->noRecurring)
+		try
 		{
-			$this->out(sprintf("-- Processing recurring subscriptions (%s)", $paddlePlanId));
-			$transactions = $this->getTransactions($paddlePlanId);
-			$this->out(sprintf('   -- Collating %d transactions', count($transactions)));
-			$this->collateTransactions($level, $transactions);
-		}
+			if (!empty($paddlePlanId) && !$this->noRecurring)
+			{
+				$this->out(sprintf("-- Processing recurring subscriptions (%s)", $paddlePlanId));
+				$transactions = $this->getTransactions($paddlePlanId);
+				$this->out(sprintf('   -- Collating %d transactions', count($transactions)));
+				$this->collateTransactions($level, $transactions);
+			}
 
-		if (!empty($paddleProductId) && !$this->noOneOff)
+			if (!empty($paddleProductId) && !$this->noOneOff)
+			{
+				$this->out(sprintf("-- Processing one-off transactions (%s)", $paddleProductId));
+				$transactions = $this->getTransactions($paddleProductId);
+				$this->out(sprintf('   -- Collating %d transactions', count($transactions)));
+				$this->collateTransactions($level, $transactions);
+			}
+		}
+		catch (Exception $e)
 		{
-			$this->out(sprintf("-- Processing one-off transactions (%s)", $paddleProductId));
-			$transactions = $this->getTransactions($paddleProductId);
-			$this->out(sprintf('   -- Collating %d transactions', count($transactions)));
-			$this->collateTransactions($level, $transactions);
+			$callStackLines = explode("\n", $e->getTraceAsString());
+			$callStackLines = array_map(function ($line) {
+				return "  " . $line;
+			}, $callStackLines);
+			$callStack = implode("\n", $callStackLines);
+
+			$this->out(sprintf('  %s Error', get_class($e)));
+			$this->out(sprintf('  #%d: %s', $e->getCode(), $e->getMessage()));
+			$this->out(sprintf('  %s:%s', $e->getFile(), $e->getLine()));
+			$this->out('  Debug Trace:');
+			$this->out($callStack);
+			$this->out('');
 		}
 	}
 
