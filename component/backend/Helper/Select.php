@@ -979,6 +979,26 @@ abstract class Select
 	}
 
 	/**
+	 * Drop down list of discount modes
+	 *
+	 * @param   string  $name      The field's name
+	 * @param   string  $selected  Pre-selected value
+	 * @param   array   $attribs   Field attributes
+	 *
+	 * @return  string  The HTML of the drop-down
+	 */
+	public static function contactFlagOptions($name = 'contact_flag', $selected = '', $attribs = [])
+	{
+		$options   = [];
+		$options[] = HTMLHelper::_('select.option', '0', Text::_('COM_AKEEBASUBS_SUBSCRIPTION_CONTACTFLAG_0'));
+		$options[] = HTMLHelper::_('select.option', '1', Text::_('COM_AKEEBASUBS_SUBSCRIPTION_CONTACTFLAG_1'));
+		$options[] = HTMLHelper::_('select.option', '2', Text::_('COM_AKEEBASUBS_SUBSCRIPTION_CONTACTFLAG_2'));
+		$options[] = HTMLHelper::_('select.option', '3', Text::_('COM_AKEEBASUBS_SUBSCRIPTION_CONTACTFLAG_3'));
+
+		return self::genericlist($options, $name, $attribs, $selected, $name);
+	}
+
+	/**
 	 * Return a generic drop-down list
 	 *
 	 * @param   array   $list      An array of objects, arrays, or scalars.

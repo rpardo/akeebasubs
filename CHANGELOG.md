@@ -3,6 +3,7 @@
 **New features**
 
 * Frontend subscription statistics JSON API
+* Allow resetting the email sending (gh-396)
 
 **Miscellaneous changes**
 

@@ -72,10 +72,10 @@ $user = JFactory::getUser($item->user_id ?? 0);
 		</div>
 
 		<div class="akeeba-form-group">
-			<label for="_noemail">
-				@lang('COM_AKEEBASUBS_SUBSCRIPTION_NOEMAIL')
+			<label for="contact_flag">
+				@lang('COM_AKEEBASUBS_SUBSCRIPTION_CONTACTFLAG')
 			</label>
-			@jhtml('FEFHelper.select.booleanswitch', '_noemail', $item->_noemail)
+			{{ \Akeeba\Subscriptions\Admin\Helper\Select::contactFlagOptions('contact_flag', $item->contact_flag) }}
 		</div>
 
 		<div class="akeeba-form-group">
@@ -96,7 +96,7 @@ $user = JFactory::getUser($item->user_id ?? 0);
 			<label for="notes">
 				@lang('COM_AKEEBASUBS_SUBSCRIPTION_NOTES')
 			</label>
-			<textarea name="notes" id="notes" cols="40" rows="5">{{ $item->notes }}</textarea>
+			<textarea name="notes" id="notes" cols="40" rows="5" style="font-family: -moz-fixed, monospace">{{ $item->notes }}</textarea>
 		</div>
 
 	</div>
@@ -238,6 +238,37 @@ $user = JFactory::getUser($item->user_id ?? 0);
 				{{ \Akeeba\Subscriptions\Admin\Helper\Select::formatCountry($country) }}
 			</p>
 		@endif
+	</div>
+
+	<div class="akeeba-panel--info akeebasubs-panel-force-top-margin">
+		<header class="akeeba-block-header">
+			<h3>
+				Email dates
+{{--				@lang('COM_AKEEBASUBS_SUBSCRIPTION_LBL_PADDLE')--}}
+			</h3>
+		</header>
+
+		<div class="akeeba-form-group">
+			<label for="ip">
+				@fieldtitle('first_contact')
+			</label>
+			@jhtml('calendar', $item->first_contact, 'first_contact', 'first_contact', '%Y-%m-%d %H:%M:%S', ['showtime' => 1])
+		</div>
+
+		<div class="akeeba-form-group">
+			<label for="ip">
+				@fieldtitle('second_contact')
+			</label>
+			@jhtml('calendar', $item->first_contact, 'first_contact', 'first_contact', '%Y-%m-%d %H:%M:%S', ['showtime' => 1])
+		</div>
+
+		<div class="akeeba-form-group">
+			<label for="ip">
+				@fieldtitle('after_contact')
+			</label>
+			@jhtml('calendar', $item->first_contact, 'first_contact', 'first_contact', '%Y-%m-%d %H:%M:%S', ['showtime' => 1])
+		</div>
+
 	</div>
 
 </div>
