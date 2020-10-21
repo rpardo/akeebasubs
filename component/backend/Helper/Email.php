@@ -249,7 +249,7 @@ abstract class Email
 		// First try to return the Levels object we get from the relation
 		$level = $sub->level;
 
-		if (is_object($level) && ($level instanceof Levels) && ($level->getId() > 0))
+		if (is_object($level) && ($level instanceof Levels) && ($level->getId() > 0) && ($level->getId() == $sub->akeebasubs_level_id))
 		{
 			return $level;
 		}
