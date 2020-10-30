@@ -31,14 +31,11 @@
         If you <a href="[RENEWALURL]">renew today</a> or at any time <strong>before your subscription's expiration at [PUBLISH_DOWN]</strong> you will get an <strong>automatic 40% discount</strong> off the listed price of the subscription if you renew for another full year.
     </p>
     <p>
-        Alternatively, you can subscribe to a recurring (automatically billed) 3-month subscription which includes the renewal discount. The minimum time commitment in this case is just 3 months.
-    </p>
-    <p>
-        In either case <strong>you do not lose any subscription time</strong>. Your renewal will start counting from [PUBLISH_DOWN] onwards.
+        You <strong>do NOT lose any subscription time</strong>. Your renewal will start counting from [PUBLISH_DOWN] onwards.
     </p>
 @stop
 @section('announcement_note')
-    The two necessary conditions for receiving the discount or being eligible for the recurring 3-month subscription are:<br/>
+    The two necessary conditions for receiving the discount are:<br/>
     a. You are purchasing a [LEVEL] subscription. If you buy a subscription to a different product or a bundle this offer is void.<br/>
     b. You must complete the checkout (payment) for your [LEVEL] renewal purchase before [PUBLISH_DOWN].<br/>
     Both conditions must be fulfilled to receive the discount. You do not need to use a coupon code or special link.<br/>

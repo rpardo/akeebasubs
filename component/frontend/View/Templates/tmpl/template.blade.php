@@ -290,7 +290,7 @@
                     <div class="akemail-container">
                         <!-- Logo Header -->
                         <div class="akemail-logo">
-                            <a href="[SITEURL]" title="Visit Akeeba Ltd">
+                            <a href="[SITEURL]" title="Visit [SITENAME]">
                                 <picture>
                                     <source srcset="/images/email-template/akeeba-logo-white.png" media="(prefers-color-scheme: dark)">
                                     <source srcset="/images/email-template/akeeba-logo.png" media="(prefers-color-scheme: light)">
@@ -332,25 +332,25 @@
                         <div class="akemail-outro">
                             <p>
                                 We wish you a great day,<br />
-                                Akeeba Ltd
+                                [SITENAME]
                             </p>
                         </div>
                         <!-- Footer -->
                         <div class="akemail-footer">
                             <p class="akemail-footer-sitelink">
-                                <a href="[SITEURL]" title="Visit akeeba.com">
-                                    https://www.akeeba.com
+                                <a href="[SITEURL]" title="Visit [SITENAME]">
+                                    [SITEURL]
                                 </a>
                             </p>
                             <p class="akemail-footer-follow">
                                 Follow us:
                                 <a href="https://www.facebook.com/akeebaltd/" target="_blank"
                                    title="Follow us on Facebook">
-                                    <img src="/images/email-template/facebook.png" width="15" height="14" alt="Facebook logo">
+                                    <img src="images/email-template/facebook.png" width="15" height="14" alt="Facebook logo">
                                 </a>
                                 <a href="https://twitter.com/akeebabackup" target="_blank"
                                    title="Follow us on Twitter">
-                                    <img src="/images/email-template/twitter.png" width="15" height="12" alt="Twitter logo">
+                                    <img src="images/email-template/twitter.png" width="15" height="12" alt="Twitter logo">
                                 </a>
                             </p>
                         </div>
@@ -366,7 +366,7 @@
                         </p>
                         <p>
                             If you want to stop receiving any email from us you can
-                            <a href="[SITEURL]/data-options.html">delete your user account</a>
+                            <a href="[SITEURL]data-options.html">delete your user account</a>
                             on our site. Please note that this process is <em>irreversible</em>.
                         </p>
                     </div>
