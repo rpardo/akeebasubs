@@ -99,13 +99,16 @@ class plgSystemAsexpirationcontrol extends JPlugin
 	{
 		if (!$this->enabled)
 		{
-			return;
+			return null;
 		}
 
 		if ($task != 'expirationcontrol')
 		{
-			return;
+			return null;
 		}
+
+		// Update the last run info
+		$this->setLastRunTimestamp();
 
 		// Get today's date
 		$jNow = new Date();
@@ -147,8 +150,7 @@ class plgSystemAsexpirationcontrol extends JPlugin
 		unset($subs);
 		unset($subsModel);
 
-		// Update the last run info and quit
-		$this->setLastRunTimestamp();
+		return true;
 	}
 
 	/**

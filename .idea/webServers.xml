@@ -3,14 +3,14 @@
   <component name="WebServers">
     <option name="servers">
       <webServer id="12138435-f75b-479b-ae3b-0773b484695f" name="MyOldSite" url="https://myoldsite.com">
-        <fileTransfer rootFolder="/home/myoldsite/public_html" accessType="SFTP" host="myoldsite.com" port="18765" sshConfigId="688386e4-aa44-485f-875d-a3a44dcb8576" sshConfig="MyOldSite" authAgent="true">
+        <fileTransfer rootFolder="/home/myoldsit/public_html" accessType="SFTP" host="myoldsite.com" port="22" sshConfigId="688386e4-aa44-485f-875d-a3a44dcb8576" sshConfig="MyOldSite" keyPair="true">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>
         </fileTransfer>
       </webServer>
       <webServer id="0c1cbb85-f302-4554-8b56-a79fc6be31ee" name="ABCOM live" url="https://www.akeeba.com">
-        <fileTransfer rootFolder="/home/akeeba/public_html" accessType="SFTP" host="mcs001-011.directrouter.com" port="22" sshConfigId="e16181e4-cdc8-4616-a397-136a172437ac" sshConfig="akeeba.com" keyPair="true">
+        <fileTransfer rootFolder="/home/akeeba/public_html" accessType="SFTP" host="mcs001-011.directrouter.com" port="22" sshConfigId="e16181e4-cdc8-4616-a397-136a172437ac" sshConfig="akeeba.com" authAgent="true">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>

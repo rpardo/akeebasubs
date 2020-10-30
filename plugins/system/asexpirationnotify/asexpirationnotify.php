@@ -75,12 +75,12 @@ class plgSystemAsexpirationnotify extends CMSPlugin
 	{
 		if (!$this->enabled)
 		{
-			return;
+			return null;
 		}
 
 		if ($task != 'expirationnotify')
 		{
-			return;
+			return null;
 		}
 
 		Log::addLogger(['text_file' => "akeebasubs_emails.php"], Log::ALL, ['akeebasubs.emails']);
@@ -253,7 +253,7 @@ class plgSystemAsexpirationnotify extends CMSPlugin
 
 						if (($options['time_limit'] > 0) && ($elapsed > $options['time_limit']))
 						{
-							return;
+							return true;
 						}
 					}
 					else
@@ -354,10 +354,12 @@ class plgSystemAsexpirationnotify extends CMSPlugin
 					// Unset last run timestamp and return
 					$this->setLastRunTimestamp(0);
 
-					return;
+					return true;
 				}
 			}
 		}
+
+		return true;
 	}
 
 	/**

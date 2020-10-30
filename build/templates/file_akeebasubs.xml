@@ -12,6 +12,7 @@
 
     <fileset>
         <files target="cli">
+            <file>akeebasubs_cron.php</file>
             <file>akeebasubs_collate.php</file>
             <file>akeebasubs_fix_early_recurring_renewals.php</file>
             <file>akeebasubs_fix_recurring.php</file>

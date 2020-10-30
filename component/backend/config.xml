@@ -174,7 +174,13 @@
 			   description="COM_AKEEBASUBS_CONFIG_PRIVACY_URL_DESC"
 		/>
 
-		<field name="siteurl" type="hidden" default=""/>
+		<field name="siteurl"
+			   type="text"
+			   default=""
+			   size="30"
+			   label="COM_AKEEBASUBS_CONFIG_SITEURL_TITLE"
+			   description="COM_AKEEBASUBS_CONFIG_SITEURL_DESC"
+		/>
 	</fieldset>
 
 	<fieldset name="paddle" label="COM_AKEEBASUBS_CONFIG_PADDLE_TITLE" description="COM_AKEEBASUBS_CONFIG_PADDLE_DESC">

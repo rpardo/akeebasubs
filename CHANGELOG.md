@@ -4,6 +4,7 @@
 
 * Frontend subscription statistics JSON API
 * Allow resetting the email sending (gh-396)
+* CLI script to send emails and refactor of the CRON implementation (gh-398)
 
 **Miscellaneous changes**
 

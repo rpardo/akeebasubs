@@ -9,13 +9,22 @@ namespace Akeeba\Subscriptions\Site\Controller;
 
 defined('_JEXEC') or die;
 
-use Akeeba\Subscriptions\Admin\Controller\Mixin;
+use Akeeba\Subscriptions\Site\Model\Cron as CronModel;
+use Akeeba\Subscriptions\Site\Model\Exception\CronCommandMissing;
+use Akeeba\Subscriptions\Site\Model\Exception\CronCommandNotFound;
+use Akeeba\Subscriptions\Site\Model\Exception\SecretMismatch;
+use Akeeba\Subscriptions\Site\Model\Exception\SecretNotConfigured;
+use Exception;
 use FOF30\Container\Container;
 use FOF30\Controller\Controller;
+use FOF30\Controller\Mixin\PredefinedTaskList;
+use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 
 class Cron extends Controller
 {
-	use Mixin\PredefinedTaskList;
+	use PredefinedTaskList;
 
 	/**
 	 * Overridden. Limit the tasks we're allowed to execute.
@@ -25,7 +34,6 @@ class Cron extends Controller
 	 */
 	public function __construct(Container $container, array $config = array())
 	{
-		$config['modelName'] = 'Subscribe';
 		$config['csrfProtection'] = 0;
 
 		parent::__construct($container, $config);
@@ -37,63 +45,163 @@ class Cron extends Controller
 
 	public function cron()
 	{
-		// Register a new generic Akeeba Subs CRON logger
-		\JLog::addLogger(['text_file' => 'akeebasubs_cron.php'], \JLog::ALL, ['akeebasubs.cron']);
+		/** @var CronModel $model */
+		$model = $this->getModel();
+		$model->log('Starting the CRON job from URL');
 
-		\JLog::add("Starting CRON job", \JLog::DEBUG, "akeebasubs.cron");
+		// Get a reference to the application or die trying
+		try
+		{
+			/** @var CMSApplication $app */
+			$app = Factory::getApplication();
+		}
+		catch (\Exception $e)
+		{
+			$model->log($e->getMessage(), Log::ERROR);
+			$model->log('Exit: Cannot instantiate application');
+			$this->bellyUp('Internal Server Error', 500);
 
-		// Makes sure SiteGround's SuperCache doesn't cache the CRON view
-		$app = \JFactory::getApplication();
+			// Technically unnecessary but helps with static code analysis :)
+			return;
+		}
+
+		// Disable caching
+		$app->setHeader('Pragma', 'public', true);
+		$app->setHeader('Expires', 0, true);
+		$app->setHeader('Cache-Control', 'must-revalidate, post-check=0, pre-check=0', true);
+		$app->setHeader('Cache-Control', 'public', false);
 		$app->setHeader('X-Cache-Control', 'False', true);
 
-		$configuredSecret = $this->container->params->get('secret', '');
+		// Check the secret key
+		$key = $this->input->get->get('secret', '', 'raw');
+		$key = $this->input->get->get('key', $key, 'raw');
 
-		if (empty($configuredSecret))
+		$model->log('Checking secret key');
+
+		try
 		{
-			\JLog::add("No secret key provided in URL", \JLog::ERROR, "akeebasubs.cron");
-			header('HTTP/1.1 503 Service unavailable due to configuration');
+			$model->checkSecret($key);
+		}
+		catch (SecretMismatch $e)
+		{
+			$model->log('Provided secret key does not match configuration', Log::ERROR);
+			$model->log('Exit: secret key mismatch');
+			$this->bellyUp('Forbidden', $e->getCode());
 
-			$this->container->platform->closeApplication();
+			// Technically unnecessary but helps with static code analysis :)
+			return;
+		}
+		catch (SecretNotConfigured $e)
+		{
+			$model->log('A secret key has not been configured yet', Log::ERROR);
+			$model->log('Exit: secret key not yet configured');
+			$this->bellyUp('Service Unavailable', $e->getCode());
+
+			// Technically unnecessary but helps with static code analysis :)
+			return;
 		}
 
-		$secret = $this->input->get('secret', null, 'raw');
+		$command = $this->input->get->getCmd('command', '');
 
-		if ($secret != $configuredSecret)
+		// You might ask for a 'cmd' filter but get an array instead
+		if (!is_string($command))
 		{
-			\JLog::add("Wrong secret key provided in URL", \JLog::ERROR, "akeebasubs.cron");
-			header('HTTP/1.1 403 Forbidden');
+			$model->log('The command specified in the URL has an invalid format', Log::ERROR);
+			$model->log('Exit: invalid command format');
+			$this->bellyUp('Bad Request', 400);
 
-			$this->container->platform->closeApplication();
+			// Technically unnecessary but helps with static code analysis :)
+			return;
 		}
 
-		$command        = $this->input->get('command', null, 'raw');
-		$command        = trim(strtolower($command));
-		$commandEscaped = \JFilterInput::getInstance()->clean($command, 'cmd');
+		$model->log('Executing the command');
 
-		if (empty($command))
+		// Run the command
+		try
 		{
-			\JLog::add("No command provided in URL", \JLog::ERROR, "akeebasubs.cron");
-			header('HTTP/1.1 501 Not implemented');
+			$timeLimit = (int) $this->container->params->get('time_limit', 10);
+			$success   = $model->run($command, $timeLimit);
+		}
+		catch (CronCommandMissing $e)
+		{
+			$model->log('There was no command specified in the URL', Log::ERROR);
+			$model->log('Exit: no command');
+			$this->bellyUp('Bad Request', 400);
 
-			$this->container->platform->closeApplication();
+			// Technically unnecessary but helps with static code analysis :)
+			return;
+		}
+		catch (CronCommandNotFound $e)
+		{
+			$model->log(sprintf('The requested command, “%s”, is not implemented', $command), Log::ERROR);
+			$model->log('Exit: unknown command');
+			$this->bellyUp('Not Implemented', 501);
+
+			// Technically unnecessary but helps with static code analysis :)
+			return;
+		}
+		catch (Exception $e)
+		{
+			$model->log(sprintf('An error occurred executing command “%s”', $command), Log::ERROR);
+			$model->log($e->getMessage());
+			$model->log($e->getFile() . '::' . $e->getLine());
+
+			foreach (explode("\n", $e->getTraceAsString()) as $line)
+			{
+				$model->log($line);
+			}
+
+			$model->log('Exit: error executing command');
+			$this->bellyUp('Internal Server Error', 500);
+
+			// Technically unnecessary but helps with static code analysis :)
+			return;
 		}
 
-		// Register a new task-specific Akeeba Subs CRON logger
-		\JLog::addLogger(['text_file' => "akeebasubs_cron_$commandEscaped.php"], \JLog::ALL, ['akeebasubs.cron.' . $command]);
-		\JLog::add("Starting execution of command $commandEscaped", \JLog::DEBUG, "akeebasubs.cron");
+		if ($success)
+		{
+			$model->log('Exit: COMMAND SUCCEEDED');
 
-		$this->container->platform->importPlugin('system');
-		$this->container->platform->importPlugin('akeebasubs');
-		$this->container->platform->runPlugins('onAkeebasubsCronTask', array(
-			$command,
-			array(
-				'time_limit' => 10
-			)
-		));
+			$app->setHeader('status', 200);
+			$app->sendHeaders();
 
-		\JLog::add("Finished running command $commandEscaped", \JLog::DEBUG, "akeebasubs.cron");
-		echo "$command OK";
+			echo "OK";
 
-		$this->container->platform->closeApplication();
+			$app->close(200);
+
+			// Technically unnecessary but helps with static code analysis :)
+			return;
+		}
+
+		$model->log('Exit: COMMAND FAILED');
+
+		$this->bellyUp('Command failed', 500);
+	}
+
+	/**
+	 * Exit the script with an error
+	 *
+	 * @param   string  $reason    The reason we're quitting. Will be included in the HTTP header.
+	 * @param   int     $httpCode  HTTP status code, default 500
+	 *
+	 * @return  void  We actually never return; this is an exit point.
+	 * @since   3.2.0
+	 */
+	private function bellyUp($reason, $httpCode = 500)
+	{
+		try
+		{
+			/** @var CMSApplication $app */
+			$app = Factory::getApplication();
+			$app->setHeader('status', $httpCode);
+			$app->setHeader('X-AkeebaSubs-Reason', $reason);
+			$app->sendHeaders();
+			$app->close($httpCode);
+		}
+		catch (Exception $e)
+		{
+			header(sprintf('HTTP/1.1 %u %s', $httpCode, $reason));
+			exit ($httpCode);
+		}
 	}
 }
