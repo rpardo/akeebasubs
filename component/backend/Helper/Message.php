@@ -362,8 +362,8 @@ abstract class Message
 		$symbol   = self::getContainer()->params->get('currencysymbol', 'EUR');
 
 		// Dates
-		$jFrom = new Date($sub->publish_up);
-		$jTo   = new Date($sub->publish_down);
+		$jFrom = new Date($sub->publish_up ?? '2001-01-01 00:00:00');
+		$jTo   = new Date($sub->publish_down ?? '2038-01-01 00:00:00');
 
 		// Download ID
 

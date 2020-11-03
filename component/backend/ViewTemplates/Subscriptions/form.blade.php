@@ -72,13 +72,6 @@ $user = JFactory::getUser($item->user_id ?? 0);
 		</div>
 
 		<div class="akeeba-form-group">
-			<label for="contact_flag">
-				@lang('COM_AKEEBASUBS_SUBSCRIPTION_CONTACTFLAG')
-			</label>
-			{{ \Akeeba\Subscriptions\Admin\Helper\Select::contactFlagOptions('contact_flag', $item->contact_flag) }}
-		</div>
-
-		<div class="akeeba-form-group">
 			<label for="publish_up">
 				@lang('COM_AKEEBASUBS_SUBSCRIPTION_PUBLISH_UP')
 			</label>
@@ -243,10 +236,16 @@ $user = JFactory::getUser($item->user_id ?? 0);
 	<div class="akeeba-panel--info akeebasubs-panel-force-top-margin">
 		<header class="akeeba-block-header">
 			<h3>
-				Email dates
-{{--				@lang('COM_AKEEBASUBS_SUBSCRIPTION_LBL_PADDLE')--}}
+				@lang('COM_AKEEBASUBS_SUBSCRIPTION_LBL_EMAIL_DATES')
 			</h3>
 		</header>
+
+		<div class="akeeba-form-group">
+			<label for="contact_flag">
+				@lang('COM_AKEEBASUBS_SUBSCRIPTION_CONTACTFLAG')
+			</label>
+			{{ \Akeeba\Subscriptions\Admin\Helper\Select::contactFlagOptions('contact_flag', $item->contact_flag) }}
+		</div>
 
 		<div class="akeeba-form-group">
 			<label for="ip">

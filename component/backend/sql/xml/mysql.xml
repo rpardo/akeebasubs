@@ -30,11 +30,11 @@ CREATE TABLE `#__akeebasubs_blockrules` (
   `iprange` varchar(255) NOT NULL DEFAULT '',
 
   `enabled` tinyint(4) NOT NULL DEFAULT '1',
-  `created_on` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `created_on` datetime NULL DEFAULT NULL,
   `created_by` bigint(20) NOT NULL DEFAULT '0',
-  `modified_on` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `modified_on` datetime NULL DEFAULT NULL,
   `modified_by` bigint(20) NOT NULL DEFAULT '0',
-  `locked_on` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `locked_on` datetime NULL DEFAULT NULL,
   `locked_by` bigint(20) NOT NULL DEFAULT '0',
   PRIMARY KEY (`akeebasubs_blockrule_id`)
 ) DEFAULT COLLATE utf8_general_ci;
@@ -48,8 +48,8 @@ CREATE TABLE `#__akeebasubs_coupons` (
     `akeebasubs_coupon_id` bigint(20) unsigned NOT NULL auto_increment,
     `title` varchar(255) NOT NULL,
 	`coupon` varchar(255) NOT NULL,
-	`publish_up` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-	`publish_down` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+	`publish_up` datetime NULL DEFAULT NULL,
+	`publish_down` datetime NULL DEFAULT NULL,
 	`subscriptions` VARCHAR(255) NULL,
 	`user` int(10) DEFAULT NULL,
     `email` VARCHAR( 255 ) NULL,
@@ -63,11 +63,11 @@ CREATE TABLE `#__akeebasubs_coupons` (
 
 	`enabled` tinyint(1) NOT NULL DEFAULT '1',
 	`ordering` bigint(20) NOT NULL DEFAULT '0',
-	`created_on` datetime NOT NULL default '0000-00-00 00:00:00',
+	`created_on` datetime NULL DEFAULT NULL,
 	`created_by` int(11) NOT NULL DEFAULT 0,
-	`modified_on` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+	`modified_on` datetime NULL DEFAULT NULL,
 	`modified_by` int(11) NOT NULL DEFAULT 0,
-	`locked_on` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+	`locked_on` datetime NULL DEFAULT NULL,
 	`locked_by` int(11) NOT NULL DEFAULT 0,
 	`hits` BIGINT(20) unsigned NOT NULL default 0,
 	PRIMARY KEY ( `akeebasubs_coupon_id` ),
@@ -106,11 +106,11 @@ CREATE TABLE `#__akeebasubs_levels` (
 
 	`enabled` tinyint(1) NOT NULL DEFAULT '1',
 	`ordering` bigint(20) NOT NULL DEFAULT '0',
-	`created_on` datetime NOT NULL default '0000-00-00 00:00:00',
+	`created_on` datetime NULL DEFAULT NULL,
 	`created_by` int(11) NOT NULL DEFAULT 0,
-	`modified_on` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+	`modified_on` datetime NULL DEFAULT NULL,
 	`modified_by` int(11) NOT NULL DEFAULT 0,
-	`locked_on` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+	`locked_on` datetime NULL DEFAULT NULL,
 	`locked_by` int(11) NOT NULL DEFAULT 0,
 	`notify1` int(10) unsigned NOT NULL DEFAULT '30',
 	`notify2` int(10) unsigned NOT NULL DEFAULT '15',
@@ -144,11 +144,11 @@ CREATE TABLE `#__akeebasubs_relations` (
     `combine` tinyint(3) NOT NULL DEFAULT '0',
     `enabled` tinyint(3) NOT NULL DEFAULT '0',
     `ordering` bigint(20) NOT NULL DEFAULT '0',
-    `created_on` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+    `created_on` datetime NULL DEFAULT NULL,
     `created_by` int(11) NOT NULL DEFAULT '0',
-    `modified_on` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+    `modified_on` datetime NULL DEFAULT NULL,
     `modified_by` int(11) NOT NULL DEFAULT '0',
-    `locked_on` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+    `locked_on` datetime NULL DEFAULT NULL,
     `locked_by` int(11) NOT NULL DEFAULT '0',
     PRIMARY KEY (`akeebasubs_relation_id`),
     UNIQUE KEY `akeebasubs_relation_unique` (`source_level_id`,`target_level_id`),
@@ -164,8 +164,8 @@ CREATE TABLE `#__akeebasubs_subscriptions` (
 	`akeebasubs_subscription_id` bigint(20) unsigned NOT NULL auto_increment,
 	`user_id` bigint(20) unsigned NOT NULL,
 	`akeebasubs_level_id` bigint(20) unsigned NOT NULL,
-	`publish_up` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-	`publish_down` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+	`publish_up` datetime NULL DEFAULT NULL,
+	`publish_down` datetime NULL DEFAULT NULL,
 	`notes` TEXT,
 	`enabled` tinyint(1) NOT NULL DEFAULT '1',
 
@@ -178,7 +178,7 @@ CREATE TABLE `#__akeebasubs_subscriptions` (
 	`gross_amount` FLOAT NOT NULL,
 	`tax_percent` FLOAT DEFAULT NULL,
 	`fee_amount` FLOAT DEFAULT NULL,
-	`created_on` datetime NOT NULL default '0000-00-00 00:00:00',
+	`created_on` datetime NULL DEFAULT NULL,
 	`params` TEXT,
 	`ip` VARCHAR(255),
 	`ua` VARCHAR(255),
@@ -197,9 +197,9 @@ CREATE TABLE `#__akeebasubs_subscriptions` (
 	`payment_method` ENUM('apple-pay', 'card', 'free', 'paypal', 'wire-transfer', 'unknown') NOT NULL DEFAULT 'unknown',
 
 	`contact_flag` tinyint(1) NOT NULL DEFAULT '0',
-	`first_contact` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-	`second_contact` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-	`after_contact` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+	`first_contact` datetime NULL DEFAULT NULL,
+	`second_contact` datetime NULL DEFAULT NULL,
+	`after_contact` datetime NULL DEFAULT NULL,
 	PRIMARY KEY ( `akeebasubs_subscription_id` )
 ) DEFAULT COLLATE utf8_general_ci;
             ]]></query>
@@ -221,11 +221,11 @@ CREATE TABLE `#__akeebasubs_upgrades` (
     `expired` tinyint(1) NOT NULL DEFAULT '0',
 	`enabled` tinyint(1) NOT NULL DEFAULT '1',
 	`ordering` bigint(20) NOT NULL DEFAULT '0',
-	`created_on` datetime NOT NULL default '0000-00-00 00:00:00',
+	`created_on` datetime NULL DEFAULT NULL,
 	`created_by` int(11) NOT NULL DEFAULT 0,
-	`modified_on` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+	`modified_on` datetime NULL DEFAULT NULL,
 	`modified_by` int(11) NOT NULL DEFAULT 0,
-	`locked_on` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+	`locked_on` datetime NULL DEFAULT NULL,
 	`locked_by` int(11) NOT NULL DEFAULT 0,
 	`hits` BIGINT(20) unsigned NOT NULL default '0',
 	PRIMARY KEY ( `akeebasubs_upgrade_id` )
@@ -603,5 +603,220 @@ ALTER TABLE `#__akeebasubs_relations` ALTER COLUMN `ordering` SET DEFAULT 0;
 ALTER TABLE `#__akeebasubs_upgrades` ALTER COLUMN `ordering` SET DEFAULT 0;
             ]]></query>
         </action>
+
+        <!-- Replace zero datetime with nullable datetime -->
+        <action table="#__akeebasubs_blockrules" canfail="1">
+            <condition type="nullable" value="created_on" operator="not"/>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_blockrules` MODIFY `created_on` DATETIME NULL DEFAULT NULL;
+      ]]></query>
+            <query><![CDATA[
+UPDATE `#__akeebasubs_blockrules` SET `created_on` = NULL WHERE `created_on` = '0000-00-00 00:00:00';
+      ]]></query>
+        </action>
+        <action table="#__akeebasubs_blockrules" canfail="1">
+            <condition type="nullable" value="modified_on" operator="not"/>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_blockrules` MODIFY `modified_on` DATETIME NULL DEFAULT NULL;
+      ]]></query>
+            <query><![CDATA[
+UPDATE `#__akeebasubs_blockrules` SET `modified_on` = NULL WHERE `modified_on` = '0000-00-00 00:00:00';
+      ]]></query>
+        </action>
+        <action table="#__akeebasubs_blockrules" canfail="1">
+            <condition type="nullable" value="locked_on" operator="not"/>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_blockrules` MODIFY `locked_on` DATETIME NULL DEFAULT NULL;
+      ]]></query>
+            <query><![CDATA[
+UPDATE `#__akeebasubs_blockrules` SET `locked_on` = NULL WHERE `locked_on` = '0000-00-00 00:00:00';
+      ]]></query>
+        </action>
+
+        <action table="#__akeebasubs_levels" canfail="1">
+            <condition type="nullable" value="created_on" operator="not"/>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_levels` MODIFY `created_on` DATETIME NULL DEFAULT NULL;
+      ]]></query>
+            <query><![CDATA[
+UPDATE `#__akeebasubs_levels` SET `created_on` = NULL WHERE `created_on` = '0000-00-00 00:00:00';
+      ]]></query>
+        </action>
+        <action table="#__akeebasubs_levels" canfail="1">
+            <condition type="nullable" value="modified_on" operator="not"/>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_levels` MODIFY `modified_on` DATETIME NULL DEFAULT NULL;
+      ]]></query>
+            <query><![CDATA[
+UPDATE `#__akeebasubs_levels` SET `modified_on` = NULL WHERE `modified_on` = '0000-00-00 00:00:00';
+      ]]></query>
+        </action>
+        <action table="#__akeebasubs_levels" canfail="1">
+            <condition type="nullable" value="locked_on" operator="not"/>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_levels` MODIFY `locked_on` DATETIME NULL DEFAULT NULL;
+      ]]></query>
+            <query><![CDATA[
+UPDATE `#__akeebasubs_levels` SET `locked_on` = NULL WHERE `locked_on` = '0000-00-00 00:00:00';
+      ]]></query>
+        </action>
+
+        <action table="#__akeebasubs_relations" canfail="1">
+            <condition type="nullable" value="created_on" operator="not"/>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_relations` MODIFY `created_on` DATETIME NULL DEFAULT NULL;
+      ]]></query>
+            <query><![CDATA[
+UPDATE `#__akeebasubs_relations` SET `created_on` = NULL WHERE `created_on` = '0000-00-00 00:00:00';
+      ]]></query>
+        </action>
+        <action table="#__akeebasubs_relations" canfail="1">
+            <condition type="nullable" value="modified_on" operator="not"/>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_relations` MODIFY `modified_on` DATETIME NULL DEFAULT NULL;
+      ]]></query>
+            <query><![CDATA[
+UPDATE `#__akeebasubs_relations` SET `modified_on` = NULL WHERE `modified_on` = '0000-00-00 00:00:00';
+      ]]></query>
+        </action>
+        <action table="#__akeebasubs_relations" canfail="1">
+            <condition type="nullable" value="locked_on" operator="not"/>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_relations` MODIFY `locked_on` DATETIME NULL DEFAULT NULL;
+      ]]></query>
+            <query><![CDATA[
+UPDATE `#__akeebasubs_relations` SET `locked_on` = NULL WHERE `locked_on` = '0000-00-00 00:00:00';
+      ]]></query>
+        </action>
+
+        <action table="#__akeebasubs_upgrades" canfail="1">
+            <condition type="nullable" value="created_on" operator="not"/>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_upgrades` MODIFY `created_on` DATETIME NULL DEFAULT NULL;
+      ]]></query>
+            <query><![CDATA[
+UPDATE `#__akeebasubs_upgrades` SET `created_on` = NULL WHERE `created_on` = '0000-00-00 00:00:00';
+      ]]></query>
+        </action>
+        <action table="#__akeebasubs_upgrades" canfail="1">
+            <condition type="nullable" value="modified_on" operator="not"/>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_upgrades` MODIFY `modified_on` DATETIME NULL DEFAULT NULL;
+      ]]></query>
+            <query><![CDATA[
+UPDATE `#__akeebasubs_upgrades` SET `modified_on` = NULL WHERE `modified_on` = '0000-00-00 00:00:00';
+      ]]></query>
+        </action>
+        <action table="#__akeebasubs_upgrades" canfail="1">
+            <condition type="nullable" value="locked_on" operator="not"/>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_upgrades` MODIFY `locked_on` DATETIME NULL DEFAULT NULL;
+      ]]></query>
+            <query><![CDATA[
+UPDATE `#__akeebasubs_upgrades` SET `locked_on` = NULL WHERE `locked_on` = '0000-00-00 00:00:00';
+      ]]></query>
+        </action>
+
+        <action table="#__akeebasubs_coupons" canfail="1">
+            <condition type="nullable" value="created_on" operator="not"/>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_coupons` MODIFY `created_on` DATETIME NULL DEFAULT NULL;
+      ]]></query>
+            <query><![CDATA[
+UPDATE `#__akeebasubs_coupons` SET `created_on` = NULL WHERE `created_on` = '0000-00-00 00:00:00';
+      ]]></query>
+        </action>
+        <action table="#__akeebasubs_coupons" canfail="1">
+            <condition type="nullable" value="modified_on" operator="not"/>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_coupons` MODIFY `modified_on` DATETIME NULL DEFAULT NULL;
+      ]]></query>
+            <query><![CDATA[
+UPDATE `#__akeebasubs_coupons` SET `modified_on` = NULL WHERE `modified_on` = '0000-00-00 00:00:00';
+      ]]></query>
+        </action>
+        <action table="#__akeebasubs_coupons" canfail="1">
+            <condition type="nullable" value="locked_on" operator="not"/>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_coupons` MODIFY `locked_on` DATETIME NULL DEFAULT NULL;
+      ]]></query>
+            <query><![CDATA[
+UPDATE `#__akeebasubs_coupons` SET `locked_on` = NULL WHERE `locked_on` = '0000-00-00 00:00:00';
+      ]]></query>
+        </action>
+        <action table="#__akeebasubs_coupons" canfail="1">
+            <condition type="nullable" value="publish_up" operator="not"/>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_coupons` MODIFY `publish_up` DATETIME NULL DEFAULT NULL;
+      ]]></query>
+            <query><![CDATA[
+UPDATE `#__akeebasubs_coupons` SET `publish_up` = NULL WHERE `publish_up` = '0000-00-00 00:00:00';
+      ]]></query>
+        </action>
+        <action table="#__akeebasubs_coupons" canfail="1">
+            <condition type="nullable" value="publish_down" operator="not"/>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_coupons` MODIFY `publish_down` DATETIME NULL DEFAULT NULL;
+      ]]></query>
+            <query><![CDATA[
+UPDATE `#__akeebasubs_coupons` SET `publish_down` = NULL WHERE `publish_down` = '0000-00-00 00:00:00';
+      ]]></query>
+        </action>
+
+        <action table="#__akeebasubs_subscriptions" canfail="1">
+            <condition type="nullable" value="created_on" operator="not"/>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_subscriptions` MODIFY `created_on` DATETIME NULL DEFAULT NULL;
+      ]]></query>
+            <query><![CDATA[
+UPDATE `#__akeebasubs_subscriptions` SET `created_on` = NULL WHERE `created_on` = '0000-00-00 00:00:00';
+      ]]></query>
+        </action>
+        <action table="#__akeebasubs_subscriptions" canfail="1">
+            <condition type="nullable" value="publish_up" operator="not"/>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_subscriptions` MODIFY `publish_up` DATETIME NULL DEFAULT NULL;
+      ]]></query>
+            <query><![CDATA[
+UPDATE `#__akeebasubs_subscriptions` SET `publish_up` = NULL WHERE `publish_up` = '0000-00-00 00:00:00';
+      ]]></query>
+        </action>
+        <action table="#__akeebasubs_subscriptions" canfail="1">
+            <condition type="nullable" value="publish_down" operator="not"/>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_subscriptions` MODIFY `publish_down` DATETIME NULL DEFAULT NULL;
+      ]]></query>
+            <query><![CDATA[
+UPDATE `#__akeebasubs_subscriptions` SET `publish_down` = NULL WHERE `publish_down` = '0000-00-00 00:00:00';
+      ]]></query>
+        </action>
+        <action table="#__akeebasubs_subscriptions" canfail="1">
+            <condition type="nullable" value="first_contact" operator="not"/>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_subscriptions` MODIFY `first_contact` DATETIME NULL DEFAULT NULL;
+      ]]></query>
+            <query><![CDATA[
+UPDATE `#__akeebasubs_subscriptions` SET `first_contact` = NULL WHERE `first_contact` = '0000-00-00 00:00:00';
+      ]]></query>
+        </action>
+        <action table="#__akeebasubs_subscriptions" canfail="1">
+            <condition type="nullable" value="second_contact" operator="not"/>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_subscriptions` MODIFY `second_contact` DATETIME NULL DEFAULT NULL;
+      ]]></query>
+            <query><![CDATA[
+UPDATE `#__akeebasubs_subscriptions` SET `second_contact` = NULL WHERE `second_contact` = '0000-00-00 00:00:00';
+      ]]></query>
+        </action>
+        <action table="#__akeebasubs_subscriptions" canfail="1">
+            <condition type="nullable" value="after_contact" operator="not"/>
+            <query><![CDATA[
+ALTER TABLE `#__akeebasubs_subscriptions` MODIFY `after_contact` DATETIME NULL DEFAULT NULL;
+      ]]></query>
+            <query><![CDATA[
+UPDATE `#__akeebasubs_subscriptions` SET `after_contact` = NULL WHERE `after_contact` = '0000-00-00 00:00:00';
+      ]]></query>
+        </action>
+
     </sql>
 </schema>
