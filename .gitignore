@@ -52,3 +52,6 @@
 # Symlink to FEF to let phpStorm auto-complete the CSS class names
 /fef.min.css
 /.idea/sshConfigs.xml
+
+# Private varaibles for phpStorm's HTTP Rest API client
+/Tests/Rest/http-client.private.env.json

@@ -1,0 +1,20 @@
+// Get aggregate statistics (sales by date)
+GET https://{{ host }}/index.php?option=com_akeebasubs&format=json&view=SubscriptionStatistics&groupbydate=1&paystate=C&since={{ since }}
+X-FOF-Token: {{ token }}
+Accept: application/json
+User-Agent: AkeebaSubsStats/1.0
+
+###
+
+// Get the 20 latest subscriptions
+GET https://{{ host }}/index.php?option=com_akeebasubs&format=json&view=SubscriptionStatistics&paystate=C&filter_order=created_on&filter_order_Dir=desc&limit=20
+X-FOF-Token: {{ token }}
+Accept: application/json
+User-Agent: AkeebaSubsStats/1.0
+
+###
+
+GET https://{{ host }}/index.php?option=com_akeebasubs&format=json&view=Subscriptions&allUsers=1&paystate=C&limit=20
+X-FOF-Token: {{ token }}
+Accept: application/json
+User-Agent: AkeebaSubsApp/1.0

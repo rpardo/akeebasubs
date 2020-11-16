@@ -12,8 +12,8 @@
     <license>GNU GPLv3 - http://www.gnu.org/licenses/gpl.html</license>
     <authorEmail>nicholas@akeeba.com</authorEmail>
     <authorUrl>www.akeeba.com</authorUrl>
-    <creationDate>2020-06-23</creationDate>
-    <version>7.1.1</version>
+    <creationDate>2020-11-15</creationDate>
+    <version>7.1.2.a1</version>
     <description>MOD_AKSUBSLIST_DESCRIPTION</description>
     <files>
         <file module="mod_aksubslist">mod_aksubslist.php</file>

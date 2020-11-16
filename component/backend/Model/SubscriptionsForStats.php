@@ -130,9 +130,6 @@ class SubscriptionsForStats extends Subscriptions
 				                $db->qn('tbl') . '.' . $db->qn('akeebasubs_level_id'))
 				->join('LEFT OUTER', $db->qn('#__users') . ' AS ' . $db->qn('u') . ' ON ' .
 				                     $db->qn('u') . '.' . $db->qn('id') . ' = ' .
-				                     $db->qn('tbl') . '.' . $db->qn('user_id'))
-				->join('LEFT OUTER', $db->qn('#__akeebasubs_users') . ' AS ' . $db->qn('a') . ' ON ' .
-				                     $db->qn('a') . '.' . $db->qn('user_id') . ' = ' .
 				                     $db->qn('tbl') . '.' . $db->qn('user_id'));
 		}
 	}
@@ -210,19 +207,6 @@ class SubscriptionsForStats extends Subscriptions
 				$db->qn('u') . '.' . $db->qn('username'),
 				$db->qn('u') . '.' . $db->qn('email'),
 				$db->qn('u') . '.' . $db->qn('block'),
-				$db->qn('a') . '.' . $db->qn('isbusiness'),
-				$db->qn('a') . '.' . $db->qn('businessname'),
-				$db->qn('a') . '.' . $db->qn('occupation'),
-				$db->qn('a') . '.' . $db->qn('vatnumber'),
-				$db->qn('a') . '.' . $db->qn('viesregistered'),
-				$db->qn('a') . '.' . $db->qn('taxauthority'),
-				$db->qn('a') . '.' . $db->qn('address1'),
-				$db->qn('a') . '.' . $db->qn('address2'),
-				$db->qn('a') . '.' . $db->qn('city'),
-				$db->qn('a') . '.' . $db->qn('zip'),
-				$db->qn('a') . '.' . $db->qn('country'),
-				$db->qn('a') . '.' . $db->qn('params') . ' AS ' . $db->qn('userparams'),
-				$db->qn('a') . '.' . $db->qn('notes') . ' AS ' . $db->qn('usernotes'),
 			));
 
 			$this->addKnownField('title', '', 'varchar(255)');
@@ -232,20 +216,6 @@ class SubscriptionsForStats extends Subscriptions
 			$this->addKnownField('username', '', 'varchar(255)');
 			$this->addKnownField('email', '', 'varchar(255)');
 			$this->addKnownField('block', 0, 'integer');
-			$this->addKnownField('isbusiness', 0, 'integer');
-			$this->addKnownField('businessname', '', 'varchar(255)');
-			$this->addKnownField('occupation', '', 'varchar(255)');
-			$this->addKnownField('vatnumber', '', 'varchar(255)');
-			$this->addKnownField('viesregistered', 0, 'integer');
-			$this->addKnownField('taxauthority', '', 'varchar(255)');
-			$this->addKnownField('address1', '', 'varchar(255)');
-			$this->addKnownField('address2', '', 'varchar(255)');
-			$this->addKnownField('city', '', 'varchar(255)');
-			$this->addKnownField('userstate', '', 'varchar(255)');
-			$this->addKnownField('zip', '', 'varchar(255)');
-			$this->addKnownField('country', '', 'varchar(255)');
-			$this->addKnownField('userparams', '', 'varchar(255)');
-			$this->addKnownField('usernotes', '', 'varchar(255)');
 
 			$order = $this->getState('filter_order', 'akeebasubs_subscription_id', 'cmd');
 
